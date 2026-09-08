@@ -1,34 +1,14 @@
-import {
-  ChartColumn,
-  ChartLine,
-  ChartScatter,
-  Database,
-  SlidersHorizontal
-} from "lucide-react"
+import { Database, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
+import ChartTypePicker from './components/ChartPicker'
+import ChartStage from './components/ChartStage'
+import FieldList from './components/FieldList'
+import type { ChartConfig, ChartType, DataField } from './types/chart'
 import Panel from './components/Panel'
+import SettingsSummary from './components/SettingsSummary'
 import './App.css'
 
 type ActiveSidePanel = "data" | "settings"
-
-type DataType = "date" | "number" | "category"
-
-type DataField = {
-  name: string
-  type: DataType
-}
-
-type ChartType = "scatter" | "line" | "bar"
-
-type ChartEncoding = {
-  x?: DataField
-  y?: DataField
-}
-
-type ChartConfig = {
-  type?: ChartType
-  encoding: ChartEncoding
-}
 
 const sampleFields: DataField[] = [
   { name: "date", type: "date" },
@@ -86,70 +66,22 @@ function App() {
         }
       >
         {isDataPanel ? (
-          <div className="field-list">
-            {sampleFields.map((field) => (
-              <button
-                className={`chip field-chip ${selectedField?.name === field.name ? 'is-active' : ''
-                  }`}
-                type='button'
-                key={field.name}
-                onClick={() => setSelectedField(field)}
-              >
-                <span>{field.name}</span>
-                <span className="field-type">{field.type}</span>
-              </button>
-            ))}
-          </div>
+          <FieldList
+            fields={sampleFields}
+            selectedField={selectedField}
+            onSelectField={setSelectedField}
+          />
         ) : (
-          <div className='settings-summary'>
-            <div>
-              <span>Chart Type</span>
-              <strong>{chartConfig.type}</strong>
-            </div>
-            <div>
-              <span>X</span>
-              <strong>{chartConfig.encoding.x?.name ?? "empty"}</strong>
-            </div>
-            <div>
-              <span>Y</span>
-              <strong>{chartConfig.encoding.y?.name ?? "empty"}</strong>
-            </div>
-          </div>
+          <SettingsSummary chartConfig={chartConfig} />
         )}
       </Panel>
 
       <Panel eyebrow="Workspace" title="Visualization" className="workspace-panel">
         {chartConfig.type ? (
-          <div className="chart-stage">
-            <div className="chart-empty-state">
-              <p>Drag fields onto chart axes.</p>
-            </div>
-            <div className="chart-axis x-axis">
-              <span>X</span>
-              <strong>{chartConfig.encoding.x?.name ?? 'empty'}</strong>
-            </div>
-            <div className="chart-axis y-axis">
-              <span>Y</span>
-              <strong>{chartConfig.encoding.y?.name ?? 'empty'}</strong>
-            </div>
-          </div>
+          <ChartStage chartConfig={chartConfig} />
         ) : (
-          <div className="chart-type-picker">
-            <button className="widget" type="button" onClick={() => selectChartType("scatter")}>
-              <ChartScatter size={22} />
-              <span>Scatter</span>
-            </button>
-            <button className="widget" type="button" onClick={() => selectChartType("line")}>
-              <ChartLine size={22} />
-              <span>Line</span>
-            </button>
-            <button className="widget" type="button" onClick={() => selectChartType("bar")}>
-              <ChartColumn size={22} />
-              <span>Bar</span>
-            </button>
-          </div>
+          <ChartTypePicker onSelectChartType={selectChartType} />
         )}
-
       </Panel>
     </main>
   )
