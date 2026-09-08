@@ -1,4 +1,10 @@
-import { Database, SlidersHorizontal } from 'lucide-react'
+import {
+  ChartColumn,
+  ChartLine,
+  ChartScatter,
+  Database,
+  SlidersHorizontal
+} from "lucide-react"
 import { useState } from 'react'
 import Panel from './components/Panel'
 import './App.css'
@@ -19,10 +25,8 @@ type ChartEncoding = {
   y?: DataField
 }
 
-type EncodingChannel = "x" | "y"
-
 type ChartConfig = {
-  type: ChartType
+  type?: ChartType
   encoding: ChartEncoding
 }
 
@@ -37,24 +41,17 @@ function App() {
     useState<ActiveSidePanel>('data')
 
   const [chartConfig, setChartConfig] = useState<ChartConfig>({
-    type: "scatter",
     encoding: {}
   })
 
-  const [selectedField, setSelectedField] = useState<DataField | null>(null)
-
-  function assignSelectedField(channel: EncodingChannel) {
-    if (!selectedField) {
-      return
-    }
+  function selectChartType(type: ChartType) {
     setChartConfig((currentConfig) => ({
       ...currentConfig,
-      encoding: {
-        ...currentConfig.encoding,
-        [channel]: selectedField,
-      },
+      type,
     }))
   }
+
+  const [selectedField, setSelectedField] = useState<DataField | null>(null)
 
   const isDataPanel = activeSidePanel === 'data'
   const sidePanelTitle = isDataPanel ? 'Fields' : 'Chart'
@@ -69,7 +66,7 @@ function App() {
         actions={
           <>
             <button
-              className={`panel-action ${isDataPanel ? 'panel-action-active' : ''}`}
+              className={`control panel-action ${isDataPanel ? 'is-active' : ''}`}
               type="button"
               aria-label="Show data fields"
               onClick={() => setActiveSidePanel('data')}
@@ -78,7 +75,7 @@ function App() {
             </button>
 
             <button
-              className={`panel-action ${!isDataPanel ? 'panel-action-active' : ''}`}
+              className={`control panel-action ${!isDataPanel ? 'is-active' : ''}`}
               type="button"
               aria-label="Show chart settings"
               onClick={() => setActiveSidePanel('settings')}
@@ -92,9 +89,7 @@ function App() {
           <div className="field-list">
             {sampleFields.map((field) => (
               <button
-                className={`field-chip ${selectedField?.name === field.name
-                  ? "field-chip-active"
-                  : ""
+                className={`chip field-chip ${selectedField?.name === field.name ? 'is-active' : ''
                   }`}
                 type='button'
                 key={field.name}
@@ -124,28 +119,37 @@ function App() {
       </Panel>
 
       <Panel eyebrow="Workspace" title="Visualization" className="workspace-panel">
-        <div className="chart-stage">
-          <p>Drop fields to build a visualization.</p>
-        </div>
-        <div className="encoding-zones">
-          <button
-            className="drop-zone"
-            type="button"
-            onClick={() => assignSelectedField("x")}
-          >
-            <span>X</span>
-            <span>{chartConfig.encoding.x?.name ?? 'empty'}</span>
-          </button>
+        {chartConfig.type ? (
+          <div className="chart-stage">
+            <div className="chart-empty-state">
+              <p>Drag fields onto chart axes.</p>
+            </div>
+            <div className="chart-axis x-axis">
+              <span>X</span>
+              <strong>{chartConfig.encoding.x?.name ?? 'empty'}</strong>
+            </div>
+            <div className="chart-axis y-axis">
+              <span>Y</span>
+              <strong>{chartConfig.encoding.y?.name ?? 'empty'}</strong>
+            </div>
+          </div>
+        ) : (
+          <div className="chart-type-picker">
+            <button className="widget" type="button" onClick={() => selectChartType("scatter")}>
+              <ChartScatter size={22} />
+              <span>Scatter</span>
+            </button>
+            <button className="widget" type="button" onClick={() => selectChartType("line")}>
+              <ChartLine size={22} />
+              <span>Line</span>
+            </button>
+            <button className="widget" type="button" onClick={() => selectChartType("bar")}>
+              <ChartColumn size={22} />
+              <span>Bar</span>
+            </button>
+          </div>
+        )}
 
-          <button
-            className="drop-zone"
-            type="button"
-            onClick={() => assignSelectedField("y")}
-          >
-            <span>Y</span>
-            <span>{chartConfig.encoding.y?.name ?? 'empty'}</span>
-          </button>
-        </div>
       </Panel>
     </main>
   )
