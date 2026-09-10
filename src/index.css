@@ -8,6 +8,7 @@
   --surface-glass: rgba(5, 8, 14, 0.28);
   --surface-glass-highlight: rgba(255, 255, 255, 0.035);
   --surface-widget: rgba(255, 255, 255, 0.07);
+  --surface-widget-strong: rgba(255, 255, 255, 0.34);
   --surface-widget-hover: rgba(255, 255, 255, 0.09);
   --surface-active: rgba(79, 156, 255, 0.18);
   --surface-disabled: rgba(255, 255, 255, 0.025);

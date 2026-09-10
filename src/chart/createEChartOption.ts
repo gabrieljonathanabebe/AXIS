@@ -68,7 +68,7 @@ export function createEChartOption(
 
   return {
     backgroundColor: "transparent",
-    animation: false,
+    animation: true,
     xAxis: {
       type: chartType === "scatter" ? "value" : "category",
       data: chartType === "scatter" ? undefined : categories,
