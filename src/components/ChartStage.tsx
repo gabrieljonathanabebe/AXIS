@@ -1,25 +1,15 @@
-import type { ChartConfig } from '../types/chart'
+import type { ChartConfig, Dataset } from '../types/chart'
+import EChartCanvas from './EChartCanvas'
 
 type ChartStageProps = {
   chartConfig: ChartConfig
+  dataset: Dataset
 }
 
-function ChartStage({ chartConfig }: ChartStageProps) {
+function ChartStage({ chartConfig, dataset }: ChartStageProps) {
   return (
     <div className="chart-stage">
-      <div className="chart-empty-state">
-        <p>Drag fields onto chart axes.</p>
-      </div>
-
-      <div className="chart-axis x-axis">
-        <span>X</span>
-        <strong>{chartConfig.encoding.x?.name ?? 'empty'}</strong>
-      </div>
-
-      <div className="chart-axis y-axis">
-        <span>Y</span>
-        <strong>{chartConfig.encoding.y?.name ?? 'empty'}</strong>
-      </div>
+      <EChartCanvas chartConfig={chartConfig} dataset={dataset} />
     </div>
   )
 }

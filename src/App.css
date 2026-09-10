@@ -171,17 +171,33 @@ h2 {
 .chart-stage {
   position: relative;
   flex: 1;
-  display: grid;
-  place-items: center;
   color: var(--color-text-muted);
   border: 1px dashed var(--border-guide);
   border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.echart-canvas {
+  position: absolute;
+  inset: var(--space-6);
 }
 
 .chart-axis {
   position: absolute;
   color: var(--color-text-muted);
   font-size: 0.8rem;
+  z-index: 1;
+}
+
+.chart-empty-state {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  text-transform: capitalize;
+  z-index: 1;
 }
 
 .chart-axis strong {

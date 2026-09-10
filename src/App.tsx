@@ -3,32 +3,31 @@ import { useState } from 'react'
 import ChartTypePicker from './components/ChartPicker'
 import ChartStage from './components/ChartStage'
 import FieldList from './components/FieldList'
-import type { ChartConfig, ChartType, DataField } from './types/chart'
+import type { ChartConfig, ChartType, DataField, Dataset } from './types/chart'
+import { createDemoDataset } from './data/createDemoDataset'
+import { getDefaultEncoding } from './chart/getDefaultEncoding'
 import Panel from './components/Panel'
 import SettingsSummary from './components/SettingsSummary'
 import './App.css'
 
 type ActiveSidePanel = "data" | "settings"
 
-const sampleFields: DataField[] = [
-  { name: "date", type: "date" },
-  { name: "revenue", type: "number" },
-  { name: "country", type: "category" },
-]
 
 function App() {
   const [activeSidePanel, setActiveSidePanel] =
     useState<ActiveSidePanel>('data')
+  const [dataset] = useState<Dataset>(() => createDemoDataset())
 
   const [chartConfig, setChartConfig] = useState<ChartConfig>({
     encoding: {}
   })
 
   function selectChartType(type: ChartType) {
-    setChartConfig((currentConfig) => ({
-      ...currentConfig,
+    setChartConfig({
       type,
-    }))
+      encoding: getDefaultEncoding(type, dataset),
+      aggregate: type === "scatter" ? undefined : "sum",
+    })
   }
 
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
@@ -67,7 +66,7 @@ function App() {
       >
         {isDataPanel ? (
           <FieldList
-            fields={sampleFields}
+            fields={dataset.fields}
             selectedField={selectedField}
             onSelectField={setSelectedField}
           />
@@ -78,7 +77,7 @@ function App() {
 
       <Panel eyebrow="Workspace" title="Visualization" className="workspace-panel">
         {chartConfig.type ? (
-          <ChartStage chartConfig={chartConfig} />
+          <ChartStage chartConfig={chartConfig} dataset={dataset} />
         ) : (
           <ChartTypePicker onSelectChartType={selectChartType} />
         )}
