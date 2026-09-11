@@ -21,6 +21,10 @@ function SettingsSummary({ chartConfig }: SettingsSummaryProps) {
         <span>Y</span>
         <strong>{chartConfig.encoding.y?.name ?? 'empty'}</strong>
       </div>
+      <div>
+        <span>Aggregation</span>
+        <strong>{chartConfig.aggregate ?? "none"}</strong>
+      </div>
     </div>
   )
 }
