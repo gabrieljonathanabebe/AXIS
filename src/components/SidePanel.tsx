@@ -1,7 +1,8 @@
 import { Database, SlidersHorizontal } from 'lucide-react'
 import FieldList from './FieldList'
-import Panel from './Panel'
+import Panel from './ui/Panel'
 import SettingsSummary from './SettingsSummary'
+import IconButton from './ui/IconButton'
 import type { ChartConfig, DataField } from '../types/chart'
 import type { ActiveSidePanel } from '../types/ui'
 
@@ -32,22 +33,22 @@ function SidePanel({
       className="side-panel"
       actions={
         <>
-          <button
-            className={`control panel-action ${isDataPanel ? 'is-active' : ''}`}
-            type="button"
-            aria-label="Show data fields"
+          <IconButton
+            className='panel-action'
+            isActive={isDataPanel}
+            label='Show data fields'
             onClick={() => onSetActiveSidePanel('data')}
           >
             <Database size={18} />
-          </button>
-          <button
-            className={`control panel-action ${!isDataPanel ? 'is-active' : ''}`}
-            type="button"
-            aria-label="Show chart settings"
+          </IconButton>
+          <IconButton
+            className='panel-action'
+            isActive={!isDataPanel}
+            label='Show chart settings'
             onClick={() => onSetActiveSidePanel('settings')}
           >
             <SlidersHorizontal size={18} />
-          </button>
+          </IconButton>
         </>
       }
     >

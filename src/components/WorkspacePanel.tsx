@@ -2,7 +2,8 @@ import { ChartColumn, Database, RotateCcw } from 'lucide-react'
 import ChartTypePicker from './ChartPicker'
 import ChartStage from './ChartStage'
 import DataTable from './DataTable'
-import Panel from './Panel'
+import IconButton from './ui/IconButton'
+import Panel from './ui/Panel'
 import type { ChartConfig, ChartType, Dataset } from '../types/chart'
 import type { WorkspaceView } from '../types/ui'
 
@@ -32,34 +33,27 @@ function WorkspacePanel({
       className="workspace-panel"
       actions={
         <>
-          <button
-            className={`control ${isChartView ? 'is-active' : ''}`}
-            type="button"
-            title="Chart View"
-            aria-label="Show chart view"
+          <IconButton
+            isActive={isChartView}
+            label='Show chart view'
             onClick={() => onSetWorkspaceView('chart')}
           >
             <ChartColumn size={18} />
-          </button>
-          <button
-            className={`control ${!isChartView ? 'is-active' : ''}`}
-            type="button"
-            title="Data View"
-            aria-label="Show data view"
+          </IconButton>
+          <IconButton
+            isActive={!isChartView}
+            label="Show data view"
             onClick={() => onSetWorkspaceView('data')}
           >
             <Database size={18} />
-          </button>
+          </IconButton>
           {isChartView && chartConfig.type ? (
-            <button
-              className="control"
-              type="button"
-              title="Reset chart"
-              aria-label="Reset chart"
+            <IconButton
+              label="Reset chart"
               onClick={onResetChart}
             >
               <RotateCcw size={18} />
-            </button>
+            </IconButton>
           ) : null}
         </>
       }

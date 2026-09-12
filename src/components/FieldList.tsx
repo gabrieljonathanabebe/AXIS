@@ -1,6 +1,8 @@
 import { useDraggable } from '@dnd-kit/core'
+import Chip from './ui/Chip'
 import type { DataField } from '../types/chart'
 import DataTypeIcon from './DataTypeIcon'
+import IconBadge from './ui/IconBadge'
 
 type FieldListProps = {
   fields: DataField[]
@@ -24,24 +26,19 @@ function DraggableFieldChip({
       id: `field:${field.name}`
     })
   return (
-    <button
+    <Chip
       ref={setNodeRef}
-      className={`chip field-chip ${isSelected ? "is-active" : ""} ${isDragging ? "is-dragging" : ""
-        }`}
-      type='button'
-      key={field.name}
+      className={`field-chip ${isDragging ? 'is-dragging' : ''}`}
+      isActive={isSelected}
       title={`Type: ${field.type}`}
       onClick={() => onSelectField(field)}
       {...listeners}
       {...attributes}
     >
-      <span className='field-chip-title'>
-        <span className='field-chip-icon'>
-          <DataTypeIcon type={field.type} />
-        </span>
-        <span>{field.name}</span>
-      </span>
-    </button>
+      <IconBadge label={field.name}>
+        <DataTypeIcon type={field.type} />
+      </IconBadge>
+    </Chip>
   )
 }
 

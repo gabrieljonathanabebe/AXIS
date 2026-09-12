@@ -167,25 +167,6 @@ h2 {
   padding: var(--space-3) var(--space-4);
 }
 
-.field-chip-title {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  gap: 8px;
-}
-
-.field-chip-icon {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
-  color: var(--color-accent);
-  background: var(--surface-active);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-pill);
-}
-
 .chart-stage {
   position: relative;
   flex: 1;
@@ -273,7 +254,7 @@ h2 {
   margin: auto 0;
 }
 
-.chart-type-picker button {
+.chart-type-option {
   display: grid;
   place-items: center;
   gap: var(--space-3);
@@ -359,25 +340,6 @@ h2 {
   border-bottom: 0;
 }
 
-.data-column-title {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  gap: 8px;
-}
-
-.data-column-icon {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 auto;
-  color: var(--color-accent);
-  background: var(--surface-active);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-pill);
-}
-
 .data-category-badge {
   display: inline-flex;
   align-items: center;
@@ -447,4 +409,56 @@ h2 {
   box-shadow: var(--shadow-accent);
   pointer-events: none;
   cursor: grabbing;
+}
+
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+  color: var(--color-accent);
+}
+
+.icon-badge-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.icon-badge-label {
+  min-width: 0;
+  color: var(--color-text);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  color: var(--color-text);
+  background: var(--surface-widget);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.button:hover {
+  color: var(--color-interactive-hover);
+  background: var(--surface-widget-hover);
+  border-color: var(--border-accent);
+  cursor: pointer;
+}
+
+.button.is-active {
+  color: var(--color-accent);
+  background: var(--surface-active);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-accent);
 }

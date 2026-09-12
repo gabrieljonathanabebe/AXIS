@@ -1,5 +1,6 @@
 import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
 import type { ChartType } from '../types/chart'
+import WidgetButton from './ui/WidgetButton'
 
 type ChartTypePickerProps = {
   onSelectChartType: (type: ChartType) => void
@@ -15,15 +16,14 @@ function ChartTypePicker({ onSelectChartType }: ChartTypePickerProps) {
   return (
     <div className="chart-type-picker">
       {chartTypes.map(({ type, label, icon: Icon }) => (
-        <button
-          className="widget"
-          type="button"
+        <WidgetButton
+          className="chart-type-option"
           key={type}
           onClick={() => onSelectChartType(type)}
         >
           <Icon size={22} />
           <span>{label}</span>
-        </button>
+        </WidgetButton>
       ))}
     </div>
   )

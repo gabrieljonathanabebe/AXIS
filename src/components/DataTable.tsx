@@ -1,5 +1,6 @@
 import DataTypeIcon from './DataTypeIcon'
 import type { Dataset, DataValue } from "../types/chart";
+import IconBadge from './ui/IconBadge';
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
 
@@ -71,12 +72,9 @@ function DataTable({ dataset }: DataTableProps) {
               key={field.name}
               title={`Type: ${field.type}`}
             >
-              <span className="data-column-title">
-                <span className="data-column-icon">
-                  <DataTypeIcon type={field.type} />
-                </span>
-                <span>{field.name}</span>
-              </span>
+              <IconBadge label={field.name}>
+                <DataTypeIcon type={field.type} />
+              </IconBadge>
             </button>
           ))}
         </div>
