@@ -3,6 +3,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
+import type { ActiveDrag, DragPayload } from '../types/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { useState } from 'react'
 import { getDefaultEncoding } from '../chart/getDefaultEncoding'
@@ -18,7 +19,7 @@ import type {
 export function useChartWorkspace() {
   const [dataset] = useState<Dataset>(() => createDemoDataset())
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
-  const [activeDragField, setActiveDragField] = useState<DataField | null>(null)
+  const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
   const [chartConfig, setChartConfig] = useState<ChartConfig>({
     encoding: {},
   })
@@ -48,28 +49,29 @@ export function useChartWorkspace() {
     }))
   }
 
-  function findFieldByDragId(id: string) {
-    const fieldName = id.replace('field:', '')
-    return dataset.fields.find((field) => field.name === fieldName)
+  function getDragPayload(event: DragStartEvent | DragEndEvent): DragPayload | null {
+    return event.active.data.current?.payload ?? null
   }
 
   function handleDragStart(event: DragStartEvent) {
-    const field = findFieldByDragId(String(event.active.id))
-    setActiveDragField(field ?? null)
+    setActiveDrag(getDragPayload(event))
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    setActiveDragField(null)
-    const field = findFieldByDragId(String(event.active.id))
-    const axis = String(event.over?.id)
-    if (!field) {
+    const payload = getDragPayload(event)
+    const overId = String(event.over?.id)
+    setActiveDrag(null)
+    if (payload?.kind === 'chart-type' && overId === 'chart-drop-zone') {
+      selectChartType(payload.chartType)
       return
     }
-    if (axis === 'axis:x') {
-      assignFieldToAxis('x', field)
-    }
-    if (axis === 'axis:y') {
-      assignFieldToAxis('y', field)
+    if (payload?.kind === 'field') {
+      if (overId === 'axis:x') {
+        assignFieldToAxis('x', payload.field)
+      }
+      if (overId === 'axis:y') {
+        assignFieldToAxis('y', payload.field)
+      }
     }
   }
 
@@ -79,7 +81,7 @@ export function useChartWorkspace() {
     })
   }
   return {
-    activeDragField,
+    activeDrag,
     chartConfig,
     dataset,
     handleDragEnd,

@@ -23,7 +23,13 @@ function DraggableFieldChip({
 }: DraggableFieldChipProps) {
   const { attributes, listeners, setNodeRef, isDragging } =
     useDraggable({
-      id: `field:${field.name}`
+      id: `field:${field.name}`,
+      data: {
+        payload: {
+          kind: 'field',
+          field,
+        },
+      },
     })
   return (
     <Chip

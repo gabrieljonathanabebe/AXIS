@@ -1,27 +1,27 @@
 import { ChartColumn, Database, RotateCcw } from 'lucide-react'
-import ChartTypePicker from './ChartPicker'
 import ChartStage from './ChartStage'
 import DataTable from './DataTable'
+import EmptyState from './ui/EmptyState'
 import IconButton from './ui/IconButton'
 import Panel from './ui/Panel'
-import type { ChartConfig, ChartType, Dataset } from '../types/chart'
+import type { ChartConfig, Dataset } from '../types/chart'
 import type { WorkspaceView } from '../types/ui'
 
 type WorkspacePanelProps = {
   chartConfig: ChartConfig
   dataset: Dataset
+  isDraggingField: boolean
   workspaceView: WorkspaceView
   onResetChart: () => void
-  onSelectChartType: (type: ChartType) => void
   onSetWorkspaceView: (view: WorkspaceView) => void
 }
 
 function WorkspacePanel({
   chartConfig,
   dataset,
+  isDraggingField,
   workspaceView,
   onResetChart,
-  onSelectChartType,
   onSetWorkspaceView,
 }: WorkspacePanelProps) {
   const isChartView = workspaceView === 'chart'
@@ -60,9 +60,17 @@ function WorkspacePanel({
     >
       {isChartView ? (
         chartConfig.type ? (
-          <ChartStage chartConfig={chartConfig} dataset={dataset} />
+          <ChartStage
+            chartConfig={chartConfig}
+            dataset={dataset}
+            isDraggingField={isDraggingField}
+          />
         ) : (
-          <ChartTypePicker onSelectChartType={onSelectChartType} />
+          <EmptyState
+            dropId='chart-drop-zone'
+            title="Drop chart type here"
+            description="Choose a chart from the side panel to start building."
+          />
         )
       ) : (
         <DataTable dataset={dataset} />

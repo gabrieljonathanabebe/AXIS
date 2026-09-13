@@ -1,9 +1,10 @@
-import { Database, SlidersHorizontal } from 'lucide-react'
+import { ChartColumn, Database, SlidersHorizontal } from 'lucide-react'
+import ChartPicker from './ChartPicker'
 import FieldList from './FieldList'
 import Panel from './ui/Panel'
 import SettingsSummary from './SettingsSummary'
 import IconButton from './ui/IconButton'
-import type { ChartConfig, DataField } from '../types/chart'
+import type { ChartConfig, ChartType, DataField } from '../types/chart'
 import type { ActiveSidePanel } from '../types/ui'
 
 type SidePanelProps = {
@@ -12,6 +13,7 @@ type SidePanelProps = {
   fields: DataField[]
   selectedField: DataField | null
   onSelectField: (field: DataField) => void
+  onSelectChartType: (type: ChartType) => void
   onSetActiveSidePanel: (panel: ActiveSidePanel) => void
 }
 
@@ -21,30 +23,42 @@ function SidePanel({
   fields,
   selectedField,
   onSelectField,
+  onSelectChartType,
   onSetActiveSidePanel,
 }: SidePanelProps) {
-  const isDataPanel = activeSidePanel === 'data'
-  const sidePanelTitle = isDataPanel ? 'Fields' : 'Chart'
+  const panelTitle =
+    activeSidePanel === 'fields'
+      ? 'Fields'
+      : activeSidePanel === 'charts'
+        ? 'Charts'
+        : 'Settings'
   return (
     <Panel
       as="aside"
       eyebrow="Panel"
-      title={sidePanelTitle}
+      title={panelTitle}
       className="side-panel"
       actions={
         <>
           <IconButton
-            className='panel-action'
-            isActive={isDataPanel}
-            label='Show data fields'
-            onClick={() => onSetActiveSidePanel('data')}
+            isActive={activeSidePanel === 'fields'}
+            label="Show fields"
+            onClick={() => onSetActiveSidePanel('fields')}
           >
             <Database size={18} />
           </IconButton>
+
           <IconButton
-            className='panel-action'
-            isActive={!isDataPanel}
-            label='Show chart settings'
+            isActive={activeSidePanel === 'charts'}
+            label="Show chart types"
+            onClick={() => onSetActiveSidePanel('charts')}
+          >
+            <ChartColumn size={18} />
+          </IconButton>
+
+          <IconButton
+            isActive={activeSidePanel === 'settings'}
+            label="Show settings"
             onClick={() => onSetActiveSidePanel('settings')}
           >
             <SlidersHorizontal size={18} />
@@ -52,12 +66,14 @@ function SidePanel({
         </>
       }
     >
-      {isDataPanel ? (
+      {activeSidePanel === 'fields' ? (
         <FieldList
           fields={fields}
           selectedField={selectedField}
           onSelectField={onSelectField}
         />
+      ) : activeSidePanel === 'charts' ? (
+        <ChartPicker onSelectChartType={onSelectChartType} />
       ) : (
         <SettingsSummary chartConfig={chartConfig} />
       )}

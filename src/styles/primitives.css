@@ -150,3 +150,33 @@
   border-color: var(--border-accent);
   box-shadow: var(--shadow-accent);
 }
+
+.empty-state {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  min-height: 100%;
+  padding: var(--space-8);
+  color: var(--color-text);
+  text-align: center;
+  border: 1px dashed transparent;
+  border-radius: var(--radius-lg);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.empty-state span {
+  max-width: 420px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.empty-state.is-over {
+  color: var(--color-accent);
+  background: var(--surface-active);
+  border-color: var(--border-accent);
+}

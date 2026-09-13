@@ -9,27 +9,29 @@ import EChartCanvas from './EChartCanvas'
 type ChartStageProps = {
   chartConfig: ChartConfig
   dataset: Dataset
+  isDraggingField: boolean
 }
 
-type AxisDropSlotProps = {
+type AxisDropZoneProps = {
   axis: keyof ChartEncoding
   label: string
-  value: string
 }
 
-function AxisDropSlot({ axis, label, value }: AxisDropSlotProps) {
+function AxisDropZone({ axis, label }: AxisDropZoneProps) {
   const { isOver, setNodeRef } = useDroppable({
     id: `axis:${axis}`,
   })
 
   return (
     <div
-      className={`axis-slot stack ${axis}-slot ${isOver ? "is-over" : ""}`}
+      aria-label={`Drop field to set ${label}-axis`}
+      className={`axis-drop-zone ${axis}-axis-drop-zone ${isOver ? 'is-over' : ''}`}
       ref={setNodeRef}
     >
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <small>Drop field</small>
+      <span className="axis-highlight-line" />
+      <span className="axis-highlight-dot axis-highlight-dot-start" />
+      <span className="axis-highlight-dot axis-highlight-dot-end" />
+      <span className="axis-drop-label">Drop here to set {label}-axis</span>
     </div>
   )
 }
@@ -37,19 +39,18 @@ function AxisDropSlot({ axis, label, value }: AxisDropSlotProps) {
 function ChartStage({
   chartConfig,
   dataset,
+  isDraggingField,
 }: ChartStageProps) {
   return (
-    <div className="chart-stage">
-      <div className='chart-encoding-overlay'>
-        <AxisDropSlot
+    <div className={`chart-stage ${isDraggingField ? 'is-dragging-field' : ''}`}>
+      <div className="chart-encoding-overlay">
+        <AxisDropZone
           axis="x"
           label="X"
-          value={chartConfig.encoding.x?.name ?? 'empty'}
         />
-        <AxisDropSlot
+        <AxisDropZone
           axis="y"
           label="Y"
-          value={chartConfig.encoding.y?.name ?? 'empty'}
         />
       </div>
       <EChartCanvas chartConfig={chartConfig} dataset={dataset} />

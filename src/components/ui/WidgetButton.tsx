@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 type WidgetButtonProps = {
@@ -5,22 +6,28 @@ type WidgetButtonProps = {
   isActive?: boolean
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
-function WidgetButton({
-  children,
-  className = '',
-  isActive = false,
-  type = 'button',
-  ...buttonProps
-}: WidgetButtonProps) {
-  return (
-    <button
-      className={`widget ${isActive ? 'is-active' : ''} ${className}`}
-      type={type}
-      {...buttonProps}
-    >
-      {children}
-    </button>
-  )
-}
+const WidgetButton = forwardRef<HTMLButtonElement, WidgetButtonProps>(
+  function WidgetButton(
+    {
+      children,
+      className = '',
+      isActive = false,
+      type = 'button',
+      ...buttonProps
+    },
+    ref,
+  ) {
+    return (
+      <button
+        ref={ref}
+        className={`widget ${isActive ? 'is-active' : ''} ${className}`}
+        type={type}
+        {...buttonProps}
+      >
+        {children}
+      </button>
+    )
+  },
+)
 
 export default WidgetButton

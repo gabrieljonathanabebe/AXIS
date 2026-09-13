@@ -51,3 +51,7 @@ h2 {
     min-height: 420px;
   }
 }
+
+.app-shell.is-data-view {
+  grid-template-columns: minmax(0, 1fr);
+}
