@@ -14,10 +14,10 @@ const chartTypes: { type: ChartType; label: string; icon: typeof ChartScatter }[
 
 function ChartTypePicker({ onSelectChartType }: ChartTypePickerProps) {
   return (
-    <div className="chart-type-picker">
+    <div className="chart-type-picker auto-grid">
       {chartTypes.map(({ type, label, icon: Icon }) => (
         <WidgetButton
-          className="chart-type-option"
+          className="chart-type-option stack center"
           key={type}
           onClick={() => onSelectChartType(type)}
         >

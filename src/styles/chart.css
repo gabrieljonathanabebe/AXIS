@@ -1,0 +1,77 @@
+.chart-stage {
+  position: relative;
+  flex: 1;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--border-guide);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.echart-canvas {
+  position: absolute;
+  inset: var(--space-6);
+}
+
+.chart-type-picker {
+  width: 100%;
+  margin: auto 0;
+}
+
+.chart-type-option {
+  padding: var(--space-6);
+}
+
+.chart-encoding-overlay {
+  position: absolute;
+  inset: var(--space-4);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.axis-slot {
+  position: absolute;
+  padding: var(--space-3);
+  color: var(--color-text-muted);
+  background: var(--surface-widget);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(24px);
+  pointer-events: auto;
+}
+
+.x-slot {
+  right: var(--space-4);
+  bottom: var(--space-4);
+  left: var(--space-8);
+}
+
+.y-slot {
+  top: var(--space-4);
+  left: var(--space-4);
+  width: 180px;
+}
+
+.axis-slot strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.axis-slot small {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.axis-slot.is-over {
+  color: var(--color-accent);
+  background: var(--surface-active);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-accent);
+}
+
+.drag-overlay-chip {
+  box-shadow: var(--shadow-accent);
+  pointer-events: none;
+  cursor: grabbing;
+}

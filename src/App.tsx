@@ -5,7 +5,6 @@ import FieldDragOverlay from './components/FieldDragOverlay'
 import { useChartWorkspace } from './hooks/useChartWorkspace'
 import SidePanel from './components/SidePanel'
 import WorkspacePanel from './components/WorkspacePanel'
-import './App.css'
 
 function App() {
   const {

@@ -28,7 +28,7 @@ function DraggableFieldChip({
   return (
     <Chip
       ref={setNodeRef}
-      className={`field-chip ${isDragging ? 'is-dragging' : ''}`}
+      className={`field-chip cluster full-width ${isDragging ? 'is-dragging' : ''}`}
       isActive={isSelected}
       title={`Type: ${field.type}`}
       onClick={() => onSelectField(field)}
@@ -48,7 +48,7 @@ function FieldList({
   onSelectField,
 }: FieldListProps) {
   return (
-    <div className="field-list">
+    <div className="stack">
       {fields.map((field) => (
         <DraggableFieldChip
           field={field}

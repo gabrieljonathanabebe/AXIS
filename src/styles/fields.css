@@ -1,0 +1,5 @@
+.field-chip {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: var(--space-3) var(--space-4);
+}

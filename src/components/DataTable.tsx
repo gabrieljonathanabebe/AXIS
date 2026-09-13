@@ -62,12 +62,12 @@ function DataTable({ dataset }: DataTableProps) {
     <div className="data-table">
       <div className="data-table-scroll">
         <div
-          className="data-table-header"
+          className="data-table-header grid"
           style={gridStyle}
         >
           {dataset.fields.map((field) => (
             <button
-              className="data-column-header"
+              className="data-column-header spread"
               type="button"
               key={field.name}
               title={`Type: ${field.type}`}
@@ -81,7 +81,7 @@ function DataTable({ dataset }: DataTableProps) {
         <div className="data-table-body">
           {dataset.rows.map((row, rowIndex) => (
             <div
-              className="data-table-row"
+              className="data-table-row grid"
               style={gridStyle}
               key={rowIndex}
             >
@@ -89,7 +89,7 @@ function DataTable({ dataset }: DataTableProps) {
                 <div className="data-table-cell" key={field.name}>
                   {field.type === "category" ? (
                     <span
-                      className="data-category-badge"
+                      className="data-category-badge inline-cluster"
                       style={getCategoryStyle(
                         categoryColorMap.get(`${field.name}:${String(row[field.name] ?? "")}`) ??
                         categoryColors[0],

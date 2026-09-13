@@ -11,7 +11,7 @@ function FieldDragOverlay({ activeField }: FieldDragOverlayProps) {
   return (
     <DragOverlay>
       {activeField ? (
-        <div className="chip field-chip drag-overlay-chip">
+        <div className="chip field-chip cluster full-width drag-overlay-chip">
           <IconBadge label={activeField.name}>
             <DataTypeIcon type={activeField.type} />
           </IconBadge>

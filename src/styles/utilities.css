@@ -1,0 +1,48 @@
+.stack {
+  display: grid;
+  gap: var(--stack-gap, var(--space-3));
+}
+
+.cluster {
+  display: flex;
+  align-items: center;
+  gap: var(--cluster-gap, var(--space-3));
+}
+
+.inline-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cluster-gap, var(--space-3));
+}
+
+.spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spread-gap, var(--space-3));
+}
+
+.center {
+  display: grid;
+  place-items: center;
+}
+
+.grid {
+  display: grid;
+  gap: var(--grid-gap, 0);
+}
+
+.auto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 120px), 1fr));
+  gap: var(--grid-gap, var(--space-4));
+}
+
+.full-width {
+  width: 100%;
+}
+
+.text-strong {
+  color: var(--color-text);
+  font-weight: 600;
+}

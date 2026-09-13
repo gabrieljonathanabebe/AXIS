@@ -6,24 +6,24 @@ type SettingsSummaryProps = {
 
 function SettingsSummary({ chartConfig }: SettingsSummaryProps) {
   return (
-    <div className="settings-summary">
-      <div>
+    <div className="stack">
+      <div className="spread">
         <span>Chart Type</span>
-        <strong>{chartConfig.type ?? 'empty'}</strong>
+        <strong className="text-strong">{chartConfig.type ?? 'empty'}</strong>
       </div>
 
-      <div>
+      <div className="spread">
         <span>X</span>
-        <strong>{chartConfig.encoding.x?.name ?? 'empty'}</strong>
+        <strong className="text-strong">{chartConfig.encoding.x?.name ?? 'empty'}</strong>
       </div>
 
-      <div>
+      <div className="spread">
         <span>Y</span>
-        <strong>{chartConfig.encoding.y?.name ?? 'empty'}</strong>
+        <strong className="text-strong">{chartConfig.encoding.y?.name ?? 'empty'}</strong>
       </div>
-      <div>
+      <div className="spread">
         <span>Aggregation</span>
-        <strong>{chartConfig.aggregate ?? "none"}</strong>
+        <strong className="text-strong">{chartConfig.aggregate ?? "none"}</strong>
       </div>
     </div>
   )

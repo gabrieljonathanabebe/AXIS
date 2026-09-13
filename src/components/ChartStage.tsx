@@ -24,7 +24,7 @@ function AxisDropSlot({ axis, label, value }: AxisDropSlotProps) {
 
   return (
     <div
-      className={`axis-slot ${axis}-slot ${isOver ? "is-over" : ""}`}
+      className={`axis-slot stack ${axis}-slot ${isOver ? "is-over" : ""}`}
       ref={setNodeRef}
     >
       <span>{label}</span>
