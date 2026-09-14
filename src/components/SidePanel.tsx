@@ -2,9 +2,15 @@ import { ChartColumn, Database, SlidersHorizontal } from 'lucide-react'
 import ChartPicker from './ChartPicker'
 import FieldList from './FieldList'
 import Panel from './ui/Panel'
-import SettingsSummary from './SettingsSummary'
+import ChartInspector from './ChartInspector'
 import IconButton from './ui/IconButton'
-import type { ChartConfig, ChartType, DataField } from '../types/chart'
+import type {
+  Aggregation,
+  ChartConfig,
+  ChartEncoding,
+  ChartType,
+  DataField,
+} from '../types/chart'
 import type { ActiveSidePanel } from '../types/ui'
 
 type SidePanelProps = {
@@ -15,6 +21,8 @@ type SidePanelProps = {
   onSelectField: (field: DataField) => void
   onSelectChartType: (type: ChartType) => void
   onSetActiveSidePanel: (panel: ActiveSidePanel) => void
+  onSetAggregation: (aggregation: Aggregation) => void
+  onSetEncodingField: (axis: keyof ChartEncoding, fieldName: string) => void
 }
 
 function SidePanel({
@@ -25,6 +33,8 @@ function SidePanel({
   onSelectField,
   onSelectChartType,
   onSetActiveSidePanel,
+  onSetAggregation,
+  onSetEncodingField,
 }: SidePanelProps) {
   const panelTitle =
     activeSidePanel === 'fields'
@@ -47,7 +57,6 @@ function SidePanel({
           >
             <Database size={18} />
           </IconButton>
-
           <IconButton
             isActive={activeSidePanel === 'charts'}
             label="Show chart types"
@@ -55,7 +64,6 @@ function SidePanel({
           >
             <ChartColumn size={18} />
           </IconButton>
-
           <IconButton
             isActive={activeSidePanel === 'settings'}
             label="Show settings"
@@ -75,7 +83,13 @@ function SidePanel({
       ) : activeSidePanel === 'charts' ? (
         <ChartPicker onSelectChartType={onSelectChartType} />
       ) : (
-        <SettingsSummary chartConfig={chartConfig} />
+        <ChartInspector
+          chartConfig={chartConfig}
+          fields={fields}
+          onSelectChartType={onSelectChartType}
+          onSetAggregation={onSetAggregation}
+          onSetEncodingField={onSetEncodingField}
+        />
       )}
     </Panel>
   )

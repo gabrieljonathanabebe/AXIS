@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { getDefaultEncoding } from '../chart/getDefaultEncoding'
 import { createDemoDataset } from '../data/createDemoDataset'
 import type {
+  Aggregation,
   ChartConfig,
   ChartEncoding,
   ChartType,
@@ -46,6 +47,21 @@ export function useChartWorkspace() {
         ...currentConfig.encoding,
         [axis]: field,
       },
+    }))
+  }
+
+  function setEncodingField(axis: keyof ChartEncoding, fieldName: string) {
+    const field = dataset.fields.find((field) => field.name === fieldName)
+    if (!field) {
+      return
+    }
+    assignFieldToAxis(axis, field)
+  }
+
+  function setAggregation(aggregate: Aggregation) {
+    setChartConfig((currentConfig) => ({
+      ...currentConfig,
+      aggregate,
     }))
   }
 
@@ -90,6 +106,8 @@ export function useChartWorkspace() {
     selectedField,
     selectChartType,
     sensors,
+    setAggregation,
+    setEncodingField,
     setSelectedField,
   }
 }

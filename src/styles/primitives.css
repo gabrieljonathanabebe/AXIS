@@ -1,7 +1,15 @@
 .glass {
   background:
-    linear-gradient(135deg, var(--surface-glass-highlight), transparent 44%),
-    var(--surface-glass);
+    radial-gradient(ellipse at var(--panel-glow-x, 14%) var(--panel-glow-y, 0%),
+      var(--surface-panel-glow),
+      transparent var(--panel-glow-size, 42%)),
+    radial-gradient(ellipse at var(--panel-glow-2-x, 82%) var(--panel-glow-2-y, 78%),
+      var(--surface-panel-glow-secondary, transparent),
+      transparent var(--panel-glow-2-size, 46%)),
+    linear-gradient(var(--panel-sheen-angle, 135deg),
+      var(--surface-panel-highlight),
+      transparent var(--panel-sheen-stop, 44%)),
+    var(--surface-panel);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
@@ -179,4 +187,78 @@
   color: var(--color-accent);
   background: var(--surface-active);
   border-color: var(--border-accent);
+}
+
+.dropdown-field {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.dropdown-field-label {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.dropdown-field-control {
+  position: relative;
+}
+
+.dropdown-field-button {
+  width: 100%;
+}
+
+.options-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: 0;
+  z-index: 10;
+  padding: 6px;
+  background:
+    linear-gradient(135deg, var(--surface-glass-highlight), transparent 42%),
+    var(--surface-widget-dropdown);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(72px) saturate(220%);
+  -webkit-backdrop-filter: blur(72px) saturate(220%);
+}
+
+.options-menu-item {
+  width: 100%;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  color: var(--color-text-muted);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.options-menu:hover {
+  background:
+    linear-gradient(135deg, var(--surface-glass-highlight), transparent 42%),
+    var(--surface-widget-dropdown);
+  border-color: var(--border-glass);
+  color: var(--color-text);
+}
+
+.options-menu-item:hover {
+  color: var(--color-accent);
+  background: var(--surface-widget);
+  border-color: transparent;
+}
+
+.options-menu-item.is-active {
+  color: var(--color-accent);
+  background: var(--surface-active);
+  border-color: transparent;
+}
+
+.chart-type-control {
+  justify-content: flex-start;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--border-subtle);
 }

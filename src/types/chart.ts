@@ -16,7 +16,7 @@ export type Dataset = {
 
 export type ChartType = 'scatter' | 'line' | 'bar'
 
-export type Aggregation = "sum" | "mean" | "median" | "min" | "max" | "count"
+export type Aggregation = 'none' | 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count'
 
 export type ChartEncoding = {
   x?: DataField

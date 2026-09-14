@@ -17,6 +17,8 @@ function App() {
     selectedField,
     selectChartType,
     sensors,
+    setAggregation,
+    setEncodingField,
     setSelectedField,
   } = useChartWorkspace()
   const [activeSidePanel, setActiveSidePanel] =
@@ -39,6 +41,8 @@ function App() {
             onSelectField={setSelectedField}
             onSelectChartType={selectChartType}
             onSetActiveSidePanel={setActiveSidePanel}
+            onSetAggregation={setAggregation}
+            onSetEncodingField={setEncodingField}
           />
         ) : null}
         <WorkspacePanel

@@ -7,11 +7,15 @@
 
   --surface-glass: rgba(5, 8, 14, 0.28);
   --surface-glass-highlight: rgba(255, 255, 255, 0.035);
+  --surface-panel: rgba(5, 8, 14, 0.28);
+  --surface-panel-highlight: rgba(255, 255, 255, 0.045);
+  --surface-panel-glow: rgba(255, 255, 255, 0.07);
   --surface-widget: rgba(255, 255, 255, 0.07);
   --surface-widget-strong: rgba(255, 255, 255, 0.34);
   --surface-widget-hover: rgba(255, 255, 255, 0.09);
   --surface-active: rgba(79, 156, 255, 0.18);
   --surface-disabled: rgba(255, 255, 255, 0.025);
+  --surface-widget-dropdown: rgba(8, 10, 14, 0.84);
 
   --border-subtle: rgba(148, 163, 184, 0.18);
   --border-accent: rgba(79, 156, 255, 0.42);
@@ -24,7 +28,7 @@
   --border-axis: rgba(148, 163, 184, 0.28);
 
   --glow-primary: rgba(255, 255, 255, 0.16);
-  --glow-secondary: rgba(192, 202, 214, 0.12);
+  --glow-secondary: rgba(199, 204, 210, 0.12);
 
   --shadow-accent: 0 0 0 1px rgba(23, 139, 255, 0.22), 0 0 24px rgba(23, 139, 255, 0.18);
 
