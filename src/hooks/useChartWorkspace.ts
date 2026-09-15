@@ -6,6 +6,7 @@ import {
 import type { ActiveDrag, DragPayload } from '../types/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { useState } from 'react'
+import { getChartDefinition } from '../chart/chartDefinitions'
 import { getDefaultEncoding } from '../chart/getDefaultEncoding'
 import { createDemoDataset } from '../data/createDemoDataset'
 import type { DatasetSummary } from '../api/datasets'
@@ -44,10 +45,11 @@ export function useChartWorkspace({
   )
 
   function selectChartType(type: ChartType) {
+    const definition = getChartDefinition(type)
     setChartConfig({
       type,
       encoding: getDefaultEncoding(type, dataset),
-      aggregate: type === 'scatter' ? undefined : 'sum',
+      aggregate: definition.defaultAggregation,
     })
   }
 

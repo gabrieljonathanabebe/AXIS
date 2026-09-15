@@ -1,6 +1,11 @@
-import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
+import {
+  chartDefinitionList,
+  getChartDefinition,
+} from '../chart/chartDefinitions'
 import DropdownField from './ui/DropdownField'
+import { getCompatibleFields } from '../chart/getCompatibleFields'
 import IconButton from './ui/IconButton'
+
 import type {
   Aggregation,
   ChartConfig,
@@ -16,12 +21,6 @@ type ChartInspectorProps = {
   onSetAggregation: (aggregation: Aggregation) => void
   onSetEncodingField: (axis: keyof ChartEncoding, fieldName: string) => void
 }
-
-const chartTypeOptions = [
-  { label: 'Scatter', value: 'scatter', icon: ChartScatter },
-  { label: 'Line', value: 'line', icon: ChartLine },
-  { label: 'Bar', value: 'bar', icon: ChartColumn },
-] satisfies { label: string; value: ChartType; icon: typeof ChartScatter }[]
 
 const aggregationOptions = [
   { label: 'None', value: 'none' },
@@ -40,45 +39,62 @@ function ChartInspector({
   onSetAggregation,
   onSetEncodingField,
 }: ChartInspectorProps) {
-  const fieldOptions = fields.map((field) => ({
-    label: field.name,
-    value: field.name,
-  }))
+
+  const activeDefinition = chartConfig.type
+    ? getChartDefinition(chartConfig.type)
+    : undefined
+
+  const activeAggregationOptions = aggregationOptions.filter((option) => {
+    return activeDefinition?.supportedAggregations.includes(option.value)
+  })
   return (
     <div className="stack">
       <div className="chart-type-control cluster">
-        {chartTypeOptions.map(({ label, value, icon: Icon }) => (
+        {chartDefinitionList.map(({ label, type, icon: Icon }) => (
           <IconButton
-            isActive={chartConfig.type === value}
+            isActive={chartConfig.type === type}
             label={label}
-            onClick={() => onSelectChartType(value)}
-            key={value}
+            onClick={() => onSelectChartType(type)}
+            key={type}
           >
             <Icon size={18} />
           </IconButton>
         ))}
       </div>
-      <div className="settings-divider" />
-      <DropdownField
-        label='X Axis'
-        options={fieldOptions}
-        value={chartConfig.encoding.x?.name ?? ''}
-        placeholder="Select field"
-        onChange={(fieldName) => onSetEncodingField('x', fieldName)}
-      />
-      <DropdownField
-        label="Y Axis"
-        options={fieldOptions}
-        value={chartConfig.encoding.y?.name ?? ''}
-        placeholder="Select field"
-        onChange={(fieldName) => onSetEncodingField('y', fieldName)}
-      />
-      <DropdownField
-        label="Aggregation"
-        options={aggregationOptions}
-        value={chartConfig.aggregate ?? 'none'}
-        onChange={onSetAggregation}
-      />
+      {activeDefinition ? (
+        <>
+          <div className="settings-divider" />
+          {activeDefinition.encodings.map((encoding) => {
+            const compatibleFields = getCompatibleFields(
+              activeDefinition.type,
+              encoding.key,
+              fields,
+            )
+            const compatibleFieldOptions = compatibleFields.map((field) => ({
+              label: field.name,
+              value: field.name,
+            }))
+            return (
+              <DropdownField
+                label={encoding.label}
+                options={compatibleFieldOptions}
+                value={chartConfig.encoding[encoding.key]?.name ?? ''}
+                placeholder="Select field"
+                onChange={(fieldName) => {
+                  onSetEncodingField(encoding.key, fieldName)
+                }}
+                key={encoding.key}
+              />
+            )
+          })}
+          <DropdownField
+            label="Aggregation"
+            options={activeAggregationOptions}
+            value={chartConfig.aggregate ?? activeDefinition.defaultAggregation}
+            onChange={onSetAggregation}
+          />
+        </>
+      ) : null}
     </div>
   )
 }
