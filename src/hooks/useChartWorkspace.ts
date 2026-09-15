@@ -8,6 +8,7 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { useState } from 'react'
 import { getDefaultEncoding } from '../chart/getDefaultEncoding'
 import { createDemoDataset } from '../data/createDemoDataset'
+import type { DatasetSummary } from '../api/datasets'
 import type {
   Aggregation,
   ChartConfig,
@@ -17,8 +18,18 @@ import type {
   Dataset,
 } from '../types/chart'
 
-export function useChartWorkspace() {
-  const [dataset] = useState<Dataset>(() => createDemoDataset())
+
+type UseChartWorkspaceParams = {
+  dataset?: Dataset | null
+}
+
+export function useChartWorkspace({
+  dataset: externalDataset,
+}: UseChartWorkspaceParams = {}) {
+  const [demoDataset] = useState<Dataset>(() => createDemoDataset())
+  const dataset = externalDataset ?? demoDataset
+  const [activeDatasetSummary, setActiveDatasetSummary] =
+    useState<DatasetSummary | null>(null)
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
   const [chartConfig, setChartConfig] = useState<ChartConfig>({
@@ -98,6 +109,7 @@ export function useChartWorkspace() {
   }
   return {
     activeDrag,
+    activeDatasetSummary,
     chartConfig,
     dataset,
     handleDragEnd,
@@ -106,6 +118,7 @@ export function useChartWorkspace() {
     selectedField,
     selectChartType,
     sensors,
+    setActiveDatasetSummary,
     setAggregation,
     setEncodingField,
     setSelectedField,

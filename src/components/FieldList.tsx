@@ -36,13 +36,13 @@ function DraggableFieldChip({
       ref={setNodeRef}
       className={`field-chip cluster full-width ${isDragging ? 'is-dragging' : ''}`}
       isActive={isSelected}
-      title={`Type: ${field.type}`}
+      title={`Type: ${field.semantic_type}`}
       onClick={() => onSelectField(field)}
       {...listeners}
       {...attributes}
     >
       <IconBadge label={field.name}>
-        <DataTypeIcon type={field.type} />
+        <DataTypeIcon type={field.semantic_type} />
       </IconBadge>
     </Chip>
   )

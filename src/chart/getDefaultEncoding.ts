@@ -4,9 +4,9 @@ export function getDefaultEncoding(
   type: ChartType,
   dataset: Dataset,
 ): ChartEncoding {
-  const numberFields = dataset.fields.filter((field) => field.type === "number")
-  const dateField = dataset.fields.find((field) => field.type === "date")
-  const categoryField = dataset.fields.find((field) => field.type === "category")
+  const numberFields = dataset.fields.filter((field) => field.semantic_type === "numeric")
+  const dateField = dataset.fields.find((field) => field.semantic_type === "temporal")
+  const categoryField = dataset.fields.find((field) => field.semantic_type === "categorical")
 
   if (type === "scatter") {
     return {

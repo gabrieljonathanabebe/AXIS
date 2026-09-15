@@ -1,9 +1,11 @@
 import { ChartColumn, Database, SlidersHorizontal } from 'lucide-react'
 import ChartPicker from './ChartPicker'
+import DatasetUpload from './DatasetUpload'
 import FieldList from './FieldList'
 import Panel from './ui/Panel'
 import ChartInspector from './ChartInspector'
 import IconButton from './ui/IconButton'
+import type { ActiveSidePanel } from '../types/ui'
 import type {
   Aggregation,
   ChartConfig,
@@ -11,30 +13,42 @@ import type {
   ChartType,
   DataField,
 } from '../types/chart'
-import type { ActiveSidePanel } from '../types/ui'
+import type { DatasetSummary } from '../api/datasets'
+
 
 type SidePanelProps = {
+  activeDatasetSummary: DatasetSummary | null
   activeSidePanel: ActiveSidePanel
   chartConfig: ChartConfig
   fields: DataField[]
+  isUploading: boolean
   selectedField: DataField | null
+  uploadError: string | null
   onSelectField: (field: DataField) => void
   onSelectChartType: (type: ChartType) => void
   onSetActiveSidePanel: (panel: ActiveSidePanel) => void
   onSetAggregation: (aggregation: Aggregation) => void
-  onSetEncodingField: (axis: keyof ChartEncoding, fieldName: string) => void
+  onSetEncodingField: (
+    axis: keyof ChartEncoding,
+    fieldName: string,
+  ) => void
+  onUploadFile: (file: File) => Promise<void>
 }
 
 function SidePanel({
+  activeDatasetSummary,
   activeSidePanel,
   chartConfig,
   fields,
+  isUploading,
   selectedField,
   onSelectField,
   onSelectChartType,
   onSetActiveSidePanel,
   onSetAggregation,
   onSetEncodingField,
+  onUploadFile,
+  uploadError,
 }: SidePanelProps) {
   const panelTitle =
     activeSidePanel === 'fields'
@@ -75,13 +89,31 @@ function SidePanel({
       }
     >
       {activeSidePanel === 'fields' ? (
-        <FieldList
-          fields={fields}
-          selectedField={selectedField}
-          onSelectField={onSelectField}
-        />
+        <div className='side-panel-body'>
+          <DatasetUpload
+            isUploading={isUploading}
+            onUploadFile={onUploadFile}
+          />
+          {uploadError ? (
+            <span className='panel-error'>{uploadError}</span>
+          ) : null}
+          {activeDatasetSummary ? (
+            <span className='dataset-summary'>
+              {activeDatasetSummary.name} · {activeDatasetSummary.row_count} rows
+            </span>
+          ) : null}
+          <div className='side-panel-scroll'>
+            <FieldList
+              fields={fields}
+              selectedField={selectedField}
+              onSelectField={onSelectField}
+            />
+          </div>
+        </div>
       ) : activeSidePanel === 'charts' ? (
-        <ChartPicker onSelectChartType={onSelectChartType} />
+        <div className="side-panel-scroll">
+          <ChartPicker onSelectChartType={onSelectChartType} />
+        </div>
       ) : (
         <ChartInspector
           chartConfig={chartConfig}

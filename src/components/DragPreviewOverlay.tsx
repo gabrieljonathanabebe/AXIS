@@ -29,7 +29,7 @@ function DragPreviewOverlay({ activeDrag }: DragPreviewOverlayProps) {
       {activeDrag?.kind === 'field' ? (
         <div className="chip field-chip cluster full-width drag-overlay-chip">
           <IconBadge label={activeDrag.field.name}>
-            <DataTypeIcon type={activeDrag.field.type} />
+            <DataTypeIcon type={activeDrag.field.semantic_type} />
           </IconBadge>
         </div>
       ) : activeDrag?.kind === 'chart-type' ? (

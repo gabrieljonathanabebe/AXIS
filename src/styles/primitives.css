@@ -208,6 +208,9 @@
 }
 
 .options-menu {
+  max-height: min(240px, 48dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
@@ -261,4 +264,31 @@
 .settings-divider {
   height: 1px;
   background: var(--border-subtle);
+}
+
+.dataset-upload {
+  min-height: 180px;
+  padding: var(--space-6);
+  color: var(--color-text);
+  text-align: center;
+  cursor: pointer;
+}
+
+.panel-error {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+}
+
+.dataset-summary {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.dataset-upload span {
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.dataset-upload input {
+  display: none;
 }

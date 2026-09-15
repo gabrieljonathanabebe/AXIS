@@ -33,12 +33,36 @@ export function createDemoDataset(rowCount = 60): Dataset {
 
   return {
     fields: [
-      { name: 'date', type: 'date' },
-      { name: 'revenue', type: 'number' },
-      { name: 'profit', type: 'number' },
-      { name: 'country', type: 'category' },
-      { name: 'category', type: 'category' },
-      { name: 'customers', type: 'number' },
+      {
+        name: 'date',
+        physical_type: 'date',
+        semantic_type: 'temporal',
+      },
+      {
+        name: 'revenue',
+        physical_type: 'float',
+        semantic_type: 'numeric',
+      },
+      {
+        name: 'profit',
+        physical_type: 'float',
+        semantic_type: 'numeric',
+      },
+      {
+        name: 'country',
+        physical_type: 'string',
+        semantic_type: 'categorical',
+      },
+      {
+        name: 'category',
+        physical_type: 'string',
+        semantic_type: 'categorical',
+      },
+      {
+        name: 'customers',
+        physical_type: 'integer',
+        semantic_type: 'numeric',
+      },
     ],
     rows: Array.from({ length: rowCount }, (_, index) => {
       const revenue = randomBetween(random, 80000, 260000)

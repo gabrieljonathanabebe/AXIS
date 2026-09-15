@@ -1,8 +1,7 @@
-export type DataType = 'date' | 'number' | 'category'
-
 export type DataField = {
   name: string
-  type: DataType
+  physical_type: PhysicalType
+  semantic_type: SemanticType
 }
 
 export type DataValue = string | number | null
@@ -16,7 +15,14 @@ export type Dataset = {
 
 export type ChartType = 'scatter' | 'line' | 'bar'
 
-export type Aggregation = 'none' | 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count'
+export type Aggregation =
+  | 'none'
+  | 'sum'
+  | 'mean'
+  | 'median'
+  | 'min'
+  | 'max'
+  | 'count'
 
 export type ChartEncoding = {
   x?: DataField
@@ -28,3 +34,17 @@ export type ChartConfig = {
   encoding: ChartEncoding
   aggregate?: Aggregation
 }
+
+export type PhysicalType =
+  | 'integer'
+  | 'float'
+  | 'string'
+  | 'boolean'
+  | 'date'
+  | 'datetime'
+
+export type SemanticType =
+  | 'numeric'
+  | 'categorical'
+  | 'temporal'
+  | 'identifier'

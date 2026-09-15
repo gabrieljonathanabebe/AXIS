@@ -43,7 +43,7 @@ function DataTable({ dataset }: DataTableProps) {
   const categoryColorMap = useMemo(() => {
     const colorMap = new Map<string, string>()
     dataset.fields
-      .filter((field) => field.type === "category")
+      .filter((field) => field.semantic_type === "categorical")
       .forEach((field) => {
         dataset.rows.forEach((row) => {
           const key = `${field.name}:${String(row[field.name] ?? "")}`
@@ -70,10 +70,10 @@ function DataTable({ dataset }: DataTableProps) {
               className="data-column-header spread"
               type="button"
               key={field.name}
-              title={`Type: ${field.type}`}
+              title={`Type: ${field.semantic_type}`}
             >
               <IconBadge label={field.name}>
-                <DataTypeIcon type={field.type} />
+                <DataTypeIcon type={field.semantic_type} />
               </IconBadge>
             </button>
           ))}
@@ -87,7 +87,7 @@ function DataTable({ dataset }: DataTableProps) {
             >
               {dataset.fields.map((field) => (
                 <div className="data-table-cell" key={field.name}>
-                  {field.type === "category" ? (
+                  {field.semantic_type === "categorical" ? (
                     <span
                       className="data-category-badge inline-cluster"
                       style={getCategoryStyle(
