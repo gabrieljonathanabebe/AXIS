@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 type IconButtonProps = {
   children: ReactNode
@@ -8,16 +8,16 @@ type IconButtonProps = {
 
 function IconButton({
   children,
-  className = "",
+  className = '',
   isActive = false,
   label,
   title,
-  type = "button",
+  type = 'button',
   ...buttonProps
 }: IconButtonProps) {
   return (
     <button
-      className={`control ${isActive ? "is-active" : ""} ${className}`}
+      className={`control ${isActive ? 'is-active' : ''} ${className}`}
       type={type}
       aria-label={label}
       title={title ?? label}

@@ -1,14 +1,7 @@
 import { useState } from 'react'
-import {
-  fetchDatasetRows,
-  uploadDataset,
-} from '../api/datasets'
-import type {
-  DatasetRows,
-  DatasetSummary,
-} from '../api/datasets'
+import { fetchDatasetRows, uploadDataset } from '../api/datasets'
+import type { DatasetRows, DatasetSummary } from '../api/datasets'
 import type { Dataset } from '../types/chart'
-
 
 type useDatasetsResults = {
   activeDatasetSummary: DatasetSummary | null
@@ -51,7 +44,7 @@ export function useDatasets(): useDatasetsResults {
 
 function toDataset(
   summary: DatasetSummary,
-  rowsResponse: DatasetRows
+  rowsResponse: DatasetRows,
 ): Dataset {
   return {
     fields: summary.fields,

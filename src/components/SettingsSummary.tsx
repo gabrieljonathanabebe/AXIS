@@ -29,19 +29,25 @@ function SettingsSummary({
 
       <div className="spread">
         <span>X</span>
-        <strong className="text-strong">{chartConfig.encoding.x?.name ?? 'empty'}</strong>
+        <strong className="text-strong">
+          {chartConfig.encoding.x?.name ?? 'empty'}
+        </strong>
       </div>
 
       <div className="spread">
         <span>Y</span>
-        <strong className="text-strong">{chartConfig.encoding.y?.name ?? 'empty'}</strong>
+        <strong className="text-strong">
+          {chartConfig.encoding.y?.name ?? 'empty'}
+        </strong>
       </div>
       <div className="spread">
         <span>Aggregation</span>
-        <strong className="text-strong">{chartConfig.aggregate ?? "none"}</strong>
+        <strong className="text-strong">
+          {chartConfig.aggregate ?? 'none'}
+        </strong>
       </div>
       <DropdownField
-        label='Aggregation'
+        label="Aggregation"
         options={aggregationOptions}
         value={chartConfig.aggregate ?? 'none'}
         onChange={onSetAggregation}

@@ -1,27 +1,12 @@
-import {
-  ChartColumn,
-  ChartLine,
-  ChartScatter,
-} from 'lucide-react'
+import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import type {
-  Aggregation,
-  ChartType,
-  SemanticType,
-} from '../types/chart'
+import type { Aggregation, ChartType, SemanticType } from '../types/chart'
 
 export type EncodingKey = 'x' | 'y'
 
-export type CompatibilityLevel =
-  | 'recommended'
-  | 'supported'
-  | 'invalid'
+export type CompatibilityLevel = 'recommended' | 'supported' | 'invalid'
 
-export type InspectorSection =
-  | 'data'
-  | 'appearance'
-  | 'axes'
-  | 'interaction'
+export type InspectorSection = 'data' | 'appearance' | 'axes' | 'interaction'
 
 export type EncodingDefinition = {
   key: EncodingKey
@@ -71,14 +56,7 @@ export const chartDefinitions = {
     label: 'Line',
     icon: ChartLine,
     defaultAggregation: 'sum',
-    supportedAggregations: [
-      'sum',
-      'mean',
-      'median',
-      'min',
-      'max',
-      'count',
-    ],
+    supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
     encodings: [
       {
@@ -102,14 +80,7 @@ export const chartDefinitions = {
     label: 'Bar',
     icon: ChartColumn,
     defaultAggregation: 'sum',
-    supportedAggregations: [
-      'sum',
-      'mean',
-      'median',
-      'min',
-      'max',
-      'count',
-    ],
+    supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
     encodings: [
       {

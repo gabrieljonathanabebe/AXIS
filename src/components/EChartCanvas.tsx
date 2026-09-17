@@ -12,9 +12,9 @@ type EChartCanvasProps = {
 function readChartTokens() {
   const styles = getComputedStyle(document.documentElement)
   return {
-    accent: styles.getPropertyValue("--color-accent").trim(),
-    axis: styles.getPropertyValue("--border-axis").trim(),
-    textMuted: styles.getPropertyValue("--color-text-muted").trim(),
+    accent: styles.getPropertyValue('--color-accent').trim(),
+    axis: styles.getPropertyValue('--border-axis').trim(),
+    textMuted: styles.getPropertyValue('--color-text-muted').trim(),
   }
 }
 
@@ -38,7 +38,7 @@ function EChartCanvas({ chartConfig, dataset }: EChartCanvasProps) {
   useEffect(() => {
     chartRef.current?.setOption(
       createEChartOption(chartConfig, dataset, readChartTokens()),
-      true
+      true,
     )
   }, [chartConfig, dataset])
 
@@ -46,4 +46,3 @@ function EChartCanvas({ chartConfig, dataset }: EChartCanvasProps) {
 }
 
 export default EChartCanvas
-

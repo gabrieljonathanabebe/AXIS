@@ -26,21 +26,13 @@ async function request<TResponse>(
   path: string,
   options: RequestOptions = {},
 ): Promise<TResponse> {
-  const {
+  const { body, headers, method = 'GET', searchParams } = options
+
+  const response = await fetch(buildUrl(path, searchParams), {
     body,
     headers,
-    method = 'GET',
-    searchParams,
-  } = options
-
-  const response = await fetch(
-    buildUrl(path, searchParams),
-    {
-      body,
-      headers,
-      method,
-    },
-  )
+    method,
+  })
 
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`)

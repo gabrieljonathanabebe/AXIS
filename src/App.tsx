@@ -1,11 +1,11 @@
-import { useState } from 'react'
 import { DndContext } from '@dnd-kit/core'
-import type { ActiveSidePanel, WorkspaceView } from './types/ui'
+
+import BuildPanel from './components/BuildPanel'
+import CanvasPanel from './components/CanvasPanel'
 import DragPreviewOverlay from './components/DragPreviewOverlay'
+import InspectorPanel from './components/InspectorPanel'
 import { useChartWorkspace } from './hooks/useChartWorkspace'
 import { useDatasets } from './hooks/useDatasets'
-import SidePanel from './components/SidePanel'
-import WorkspacePanel from './components/WorkspacePanel'
 
 function App() {
   const {
@@ -26,49 +26,45 @@ function App() {
     selectChartType,
     sensors,
     setAggregation,
+    setAppearance,
+    setChartAppearance,
     setEncodingField,
     setSelectedField,
   } = useChartWorkspace({
     dataset: uploadedDataset,
   })
-  const [activeSidePanel, setActiveSidePanel] =
-    useState<ActiveSidePanel>('fields')
-  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("chart")
-
   return (
     <DndContext
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <main className={`app-shell ${workspaceView === 'data' ? 'is-data-view' : ''}`}>
-        {workspaceView === 'chart' ? (
-          <SidePanel
-            activeDatasetSummary={activeDatasetSummary}
-            activeSidePanel={activeSidePanel}
-            chartConfig={chartConfig}
-            fields={dataset.fields}
-            isUploading={isUploading}
-            selectedField={selectedField}
-            onSelectField={setSelectedField}
-            onSelectChartType={selectChartType}
-            onSetActiveSidePanel={setActiveSidePanel}
-            onSetAggregation={setAggregation}
-            onSetEncodingField={setEncodingField}
-            onUploadFile={async (file) => {
-              await uploadFile(file)
-              setWorkspaceView('data')
-            }}
-            uploadError={uploadError}
-          />
-        ) : null}
-        <WorkspacePanel
+      <main className="app-shell">
+        <BuildPanel
+          activeDatasetSummary={activeDatasetSummary}
+          fields={dataset.fields}
+          isUploading={isUploading}
+          selectedField={selectedField}
+          uploadError={uploadError}
+          onSelectChartType={selectChartType}
+          onSelectField={setSelectedField}
+          onUploadFile={async (file) => {
+            await uploadFile(file)
+          }}
+        />
+        <CanvasPanel
           chartConfig={chartConfig}
           dataset={dataset}
           isDraggingField={activeDrag?.kind === 'field'}
-          workspaceView={workspaceView}
           onResetChart={resetChart}
-          onSetWorkspaceView={setWorkspaceView}
+        />
+        <InspectorPanel
+          chartConfig={chartConfig}
+          fields={dataset.fields}
+          onSetAggregation={setAggregation}
+          onSetAppearance={setAppearance}
+          onSetChartAppearance={setChartAppearance}
+          onSetEncodingField={setEncodingField}
         />
       </main>
       <DragPreviewOverlay activeDrag={activeDrag} />

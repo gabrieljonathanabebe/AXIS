@@ -1,8 +1,8 @@
 import DataTypeIcon from './DataTypeIcon'
-import type { Dataset, DataValue } from "../types/chart";
-import IconBadge from './ui/IconBadge';
-import { useMemo } from "react";
-import type { CSSProperties } from "react";
+import type { Dataset, DataValue } from '../types/chart'
+import IconBadge from './ui/IconBadge'
+import { useMemo } from 'react'
+import type { CSSProperties } from 'react'
 
 type DataTableProps = {
   dataset: Dataset
@@ -19,17 +19,17 @@ const categoryColors = [
 
 function formatCellValue(value: DataValue) {
   if (value === null) {
-    return ""
+    return ''
   }
-  if (typeof value === "number") {
-    return new Intl.NumberFormat("en-US").format(value)
+  if (typeof value === 'number') {
+    return new Intl.NumberFormat('en-US').format(value)
   }
   return value
 }
 
 function getCategoryStyle(color: string): CSSProperties {
   return {
-    "--category-color": color,
+    '--category-color': color,
   } as CSSProperties
 }
 
@@ -43,10 +43,10 @@ function DataTable({ dataset }: DataTableProps) {
   const categoryColorMap = useMemo(() => {
     const colorMap = new Map<string, string>()
     dataset.fields
-      .filter((field) => field.semantic_type === "categorical")
+      .filter((field) => field.semantic_type === 'categorical')
       .forEach((field) => {
         dataset.rows.forEach((row) => {
-          const key = `${field.name}:${String(row[field.name] ?? "")}`
+          const key = `${field.name}:${String(row[field.name] ?? '')}`
 
           if (!colorMap.has(key)) {
             colorMap.set(
@@ -61,10 +61,7 @@ function DataTable({ dataset }: DataTableProps) {
   return (
     <div className="data-table">
       <div className="data-table-scroll">
-        <div
-          className="data-table-header grid"
-          style={gridStyle}
-        >
+        <div className="data-table-header grid" style={gridStyle}>
           {dataset.fields.map((field) => (
             <button
               className="data-column-header spread"
@@ -87,12 +84,13 @@ function DataTable({ dataset }: DataTableProps) {
             >
               {dataset.fields.map((field) => (
                 <div className="data-table-cell" key={field.name}>
-                  {field.semantic_type === "categorical" ? (
+                  {field.semantic_type === 'categorical' ? (
                     <span
                       className="data-category-badge inline-cluster"
                       style={getCategoryStyle(
-                        categoryColorMap.get(`${field.name}:${String(row[field.name] ?? "")}`) ??
-                        categoryColors[0],
+                        categoryColorMap.get(
+                          `${field.name}:${String(row[field.name] ?? '')}`,
+                        ) ?? categoryColors[0],
                       )}
                     >
                       {formatCellValue(row[field.name])}

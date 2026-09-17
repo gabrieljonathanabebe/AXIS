@@ -14,7 +14,6 @@ function DatasetUpload({
     await onUploadFile(file)
   }
 
-
   async function handleInputChange(
     event: ChangeEvent<HTMLInputElement>,
   ): Promise<void> {
@@ -26,10 +25,7 @@ function DatasetUpload({
     event.target.value = ''
   }
 
-
-  async function handleDrop(
-    event: DragEvent<HTMLLabelElement>,
-  ): Promise<void> {
+  async function handleDrop(event: DragEvent<HTMLLabelElement>): Promise<void> {
     event.preventDefault()
     const file = event.dataTransfer.files[0]
     if (!file) {
@@ -38,15 +34,12 @@ function DatasetUpload({
     await handleFile(file)
   }
 
-
-  function handleDragOver(
-    event: DragEvent<HTMLLabelElement>,
-  ): void {
+  function handleDragOver(event: DragEvent<HTMLLabelElement>): void {
     event.preventDefault()
   }
   return (
     <label
-      className="dataset-upload widget center stack"
+      className="dataset-upload widget is-interactive center stack"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >

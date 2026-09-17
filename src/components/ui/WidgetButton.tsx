@@ -20,7 +20,7 @@ const WidgetButton = forwardRef<HTMLButtonElement, WidgetButtonProps>(
     return (
       <button
         ref={ref}
-        className={`widget ${isActive ? 'is-active' : ''} ${className}`}
+        className={`widget is-interactive ${isActive ? 'is-active' : ''} ${className}`}
         type={type}
         {...buttonProps}
       >

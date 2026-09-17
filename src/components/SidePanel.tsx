@@ -8,13 +8,13 @@ import IconButton from './ui/IconButton'
 import type { ActiveSidePanel } from '../types/ui'
 import type {
   Aggregation,
+  ChartAppearance,
   ChartConfig,
   ChartEncoding,
   ChartType,
   DataField,
 } from '../types/chart'
 import type { DatasetSummary } from '../api/datasets'
-
 
 type SidePanelProps = {
   activeDatasetSummary: DatasetSummary | null
@@ -28,10 +28,19 @@ type SidePanelProps = {
   onSelectChartType: (type: ChartType) => void
   onSetActiveSidePanel: (panel: ActiveSidePanel) => void
   onSetAggregation: (aggregation: Aggregation) => void
-  onSetEncodingField: (
-    axis: keyof ChartEncoding,
-    fieldName: string,
+  onSetAppearance: <TKey extends keyof ChartAppearance>(
+    key: TKey,
+    value: ChartAppearance[TKey],
   ) => void
+  onSetChartAppearance: <
+    TChartKey extends 'scatter' | 'line' | 'bar',
+    TOptionKey extends keyof ChartAppearance[TChartKey],
+  >(
+    chartKey: TChartKey,
+    optionKey: TOptionKey,
+    value: ChartAppearance[TChartKey][TOptionKey],
+  ) => void
+  onSetEncodingField: (axis: keyof ChartEncoding, fieldName: string) => void
   onUploadFile: (file: File) => Promise<void>
 }
 
@@ -46,6 +55,8 @@ function SidePanel({
   onSelectChartType,
   onSetActiveSidePanel,
   onSetAggregation,
+  onSetAppearance,
+  onSetChartAppearance,
   onSetEncodingField,
   onUploadFile,
   uploadError,
@@ -89,20 +100,21 @@ function SidePanel({
       }
     >
       {activeSidePanel === 'fields' ? (
-        <div className='side-panel-body'>
+        <div className="side-panel-body">
           <DatasetUpload
             isUploading={isUploading}
             onUploadFile={onUploadFile}
           />
           {uploadError ? (
-            <span className='panel-error'>{uploadError}</span>
+            <span className="panel-error">{uploadError}</span>
           ) : null}
           {activeDatasetSummary ? (
-            <span className='dataset-summary'>
-              {activeDatasetSummary.name} · {activeDatasetSummary.row_count} rows
+            <span className="dataset-summary">
+              {activeDatasetSummary.name} · {activeDatasetSummary.row_count}{' '}
+              rows
             </span>
           ) : null}
-          <div className='side-panel-scroll'>
+          <div className="side-panel-scroll">
             <FieldList
               fields={fields}
               selectedField={selectedField}
@@ -115,13 +127,16 @@ function SidePanel({
           <ChartPicker onSelectChartType={onSelectChartType} />
         </div>
       ) : (
-        <ChartInspector
-          chartConfig={chartConfig}
-          fields={fields}
-          onSelectChartType={onSelectChartType}
-          onSetAggregation={onSetAggregation}
-          onSetEncodingField={onSetEncodingField}
-        />
+        <div className="side-panel-scroll">
+          <ChartInspector
+            chartConfig={chartConfig}
+            fields={fields}
+            onSetAggregation={onSetAggregation}
+            onSetAppearance={onSetAppearance}
+            onSetChartAppearance={onSetChartAppearance}
+            onSetEncodingField={onSetEncodingField}
+          />
+        </div>
       )}
     </Panel>
   )

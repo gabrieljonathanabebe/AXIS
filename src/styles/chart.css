@@ -21,7 +21,6 @@
 
 .chart-type-picker {
   width: 100%;
-  margin: auto 0;
 }
 
 .chart-type-option {
@@ -43,7 +42,10 @@
 
 .x-axis-drop-zone {
   right: calc(var(--chart-canvas-inset) + var(--chart-grid-right));
-  bottom: calc(var(--chart-canvas-inset) + var(--chart-grid-bottom) - var(--axis-line-offset));
+  bottom: calc(
+    var(--chart-canvas-inset) + var(--chart-grid-bottom) -
+      var(--axis-line-offset)
+  );
   left: calc(var(--chart-canvas-inset) + var(--chart-grid-left));
   height: var(--axis-hit-size);
 }
@@ -51,7 +53,9 @@
 .y-axis-drop-zone {
   top: calc(var(--chart-canvas-inset) + var(--chart-grid-top));
   bottom: calc(var(--chart-canvas-inset) + var(--chart-grid-bottom));
-  left: calc(var(--chart-canvas-inset) + var(--chart-grid-left) - var(--axis-line-offset));
+  left: calc(
+    var(--chart-canvas-inset) + var(--chart-grid-left) - var(--axis-line-offset)
+  );
   width: var(--axis-hit-size);
 }
 
@@ -171,4 +175,8 @@
   box-shadow: var(--shadow-accent);
   pointer-events: none;
   cursor: grabbing;
+}
+
+.inspector-controls {
+  gap: var(--space-2);
 }

@@ -2,7 +2,7 @@ import type { Dataset } from '../types/chart'
 
 function createRandom(seed: number) {
   return function random() {
-    let value = seed += 0x6d2b79f5
+    let value = (seed += 0x6d2b79f5)
     value = Math.imul(value ^ (value >>> 15), value | 1)
     value ^= value + Math.imul(value ^ (value >>> 7), value | 61)
 

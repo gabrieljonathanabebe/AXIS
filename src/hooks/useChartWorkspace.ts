@@ -1,8 +1,4 @@
-import {
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
+import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { ActiveDrag, DragPayload } from '../types/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { useState } from 'react'
@@ -12,6 +8,7 @@ import { createDemoDataset } from '../data/createDemoDataset'
 import type { DatasetSummary } from '../api/datasets'
 import type {
   Aggregation,
+  ChartAppearance,
   ChartConfig,
   ChartEncoding,
   ChartType,
@@ -19,6 +16,25 @@ import type {
   Dataset,
 } from '../types/chart'
 
+const defaultAppearance: ChartAppearance = {
+  color: '#1e90ff',
+  showGrid: true,
+  showTooltip: true,
+  animation: true,
+  scatter: {
+    pointSize: 10,
+    opacity: 0.9,
+  },
+  line: {
+    lineWidth: 3,
+    smooth: false,
+    showSymbol: true,
+  },
+  bar: {
+    borderRadius: 4,
+    barWidth: 24,
+  },
+}
 
 type UseChartWorkspaceParams = {
   dataset?: Dataset | null
@@ -35,6 +51,7 @@ export function useChartWorkspace({
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
   const [chartConfig, setChartConfig] = useState<ChartConfig>({
     encoding: {},
+    appearance: defaultAppearance,
   })
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -46,11 +63,25 @@ export function useChartWorkspace({
 
   function selectChartType(type: ChartType) {
     const definition = getChartDefinition(type)
-    setChartConfig({
+    setChartConfig((currentConfig) => ({
       type,
       encoding: getDefaultEncoding(type, dataset),
       aggregate: definition.defaultAggregation,
-    })
+      appearance: currentConfig.appearance,
+    }))
+  }
+
+  function setAppearance<TKey extends keyof ChartAppearance>(
+    key: TKey,
+    value: ChartAppearance[TKey],
+  ): void {
+    setChartConfig((currentConfig) => ({
+      ...currentConfig,
+      appearance: {
+        ...currentConfig.appearance,
+        [key]: value,
+      },
+    }))
   }
 
   function assignFieldToAxis(axis: keyof ChartEncoding, field: DataField) {
@@ -78,7 +109,9 @@ export function useChartWorkspace({
     }))
   }
 
-  function getDragPayload(event: DragStartEvent | DragEndEvent): DragPayload | null {
+  function getDragPayload(
+    event: DragStartEvent | DragEndEvent,
+  ): DragPayload | null {
     return event.active.data.current?.payload ?? null
   }
 
@@ -104,9 +137,30 @@ export function useChartWorkspace({
     }
   }
 
+  function setChartAppearance<
+    TChartKey extends 'scatter' | 'line' | 'bar',
+    TOptionKey extends keyof ChartAppearance[TChartKey],
+  >(
+    chartKey: TChartKey,
+    optionKey: TOptionKey,
+    value: ChartAppearance[TChartKey][TOptionKey],
+  ): void {
+    setChartConfig((currentConfig) => ({
+      ...currentConfig,
+      appearance: {
+        ...currentConfig.appearance,
+        [chartKey]: {
+          ...currentConfig.appearance[chartKey],
+          [optionKey]: value,
+        },
+      },
+    }))
+  }
+
   function resetChart() {
     setChartConfig({
       encoding: {},
+      appearance: defaultAppearance,
     })
   }
   return {
@@ -122,6 +176,8 @@ export function useChartWorkspace({
     sensors,
     setActiveDatasetSummary,
     setAggregation,
+    setAppearance,
+    setChartAppearance,
     setEncodingField,
     setSelectedField,
   }

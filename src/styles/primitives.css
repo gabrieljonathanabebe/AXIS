@@ -1,14 +1,20 @@
 .glass {
   background:
-    radial-gradient(ellipse at var(--panel-glow-x, 14%) var(--panel-glow-y, 0%),
+    radial-gradient(
+      ellipse at var(--panel-glow-x, 14%) var(--panel-glow-y, 0%),
       var(--surface-panel-glow),
-      transparent var(--panel-glow-size, 42%)),
-    radial-gradient(ellipse at var(--panel-glow-2-x, 82%) var(--panel-glow-2-y, 78%),
+      transparent var(--panel-glow-size, 42%)
+    ),
+    radial-gradient(
+      ellipse at var(--panel-glow-2-x, 82%) var(--panel-glow-2-y, 78%),
       var(--surface-panel-glow-secondary, transparent),
-      transparent var(--panel-glow-2-size, 46%)),
-    linear-gradient(var(--panel-sheen-angle, 135deg),
+      transparent var(--panel-glow-2-size, 46%)
+    ),
+    linear-gradient(
+      var(--panel-sheen-angle, 135deg),
       var(--surface-panel-highlight),
-      transparent var(--panel-sheen-stop, 44%)),
+      transparent var(--panel-sheen-stop, 44%)
+    ),
     var(--surface-panel);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
@@ -25,7 +31,7 @@
 
 .panel {
   min-height: calc(100vh - var(--space-8) * 2);
-  padding: var(--space-6);
+  padding: var(--space-4);
 }
 
 @media (max-width: 960px) {
@@ -73,7 +79,7 @@
 
 .control:hover,
 .chip:hover,
-.widget:hover {
+.widget.is-interactive:hover {
   background: var(--surface-widget-hover);
   border-color: var(--border-accent);
   color: var(--color-interactive-hover);
@@ -82,7 +88,7 @@
 
 .control.is-active,
 .chip.is-active,
-.widget.is-active {
+.widget.is-interactive.is-active {
   color: var(--color-accent);
   background: var(--surface-active);
   border-color: var(--border-accent);
@@ -191,12 +197,13 @@
 
 .dropdown-field {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .dropdown-field-label {
   color: var(--color-text-muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-xs);
+  line-height: 1.3;
 }
 
 .dropdown-field-control {
@@ -291,4 +298,280 @@
 
 .dataset-upload input {
   display: none;
+}
+
+/* Collapsible Section */
+.collapsible-section {
+  display: grid;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  padding: var(--space-2);
+  align-content: start;
+  background:
+    linear-gradient(135deg, var(--surface-section-highlight), transparent 44%),
+    var(--surface-section);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.collapsible-section-trigger {
+  width: 100%;
+  min-height: 32px;
+  padding: 0;
+  justify-content: space-between;
+  color: var(--color-text);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.collapsible-section-trigger:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.collapsible-section-trigger svg {
+  transition: transform var(--transition-fast);
+}
+
+.collapsible-section-trigger svg.is-open {
+  transform: rotate(180deg);
+}
+
+.collapsible-section-content {
+  min-height: 0;
+  display: grid;
+}
+
+/* =============== Control Row Styles =============== */
+
+.control-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 36px;
+}
+
+.control-row-label {
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: 1.3;
+}
+
+.control-row-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Toggle Styles */
+
+.toggle {
+  justify-content: flex-start;
+  width: 44px;
+  min-width: 44px;
+  height: 24px;
+  min-height: 24px;
+  padding: 2px;
+  background: var(--surface-widget);
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.toggle:hover {
+  background: var(--surface-widget-hover);
+  border-color: var(--border-accent);
+}
+
+.toggle.is-active,
+.toggle.is-active:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-accent);
+}
+
+.toggle-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--color-text-muted);
+  border-radius: var(--radius-pill);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.toggle.is-active .toggle-thumb {
+  background: var(--color-text);
+  transform: translateX(20px);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Slider Styles */
+.slider {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.slider-track {
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  min-width: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider-track::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--color-accent) 0%,
+    var(--color-accent) var(--slider-progress),
+    var(--surface-widget) var(--slider-progress),
+    var(--surface-widget) 100%
+  );
+  border-radius: var(--radius-pill);
+}
+
+.slider-track::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  appearance: none;
+  background: var(--color-text);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-accent);
+}
+
+.slider-track::-moz-range-track {
+  height: 4px;
+  background: var(--surface-widget);
+  border-radius: var(--radius-pill);
+}
+
+.slider-track::-moz-range-progress {
+  height: 4px;
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+}
+
+.slider-track::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--color-text);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-accent);
+}
+
+.slider-number {
+  width: 48px;
+  height: 32px;
+  padding: 0 8px;
+  padding-inline: 6px;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  appearance: textfield;
+  background: var(--surface-widget);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.slider-number:hover {
+  border-color: var(--border-accent);
+}
+
+.slider-number:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: var(--shadow-accent);
+}
+
+.slider-number::-webkit-inner-spin-button,
+.slider-number::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+/* Color Swatch Picker Styles */
+.color-swatch-picker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+}
+
+.color-swatch {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 20px;
+  padding: 3px;
+  background: transparent;
+  border-color: transparent;
+  border-radius: var(--radius-pill);
+  box-shadow: none;
+}
+
+.color-swatch:hover {
+  background: var(--surface-widget-hover);
+  border-color: var(--border-accent);
+}
+
+.color-swatch.is-active {
+  background: var(--surface-active);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-accent);
+}
+
+.color-swatch-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--swatch-color);
+  border-radius: var(--radius-pill);
+}
+
+.select-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.select-control-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  padding-inline: var(--space-3);
+  font-size: 0.8rem;
+}
+
+.select-control-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

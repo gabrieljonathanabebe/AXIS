@@ -19,18 +19,17 @@ type DraggableFieldChipProps = {
 function DraggableFieldChip({
   field,
   isSelected,
-  onSelectField
+  onSelectField,
 }: DraggableFieldChipProps) {
-  const { attributes, listeners, setNodeRef, isDragging } =
-    useDraggable({
-      id: `field:${field.name}`,
-      data: {
-        payload: {
-          kind: 'field',
-          field,
-        },
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `field:${field.name}`,
+    data: {
+      payload: {
+        kind: 'field',
+        field,
       },
-    })
+    },
+  })
   return (
     <Chip
       ref={setNodeRef}
@@ -48,11 +47,7 @@ function DraggableFieldChip({
   )
 }
 
-function FieldList({
-  fields,
-  selectedField,
-  onSelectField,
-}: FieldListProps) {
+function FieldList({ fields, selectedField, onSelectField }: FieldListProps) {
   return (
     <div className="stack">
       {fields.map((field) => (

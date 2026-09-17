@@ -1,12 +1,5 @@
-import type {
-  DataField,
-  DataRow,
-} from '../types/chart'
-import {
-  get,
-  post,
-} from './client'
-
+import type { DataField, DataRow } from '../types/chart'
+import { get, post } from './client'
 
 export type DatasetSummary = {
   id: string
@@ -22,27 +15,18 @@ export type DatasetRows = {
   rows: DataRow[]
 }
 
-export function uploadDataset(
-  file: File,
-): Promise<DatasetSummary> {
+export function uploadDataset(file: File): Promise<DatasetSummary> {
   const formData = new FormData()
   formData.append('file', file)
-  return post<DatasetSummary>(
-    '/datasets',
-    formData,
-  )
+  return post<DatasetSummary>('/datasets', formData)
 }
 
 export function fetchDatasetRows(
   datasetId: string,
   limit = 100,
 ): Promise<DatasetRows> {
-  return get<DatasetRows>(
-    `/datasets/${datasetId}/rows`,
-    {
-      offset: 0,
-      limit,
-    },
-  )
+  return get<DatasetRows>(`/datasets/${datasetId}/rows`, {
+    offset: 0,
+    limit,
+  })
 }
-

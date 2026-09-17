@@ -23,12 +23,16 @@
 }
 
 .data-table-header::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(180deg, var(--surface-widget-strong), var(--surface-widget)),
+    linear-gradient(
+      180deg,
+      var(--surface-widget-strong),
+      var(--surface-widget)
+    ),
     var(--surface-glass);
   backdrop-filter: blur(72px) saturate(210%);
   -webkit-backdrop-filter: blur(72px) saturate(210%);
@@ -73,6 +77,7 @@
   padding: 0 10px;
   background: color-mix(in srgb, var(--category-color) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--category-color) 52%, transparent);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--category-color) 12%, transparent);
+  box-shadow: 0 0 16px
+    color-mix(in srgb, var(--category-color) 12%, transparent);
   border-radius: var(--radius-pill);
 }
