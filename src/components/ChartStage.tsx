@@ -1,9 +1,9 @@
 import { useDroppable } from '@dnd-kit/core'
-import type { ChartConfig, ChartEncoding, Dataset } from '../types/chart'
+import type { ChartEncoding, ChartInstance, Dataset } from '../types/chart'
 import EChartCanvas from './EChartCanvas'
 
 type ChartStageProps = {
-  chartConfig: ChartConfig
+  chart: ChartInstance
   dataset: Dataset
   isDraggingField: boolean
 }
@@ -32,11 +32,7 @@ function AxisDropZone({ axis, label }: AxisDropZoneProps) {
   )
 }
 
-function ChartStage({
-  chartConfig,
-  dataset,
-  isDraggingField,
-}: ChartStageProps) {
+function ChartStage({ chart, dataset, isDraggingField }: ChartStageProps) {
   return (
     <div
       className={`chart-stage ${isDraggingField ? 'is-dragging-field' : ''}`}
@@ -45,7 +41,7 @@ function ChartStage({
         <AxisDropZone axis="x" label="X" />
         <AxisDropZone axis="y" label="Y" />
       </div>
-      <EChartCanvas chartConfig={chartConfig} dataset={dataset} />
+      <EChartCanvas chart={chart} dataset={dataset} />
     </div>
   )
 }

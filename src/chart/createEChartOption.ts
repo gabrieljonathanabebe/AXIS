@@ -1,5 +1,5 @@
 import type { EChartsOption } from 'echarts'
-import type { ChartConfig, Dataset } from '../types/chart'
+import type { ChartSpec, ChartType, Dataset } from '../types/chart'
 
 type ChartsTokens = {
   accent: string
@@ -38,17 +38,17 @@ function aggregateSumByXValue(
 }
 
 export function createEChartOption(
-  chartConfig: ChartConfig,
+  chartType: ChartType,
+  spec: ChartSpec,
   dataset: Dataset,
   tokens: ChartsTokens,
 ): EChartsOption {
-  const chartType = chartConfig.type ?? 'scatter'
-  const xField = chartConfig.encoding.x
-  const yField = chartConfig.encoding.y
-  const { appearance } = chartConfig
+  const { data: dataSpec, appearance, interaction } = spec
+  const xField = dataSpec.encoding.x
+  const yField = dataSpec.encoding.y
   const shouldAggregate =
     chartType !== 'scatter' &&
-    chartConfig.aggregate === 'sum' &&
+    dataSpec.aggregation === 'sum' &&
     xField?.name &&
     yField?.name
   const aggregated = shouldAggregate
@@ -98,10 +98,10 @@ export function createEChartOption(
   return {
     color: [appearance.color],
     backgroundColor: 'transparent',
-    animation: appearance.animation,
+    animation: interaction.animation.enabled,
     tooltip: {
-      show: appearance.showTooltip,
-      trigger: chartConfig.type === 'scatter' ? 'item' : 'axis',
+      show: interaction.tooltip.enabled,
+      trigger: chartType === 'scatter' ? 'item' : 'axis',
       backgroundColor: 'rgba(10, 14, 22, 0.92)',
       borderColor: 'rgba(30, 144, 255, 0.45)',
       borderWidth: 1,

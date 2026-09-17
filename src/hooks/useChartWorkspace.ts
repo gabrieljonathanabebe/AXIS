@@ -1,40 +1,17 @@
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import type { ActiveDrag, DragPayload } from '../types/ui'
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { useState } from 'react'
-import { getChartDefinition } from '../chart/chartDefinitions'
-import { getDefaultEncoding } from '../chart/getDefaultEncoding'
 import { createDemoDataset } from '../data/createDemoDataset'
-import type { DatasetSummary } from '../api/datasets'
+import { useChartCollection } from './useChartCollection'
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
+import type { ActiveDrag, DragPayload } from '../types/ui'
 import type {
   Aggregation,
-  ChartAppearance,
-  ChartConfig,
+  ChartAppearanceSpec,
   ChartEncoding,
-  ChartType,
+  ChartInteractionSpec,
   DataField,
   Dataset,
 } from '../types/chart'
-
-const defaultAppearance: ChartAppearance = {
-  color: '#1e90ff',
-  showGrid: true,
-  showTooltip: true,
-  animation: true,
-  scatter: {
-    pointSize: 10,
-    opacity: 0.9,
-  },
-  line: {
-    lineWidth: 3,
-    smooth: false,
-    showSymbol: true,
-  },
-  bar: {
-    borderRadius: 4,
-    barWidth: 24,
-  },
-}
 
 type UseChartWorkspaceParams = {
   dataset?: Dataset | null
@@ -45,14 +22,20 @@ export function useChartWorkspace({
 }: UseChartWorkspaceParams = {}) {
   const [demoDataset] = useState<Dataset>(() => createDemoDataset())
   const dataset = externalDataset ?? demoDataset
-  const [activeDatasetSummary, setActiveDatasetSummary] =
-    useState<DatasetSummary | null>(null)
+
+  const {
+    charts,
+    selectedChart,
+    selectedChartId,
+    removeSelectedChart,
+    selectChart,
+    selectChartType,
+    updateChart,
+    updateSelectedChart,
+  } = useChartCollection(dataset)
+
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
-  const [chartConfig, setChartConfig] = useState<ChartConfig>({
-    encoding: {},
-    appearance: defaultAppearance,
-  })
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -61,35 +44,53 @@ export function useChartWorkspace({
     }),
   )
 
-  function selectChartType(type: ChartType) {
-    const definition = getChartDefinition(type)
-    setChartConfig((currentConfig) => ({
-      type,
-      encoding: getDefaultEncoding(type, dataset),
-      aggregate: definition.defaultAggregation,
-      appearance: currentConfig.appearance,
-    }))
-  }
-
-  function setAppearance<TKey extends keyof ChartAppearance>(
+  function updateAppearance<TKey extends keyof ChartAppearanceSpec>(
     key: TKey,
-    value: ChartAppearance[TKey],
+    value: ChartAppearanceSpec[TKey],
   ): void {
-    setChartConfig((currentConfig) => ({
-      ...currentConfig,
-      appearance: {
-        ...currentConfig.appearance,
-        [key]: value,
+    updateSelectedChart((chart) => ({
+      ...chart,
+      spec: {
+        ...chart.spec,
+        appearance: {
+          ...chart.spec.appearance,
+          [key]: value,
+        },
       },
     }))
   }
 
-  function assignFieldToAxis(axis: keyof ChartEncoding, field: DataField) {
-    setChartConfig((currentConfig) => ({
-      ...currentConfig,
-      encoding: {
-        ...currentConfig.encoding,
-        [axis]: field,
+  function updateInteraction<TKey extends keyof ChartInteractionSpec>(
+    key: TKey,
+    value: ChartInteractionSpec[TKey],
+  ): void {
+    updateSelectedChart((chart) => ({
+      ...chart,
+      spec: {
+        ...chart.spec,
+        interaction: {
+          ...chart.spec.interaction,
+          [key]: value,
+        },
+      },
+    }))
+  }
+
+  function assignFieldToAxis(
+    axis: keyof ChartEncoding,
+    field: DataField,
+  ): void {
+    updateSelectedChart((chart) => ({
+      ...chart,
+      spec: {
+        ...chart.spec,
+        data: {
+          ...chart.spec.data,
+          encoding: {
+            ...chart.spec.data.encoding,
+            [axis]: field,
+          },
+        },
       },
     }))
   }
@@ -102,10 +103,39 @@ export function useChartWorkspace({
     assignFieldToAxis(axis, field)
   }
 
-  function setAggregation(aggregate: Aggregation) {
-    setChartConfig((currentConfig) => ({
-      ...currentConfig,
-      aggregate,
+  function setAggregation(aggregation: Aggregation): void {
+    updateSelectedChart((chart) => ({
+      ...chart,
+      spec: {
+        ...chart.spec,
+        data: {
+          ...chart.spec.data,
+          aggregation,
+        },
+      },
+    }))
+  }
+
+  function setChartAppearance<
+    TChartKey extends 'scatter' | 'line' | 'bar',
+    TOptionKey extends keyof ChartAppearanceSpec[TChartKey],
+  >(
+    chartKey: TChartKey,
+    optionKey: TOptionKey,
+    value: ChartAppearanceSpec[TChartKey][TOptionKey],
+  ): void {
+    updateSelectedChart((chart) => ({
+      ...chart,
+      spec: {
+        ...chart.spec,
+        appearance: {
+          ...chart.spec.appearance,
+          [chartKey]: {
+            ...chart.spec.appearance[chartKey],
+            [optionKey]: value,
+          },
+        },
+      },
     }))
   }
 
@@ -115,11 +145,11 @@ export function useChartWorkspace({
     return event.active.data.current?.payload ?? null
   }
 
-  function handleDragStart(event: DragStartEvent) {
+  function handleDragStart(event: DragStartEvent): void {
     setActiveDrag(getDragPayload(event))
   }
 
-  function handleDragEnd(event: DragEndEvent) {
+  function handleDragEnd(event: DragEndEvent): void {
     const payload = getDragPayload(event)
     const overId = String(event.over?.id)
     setActiveDrag(null)
@@ -137,48 +167,26 @@ export function useChartWorkspace({
     }
   }
 
-  function setChartAppearance<
-    TChartKey extends 'scatter' | 'line' | 'bar',
-    TOptionKey extends keyof ChartAppearance[TChartKey],
-  >(
-    chartKey: TChartKey,
-    optionKey: TOptionKey,
-    value: ChartAppearance[TChartKey][TOptionKey],
-  ): void {
-    setChartConfig((currentConfig) => ({
-      ...currentConfig,
-      appearance: {
-        ...currentConfig.appearance,
-        [chartKey]: {
-          ...currentConfig.appearance[chartKey],
-          [optionKey]: value,
-        },
-      },
-    }))
-  }
-
-  function resetChart() {
-    setChartConfig({
-      encoding: {},
-      appearance: defaultAppearance,
-    })
-  }
   return {
     activeDrag,
-    activeDatasetSummary,
-    chartConfig,
+    charts,
     dataset,
     handleDragEnd,
     handleDragStart,
-    resetChart,
+    resetChart: removeSelectedChart,
+    selectedChart,
+    selectedChartId,
     selectedField,
+    selectChart,
     selectChartType,
     sensors,
-    setActiveDatasetSummary,
     setAggregation,
-    setAppearance,
     setChartAppearance,
     setEncodingField,
     setSelectedField,
+    updateAppearance,
+    updateChart,
+    updateInteraction,
+    updateSelectedChart,
   }
 }

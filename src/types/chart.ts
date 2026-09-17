@@ -23,13 +23,6 @@ export type ChartEncoding = {
   y?: DataField
 }
 
-export type ChartConfig = {
-  type?: ChartType
-  encoding: ChartEncoding
-  aggregate?: Aggregation
-  appearance: ChartAppearance
-}
-
 export type PhysicalType =
   'integer' | 'float' | 'string' | 'boolean' | 'date' | 'datetime'
 
@@ -51,12 +44,43 @@ export type BarAppearance = {
   barWidth: number
 }
 
-export type ChartAppearance = {
+export type ChartDataSpec = {
+  encoding: ChartEncoding
+  aggregation: Aggregation
+}
+
+export type ChartAppearanceSpec = {
   color: string
   showGrid: boolean
-  showTooltip: boolean
-  animation: boolean
   scatter: ScatterAppearance
   line: LineAppearance
   bar: BarAppearance
+}
+export type ChartInteractionSpec = {
+  tooltip: {
+    enabled: boolean
+  }
+  animation: {
+    enabled: boolean
+  }
+}
+
+export type ChartSpec = {
+  data: ChartDataSpec
+  appearance: ChartAppearanceSpec
+  interaction: ChartInteractionSpec
+}
+
+export type ChartLayout = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export type ChartInstance = {
+  id: string
+  type: ChartType
+  spec: ChartSpec
+  layout: ChartLayout
 }

@@ -17,22 +17,21 @@ function App() {
   } = useDatasets()
   const {
     activeDrag,
-    chartConfig,
     dataset,
     handleDragEnd,
     handleDragStart,
     resetChart,
+    selectedChart,
     selectedField,
     selectChartType,
     sensors,
     setAggregation,
-    setAppearance,
     setChartAppearance,
     setEncodingField,
     setSelectedField,
-  } = useChartWorkspace({
-    dataset: uploadedDataset,
-  })
+    updateAppearance,
+    updateInteraction,
+  } = useChartWorkspace({ dataset: uploadedDataset })
   return (
     <DndContext
       sensors={sensors}
@@ -53,16 +52,17 @@ function App() {
           }}
         />
         <CanvasPanel
-          chartConfig={chartConfig}
+          chart={selectedChart}
           dataset={dataset}
           isDraggingField={activeDrag?.kind === 'field'}
           onResetChart={resetChart}
         />
         <InspectorPanel
-          chartConfig={chartConfig}
+          chart={selectedChart}
           fields={dataset.fields}
           onSetAggregation={setAggregation}
-          onSetAppearance={setAppearance}
+          onSetAppearance={updateAppearance}
+          onSetInteraction={updateInteraction}
           onSetChartAppearance={setChartAppearance}
           onSetEncodingField={setEncodingField}
         />
@@ -71,4 +71,5 @@ function App() {
     </DndContext>
   )
 }
+
 export default App

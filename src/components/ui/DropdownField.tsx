@@ -19,7 +19,6 @@ function DropdownField<TValue extends string>({
   return (
     <div className="dropdown-field">
       <span className="dropdown-field-label">{label}</span>
-
       <SelectControl
         label={label}
         options={options}

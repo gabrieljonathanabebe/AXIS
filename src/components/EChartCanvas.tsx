@@ -2,10 +2,10 @@ import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
 import { useEffect, useRef } from 'react'
 import { createEChartOption } from '../chart/createEChartOption'
-import type { ChartConfig, Dataset } from '../types/chart'
+import type { ChartInstance, Dataset } from '../types/chart'
 
 type EChartCanvasProps = {
-  chartConfig: ChartConfig
+  chart: ChartInstance
   dataset: Dataset
 }
 
@@ -18,7 +18,7 @@ function readChartTokens() {
   }
 }
 
-function EChartCanvas({ chartConfig, dataset }: EChartCanvasProps) {
+function EChartCanvas({ chart, dataset }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
 
@@ -37,10 +37,10 @@ function EChartCanvas({ chartConfig, dataset }: EChartCanvasProps) {
 
   useEffect(() => {
     chartRef.current?.setOption(
-      createEChartOption(chartConfig, dataset, readChartTokens()),
+      createEChartOption(chart.type, chart.spec, dataset, readChartTokens()),
       true,
     )
-  }, [chartConfig, dataset])
+  }, [chart, dataset])
 
   return <div className="echart-canvas" ref={containerRef} />
 }

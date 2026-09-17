@@ -3,17 +3,17 @@ import ChartStage from './ChartStage'
 import EmptyState from './ui/EmptyState'
 import IconButton from './ui/IconButton'
 import Panel from './ui/Panel'
-import type { ChartConfig, Dataset } from '../types/chart'
+import type { ChartInstance, Dataset } from '../types/chart'
 
 type CanvasPanelProps = {
-  chartConfig: ChartConfig
+  chart: ChartInstance | null
   dataset: Dataset
   isDraggingField: boolean
   onResetChart: () => void
 }
 
 function CanvasPanel({
-  chartConfig,
+  chart,
   dataset,
   isDraggingField,
   onResetChart,
@@ -24,16 +24,16 @@ function CanvasPanel({
       title="Canvas"
       className="canvas-panel"
       actions={
-        chartConfig.type ? (
+        chart ? (
           <IconButton label="Reset chart" onClick={onResetChart}>
             <RotateCcw size={18} />
           </IconButton>
         ) : null
       }
     >
-      {chartConfig.type ? (
+      {chart ? (
         <ChartStage
-          chartConfig={chartConfig}
+          chart={chart}
           dataset={dataset}
           isDraggingField={isDraggingField}
         />

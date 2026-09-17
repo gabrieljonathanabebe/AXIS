@@ -10,28 +10,34 @@ import Toggle from './ui/Toggle'
 
 import type {
   Aggregation,
-  ChartAppearance,
-  ChartConfig,
+  ChartAppearanceSpec,
   ChartEncoding,
+  ChartInstance,
+  ChartInteractionSpec,
   DataField,
 } from '../types/chart'
 import ColorSwatchPicker from './ui/ColorSwatchPicker'
 
+// ===== PROPS =================================================================
 type ChartInspectorProps = {
-  chartConfig: ChartConfig
+  chart: ChartInstance
   fields: DataField[]
   onSetAggregation: (aggregation: Aggregation) => void
-  onSetAppearance: <TKey extends keyof ChartAppearance>(
+  onSetAppearance: <TKey extends keyof ChartAppearanceSpec>(
     key: TKey,
-    value: ChartAppearance[TKey],
+    value: ChartAppearanceSpec[TKey],
+  ) => void
+  onSetInteraction: <TKey extends keyof ChartInteractionSpec>(
+    key: TKey,
+    value: ChartInteractionSpec[TKey],
   ) => void
   onSetChartAppearance: <
     TChartKey extends 'scatter' | 'line' | 'bar',
-    TOptionKey extends keyof ChartAppearance[TChartKey],
+    TOptionKey extends keyof ChartAppearanceSpec[TChartKey],
   >(
     chartKey: TChartKey,
     optionKey: TOptionKey,
-    value: ChartAppearance[TChartKey][TOptionKey],
+    value: ChartAppearanceSpec[TChartKey][TOptionKey],
   ) => void
   onSetEncodingField: (axis: keyof ChartEncoding, fieldName: string) => void
 }
@@ -55,19 +61,19 @@ const colorOptions = [
 ] satisfies { label: string; value: string }[]
 
 function ChartInspector({
-  chartConfig,
+  chart,
   fields,
   onSetAggregation,
   onSetAppearance,
+  onSetInteraction,
   onSetChartAppearance,
   onSetEncodingField,
 }: ChartInspectorProps) {
-  const activeDefinition = chartConfig.type
-    ? getChartDefinition(chartConfig.type)
-    : undefined
+  const activeDefinition = getChartDefinition(chart.type)
+  const { data, appearance, interaction } = chart.spec
 
   const activeAggregationOptions = aggregationOptions.filter((option) => {
-    return activeDefinition?.supportedAggregations.includes(option.value)
+    return activeDefinition.supportedAggregations.includes(option.value)
   })
   return (
     <div className="stack">
@@ -92,7 +98,7 @@ function ChartInspector({
                     <SelectControl
                       label={`${encoding.label} field`}
                       options={compatibleFieldOptions}
-                      value={chartConfig.encoding[encoding.key]?.name ?? ''}
+                      value={data.encoding[encoding.key]?.name ?? ''}
                       placeholder="Select field"
                       onChange={(fieldName) => {
                         onSetEncodingField(encoding.key, fieldName)
@@ -106,7 +112,7 @@ function ChartInspector({
                   label="Aggregation"
                   options={activeAggregationOptions}
                   value={
-                    chartConfig.aggregate ?? activeDefinition.defaultAggregation
+                    data.aggregation ?? activeDefinition.defaultAggregation
                   }
                   onChange={onSetAggregation}
                 />
@@ -122,7 +128,7 @@ function ChartInspector({
                 <ColorSwatchPicker
                   label="Chart color"
                   options={colorOptions}
-                  value={chartConfig.appearance.color}
+                  value={appearance.color}
                   onChange={(value) => {
                     onSetAppearance('color', value)
                   }}
@@ -131,7 +137,7 @@ function ChartInspector({
               <ControlRow label="Grid">
                 <Toggle
                   label="Show grid"
-                  checked={chartConfig.appearance.showGrid}
+                  checked={appearance.showGrid}
                   onCheckedChange={(checked) => {
                     onSetAppearance('showGrid', checked)
                   }}
@@ -140,18 +146,18 @@ function ChartInspector({
               <ControlRow label="Tooltip">
                 <Toggle
                   label="Show tooltip"
-                  checked={chartConfig.appearance.showTooltip}
-                  onCheckedChange={(checked) => {
-                    onSetAppearance('showTooltip', checked)
+                  checked={interaction.tooltip.enabled}
+                  onCheckedChange={(enabled) => {
+                    onSetInteraction('tooltip', { enabled })
                   }}
                 />
               </ControlRow>
               <ControlRow label="Animation">
                 <Toggle
                   label="Enable animation"
-                  checked={chartConfig.appearance.animation}
-                  onCheckedChange={(checked) => {
-                    onSetAppearance('animation', checked)
+                  checked={interaction.animation.enabled}
+                  onCheckedChange={(enabled) => {
+                    onSetInteraction('animation', { enabled })
                   }}
                 />
               </ControlRow>
@@ -163,7 +169,7 @@ function ChartInspector({
             icon={<SlidersHorizontal size={18} />}
           >
             <div className="stack inspector-controls">
-              {chartConfig.type === 'scatter' ? (
+              {chart.type === 'scatter' ? (
                 <>
                   <ControlRow label="Point size">
                     <Slider
@@ -171,7 +177,7 @@ function ChartInspector({
                       min={4}
                       max={28}
                       step={1}
-                      value={chartConfig.appearance.scatter.pointSize}
+                      value={appearance.scatter.pointSize}
                       onValueChange={(value) => {
                         onSetChartAppearance('scatter', 'pointSize', value)
                       }}
@@ -183,7 +189,7 @@ function ChartInspector({
                       min={0.1}
                       max={1}
                       step={0.05}
-                      value={chartConfig.appearance.scatter.opacity}
+                      value={appearance.scatter.opacity}
                       onValueChange={(value) => {
                         onSetChartAppearance('scatter', 'opacity', value)
                       }}
@@ -192,7 +198,7 @@ function ChartInspector({
                 </>
               ) : null}
 
-              {chartConfig.type === 'line' ? (
+              {chart.type === 'line' ? (
                 <>
                   <ControlRow label="Line width">
                     <Slider
@@ -200,7 +206,7 @@ function ChartInspector({
                       min={1}
                       max={8}
                       step={0.5}
-                      value={chartConfig.appearance.line.lineWidth}
+                      value={appearance.line.lineWidth}
                       onValueChange={(value) => {
                         onSetChartAppearance('line', 'lineWidth', value)
                       }}
@@ -209,7 +215,7 @@ function ChartInspector({
                   <ControlRow label="Smooth">
                     <Toggle
                       label="Smooth line"
-                      checked={chartConfig.appearance.line.smooth}
+                      checked={appearance.line.smooth}
                       onCheckedChange={(checked) => {
                         onSetChartAppearance('line', 'smooth', checked)
                       }}
@@ -218,7 +224,7 @@ function ChartInspector({
                   <ControlRow label="Show points">
                     <Toggle
                       label="Show data points"
-                      checked={chartConfig.appearance.line.showSymbol}
+                      checked={appearance.line.showSymbol}
                       onCheckedChange={(checked) => {
                         onSetChartAppearance('line', 'showSymbol', checked)
                       }}
@@ -227,7 +233,7 @@ function ChartInspector({
                 </>
               ) : null}
 
-              {chartConfig.type === 'bar' ? (
+              {chart.type === 'bar' ? (
                 <>
                   <ControlRow label="Bar width">
                     <Slider
@@ -235,7 +241,7 @@ function ChartInspector({
                       min={8}
                       max={64}
                       step={2}
-                      value={chartConfig.appearance.bar.barWidth}
+                      value={appearance.bar.barWidth}
                       onValueChange={(value) => {
                         onSetChartAppearance('bar', 'barWidth', value)
                       }}
@@ -247,7 +253,7 @@ function ChartInspector({
                       min={0}
                       max={24}
                       step={1}
-                      value={chartConfig.appearance.bar.borderRadius}
+                      value={appearance.bar.borderRadius}
                       onValueChange={(value) => {
                         onSetChartAppearance('bar', 'borderRadius', value)
                       }}
