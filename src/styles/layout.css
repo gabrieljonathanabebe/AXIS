@@ -6,7 +6,7 @@
   grid-template-columns:
     minmax(220px, 240px)
     minmax(0, 1fr)
-    clamp(220px, 20vw, 280px);
+    clamp(220px, 20vw, 240px);
   gap: var(--space-3);
   align-items: stretch;
   padding: var(--space-6);

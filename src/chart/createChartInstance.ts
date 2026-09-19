@@ -25,7 +25,31 @@ export function createDefaultChartSpec(
     },
     appearance: {
       color: '#1e90ff',
-      showGrid: true,
+      grid: {
+        enabled: true,
+        color: '#ffffff',
+        opacity: 0.08,
+        lineStyle: 'solid',
+      },
+      title: {
+        enabled: false,
+        text: '',
+        alignment: 'left',
+      },
+      xAxis: {
+        enabled: true,
+        title: '',
+        min: null,
+        max: null,
+        format: 'auto',
+      },
+      yAxis: {
+        enabled: true,
+        title: '',
+        min: null,
+        max: null,
+        format: 'auto',
+      },
       scatter: {
         pointSize: 10,
         opacity: 0.9,
@@ -43,9 +67,20 @@ export function createDefaultChartSpec(
     interaction: {
       tooltip: {
         enabled: true,
+        trigger: type === 'scatter' ? 'item' : 'axis',
+        fields: [],
+        valueFormat: 'auto',
+        delay: 0,
+      },
+      zoom: {
+        enabled: false,
+        inside: true,
+        slider: false,
       },
       animation: {
         enabled: true,
+        duration: 500,
+        easing: 'cubicOut',
       },
     },
   }

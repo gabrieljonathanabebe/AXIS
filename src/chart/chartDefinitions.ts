@@ -1,8 +1,13 @@
 import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import type { Aggregation, ChartType, SemanticType } from '../types/chart'
+import type {
+  Aggregation,
+  ChartEncoding,
+  ChartType,
+  SemanticType,
+} from '../types/chart'
 
-export type EncodingKey = 'x' | 'y'
+export type EncodingKey = keyof ChartEncoding
 
 export type CompatibilityLevel = 'recommended' | 'supported' | 'invalid'
 
@@ -49,6 +54,20 @@ export const chartDefinitions = {
         recommendedTypes: ['numeric'],
         supportedTypes: [],
       },
+      {
+        key: 'color',
+        label: 'Color',
+        required: false,
+        recommendedTypes: ['categorical'],
+        supportedTypes: ['numeric'],
+      },
+      {
+        key: 'size',
+        label: 'Size',
+        required: false,
+        recommendedTypes: ['numeric'],
+        supportedTypes: [],
+      },
     ],
   },
   line: {
@@ -73,6 +92,13 @@ export const chartDefinitions = {
         recommendedTypes: ['numeric'],
         supportedTypes: [],
       },
+      {
+        key: 'series',
+        label: 'Series',
+        required: false,
+        recommendedTypes: ['categorical'],
+        supportedTypes: [],
+      },
     ],
   },
   bar: {
@@ -85,14 +111,14 @@ export const chartDefinitions = {
     encodings: [
       {
         key: 'x',
-        label: 'X Axis',
+        label: 'Category',
         required: true,
         recommendedTypes: ['categorical'],
         supportedTypes: ['temporal'],
       },
       {
         key: 'y',
-        label: 'Y Axis',
+        label: 'Value',
         required: true,
         recommendedTypes: ['numeric'],
         supportedTypes: [],

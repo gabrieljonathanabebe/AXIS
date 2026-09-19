@@ -1,11 +1,7 @@
 import type { EChartsOption } from 'echarts'
-import type { ChartSpec, ChartType, Dataset } from '../types/chart'
 
-type ChartsTokens = {
-  accent: string
-  axis: string
-  textMuted: string
-}
+import type { ChartSpec, ChartType, Dataset } from '../types/chart'
+import type { ChartTheme } from './chartTheme'
 
 type ChartValue = string | number | null | undefined
 
@@ -37,15 +33,39 @@ function aggregateSumByXValue(
   }
 }
 
+function getDefaultChartTitle(
+  chartType: ChartType,
+  xFieldName?: string,
+  yFieldName?: string,
+): string {
+  if (!xFieldName && !yFieldName) {
+    return 'Untitled chart'
+  }
+
+  const xLabel = xFieldName ?? 'Category'
+  const yLabel = yFieldName ?? 'Value'
+
+  if (chartType === 'scatter') {
+    return `${yLabel} vs. ${xLabel}`
+  }
+
+  return `${yLabel} by ${xLabel}`
+}
+
 export function createEChartOption(
   chartType: ChartType,
   spec: ChartSpec,
   dataset: Dataset,
-  tokens: ChartsTokens,
+  theme: ChartTheme,
 ): EChartsOption {
   const { data: dataSpec, appearance, interaction } = spec
   const xField = dataSpec.encoding.x
   const yField = dataSpec.encoding.y
+  const defaultTitle = getDefaultChartTitle(
+    chartType,
+    xField?.name,
+    yField?.name,
+  )
   const shouldAggregate =
     chartType !== 'scatter' &&
     dataSpec.aggregation === 'sum' &&
@@ -99,20 +119,23 @@ export function createEChartOption(
     color: [appearance.color],
     backgroundColor: 'transparent',
     animation: interaction.animation.enabled,
+    animationDuration: interaction.animation.duration,
+    animationEasing: interaction.animation.easing,
     tooltip: {
       show: interaction.tooltip.enabled,
-      trigger: chartType === 'scatter' ? 'item' : 'axis',
-      backgroundColor: 'rgba(10, 14, 22, 0.92)',
-      borderColor: 'rgba(30, 144, 255, 0.45)',
-      borderWidth: 1,
+      trigger: interaction.tooltip.trigger,
+      showDelay: interaction.tooltip.delay,
+      backgroundColor: theme.tooltip.background,
+      borderColor: theme.tooltip.borderColor,
+      borderWidth: theme.tooltip.borderWidth,
       textStyle: {
-        color: '#f5f7fb',
-        fontSize: 13,
+        color: theme.text,
+        fontSize: theme.tooltip.fontSize,
       },
       extraCssText: [
-        'backdrop-filter: blur(18px)',
-        'border-radius: 14px',
-        'box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35)',
+        `backdrop-filter: blur(${theme.tooltip.blur})`,
+        `border-radius: ${theme.tooltip.radius}`,
+        `box-shadow: ${theme.tooltip.shadow}`,
       ].join(';'),
     },
     grid: {
@@ -122,6 +145,35 @@ export function createEChartOption(
       left: 72,
       containLabel: false,
     },
+    dataZoom: interaction.zoom.enabled
+      ? [
+          ...(interaction.zoom.inside
+            ? [
+                {
+                  type: 'inside' as const,
+                },
+              ]
+            : []),
+          ...(interaction.zoom.slider
+            ? [
+                {
+                  type: 'slider' as const,
+                },
+              ]
+            : []),
+        ]
+      : undefined,
+    title: {
+      show: appearance.title.enabled,
+      text: appearance.title.text.trim() || defaultTitle,
+      left: appearance.title.alignment,
+      top: 16,
+      textStyle: {
+        color: theme.axis,
+        fontSize: 16,
+        fontWeight: 600,
+      },
+    },
     xAxis: {
       type: chartType === 'scatter' ? 'value' : 'category',
       data: chartType === 'scatter' ? undefined : categories,
@@ -129,14 +181,15 @@ export function createEChartOption(
       nameLocation: 'middle',
       nameGap: 32,
       axisLabel: {
-        color: tokens.textMuted,
+        color: theme.textMuted,
       },
       splitLine: {
-        show: appearance.showGrid,
+        show: appearance.grid.enabled,
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.08)',
+          color: appearance.grid.color,
+          opacity: appearance.grid.opacity,
+          type: appearance.grid.lineStyle,
           width: 1,
-          opacity: 0.25,
         },
       },
     },
@@ -146,14 +199,15 @@ export function createEChartOption(
       nameLocation: 'middle',
       nameGap: 48,
       axisLabel: {
-        color: tokens.textMuted,
+        color: theme.textMuted,
       },
       splitLine: {
-        show: appearance.showGrid,
+        show: appearance.grid.enabled,
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.08)',
+          color: appearance.grid.color,
+          opacity: appearance.grid.opacity,
+          type: appearance.grid.lineStyle,
           width: 1,
-          opacity: 0.25,
         },
       },
     },

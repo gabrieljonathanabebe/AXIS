@@ -180,3 +180,115 @@
 .inspector-controls {
   gap: var(--space-2);
 }
+
+.inspector-property {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.inspector-property-children {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  padding-left: var(--space-4);
+}
+
+.inspector-property-children .control-row {
+  min-height: var(--control-height-sm);
+  gap: var(--space-2);
+}
+
+.inspector-property-children .control-row-label {
+  font-size: var(--font-size-2xs);
+}
+
+.inspector-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  padding: 2px;
+  background: var(--surface-widget);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.inspector-tab {
+  min-width: 0;
+  min-height: var(--control-height-sm);
+  padding-inline: var(--space-2);
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.inspector-tab span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inspector-tab:hover {
+  background: var(--surface-widget-hover);
+  border-color: transparent;
+}
+
+.inspector-tab.is-active {
+  color: var(--color-accent);
+  background: var(--surface-active);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.inspector-tab-panel {
+  min-width: 0;
+  min-height: 0;
+}
+
+.inspector-tab-panel[hidden] {
+  display: none;
+}
+
+.inspector-tab-content {
+  gap: var(--space-2);
+}
+
+.inspector-widget {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--surface-section);
+}
+
+.inspector-widget-header {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.inspector-widget-content {
+  gap: var(--space-1);
+}
+
+.inspector-widget-subproperties {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding-left: var(--space-4);
+}
+
+.inspector-widget-subproperties .control-row {
+  min-height: var(--control-height-sm);
+  gap: var(--space-2);
+}
+
+.inspector-widget-subproperties .control-row-label {
+  font-size: var(--font-size-2xs);
+}

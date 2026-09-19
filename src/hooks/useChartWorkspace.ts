@@ -76,9 +76,9 @@ export function useChartWorkspace({
     }))
   }
 
-  function assignFieldToAxis(
-    axis: keyof ChartEncoding,
-    field: DataField,
+  function assignFieldToEncoding(
+    key: keyof ChartEncoding,
+    field: DataField | undefined,
   ): void {
     updateSelectedChart((chart) => ({
       ...chart,
@@ -88,19 +88,22 @@ export function useChartWorkspace({
           ...chart.spec.data,
           encoding: {
             ...chart.spec.data.encoding,
-            [axis]: field,
+            [key]: field,
           },
         },
       },
     }))
   }
 
-  function setEncodingField(axis: keyof ChartEncoding, fieldName: string) {
+  function setEncodingField(
+    axis: keyof ChartEncoding,
+    fieldName: string,
+  ): void {
     const field = dataset.fields.find((field) => field.name === fieldName)
     if (!field) {
       return
     }
-    assignFieldToAxis(axis, field)
+    assignFieldToEncoding(axis, field)
   }
 
   function setAggregation(aggregation: Aggregation): void {
@@ -159,10 +162,10 @@ export function useChartWorkspace({
     }
     if (payload?.kind === 'field') {
       if (overId === 'axis:x') {
-        assignFieldToAxis('x', payload.field)
+        assignFieldToEncoding('x', payload.field)
       }
       if (overId === 'axis:y') {
-        assignFieldToAxis('y', payload.field)
+        assignFieldToEncoding('y', payload.field)
       }
     }
   }

@@ -19,7 +19,20 @@
   --surface-section: rgba(255, 255, 255, 0.025);
   --surface-section-highlight: rgba(255, 255, 255, 0.025);
 
+  --chart-tooltip-background: rgba(10, 14, 22, 0.92);
+  --chart-tooltip-border: rgba(30, 144, 255, 0.45);
+  --chart-tooltip-border-width: 1px;
+  --chart-tooltip-text: var(--color-text);
+  --chart-tooltip-font-size: 13px;
+  --chart-tooltip-blur: 18px;
+  --chart-tooltip-radius: 14px;
+  --chart-tooltip-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+
+  --font-size-2xs: 0.6875rem;
   --font-size-xs: 0.75rem;
+
+  --control-height-xs: 22px;
+  --control-height-sm: 28px;
 
   --border-subtle: rgba(148, 163, 184, 0.18);
   --border-accent: rgba(79, 156, 255, 0.42);
