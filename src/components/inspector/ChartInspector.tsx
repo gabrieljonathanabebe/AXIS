@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import AppearanceInspectorTab from './inspector/AppearanceInspectorTab'
-import DataInspectorTab from './inspector/DataInspectorTab'
-import InspectorTabs from './inspector/InspectorTabs'
-import InteractionInspectorTab from './inspector/InteractionInspectorTab'
+import AppearanceInspectorTab from './AppearanceInspectorTab'
+import DataInspectorTab from './DataInspectorTab'
+import InspectorTabs from './InspectorTabs'
+import InteractionInspectorTab from './InteractionInspectorTab'
 
-import type { InspectorTab } from './inspector/InspectorTabs'
-import type { ChartInspectorProps } from './inspector/types'
+import type { InspectorTab } from './InspectorTabs'
+import type { ChartInspectorProps } from './types'
 
 function ChartInspector({
   chart,
@@ -18,7 +18,6 @@ function ChartInspector({
   onSetEncodingField,
 }: ChartInspectorProps) {
   const [activeTab, setActiveTab] = useState<InspectorTab>('data')
-
   return (
     <InspectorTabs
       value={activeTab}

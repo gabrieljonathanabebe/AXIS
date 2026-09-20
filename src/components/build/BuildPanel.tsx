@@ -1,11 +1,11 @@
 import { ChartColumn, Database } from 'lucide-react'
 import ChartPicker from './ChartPicker'
-import CollapsibleSection from './ui/CollapsibleSection'
+import CollapsibleSection from '../ui/CollapsibleSection'
 import DatasetUpload from './DatasetUpload'
 import FieldList from './FieldList'
-import Panel from './ui/Panel'
-import type { ChartType, DataField } from '../types/chart'
-import type { DatasetSummary } from '../api/datasets'
+import Panel from '../ui/Panel'
+import type { ChartType, DataField } from '../../types/chart'
+import type { DatasetSummary } from '../../api/datasets'
 
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
@@ -33,7 +33,8 @@ function BuildPanel({
       as="aside"
       eyebrow="Build"
       title="Build"
-      className="build-panel side-panel"
+      className="build-panel"
+      isScrollable
     >
       <div className="build-panel-content">
         <DatasetUpload isUploading={isUploading} onUploadFile={onUploadFile} />

@@ -1,9 +1,9 @@
 import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
-import type { ChartType } from '../types/chart'
+import type { ChartType } from '../../types/chart'
 import { useDraggable } from '@dnd-kit/core'
-import WidgetButton from './ui/WidgetButton'
+import WidgetButton from '../ui/WidgetButton'
 
-type ChartTypePickerProps = {
+type ChartPickerProps = {
   onSelectChartType: (type: ChartType) => void
 }
 
@@ -54,7 +54,7 @@ function DraggableChartType({
   )
 }
 
-function ChartTypePicker({ onSelectChartType }: ChartTypePickerProps) {
+function ChartPicker({ onSelectChartType }: ChartPickerProps) {
   return (
     <div className="chart-type-picker auto-grid">
       {chartTypes.map(({ type, label, icon }) => (
@@ -70,4 +70,4 @@ function ChartTypePicker({ onSelectChartType }: ChartTypePickerProps) {
   )
 }
 
-export default ChartTypePicker
+export default ChartPicker

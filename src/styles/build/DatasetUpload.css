@@ -1,0 +1,16 @@
+.dataset-upload {
+  min-height: 180px;
+  padding: var(--space-6);
+  color: var(--color-text-primary);
+  text-align: center;
+  cursor: pointer;
+}
+
+.dataset-upload span {
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.dataset-upload input {
+  display: none;
+}

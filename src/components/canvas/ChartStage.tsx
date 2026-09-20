@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core'
-import type { ChartEncoding, ChartInstance, Dataset } from '../types/chart'
+import type { ChartEncoding, ChartInstance, Dataset } from '../../types/chart'
 import EChartCanvas from './EChartCanvas'
 
 type ChartStageProps = {

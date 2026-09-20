@@ -1,8 +1,38 @@
 @import './styles/tokens.css';
+@import './styles/themes.css';
 @import './styles/base.css';
-@import './styles/primitives.css';
+
+@import './styles/ui/Button.css';
+@import './styles/ui/Chip.css';
+@import './styles/ui/CollapsibleSection.css';
+@import './styles/ui/ColorControl.css';
+@import './styles/ui/ControlRow.css';
+@import './styles/ui/DropdownField.css';
+@import './styles/ui/EmptyState.css';
+@import './styles/ui/IconBadge.css';
+@import './styles/ui/IconButton.css';
+@import './styles/ui/OptionsMenu.css';
+@import './styles/ui/Panel.css';
+@import './styles/ui/SelectControl.css';
+@import './styles/ui/SegmentedControl.css';
+@import './styles/ui/Slider.css';
+@import './styles/ui/TextInput.css';
+@import './styles/ui/Toggle.css';
+@import './styles/ui/Widget.css';
+
 @import './styles/utilities.css';
-@import './styles/layout.css';
-@import './styles/fields.css';
-@import './styles/chart.css';
-@import './styles/data-table.css';
+@import './styles/App.css';
+
+@import './styles/build/BuildPanel.css';
+@import './styles/build/ChartPicker.css';
+@import './styles/build/DatasetUpload.css';
+@import './styles/build/FieldList.css';
+
+@import './styles/canvas/CanvasPanel.css';
+@import './styles/canvas/ChartStage.css';
+@import './styles/canvas/EChartCanvas.css';
+
+@import './styles/data/DataTable.css';
+@import './styles/dnd/DragPreviewOverlay.css';
+@import './styles/inspector/InspectorTabs.css';
+@import './styles/inspector/InspectorWidget.css';

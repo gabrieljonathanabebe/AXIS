@@ -1,9 +1,9 @@
 import { RotateCcw } from 'lucide-react'
 import ChartStage from './ChartStage'
-import EmptyState from './ui/EmptyState'
-import IconButton from './ui/IconButton'
-import Panel from './ui/Panel'
-import type { ChartInstance, Dataset } from '../types/chart'
+import EmptyState from '../ui/EmptyState'
+import IconButton from '../ui/IconButton'
+import Panel from '../ui/Panel'
+import type { ChartInstance, Dataset } from '../../types/chart'
 
 type CanvasPanelProps = {
   chart: ChartInstance | null

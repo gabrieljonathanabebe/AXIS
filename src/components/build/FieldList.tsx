@@ -1,8 +1,8 @@
 import { useDraggable } from '@dnd-kit/core'
-import Chip from './ui/Chip'
-import type { DataField } from '../types/chart'
-import DataTypeIcon from './DataTypeIcon'
-import IconBadge from './ui/IconBadge'
+import Chip from '../ui/Chip'
+import type { DataField } from '../../types/chart'
+import DataTypeIcon from '../data/DataTypeIcon'
+import IconBadge from '../ui/IconBadge'
 
 type FieldListProps = {
   fields: DataField[]

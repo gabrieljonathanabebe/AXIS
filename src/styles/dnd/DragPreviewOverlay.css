@@ -1,0 +1,11 @@
+.drag-overlay-chip {
+  box-shadow: var(--shadow-accent);
+  pointer-events: none;
+  cursor: grabbing;
+}
+
+.chart-type-drag-overlay {
+  box-shadow: var(--shadow-accent);
+  pointer-events: none;
+  cursor: grabbing;
+}

@@ -2,10 +2,10 @@ import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
 import { useEffect, useRef } from 'react'
 
-import { createEChartOption } from '../chart/createEChartOption'
-import type { ChartInstance, Dataset } from '../types/chart'
+import { createEChartOption } from '../../chart/createEChartOption'
+import type { ChartInstance, Dataset } from '../../types/chart'
 
-import type { ChartTheme } from '../chart/chartTheme'
+import type { ChartTheme } from '../../chart/chartTheme'
 
 type EChartCanvasProps = {
   chart: ChartInstance
@@ -17,7 +17,15 @@ function readToken(styles: CSSStyleDeclaration, name: string): string {
 }
 
 function readNumberToken(styles: CSSStyleDeclaration, name: string): number {
-  return Number.parseFloat(readToken(styles, name))
+  const value = readToken(styles, name)
+  const numericValue = Number.parseFloat(value)
+
+  if (value.endsWith('rem')) {
+    const rootFontSize = Number.parseFloat(styles.fontSize)
+    return numericValue * rootFontSize
+  }
+
+  return numericValue
 }
 
 function readChartTheme(): ChartTheme {
@@ -25,17 +33,17 @@ function readChartTheme(): ChartTheme {
 
   return {
     accent: readToken(styles, '--color-accent'),
-    axis: readToken(styles, '--border-axis'),
-    text: readToken(styles, '--color-text'),
-    textMuted: readToken(styles, '--color-text-muted'),
+    axis: readToken(styles, '--color-border-strong'),
+    text: readToken(styles, '--color-text-primary'),
+    textMuted: readToken(styles, '--color-text-secondary'),
     tooltip: {
-      background: readToken(styles, '--chart-tooltip-background'),
-      borderColor: readToken(styles, '--chart-tooltip-border'),
-      borderWidth: readNumberToken(styles, '--chart-tooltip-border-width'),
-      fontSize: readNumberToken(styles, '--chart-tooltip-font-size'),
-      blur: readToken(styles, '--chart-tooltip-blur'),
-      radius: readToken(styles, '--chart-tooltip-radius'),
-      shadow: readToken(styles, '--chart-tooltip-shadow'),
+      background: readToken(styles, '--color-surface-overlay'),
+      borderColor: readToken(styles, '--color-border-accent'),
+      borderWidth: readNumberToken(styles, '--border-width-thin'),
+      fontSize: readNumberToken(styles, '--font-size-sm'),
+      blur: readToken(styles, '--blur-sm'),
+      radius: readToken(styles, '--radius-md'),
+      shadow: readToken(styles, '--shadow-md'),
     },
   }
 }

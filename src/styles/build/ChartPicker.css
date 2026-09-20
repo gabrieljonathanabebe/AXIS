@@ -1,0 +1,7 @@
+.chart-type-picker {
+  width: 100%;
+}
+
+.chart-type-option {
+  padding: var(--space-6);
+}

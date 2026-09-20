@@ -41,8 +41,3 @@
 .full-width {
   width: 100%;
 }
-
-.text-strong {
-  color: var(--color-text);
-  font-weight: 600;
-}

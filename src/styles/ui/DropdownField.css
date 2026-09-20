@@ -1,0 +1,18 @@
+.dropdown-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.dropdown-field-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  line-height: 1.3;
+}
+
+.dropdown-field-control {
+  position: relative;
+}
+
+.dropdown-field-button {
+  width: 100%;
+}

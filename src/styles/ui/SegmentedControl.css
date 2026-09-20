@@ -1,0 +1,37 @@
+.segmented-control {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  height: var(--control-height-sm);
+  width: 100%;
+  min-width: 0;
+  padding: 2px;
+  background: var(--color-surface-default);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.segmented-control-option {
+  min-width: 0;
+  height: var(--control-height-xs);
+  padding-inline: var(--space-2);
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.segmented-control-option:hover {
+  background: var(--color-surface-hover);
+  border-color: transparent;
+}
+
+.segmented-control-option.is-active {
+  color: var(--color-accent);
+  background: var(--color-surface-active);
+  border-color: transparent;
+  box-shadow: none;
+}

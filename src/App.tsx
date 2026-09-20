@@ -1,9 +1,9 @@
 import { DndContext } from '@dnd-kit/core'
 
-import BuildPanel from './components/BuildPanel'
-import CanvasPanel from './components/CanvasPanel'
-import DragPreviewOverlay from './components/DragPreviewOverlay'
-import InspectorPanel from './components/InspectorPanel'
+import BuildPanel from './components/build/BuildPanel'
+import CanvasPanel from './components/canvas/CanvasPanel'
+import DragPreviewOverlay from './components/dnd/DragPreviewOverlay'
+import InspectorPanel from './components/inspector/InspectorPanel'
 import { useChartWorkspace } from './hooks/useChartWorkspace'
 import { useDatasets } from './hooks/useDatasets'
 

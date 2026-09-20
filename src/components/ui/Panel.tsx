@@ -7,6 +7,7 @@ type PanelProps = {
   className?: string
   actions?: ReactNode
   children?: ReactNode
+  isScrollable?: boolean
 }
 
 function Panel({
@@ -16,9 +17,12 @@ function Panel({
   className = '',
   actions,
   children,
+  isScrollable = false,
 }: PanelProps) {
   return (
-    <Element className={`panel glass ${className}`}>
+    <Element
+      className={`panel ${isScrollable ? 'is-scrollable' : ''} ${className}`}
+    >
       <header className="panel-header">
         <div>
           <p className="eyebrow">{eyebrow}</p>

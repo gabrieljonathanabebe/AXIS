@@ -1,0 +1,41 @@
+.collapsible-section {
+  display: grid;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  padding: var(--space-2);
+  align-content: start;
+  background:
+    linear-gradient(135deg, var(--color-glass-tint-subtle), transparent 44%),
+    var(--color-surface-subtle);
+  backdrop-filter: blur(var(--blur-md)) saturate(160%);
+}
+
+.collapsible-section-trigger {
+  width: 100%;
+  min-height: 32px;
+  padding: 0;
+  justify-content: space-between;
+  color: var(--color-text-primary);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.collapsible-section-trigger:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.collapsible-section-trigger svg {
+  transition: transform var(--transition-fast);
+}
+
+.collapsible-section-trigger svg.is-open {
+  transform: rotate(180deg);
+}
+
+.collapsible-section-content {
+  min-height: 0;
+  display: grid;
+}

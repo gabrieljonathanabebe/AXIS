@@ -31,7 +31,6 @@ function AggregationWidget({
   const activeOptions = aggregationOptions.filter((option) => {
     return definition.supportedAggregations.includes(option.value)
   })
-
   return (
     <InspectorWidget title="Aggregation" icon={<Sigma size={16} />}>
       <ControlRow label="Function">

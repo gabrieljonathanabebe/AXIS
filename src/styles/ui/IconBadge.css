@@ -1,0 +1,20 @@
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: var(--space-2);
+  color: var(--color-accent);
+}
+
+.icon-badge-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.icon-badge-label {
+  min-width: 0;
+  color: var(--color-text-primary);
+}

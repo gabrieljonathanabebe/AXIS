@@ -1,0 +1,25 @@
+.widget {
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.widget.is-interactive:hover {
+  color: var(--color-accent-hover);
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+  cursor: pointer;
+}
+
+.widget.is-interactive.is-active {
+  color: var(--color-accent);
+  background: var(--color-surface-active);
+  border-color: var(--color-border-accent);
+  box-shadow: var(--shadow-accent);
+}

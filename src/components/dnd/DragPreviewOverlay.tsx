@@ -1,8 +1,8 @@
 import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
 import { DragOverlay } from '@dnd-kit/core'
-import DataTypeIcon from './DataTypeIcon'
-import IconBadge from './ui/IconBadge'
-import type { ActiveDrag } from '../types/ui'
+import DataTypeIcon from '../data/DataTypeIcon'
+import IconBadge from '../ui/IconBadge'
+import type { ActiveDrag } from '../../types/ui'
 
 type DragPreviewOverlayProps = {
   activeDrag: ActiveDrag

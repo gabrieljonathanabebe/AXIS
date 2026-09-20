@@ -1,0 +1,21 @@
+.app-shell {
+  min-height: 100vh;
+  height: 100dvh;
+  display: grid;
+  overflow: hidden;
+  grid-template-columns:
+    minmax(220px, 240px)
+    minmax(0, 1fr)
+    clamp(220px, 20vw, 240px);
+  gap: var(--space-3);
+  align-items: stretch;
+  padding: var(--space-6);
+  background: var(--color-background);
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    padding: var(--space-4);
+  }
+}

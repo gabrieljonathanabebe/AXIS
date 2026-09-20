@@ -27,7 +27,6 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
           }}
         />
       </ControlRow>
-
       {value.enabled ? (
         <div className="inspector-widget-subproperties">
           <ControlRow label="Duration">

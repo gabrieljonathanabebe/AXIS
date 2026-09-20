@@ -1,5 +1,5 @@
 import { Calendar, Hash, IdCard, Tags } from 'lucide-react'
-import type { SemanticType } from '../types/chart'
+import type { SemanticType } from '../../types/chart'
 
 type DataTypeIconProps = {
   type: SemanticType

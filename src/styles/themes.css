@@ -1,0 +1,90 @@
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-background: #05070c;
+  --color-background-subtle: #0a0e16;
+
+  --color-control-handle: #eef4ff;
+
+  --color-surface-glass: rgba(5, 8, 14, 0.28);
+  --color-surface-subtle: rgba(255, 255, 255, 0.025);
+  --color-surface-default: rgba(255, 255, 255, 0.07);
+  --color-surface-strong: rgba(255, 255, 255, 0.34);
+  --color-surface-overlay: rgba(8, 10, 14, 0.7);
+
+  --color-surface-hover: rgba(255, 255, 255, 0.09);
+  --color-surface-active: rgba(79, 156, 255, 0.18);
+
+  --color-text-primary: #eef4ff;
+  --color-text-secondary: #a7afbd;
+  --color-text-disabled: #6f7785;
+  --color-text-inverse: #05080e;
+
+  --color-border-subtle: rgba(148, 163, 184, 0.18);
+  --color-border-default: rgba(210, 226, 255, 0.22);
+  --color-border-strong: rgba(148, 163, 184, 0.28);
+  --color-border-accent: rgba(79, 156, 255, 0.42);
+
+  --color-glass-tint-subtle: rgba(255, 255, 255, 0.035);
+  --color-glass-tint-default: rgba(255, 255, 255, 0.045);
+  --color-glass-tint-strong: rgba(255, 255, 255, 0.07);
+
+  --color-glow-primary: rgba(255, 255, 255, 0.16);
+  --color-glow-secondary: rgba(199, 204, 210, 0.12);
+
+  --color-accent: #178bff;
+  --color-accent-hover: #178bff;
+  --color-accent-soft: rgba(79, 156, 255, 0.18);
+
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-md: 0 18px 42px rgba(0, 0, 0, 0.34);
+  --shadow-lg: 0 28px 90px rgba(0, 0, 0, 0.42);
+  --shadow-accent:
+    0 0 0 1px rgba(23, 139, 255, 0.22), 0 0 24px rgba(23, 139, 255, 0.18);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --color-background: #edf6ff;
+  --color-background-subtle: #cfe4f7;
+
+  --color-control-handle: #ffffff;
+
+  --color-surface-glass: rgba(246, 251, 255, 0.5);
+  --color-surface-subtle: rgba(255, 255, 255, 0.28);
+  --color-surface-default: rgba(255, 255, 255, 0.52);
+  --color-surface-strong: rgba(255, 255, 255, 0.74);
+  --color-surface-overlay: rgba(250, 253, 255, 0.84);
+
+  --color-surface-hover: rgba(255, 255, 255, 0.68);
+  --color-surface-active: rgba(8, 127, 231, 0.13);
+
+  --color-text-primary: #101828;
+  --color-text-secondary: #667085;
+  --color-text-disabled: #98a2b3;
+  --color-text-inverse: #f8fafc;
+
+  --color-border-subtle: rgba(47, 72, 103, 0.16);
+  --color-border-default: rgba(47, 72, 103, 0.24);
+  --color-border-strong: rgba(47, 72, 103, 0.36);
+  --color-border-accent: rgba(23, 139, 255, 0.42);
+
+  --color-glass-tint-subtle: rgba(38, 104, 166, 0.025);
+  --color-glass-tint-default: rgba(38, 104, 166, 0.05);
+  --color-glass-tint-strong: rgba(38, 104, 166, 0.08);
+
+  --color-glow-primary: rgba(255, 255, 255, 0.42);
+  --color-glow-secondary: rgba(23, 139, 255, 0.13);
+
+  --color-accent: #087fe7;
+  --color-accent-hover: #006fce;
+  --color-accent-soft: rgba(8, 127, 231, 0.14);
+
+  --shadow-sm: 0 8px 24px rgba(47, 72, 103, 0.12);
+  --shadow-md: 0 18px 42px rgba(47, 72, 103, 0.16);
+  --shadow-lg: 0 28px 90px rgba(47, 72, 103, 0.2);
+  --shadow-accent:
+    0 0 0 1px rgba(8, 127, 231, 0.2), 0 0 24px rgba(8, 127, 231, 0.14);
+}

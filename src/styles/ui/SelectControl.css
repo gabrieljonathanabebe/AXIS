@@ -1,0 +1,20 @@
+.select-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.select-control-button {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height-sm);
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.select-control-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

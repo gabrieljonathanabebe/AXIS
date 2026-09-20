@@ -1,6 +1,6 @@
 import DataTypeIcon from './DataTypeIcon'
-import type { Dataset, DataValue } from '../types/chart'
-import IconBadge from './ui/IconBadge'
+import type { Dataset, DataValue } from '../../types/chart'
+import IconBadge from '../ui/IconBadge'
 import { useMemo } from 'react'
 import type { CSSProperties } from 'react'
 
