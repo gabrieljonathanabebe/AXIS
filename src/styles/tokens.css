@@ -10,6 +10,7 @@
   --surface-panel: rgba(5, 8, 14, 0.28);
   --surface-panel-highlight: rgba(255, 255, 255, 0.045);
   --surface-panel-glow: rgba(255, 255, 255, 0.07);
+  --surface-popover: rgba(8, 10, 14, 0.7);
   --surface-widget: rgba(255, 255, 255, 0.07);
   --surface-widget-strong: rgba(255, 255, 255, 0.34);
   --surface-widget-hover: rgba(255, 255, 255, 0.09);

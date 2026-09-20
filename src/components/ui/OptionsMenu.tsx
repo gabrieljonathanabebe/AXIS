@@ -25,6 +25,8 @@ function OptionsMenu<TValue extends string>({
         return (
           <Button
             className="options-menu-item spread"
+            role="option"
+            aria-selected={isSelected}
             isActive={isSelected}
             onClick={() => onChange(option.value)}
             key={option.value}

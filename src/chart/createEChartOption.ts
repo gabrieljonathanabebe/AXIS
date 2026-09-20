@@ -2,6 +2,7 @@ import type { EChartsOption } from 'echarts'
 
 import type { ChartSpec, ChartType, Dataset } from '../types/chart'
 import type { ChartTheme } from './chartTheme'
+import { createAxisLabelFormatter } from './createAxisLabelFormatter'
 
 type ChartValue = string | number | null | undefined
 
@@ -175,16 +176,27 @@ export function createEChartOption(
       },
     },
     xAxis: {
+      show: appearance.xAxis.enabled,
       type: chartType === 'scatter' ? 'value' : 'category',
       data: chartType === 'scatter' ? undefined : categories,
-      name: xField?.name ?? '',
+      name: appearance.xAxis.title.trim() || xField?.name || '',
       nameLocation: 'middle',
       nameGap: 32,
+      min: appearance.xAxis.min ?? undefined,
+      max: appearance.xAxis.max ?? undefined,
       axisLabel: {
+        show: appearance.xAxis.enabled,
         color: theme.textMuted,
+        formatter: createAxisLabelFormatter(appearance.xAxis),
+      },
+      axisLine: {
+        show: appearance.xAxis.enabled,
+      },
+      axisTick: {
+        show: appearance.xAxis.enabled,
       },
       splitLine: {
-        show: appearance.grid.enabled,
+        show: appearance.xAxis.enabled && appearance.grid.enabled,
         lineStyle: {
           color: appearance.grid.color,
           opacity: appearance.grid.opacity,
@@ -194,15 +206,26 @@ export function createEChartOption(
       },
     },
     yAxis: {
+      show: appearance.yAxis.enabled,
       type: 'value',
-      name: yField?.name ?? '',
+      name: appearance.yAxis.title.trim() || yField?.name || '',
       nameLocation: 'middle',
       nameGap: 48,
+      min: appearance.yAxis.min ?? undefined,
+      max: appearance.yAxis.max ?? undefined,
       axisLabel: {
+        show: appearance.yAxis.enabled,
         color: theme.textMuted,
+        formatter: createAxisLabelFormatter(appearance.yAxis),
+      },
+      axisLine: {
+        show: appearance.yAxis.enabled,
+      },
+      axisTick: {
+        show: appearance.yAxis.enabled,
       },
       splitLine: {
-        show: appearance.grid.enabled,
+        show: appearance.yAxis.enabled && appearance.grid.enabled,
         lineStyle: {
           color: appearance.grid.color,
           opacity: appearance.grid.opacity,
@@ -215,6 +238,11 @@ export function createEChartOption(
       {
         type: chartType,
         data,
+        label: {
+          show: appearance.labels.enabled,
+          position: appearance.labels.position,
+          color: theme.text,
+        },
         ...seriesAppearance,
       },
     ],

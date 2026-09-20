@@ -27,7 +27,7 @@ export function createDefaultChartSpec(
       color: '#1e90ff',
       grid: {
         enabled: true,
-        color: '#ffffff',
+        color: '#334155',
         opacity: 0.08,
         lineStyle: 'solid',
       },
@@ -42,6 +42,7 @@ export function createDefaultChartSpec(
         min: null,
         max: null,
         format: 'auto',
+        currency: 'EUR',
       },
       yAxis: {
         enabled: true,
@@ -49,6 +50,11 @@ export function createDefaultChartSpec(
         min: null,
         max: null,
         format: 'auto',
+        currency: 'EUR',
+      },
+      labels: {
+        enabled: false,
+        position: type === 'scatter' ? 'right' : 'top',
       },
       scatter: {
         pointSize: 10,

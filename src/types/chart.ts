@@ -64,6 +64,7 @@ export type ChartAppearanceSpec = {
   grid: GridAppearance
   xAxis: AxisAppearance
   yAxis: AxisAppearance
+  labels: LabelsAppearance
   scatter: ScatterAppearance
   line: LineAppearance
   bar: BarAppearance
@@ -121,6 +122,8 @@ export type LineStyle = 'solid' | 'dashed' | 'dotted'
 
 export type AxisFormat = 'auto' | 'number' | 'percent' | 'currency' | 'date'
 
+export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'JPY'
+
 export type GridAppearance = {
   enabled: boolean
   color: string
@@ -134,4 +137,12 @@ export type AxisAppearance = {
   min: number | null
   max: number | null
   format: AxisFormat
+  currency: CurrencyCode
+}
+
+export type LabelPosition = 'top' | 'right' | 'inside'
+
+export type LabelsAppearance = {
+  enabled: boolean
+  position: LabelPosition
 }
