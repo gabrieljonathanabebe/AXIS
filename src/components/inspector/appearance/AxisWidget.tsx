@@ -1,7 +1,6 @@
-import { Eye, EyeOff, MoveHorizontal, MoveVertical } from 'lucide-react'
+import { MoveHorizontal, MoveVertical } from 'lucide-react'
 
 import ControlRow from '../../ui/ControlRow'
-import IconButton from '../../ui/IconButton'
 import SelectControl from '../../ui/SelectControl'
 import TextInput from '../../ui/TextInput'
 import InspectorWidget from '../InspectorWidget'
@@ -38,68 +37,57 @@ const currencyOptions = [
 function AxisWidget({ orientation, value, onChange }: AxisWidgetProps) {
   const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
   const AxisIcon = orientation === 'x' ? MoveHorizontal : MoveVertical
-  const VisibilityIcon = value.enabled ? Eye : EyeOff
   return (
-    <InspectorWidget title={title} icon={<AxisIcon size={16} />}>
-      <ControlRow label="Visible">
-        <IconButton
-          size="sm"
-          label={value.enabled ? `Hide ${title}` : `Show ${title}`}
-          isActive={value.enabled}
-          onClick={() => {
+    <InspectorWidget
+      title={title}
+      icon={<AxisIcon size={16} />}
+      visibility={{
+        visible: value.enabled,
+        onChange: (enabled) => {
+          onChange({ ...value, enabled })
+        },
+      }}
+    >
+      <ControlRow label="Title">
+        <TextInput
+          label={`${title} title`}
+          value={value.title}
+          placeholder="Automatic"
+          onValueChange={(axisTitle) => {
             onChange({
               ...value,
-              enabled: !value.enabled,
+              title: axisTitle,
             })
           }}
-        >
-          <VisibilityIcon size={15} />
-        </IconButton>
+        />
       </ControlRow>
-      {value.enabled ? (
-        <div className="inspector-widget-subproperties">
-          <ControlRow label="Title">
-            <TextInput
-              label={`${title} title`}
-              value={value.title}
-              placeholder="Automatic"
-              onValueChange={(axisTitle) => {
-                onChange({
-                  ...value,
-                  title: axisTitle,
-                })
-              }}
-            />
-          </ControlRow>
-          <ControlRow label="Format">
-            <SelectControl
-              label={`${title} format`}
-              options={formatOptions}
-              value={value.format}
-              onChange={(format) => {
-                onChange({
-                  ...value,
-                  format,
-                })
-              }}
-            />
-          </ControlRow>
-          {value.format === 'currency' ? (
-            <ControlRow label="Currency">
-              <SelectControl
-                label={`${title} currency`}
-                options={currencyOptions}
-                value={value.currency}
-                onChange={(currency) => {
-                  onChange({
-                    ...value,
-                    currency,
-                  })
-                }}
-              />
-            </ControlRow>
-          ) : null}
-        </div>
+      <ControlRow label="Format">
+        <SelectControl
+          label={`${title} format`}
+          options={formatOptions}
+          value={value.format}
+          onChange={(format) => {
+            onChange({
+              ...value,
+              format,
+            })
+          }}
+        />
+      </ControlRow>
+      {value.format === 'currency' ? (
+        <ControlRow label="Currency">
+          <SelectControl
+            label={`${title} currency`}
+            options={currencyOptions}
+            value={value.currency}
+            onChange={(currency) => {
+              onChange({
+                ...value,
+                currency,
+              })
+            }}
+          />
+        </ControlRow>
       ) : null}
     </InspectorWidget>
   )

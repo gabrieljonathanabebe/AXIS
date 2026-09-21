@@ -38,3 +38,29 @@ class DatasetRows(BaseModel):
     offset: int
     limit: int
     rows: list[dict[str, Any]]
+
+
+class GroupAggregation(StrEnum):
+    SUM = "sum"
+    MEAN = "mean"
+    MEDIAN = "median"
+    MIN = "min"
+    MAX = "max"
+    COUNT = "count"
+
+
+class ChartQueryRequest(BaseModel):
+    x: str
+    y: str
+    series: str | None = None
+    aggregation: GroupAggregation
+
+
+class ChartQueryPoint(BaseModel):
+    x: str | None
+    series: str | None
+    value: float | None
+
+
+class ChartQueryResult(BaseModel):
+    points: list[ChartQueryPoint]

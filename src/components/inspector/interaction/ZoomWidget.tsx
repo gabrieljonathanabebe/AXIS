@@ -6,7 +6,7 @@ import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInteractionSpec } from '../../../types/chart'
 
-type ZoomMode = 'off' | 'inside' | 'slider' | 'both'
+type ZoomMode = 'inside' | 'slider' | 'both'
 
 type ZoomWidgetProps = {
   value: ChartInteractionSpec['zoom']
@@ -14,25 +14,35 @@ type ZoomWidgetProps = {
 }
 
 const zoomModeOptions = [
-  { label: 'Off', value: 'off' },
   { label: 'Inside', value: 'inside' },
   { label: 'Slider', value: 'slider' },
   { label: 'Both', value: 'both' },
 ] satisfies { label: string; value: ZoomMode }[]
 
 function getZoomMode(value: ChartInteractionSpec['zoom']): ZoomMode {
-  if (!value.enabled) {
-    return 'off'
-  }
   if (value.inside && value.slider) {
     return 'both'
   }
-  return value.inside ? 'inside' : 'slider'
+  return value.slider ? 'slider' : 'inside'
 }
 
 function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
   return (
-    <InspectorWidget title="Zoom" icon={<ZoomIn size={16} />}>
+    <InspectorWidget
+      title="Zoom"
+      icon={<ZoomIn size={16} />}
+      visibility={{
+        visible: value.enabled,
+        onChange: (enabled) => {
+          onChange({
+            ...value,
+            enabled,
+            inside:
+              enabled && !value.inside && !value.slider ? true : value.inside,
+          })
+        },
+      }}
+    >
       <ControlRow label="Mode">
         <SelectControl
           label="Zoom mode"
@@ -40,7 +50,7 @@ function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
           value={getZoomMode(value)}
           onChange={(mode) => {
             onChange({
-              enabled: mode !== 'off',
+              ...value,
               inside: mode === 'inside' || mode === 'both',
               slider: mode === 'slider' || mode === 'both',
             })

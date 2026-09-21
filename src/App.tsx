@@ -54,6 +54,7 @@ function App() {
         <CanvasPanel
           chart={selectedChart}
           dataset={dataset}
+          datasetId={activeDatasetSummary?.id ?? null}
           isDraggingField={activeDrag?.kind === 'field'}
           onResetChart={resetChart}
         />

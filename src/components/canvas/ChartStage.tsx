@@ -5,6 +5,7 @@ import EChartCanvas from './EChartCanvas'
 type ChartStageProps = {
   chart: ChartInstance
   dataset: Dataset
+  datasetId: string | null
   isDraggingField: boolean
 }
 
@@ -32,7 +33,12 @@ function AxisDropZone({ axis, label }: AxisDropZoneProps) {
   )
 }
 
-function ChartStage({ chart, dataset, isDraggingField }: ChartStageProps) {
+function ChartStage({
+  chart,
+  dataset,
+  datasetId,
+  isDraggingField,
+}: ChartStageProps) {
   return (
     <div
       className={`chart-stage ${isDraggingField ? 'is-dragging-field' : ''}`}
@@ -41,7 +47,7 @@ function ChartStage({ chart, dataset, isDraggingField }: ChartStageProps) {
         <AxisDropZone axis="x" label="X" />
         <AxisDropZone axis="y" label="Y" />
       </div>
-      <EChartCanvas chart={chart} dataset={dataset} />
+      <EChartCanvas chart={chart} dataset={dataset} datasetId={datasetId} />
     </div>
   )
 }

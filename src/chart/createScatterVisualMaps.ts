@@ -1,6 +1,5 @@
 import type {
   ContinuousVisualMapComponentOption,
-  PiecewiseVisualMapComponentOption,
   VisualMapComponentOption,
 } from 'echarts'
 
@@ -102,52 +101,16 @@ function createContinuousColorVisualMap(
   }
 }
 
-function createCategoricalColorVisualMap(
-  rows: Dataset['rows'],
-  fieldName: string,
-  appearance: ChartAppearanceSpec,
-): PiecewiseVisualMapComponentOption | null {
-  const categories = Array.from(
-    new Set(
-      rows.flatMap((row) => {
-        const value = row[fieldName]
-
-        return value === null || value === undefined ? [] : [String(value)]
-      }),
-    ),
-  )
-
-  if (categories.length === 0) {
-    return null
-  }
-
-  return {
-    show: false,
-    type: 'piecewise',
-    dimension: 3,
-    categories,
-    inRange: {
-      color: appearance.colorScale.categorical.palette,
-    },
-  }
-}
-
 function createColorVisualMap(
   rows: Dataset['rows'],
   encoding: ChartEncoding,
   appearance: ChartAppearanceSpec,
 ): VisualMapComponentOption | null {
   const colorField = encoding.color
-
-  if (!colorField) {
+  if (colorField?.semantic_type !== 'numeric') {
     return null
   }
-
-  if (colorField.semantic_type === 'numeric') {
-    return createContinuousColorVisualMap(rows, colorField.name, appearance)
-  }
-
-  return createCategoricalColorVisualMap(rows, colorField.name, appearance)
+  return createContinuousColorVisualMap(rows, colorField.name, appearance)
 }
 
 export function createScatterVisualMaps({

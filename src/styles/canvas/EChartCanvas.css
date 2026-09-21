@@ -2,3 +2,12 @@
   position: absolute;
   inset: var(--chart-canvas-inset);
 }
+
+.chart-query-error {
+  position: absolute;
+  inset: var(--chart-canvas-inset);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-overlay);
+}

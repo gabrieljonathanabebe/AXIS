@@ -10,7 +10,7 @@ import Toggle from '../../ui/Toggle'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInspectorProps } from '../types'
-import type { ScatterSymbol } from '../../../types/chart'
+import type { LineStyle, ScatterSymbol } from '../../../types/chart'
 
 type MarkSeriesWidgetProps = Pick<
   ChartInspectorProps,
@@ -23,6 +23,12 @@ const scatterSymbolOptions = [
   { label: 'Triangle', value: 'triangle' },
   { label: 'Diamond', value: 'diamond' },
 ] satisfies { label: string; value: ScatterSymbol }[]
+
+const lineStyleOptions = [
+  { label: 'Solid', value: 'solid' },
+  { label: 'Dashed', value: 'dashed' },
+  { label: 'Dotted', value: 'dotted' },
+] satisfies { label: string; value: LineStyle }[]
 
 const scatterSymbolIcons = {
   circle: Circle,
@@ -39,15 +45,17 @@ function MarkSeriesWidget({
   // CONSTANTS
   const { appearance } = chart.spec
   const hasSizeEncoding = Boolean(chart.spec.data.encoding.size)
+  const hasLineSeries =
+    chart.type === 'line' && Boolean(chart.spec.data.encoding.series)
   const colorField = chart.spec.data.encoding.color
   const hasColorEncoding = Boolean(colorField)
   const hasContinuousColorEncoding = colorField?.semantic_type === 'numeric'
   const hasCategoricalColorEncoding =
-    colorField?.semantic_type === 'categorical'
+    colorField?.semantic_type === 'categorical' || hasLineSeries
   // RETURN
   return (
     <InspectorWidget title="Mark / Series" icon={<Paintbrush size={16} />}>
-      {!hasColorEncoding ? (
+      {!hasColorEncoding && !hasLineSeries ? (
         <ControlRow label="Color">
           <ColorControl
             label="Chart color"
@@ -169,6 +177,22 @@ function MarkSeriesWidget({
               }}
             />
           </ControlRow>
+          <ControlRow label="Line style">
+            <SegmentedControl
+              label="Line style"
+              options={lineStyleOptions}
+              value={appearance.line.lineStyle}
+              renderOption={(option) => (
+                <span
+                  className="line-style-preview"
+                  style={{ borderTopStyle: option.value }}
+                />
+              )}
+              onValueChange={(lineStyle) => {
+                onSetChartAppearance('line', 'lineStyle', lineStyle)
+              }}
+            />
+          </ControlRow>
           <ControlRow label="Smooth">
             <Toggle
               label="Smooth line"
@@ -187,6 +211,40 @@ function MarkSeriesWidget({
               }}
             />
           </ControlRow>
+          <ControlRow label="Area fill">
+            <Toggle
+              label="Fill area below line"
+              checked={appearance.line.areaFill}
+              onCheckedChange={(areaFill) => {
+                onSetChartAppearance('line', 'areaFill', areaFill)
+              }}
+            />
+          </ControlRow>
+          {appearance.line.areaFill ? (
+            <div className="inspector-widget-subproperties">
+              <ControlRow label="Color">
+                <ColorControl
+                  label="Area fill color"
+                  value={appearance.line.areaColor}
+                  onChange={(areaColor) => {
+                    onSetChartAppearance('line', 'areaColor', areaColor)
+                  }}
+                />
+              </ControlRow>
+              <ControlRow label="Opacity">
+                <Slider
+                  label="Area fill opacity"
+                  min={0.05}
+                  max={1}
+                  step={0.05}
+                  value={appearance.line.areaOpacity}
+                  onValueChange={(areaOpacity) => {
+                    onSetChartAppearance('line', 'areaOpacity', areaOpacity)
+                  }}
+                />
+              </ControlRow>
+            </div>
+          ) : null}
         </>
       ) : null}
       {chart.type === 'bar' ? (

@@ -8,6 +8,7 @@ import type { ChartInstance, Dataset } from '../../types/chart'
 type CanvasPanelProps = {
   chart: ChartInstance | null
   dataset: Dataset
+  datasetId: string | null
   isDraggingField: boolean
   onResetChart: () => void
 }
@@ -15,6 +16,7 @@ type CanvasPanelProps = {
 function CanvasPanel({
   chart,
   dataset,
+  datasetId,
   isDraggingField,
   onResetChart,
 }: CanvasPanelProps) {
@@ -35,6 +37,7 @@ function CanvasPanel({
         <ChartStage
           chart={chart}
           dataset={dataset}
+          datasetId={datasetId}
           isDraggingField={isDraggingField}
         />
       ) : (

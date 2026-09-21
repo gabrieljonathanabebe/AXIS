@@ -6,6 +6,7 @@ import type {
   Dataset,
   LabelFontWeight,
 } from '../types/chart'
+import type { ChartQueryResult } from '../api/chartQuery'
 import type { ChartTheme } from './chartTheme'
 import { createAxisLabelFormatter } from './createAxisLabelFormatter'
 import { createScatterVisualMaps } from './createScatterVisualMaps'
@@ -17,27 +18,6 @@ function getValue(row: Record<string, ChartValue>, fieldName?: string) {
     return null
   }
   return row[fieldName]
-}
-
-function toNumber(value: ChartValue) {
-  return typeof value === 'number' ? value : 0
-}
-
-function aggregateSumByXValue(
-  rows: Dataset['rows'],
-  xFieldName: string,
-  yFieldName: string,
-) {
-  const groupedValues = new Map<string, number>()
-  rows.forEach((row) => {
-    const xValue = String(getValue(row, xFieldName) ?? '')
-    const value = toNumber(getValue(row, yFieldName))
-    groupedValues.set(xValue, (groupedValues.get(xValue) ?? 0) + value)
-  })
-  return {
-    categories: Array.from(groupedValues.keys()),
-    data: Array.from(groupedValues.values()),
-  }
 }
 
 function getDefaultChartTitle(
@@ -70,6 +50,7 @@ export function createEChartOption(
   spec: ChartSpec,
   dataset: Dataset,
   theme: ChartTheme,
+  queryResult: ChartQueryResult | null,
 ): EChartsOption {
   // CONSTANTS
   const { data: dataSpec, appearance, interaction } = spec
@@ -81,17 +62,11 @@ export function createEChartOption(
     yField?.name,
   )
 
-  const shouldAggregate =
-    chartType !== 'scatter' &&
-    dataSpec.aggregation === 'sum' &&
-    xField?.name &&
-    yField?.name
-  const aggregated = shouldAggregate
-    ? aggregateSumByXValue(dataset.rows, xField.name, yField.name)
-    : null
+  const points = queryResult?.points ?? []
   const categories =
-    aggregated?.categories ??
-    dataset.rows.map((row) => String(getValue(row, xField?.name) ?? ''))
+    chartType === 'scatter'
+      ? []
+      : Array.from(new Set(points.map((point) => point.x ?? '')))
 
   const sizeFieldName = dataSpec.encoding.size?.name
   const colorFieldName = dataSpec.encoding.color?.name
@@ -101,15 +76,18 @@ export function createEChartOption(
     getValue(row, sizeFieldName),
     getValue(row, colorFieldName),
   ])
-
-  const data =
-    aggregated?.data ??
-    (chartType === 'scatter'
-      ? scatterData
-      : dataset.rows.map((row) => {
-          return getValue(row, yField?.name)
-        }))
-
+  const scatterColorField = dataSpec.encoding.color
+  const scatterCategories =
+    chartType === 'scatter' &&
+    scatterColorField?.semantic_type === 'categorical'
+      ? Array.from(
+          new Set(
+            dataset.rows.map((row) =>
+              String(row[scatterColorField.name] ?? '(empty)'),
+            ),
+          ),
+        )
+      : []
   const scatterVisualMaps =
     chartType === 'scatter'
       ? createScatterVisualMaps({
@@ -118,6 +96,9 @@ export function createEChartOption(
           appearance,
         })
       : []
+
+  const hasLineSeries =
+    chartType === 'line' && Boolean(dataSpec.encoding.series)
 
   const seriesAppearance =
     chartType === 'scatter'
@@ -138,11 +119,18 @@ export function createEChartOption(
             smooth: appearance.line.smooth,
             showSymbol: appearance.line.showSymbol,
             lineStyle: {
-              color: appearance.color,
+              color: hasLineSeries ? undefined : appearance.color,
               width: appearance.line.lineWidth,
+              type: appearance.line.lineStyle,
             },
+            areaStyle: appearance.line.areaFill
+              ? {
+                  color: appearance.line.areaColor,
+                  opacity: appearance.line.areaOpacity,
+                }
+              : undefined,
             itemStyle: {
-              color: appearance.color,
+              color: hasLineSeries ? undefined : appearance.color,
             },
           }
         : {
@@ -152,9 +140,102 @@ export function createEChartOption(
               borderRadius: appearance.bar.borderRadius,
             },
           }
+  const seriesNames = dataSpec.encoding.series
+    ? Array.from(new Set(points.map((point) => point.series)))
+    : [null]
+
+  const chartSeries = seriesNames.map((name) => {
+    const values = new Map(
+      points
+        .filter((point) => point.series === name)
+        .map((point) => [point.x ?? '', point.value]),
+    )
+    return {
+      type: chartType,
+      name: name ?? undefined,
+      data: categories.map((category) => values.get(category) ?? null),
+      label: {
+        show: appearance.labels.enabled,
+        position: appearance.labels.position,
+        color: appearance.labels.color,
+        fontSize: appearance.labels.fontSize,
+        fontWeight: labelFontWeights[appearance.labels.fontWeight],
+      },
+      ...seriesAppearance,
+    }
+  })
+
+  const scatterCategorySeries = scatterCategories.map((name, index) => ({
+    type: 'scatter' as const,
+    name,
+    data: scatterData.filter((_, rowIndex) => {
+      const value = dataset.rows[rowIndex][scatterColorField!.name]
+      return String(value ?? '(empty)') === name
+    }),
+    label: {
+      show: appearance.labels.enabled,
+      position: appearance.labels.position,
+      color: appearance.labels.color,
+      fontSize: appearance.labels.fontSize,
+      fontWeight: labelFontWeights[appearance.labels.fontWeight],
+    },
+    ...seriesAppearance,
+    itemStyle: {
+      color:
+        appearance.colorScale.categorical.palette[
+          index % appearance.colorScale.categorical.palette.length
+        ],
+      opacity: appearance.scatter.opacity,
+    },
+  }))
+
+  const legendPosition = appearance.legend.position
+  const legendAlignment = appearance.legend.alignment
+  const legendVertical = legendPosition === 'left' || legendPosition === 'right'
 
   return {
-    color: [appearance.color],
+    color: hasLineSeries
+      ? appearance.colorScale.categorical.palette
+      : [appearance.color],
+    legend: {
+      show:
+        appearance.legend.visible &&
+        (Boolean(dataSpec.encoding.series) || scatterCategories.length > 0),
+      textStyle: {
+        color: appearance.legend.textColor,
+        fontSize: appearance.legend.fontSize,
+      },
+      itemGap: appearance.legend.gap,
+      orient: legendVertical ? 'vertical' : 'horizontal',
+      top:
+        legendPosition === 'top'
+          ? 8
+          : legendVertical && legendAlignment === 'start'
+            ? 56
+            : legendVertical && legendAlignment === 'center'
+              ? 'middle'
+              : undefined,
+      bottom:
+        legendPosition === 'bottom'
+          ? 8
+          : legendVertical && legendAlignment === 'end'
+            ? 56
+            : undefined,
+      left:
+        legendPosition === 'left'
+          ? 8
+          : !legendVertical && legendAlignment === 'start'
+            ? 72
+            : !legendVertical && legendAlignment === 'center'
+              ? 'center'
+              : undefined,
+      right:
+        legendPosition === 'right'
+          ? 8
+          : !legendVertical && legendAlignment === 'end'
+            ? 56
+            : undefined,
+    },
     backgroundColor: 'transparent',
     animation: interaction.animation.enabled,
     animationDuration: interaction.animation.duration,
@@ -253,7 +334,7 @@ export function createEChartOption(
       max: appearance.yAxis.max ?? undefined,
       axisLabel: {
         show: appearance.yAxis.enabled,
-        color: theme.textMuted,
+        color: theme.text,
         formatter: createAxisLabelFormatter(appearance.yAxis),
       },
       axisLine: {
@@ -272,19 +353,11 @@ export function createEChartOption(
         },
       },
     },
-    series: [
-      {
-        type: chartType,
-        data,
-        label: {
-          show: appearance.labels.enabled,
-          position: appearance.labels.position,
-          color: appearance.labels.color,
-          fontSize: appearance.labels.fontSize,
-          fontWeight: labelFontWeights[appearance.labels.fontWeight],
-        },
-        ...seriesAppearance,
-      },
-    ],
+    series:
+      chartType === 'scatter'
+        ? scatterCategorySeries.length > 0
+          ? scatterCategorySeries
+          : [{ ...chartSeries[0], data: scatterData }]
+        : chartSeries,
   }
 }

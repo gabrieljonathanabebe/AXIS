@@ -3,13 +3,16 @@ import type { ECharts } from 'echarts'
 import { useEffect, useRef } from 'react'
 
 import { createEChartOption } from '../../chart/createEChartOption'
-import type { ChartInstance, Dataset } from '../../types/chart'
+import { useChartQuery } from '../../hooks/useChartQuery'
 
+import type { ChartInstance, Dataset } from '../../types/chart'
+import type { ChartQueryRequest } from '../../api/chartQuery'
 import type { ChartTheme } from '../../chart/chartTheme'
 
 type EChartCanvasProps = {
   chart: ChartInstance
   dataset: Dataset
+  datasetId: string | null
 }
 
 function readToken(styles: CSSStyleDeclaration, name: string): string {
@@ -48,9 +51,24 @@ function readChartTheme(): ChartTheme {
   }
 }
 
-function EChartCanvas({ chart, dataset }: EChartCanvasProps) {
+function EChartCanvas({ chart, dataset, datasetId }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
+  const { encoding, aggregation } = chart.spec.data
+  const query: ChartQueryRequest | null =
+    chart.type !== 'scatter' &&
+    aggregation !== 'none' &&
+    encoding.x &&
+    encoding.y
+      ? {
+          x: encoding.x.name,
+          y: encoding.y.name,
+          series: encoding.series?.name ?? null,
+          aggregation,
+        }
+      : null
+
+  const { result, isLoading, error } = useChartQuery(datasetId, query)
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -67,12 +85,38 @@ function EChartCanvas({ chart, dataset }: EChartCanvasProps) {
 
   useEffect(() => {
     chartRef.current?.setOption(
-      createEChartOption(chart.type, chart.spec, dataset, readChartTheme()),
+      createEChartOption(
+        chart.type,
+        chart.spec,
+        dataset,
+        readChartTheme(),
+        result,
+      ),
       true,
     )
-  }, [chart, dataset])
+  }, [chart, dataset, result])
 
-  return <div className="echart-canvas" ref={containerRef} />
+  useEffect(() => {
+    if (isLoading) {
+      chartRef.current?.showLoading('default', {
+        text: 'Loading chart...',
+        maskColor: 'rgba(255, 255, 255, 0)',
+      })
+    } else {
+      chartRef.current?.hideLoading()
+    }
+  }, [isLoading])
+
+  return (
+    <>
+      <div className="echart-canvas" ref={containerRef} />
+      {error && (
+        <div className="chart-query-error" role="alert">
+          {error}
+        </div>
+      )}
+    </>
+  )
 }
 
 export default EChartCanvas

@@ -2,7 +2,6 @@ import { Sparkles } from 'lucide-react'
 
 import ControlRow from '../../ui/ControlRow'
 import Slider from '../../ui/Slider'
-import Toggle from '../../ui/Toggle'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInteractionSpec } from '../../../types/chart'
@@ -14,38 +13,31 @@ type AnimationWidgetProps = {
 
 function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   return (
-    <InspectorWidget title="Animation" icon={<Sparkles size={16} />}>
-      <ControlRow label="Enabled">
-        <Toggle
-          label="Enable animation"
-          checked={value.enabled}
-          onCheckedChange={(enabled) => {
+    <InspectorWidget
+      title="Animation"
+      icon={<Sparkles size={16} />}
+      visibility={{
+        visible: value.enabled,
+        onChange: (enabled) => {
+          onChange({ ...value, enabled })
+        },
+      }}
+    >
+      <ControlRow label="Duration">
+        <Slider
+          label="Animation duration"
+          min={0}
+          max={2000}
+          step={50}
+          value={value.duration}
+          onValueChange={(duration) => {
             onChange({
               ...value,
-              enabled,
+              duration,
             })
           }}
         />
       </ControlRow>
-      {value.enabled ? (
-        <div className="inspector-widget-subproperties">
-          <ControlRow label="Duration">
-            <Slider
-              label="Animation duration"
-              min={0}
-              max={2000}
-              step={50}
-              value={value.duration}
-              onValueChange={(duration) => {
-                onChange({
-                  ...value,
-                  duration,
-                })
-              }}
-            />
-          </ControlRow>
-        </div>
-      ) : null}
     </InspectorWidget>
   )
 }

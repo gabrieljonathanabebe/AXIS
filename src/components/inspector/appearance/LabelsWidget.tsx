@@ -5,7 +5,6 @@ import ControlRow from '../../ui/ControlRow'
 import ScrubbableNumber from '../../ui/ScrubbableNumber'
 import SegmentedControl from '../../ui/SegmentedControl'
 import SelectControl from '../../ui/SelectControl'
-import Toggle from '../../ui/Toggle'
 import InspectorWidget from '../InspectorWidget'
 
 import type {
@@ -39,86 +38,79 @@ const positionOptions = [
 
 function LabelsWidget({ value, onChange }: LabelsWidgetProps) {
   return (
-    <InspectorWidget title="Labels" icon={<Tags size={16} />}>
-      <ControlRow label="Enabled">
-        <Toggle
-          label="Show data labels"
-          checked={value.enabled}
-          onCheckedChange={(enabled) => {
+    <InspectorWidget
+      title="Labels"
+      icon={<Tags size={16} />}
+      visibility={{
+        visible: value.enabled,
+        onChange: (enabled) => {
+          onChange({ ...value, enabled })
+        },
+      }}
+    >
+      <ControlRow label="Color">
+        <ColorControl
+          label="Label color"
+          value={value.color}
+          onChange={(color) => {
             onChange({
               ...value,
-              enabled,
+              color,
             })
           }}
         />
       </ControlRow>
-      {value.enabled ? (
-        <div className="inspector-widget-subproperties">
-          <ControlRow label="Color">
-            <ColorControl
-              label="Label color"
-              value={value.color}
-              onChange={(color) => {
-                onChange({
-                  ...value,
-                  color,
-                })
+      <ControlRow label="Font size">
+        <ScrubbableNumber
+          label="Label font size"
+          min={9}
+          max={28}
+          step={1}
+          value={value.fontSize}
+          onValueChange={(fontSize) => {
+            onChange({
+              ...value,
+              fontSize,
+            })
+          }}
+        />
+      </ControlRow>
+      <ControlRow label="Weight">
+        <SegmentedControl
+          label="Label font weight"
+          options={fontWeightOptions}
+          value={value.fontWeight}
+          renderOption={(option) => (
+            <span
+              aria-hidden="true"
+              style={{
+                fontWeight: fontWeightValues[option.value],
               }}
-            />
-          </ControlRow>
-          <ControlRow label="Font size">
-            <ScrubbableNumber
-              label="Label font size"
-              min={9}
-              max={28}
-              step={1}
-              value={value.fontSize}
-              onValueChange={(fontSize) => {
-                onChange({
-                  ...value,
-                  fontSize,
-                })
-              }}
-            />
-          </ControlRow>
-          <ControlRow label="Weight">
-            <SegmentedControl
-              label="Label font weight"
-              options={fontWeightOptions}
-              value={value.fontWeight}
-              renderOption={(option) => (
-                <span
-                  aria-hidden="true"
-                  style={{
-                    fontWeight: fontWeightValues[option.value],
-                  }}
-                >
-                  A
-                </span>
-              )}
-              onValueChange={(fontWeight) => {
-                onChange({
-                  ...value,
-                  fontWeight,
-                })
-              }}
-            />
-          </ControlRow>
-          <ControlRow label="Position">
-            <SelectControl
-              label="Label position"
-              options={positionOptions}
-              value={value.position}
-              onChange={(position) => {
-                onChange({
-                  ...value,
-                  position,
-                })
-              }}
-            />
-          </ControlRow>
-        </div>
-      ) : null}
+            >
+              A
+            </span>
+          )}
+          onValueChange={(fontWeight) => {
+            onChange({
+              ...value,
+              fontWeight,
+            })
+          }}
+        />
+      </ControlRow>
+      <ControlRow label="Position">
+        <SelectControl
+          label="Label position"
+          options={positionOptions}
+          value={value.position}
+          onChange={(position) => {
+            onChange({
+              ...value,
+              position,
+            })
+          }}
+        />
+      </ControlRow>
     </InspectorWidget>
   )
 }

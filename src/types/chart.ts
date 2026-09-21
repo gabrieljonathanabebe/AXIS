@@ -31,12 +31,6 @@ export type PhysicalType =
 
 export type SemanticType = 'numeric' | 'categorical' | 'temporal' | 'identifier'
 
-export type LineAppearance = {
-  lineWidth: number
-  smooth: boolean
-  showSymbol: boolean
-}
-
 export type BarAppearance = {
   borderRadius: number
   barWidth: number
@@ -61,6 +55,7 @@ export type ChartAppearanceSpec = {
   xAxis: AxisAppearance
   yAxis: AxisAppearance
   labels: LabelsAppearance
+  legend: LegendAppearance
   scatter: ScatterAppearance
   line: LineAppearance
   bar: BarAppearance
@@ -147,6 +142,23 @@ export type LabelsAppearance = {
   fontSize: number
   fontWeight: LabelFontWeight
 }
+// ===== LEGEND ================================================================
+export type LegendAppearance = {
+  visible: boolean
+  position: 'top' | 'bottom' | 'left' | 'right'
+  alignment: 'start' | 'center' | 'end'
+  symbol: 'auto' | 'circle' | 'rect' | 'line'
+  textColor: string
+  fontSize: number
+  gap: number
+  layout: 'auto' | 'plain' | 'scroll'
+  itemWidth: number
+  itemHeight: 14
+  padding: number
+  inactiveColor: string
+}
+
+// ===== SCATTER ===============================================================
 
 export type ScatterSymbol = 'circle' | 'rect' | 'triangle' | 'diamond'
 
@@ -170,4 +182,15 @@ export type ColorScaleAppearance = {
     startColor: string
     endColor: string
   }
+}
+
+// ===== LINE ==================================================================
+export type LineAppearance = {
+  lineWidth: number
+  lineStyle: LineStyle
+  smooth: boolean
+  showSymbol: boolean
+  areaFill: boolean
+  areaColor: string
+  areaOpacity: number
 }

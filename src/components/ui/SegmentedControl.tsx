@@ -7,19 +7,25 @@ type SegmentedControlProps<TValue extends string> = {
   label: string
   options: OptionItem<TValue>[]
   value: TValue
+  className?: string
   renderOption?: (option: OptionItem<TValue>) => ReactNode
   onValueChange: (value: TValue) => void
 }
 
 function SegmentedControl<TValue extends string>({
   label,
+  className = '',
   options,
   value,
   renderOption,
   onValueChange,
 }: SegmentedControlProps<TValue>) {
   return (
-    <div className="segmented-control" role="group" aria-label={label}>
+    <div
+      className={`segmented-control ${className}`}
+      role="group"
+      aria-label={label}
+    >
       {options.map((option) => {
         const isActive = option.value === value
 

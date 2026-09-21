@@ -62,6 +62,20 @@ export function createDefaultChartSpec(
         format: 'auto',
         currency: 'EUR',
       },
+      legend: {
+        visible: true,
+        position: 'bottom',
+        alignment: 'center',
+        symbol: 'auto',
+        textColor: '#eef4ff',
+        fontSize: 12,
+        gap: 16,
+        layout: 'auto',
+        itemWidth: 24,
+        itemHeight: 14,
+        padding: 8,
+        inactiveColor: '#8b95a7',
+      },
       labels: {
         enabled: false,
         position: type === 'scatter' ? 'right' : 'top',
@@ -80,8 +94,12 @@ export function createDefaultChartSpec(
       },
       line: {
         lineWidth: 3,
+        lineStyle: 'solid',
         smooth: false,
         showSymbol: true,
+        areaFill: false,
+        areaColor: '#1E90FF',
+        areaOpacity: 0.25,
       },
       bar: {
         borderRadius: 4,

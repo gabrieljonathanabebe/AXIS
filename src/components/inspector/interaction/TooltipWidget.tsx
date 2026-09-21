@@ -2,7 +2,6 @@ import { MessageSquareText } from 'lucide-react'
 
 import ControlRow from '../../ui/ControlRow'
 import SegmentedControl from '../../ui/SegmentedControl'
-import Toggle from '../../ui/Toggle'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInteractionSpec, TooltipTrigger } from '../../../types/chart'
@@ -19,36 +18,29 @@ const triggerOptions = [
 
 function TooltipWidget({ value, onChange }: TooltipWidgetProps) {
   return (
-    <InspectorWidget title="Tooltip" icon={<MessageSquareText size={16} />}>
-      <ControlRow label="Enabled">
-        <Toggle
-          label="Show tooltip"
-          checked={value.enabled}
-          onCheckedChange={(enabled) => {
+    <InspectorWidget
+      title="Tooltip"
+      icon={<MessageSquareText size={16} />}
+      visibility={{
+        visible: value.enabled,
+        onChange: (enabled) => {
+          onChange({ ...value, enabled })
+        },
+      }}
+    >
+      <ControlRow label="Trigger">
+        <SegmentedControl
+          label="Tooltip trigger"
+          options={triggerOptions}
+          value={value.trigger}
+          onValueChange={(trigger) => {
             onChange({
               ...value,
-              enabled,
+              trigger,
             })
           }}
         />
       </ControlRow>
-      {value.enabled ? (
-        <div className="inspector-widget-subproperties">
-          <ControlRow label="Trigger">
-            <SegmentedControl
-              label="Tooltip trigger"
-              options={triggerOptions}
-              value={value.trigger}
-              onValueChange={(trigger) => {
-                onChange({
-                  ...value,
-                  trigger,
-                })
-              }}
-            />
-          </ControlRow>
-        </div>
-      ) : null}
     </InspectorWidget>
   )
 }

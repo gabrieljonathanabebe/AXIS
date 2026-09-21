@@ -5,7 +5,13 @@ import polars as pl
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.models import DatasetRows, DatasetSummary
+from app import chart_query as cq
+from app.models import (
+    DatasetRows,
+    DatasetSummary,
+    ChartQueryRequest,
+    ChartQueryResult,
+)
 from app.schema_detection import infer_fields
 from app.store import StoredDataset, datasets
 
@@ -65,3 +71,21 @@ def get_dataset_rows(
         limit=bounded_limit,
         rows=frame_slice.to_dicts(),
     )
+
+
+@app.post("/datasets/{dataset_id}/chart-query")
+def query_chart(
+    dataset_id: str,
+    query: ChartQueryRequest,
+) -> ChartQueryResult:
+    stored = datasets.get(dataset_id)
+    if stored is None:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
+    try:
+        cq.validate_chart_query(stored.summary, query)
+        return cq.build_chart_query_result(stored.frame, query)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=422,
+            detail=str(error),
+        ) from error
