@@ -31,11 +31,6 @@ export type PhysicalType =
 
 export type SemanticType = 'numeric' | 'categorical' | 'temporal' | 'identifier'
 
-export type ScatterAppearance = {
-  pointSize: number
-  opacity: number
-}
-
 export type LineAppearance = {
   lineWidth: number
   smooth: boolean
@@ -60,6 +55,7 @@ export type ChartDataSpec = {
 
 export type ChartAppearanceSpec = {
   color: string
+  colorScale: ColorScaleAppearance
   title: ChartTitleAppearance
   grid: GridAppearance
   xAxis: AxisAppearance
@@ -142,7 +138,36 @@ export type AxisAppearance = {
 
 export type LabelPosition = 'top' | 'right' | 'inside'
 
+export type LabelFontWeight = 'light' | 'medium' | 'bold'
+
 export type LabelsAppearance = {
   enabled: boolean
   position: LabelPosition
+  color: string
+  fontSize: number
+  fontWeight: LabelFontWeight
+}
+
+export type ScatterSymbol = 'circle' | 'rect' | 'triangle' | 'diamond'
+
+export type ScatterAppearance = {
+  pointSize: number
+  sizeRange: ScatterSizeRange
+  opacity: number
+  symbol: ScatterSymbol
+}
+
+export type ScatterSizeRange = {
+  min: number
+  max: number
+}
+
+export type ColorScaleAppearance = {
+  categorical: {
+    palette: string[]
+  }
+  continuous: {
+    startColor: string
+    endColor: string
+  }
 }

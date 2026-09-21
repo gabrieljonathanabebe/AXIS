@@ -1,6 +1,9 @@
 .widget {
+  --corner-glow-size: 14%;
+  --widget-surface: var(--color-surface-subtle);
+
   color: var(--color-text-primary);
-  background: var(--color-surface-default);
+  background: var(--effect-corner-glow), var(--widget-surface);
   border: var(--border-width-thin) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   transition:
@@ -11,15 +14,17 @@
 }
 
 .widget.is-interactive:hover {
+  --widget-surface: var(--color-surface-hover);
+
   color: var(--color-accent-hover);
-  background: var(--color-surface-hover);
   border-color: var(--color-border-accent);
   cursor: pointer;
 }
 
 .widget.is-interactive.is-active {
+  --widget-surface: var(--color-surface-active);
+
   color: var(--color-accent);
-  background: var(--color-surface-active);
   border-color: var(--color-border-accent);
   box-shadow: var(--shadow-accent);
 }

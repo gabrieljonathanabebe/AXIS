@@ -12,7 +12,9 @@
 @import './styles/ui/IconBadge.css';
 @import './styles/ui/IconButton.css';
 @import './styles/ui/OptionsMenu.css';
+@import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
+@import './styles/ui/ScrubbableNumber.css';
 @import './styles/ui/SelectControl.css';
 @import './styles/ui/SegmentedControl.css';
 @import './styles/ui/Slider.css';

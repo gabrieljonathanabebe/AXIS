@@ -1,8 +1,14 @@
 import type { EChartsOption } from 'echarts'
 
-import type { ChartSpec, ChartType, Dataset } from '../types/chart'
+import type {
+  ChartSpec,
+  ChartType,
+  Dataset,
+  LabelFontWeight,
+} from '../types/chart'
 import type { ChartTheme } from './chartTheme'
 import { createAxisLabelFormatter } from './createAxisLabelFormatter'
+import { createScatterVisualMaps } from './createScatterVisualMaps'
 
 type ChartValue = string | number | null | undefined
 
@@ -53,12 +59,19 @@ function getDefaultChartTitle(
   return `${yLabel} by ${xLabel}`
 }
 
+const labelFontWeights = {
+  light: 300,
+  medium: 500,
+  bold: 700,
+} satisfies Record<LabelFontWeight, number>
+
 export function createEChartOption(
   chartType: ChartType,
   spec: ChartSpec,
   dataset: Dataset,
   theme: ChartTheme,
 ): EChartsOption {
+  // CONSTANTS
   const { data: dataSpec, appearance, interaction } = spec
   const xField = dataSpec.encoding.x
   const yField = dataSpec.encoding.y
@@ -67,6 +80,7 @@ export function createEChartOption(
     xField?.name,
     yField?.name,
   )
+
   const shouldAggregate =
     chartType !== 'scatter' &&
     dataSpec.aggregation === 'sum' &&
@@ -78,21 +92,44 @@ export function createEChartOption(
   const categories =
     aggregated?.categories ??
     dataset.rows.map((row) => String(getValue(row, xField?.name) ?? ''))
+
+  const sizeFieldName = dataSpec.encoding.size?.name
+  const colorFieldName = dataSpec.encoding.color?.name
+  const scatterData = dataset.rows.map((row) => [
+    getValue(row, xField?.name),
+    getValue(row, yField?.name),
+    getValue(row, sizeFieldName),
+    getValue(row, colorFieldName),
+  ])
+
   const data =
     aggregated?.data ??
     (chartType === 'scatter'
-      ? dataset.rows.map((row) => [
-          getValue(row, xField?.name),
-          getValue(row, yField?.name),
-        ])
-      : dataset.rows.map((row) => getValue(row, yField?.name)))
+      ? scatterData
+      : dataset.rows.map((row) => {
+          return getValue(row, yField?.name)
+        }))
+
+  const scatterVisualMaps =
+    chartType === 'scatter'
+      ? createScatterVisualMaps({
+          rows: dataset.rows,
+          encoding: dataSpec.encoding,
+          appearance,
+        })
+      : []
 
   const seriesAppearance =
     chartType === 'scatter'
       ? {
-          symbolSize: appearance.scatter.pointSize,
+          encode: {
+            x: 0,
+            y: 1,
+          },
+          symbol: appearance.scatter.symbol,
+          symbolSize: sizeFieldName ? undefined : appearance.scatter.pointSize,
           itemStyle: {
-            color: appearance.color,
+            color: colorFieldName ? undefined : appearance.color,
             opacity: appearance.scatter.opacity,
           },
         }
@@ -122,6 +159,7 @@ export function createEChartOption(
     animation: interaction.animation.enabled,
     animationDuration: interaction.animation.duration,
     animationEasing: interaction.animation.easing,
+    visualMap: scatterVisualMaps.length > 0 ? scatterVisualMaps : undefined,
     tooltip: {
       show: interaction.tooltip.enabled,
       trigger: interaction.tooltip.trigger,
@@ -241,7 +279,9 @@ export function createEChartOption(
         label: {
           show: appearance.labels.enabled,
           position: appearance.labels.position,
-          color: theme.text,
+          color: appearance.labels.color,
+          fontSize: appearance.labels.fontSize,
+          fontWeight: labelFontWeights[appearance.labels.fontWeight],
         },
         ...seriesAppearance,
       },

@@ -96,14 +96,14 @@ export function useChartWorkspace({
   }
 
   function setEncodingField(
-    axis: keyof ChartEncoding,
+    encodingKey: keyof ChartEncoding,
     fieldName: string,
   ): void {
-    const field = dataset.fields.find((field) => field.name === fieldName)
-    if (!field) {
-      return
-    }
-    assignFieldToEncoding(axis, field)
+    const field = dataset.fields.find((field) => {
+      return field.name === fieldName
+    })
+
+    assignFieldToEncoding(encodingKey, field)
   }
 
   function setAggregation(aggregation: Aggregation): void {

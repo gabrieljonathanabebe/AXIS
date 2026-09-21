@@ -1,3 +1,4 @@
+import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
 import { getChartDefinition } from './chartDefinitions'
 import { getDefaultEncoding } from './getDefaultEncoding'
 import type {
@@ -24,7 +25,16 @@ export function createDefaultChartSpec(
       aggregation: definition.defaultAggregation,
     },
     appearance: {
-      color: '#1e90ff',
+      color: '#1E90FF',
+      colorScale: {
+        categorical: {
+          palette: [...DEFAULT_CATEGORICAL_PALETTE],
+        },
+        continuous: {
+          startColor: '#BFE3FF',
+          endColor: '#1E90FF',
+        },
+      },
       grid: {
         enabled: true,
         color: '#334155',
@@ -55,10 +65,18 @@ export function createDefaultChartSpec(
       labels: {
         enabled: false,
         position: type === 'scatter' ? 'right' : 'top',
+        color: '#eef4ff',
+        fontSize: 12,
+        fontWeight: 'medium',
       },
       scatter: {
         pointSize: 10,
+        sizeRange: {
+          min: 6,
+          max: 28,
+        },
         opacity: 0.9,
+        symbol: 'circle',
       },
       line: {
         lineWidth: 3,

@@ -1,14 +1,12 @@
 .collapsible-section {
+  --widget-surface: var(--color-surface-subtle);
+
   display: grid;
   flex: 0 0 auto;
   gap: var(--space-2);
   min-height: 0;
   padding: var(--space-2);
   align-content: start;
-  background:
-    linear-gradient(135deg, var(--color-glass-tint-subtle), transparent 44%),
-    var(--color-surface-subtle);
-  backdrop-filter: blur(var(--blur-md)) saturate(160%);
 }
 
 .collapsible-section-trigger {

@@ -1,20 +1,7 @@
 .panel {
-  --panel-corner-glow-size: 34%;
-
   min-height: calc(100vh - var(--space-8) * 2);
-  padding: var(--space-4);
-  background:
-    radial-gradient(
-      ellipse at 0% 0%,
-      var(--color-glow-primary),
-      transparent var(--panel-corner-glow-size)
-    ),
-    radial-gradient(
-      ellipse at 100% 100%,
-      var(--color-glow-primary),
-      transparent var(--panel-corner-glow-size)
-    ),
-    var(--color-surface-glass);
+  padding: var(--space-3);
+  background: var(--color-surface-glass);
   border: var(--border-width-thin) solid var(--color-border-default);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
