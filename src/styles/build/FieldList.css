@@ -1,5 +1,6 @@
 .field-chip {
   padding: var(--space-3) var(--space-4);
+  height: 30px;
   font: inherit;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 }

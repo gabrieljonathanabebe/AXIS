@@ -1,7 +1,7 @@
 import { GripVertical } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-import Button from '../../components/ui/Button'
+import Button from './Button'
 
 import type { PointerEvent as ReactPointerEvent } from 'react'
 
