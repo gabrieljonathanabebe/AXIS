@@ -181,6 +181,12 @@ export type ColorScaleAppearance = {
   continuous: {
     startColor: string
     endColor: string
+    visible: boolean
+    position: 'left' | 'right'
+    orientation: 'vertical' | 'horizontal'
+    min: number | null
+    max: number | null
+    labels: boolean
   }
 }
 

@@ -33,6 +33,12 @@ export function createDefaultChartSpec(
         continuous: {
           startColor: '#BFE3FF',
           endColor: '#1E90FF',
+          visible: true,
+          position: 'right',
+          orientation: 'vertical',
+          min: null,
+          max: null,
+          labels: true,
         },
       },
       grid: {

@@ -3,6 +3,8 @@ import type {
   VisualMapComponentOption,
 } from 'echarts'
 
+import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
+
 import type {
   ChartAppearanceSpec,
   ChartEncoding,
@@ -75,32 +77,6 @@ function createSizeVisualMap(
   }
 }
 
-function createContinuousColorVisualMap(
-  rows: Dataset['rows'],
-  fieldName: string,
-  appearance: ChartAppearanceSpec,
-): ContinuousVisualMapComponentOption | null {
-  const domain = getNumericDomain(rows, fieldName)
-
-  if (!domain) {
-    return null
-  }
-
-  return {
-    show: false,
-    type: 'continuous',
-    dimension: 3,
-    min: domain.min,
-    max: domain.max,
-    inRange: {
-      color: [
-        appearance.colorScale.continuous.startColor,
-        appearance.colorScale.continuous.endColor,
-      ],
-    },
-  }
-}
-
 function createColorVisualMap(
   rows: Dataset['rows'],
   encoding: ChartEncoding,
@@ -110,7 +86,15 @@ function createColorVisualMap(
   if (colorField?.semantic_type !== 'numeric') {
     return null
   }
-  return createContinuousColorVisualMap(rows, colorField.name, appearance)
+  const values = rows.map((row) => {
+    const value = row[colorField.name]
+    return typeof value === 'number' ? value : null
+  })
+  return createContinuousColorVisualMap({
+    appearance: appearance.colorScale.continuous,
+    dimension: 3,
+    values,
+  })
 }
 
 export function createScatterVisualMaps({

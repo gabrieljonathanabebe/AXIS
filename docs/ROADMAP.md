@@ -48,6 +48,8 @@ erweitert werden.
 - Scatter Color Encoding
 - Line Series
 - gruppierte Line-/Bar-Aggregation über Polars im Backend
+- Legend für diskrete Line Series und Scatter-Kategorien
+- Continuous Color Scale für numerische Scatter-Color-Encodings
 
 ### Inspector Foundation
 
@@ -60,6 +62,8 @@ erweitert werden.
 ### Reusable Controls
 
 - ColorControl
+- kompakte ColorControl-Variante
+- GradientControl für kontinuierliche Farbverläufe
 - ScrubbableNumber
 - grundlegende Inspector Controls
 
@@ -75,8 +79,6 @@ Aktueller Fokus:
 
 ### Visualization Completion
 
-- Legend für diskrete Series / Categories
-- Continuous Color Scale für numerische Color Encodings
 - relevante Legend Interaction
 - Inspector-Polish für Scatter, Line und Bar
 

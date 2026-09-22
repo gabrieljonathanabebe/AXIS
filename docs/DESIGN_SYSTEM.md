@@ -244,6 +244,17 @@ Verwenden:
 
 Keine neuen spezialisierten Color Picker erzeugen.
 
+Darstellungsvarianten:
+
+- `inline` zeigt Preset-Farben direkt in der Zeile;
+- `compact` zeigt einen einzelnen Farbauslöser und öffnet Presets,
+  Picker und HEX-Eingabe in einem Popover.
+
+`GradientControl` kombiniert zwei kompakte ColorControls mit einer
+Vorschau des Verlaufs. Es wird für Low-/High-Farben kontinuierlicher
+Farbskalen verwendet. Die eigentliche Farbauswahl bleibt vollständig
+im zentralen ColorControl.
+
 ### Offener numerischer Wert
 
 Verwenden:
@@ -414,6 +425,15 @@ Continuous Numeric Color
 ECharts `visualMap` ist ein Renderer-Detail.
 
 Im Cevyn UI heißt das Feature `Color Scale`.
+
+Der aktuelle Scatter-Inspector unterstützt:
+
+- Sichtbarkeit;
+- Position links oder rechts;
+- vertikale oder horizontale Ausrichtung;
+- Auto-/Custom-Minimum und -Maximum;
+- Low-/High-Farben über GradientControl;
+- ein- und ausblendbare Endlabels.
 
 ## 12. Reuse Rules
 

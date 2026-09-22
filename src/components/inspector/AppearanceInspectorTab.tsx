@@ -1,5 +1,6 @@
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
+import ColorScaleWidget from './appearance/ColorScaleWidget'
 import GridWidget from './appearance/GridWidget'
 import LabelsWidget from './appearance/LabelsWidget'
 import LegendWidget from './appearance/LegendWidget'
@@ -17,6 +18,7 @@ function AppearanceInspectorTab({
   onSetAppearance,
   onSetChartAppearance,
 }: AppearanceInspectorTabProps) {
+  // CONSTANTS
   const { appearance } = chart.spec
   const { encoding } = chart.spec.data
   const showLegend =
@@ -24,7 +26,8 @@ function AppearanceInspectorTab({
       Boolean(encoding.series)) ||
     (chart.type === 'scatter' &&
       encoding.color?.semantic_type === 'categorical')
-
+  const showColorScale = encoding.color?.semantic_type === 'numeric'
+  // RETURN TSX COMPONENT
   return (
     <div className="stack inspector-tab-content">
       <ChartTitleWidget
@@ -48,6 +51,17 @@ function AppearanceInspectorTab({
         <LegendWidget
           value={appearance.legend}
           onChange={(legend) => onSetAppearance('legend', legend)}
+        />
+      ) : null}
+      {showColorScale ? (
+        <ColorScaleWidget
+          value={appearance.colorScale.continuous}
+          onChange={(continuous) => {
+            onSetAppearance('colorScale', {
+              ...appearance.colorScale,
+              continuous,
+            })
+          }}
         />
       ) : null}
       <GridWidget

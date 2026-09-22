@@ -3,6 +3,13 @@
   min-width: 0;
 }
 
+.color-control-compact-presets {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
 .color-control-swatches {
   display: flex;
   align-items: center;

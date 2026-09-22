@@ -49,7 +49,6 @@ function MarkSeriesWidget({
     chart.type === 'line' && Boolean(chart.spec.data.encoding.series)
   const colorField = chart.spec.data.encoding.color
   const hasColorEncoding = Boolean(colorField)
-  const hasContinuousColorEncoding = colorField?.semantic_type === 'numeric'
   const hasCategoricalColorEncoding =
     colorField?.semantic_type === 'categorical' || hasLineSeries
   // RETURN
@@ -65,41 +64,6 @@ function MarkSeriesWidget({
             }}
           />
         </ControlRow>
-      ) : null}
-      {hasContinuousColorEncoding ? (
-        <>
-          <ControlRow label="Low color">
-            <ColorControl
-              label="Low value color"
-              value={appearance.colorScale.continuous.startColor}
-              onChange={(startColor) => {
-                onSetAppearance('colorScale', {
-                  ...appearance.colorScale,
-                  continuous: {
-                    ...appearance.colorScale.continuous,
-                    startColor,
-                  },
-                })
-              }}
-            />
-          </ControlRow>
-
-          <ControlRow label="High color">
-            <ColorControl
-              label="High value color"
-              value={appearance.colorScale.continuous.endColor}
-              onChange={(endColor) => {
-                onSetAppearance('colorScale', {
-                  ...appearance.colorScale,
-                  continuous: {
-                    ...appearance.colorScale.continuous,
-                    endColor,
-                  },
-                })
-              }}
-            />
-          </ControlRow>
-        </>
       ) : null}
       {hasCategoricalColorEncoding ? (
         <ControlRow label="Palette">

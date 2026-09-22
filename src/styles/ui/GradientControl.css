@@ -1,0 +1,18 @@
+.gradient-control {
+  display: grid;
+  grid-template-columns: 20px minmax(48px, 1fr) 20px;
+  align-items: center;
+  gap: var(--space-1);
+  width: 100%;
+  min-width: 0;
+}
+
+.gradient-control-preview {
+  height: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  border-radius: var(--radius-pill);
+}
