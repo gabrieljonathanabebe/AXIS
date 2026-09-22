@@ -11,3 +11,34 @@
   color: var(--color-text-secondary);
   background: var(--color-surface-overlay);
 }
+
+.chart-tooltip-heading {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.chart-tooltip-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 160px;
+  color: var(--color-text-secondary);
+}
+
+.chart-tooltip-row + .chart-tooltip-row {
+  margin-top: var(--space-1);
+}
+
+.chart-tooltip-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-tooltip-row strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}

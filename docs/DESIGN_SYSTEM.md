@@ -440,7 +440,17 @@ Der aktuelle Scatter-Inspector unterstützt:
 - Low-/High-Farben über GradientControl;
 - ein- und ausblendbare Endlabels.
 
-## 12. Reuse Rules
+## 12. Chart Tooltips
+
+Chart-Tooltips verwenden standardmäßig strukturierte Zeilen mit
+Feld- oder Seriennamen und lokal formatierten Werten.
+
+Für Line und Bar steht der X-Wert als Überschrift über den sichtbaren
+Serienwerten. Scatter zeigt die tatsächlich belegten X-, Y-, Size- und
+Color-Encodings. Inhalte aus Datasets werden vor der Ausgabe als HTML
+escaped.
+
+## 13. Reuse Rules
 
 Vor dem Erstellen neuer UI:
 
@@ -465,7 +475,7 @@ ScrubbableNumber
 
 alle drei Fälle abdecken kann.
 
-## 13. CSS
+## 14. CSS
 
 Custom CSS bleibt aktuell ein zentraler Teil des UI-Systems.
 
@@ -478,7 +488,7 @@ Bevor neue Styles geschrieben werden:
 
 Keine nahezu identischen lokalen Styles kopieren.
 
-## 14. Interaction States
+## 15. Interaction States
 
 Komponenten sollen mindestens sinnvolle Zustände berücksichtigen:
 
@@ -500,7 +510,7 @@ Zusätzlich können verwendet werden:
 - Tooltip
 - `aria-label`
 
-## 15. Direct Manipulation
+## 16. Direct Manipulation
 
 Langfristig:
 

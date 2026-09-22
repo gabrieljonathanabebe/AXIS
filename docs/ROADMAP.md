@@ -51,6 +51,7 @@ erweitert werden.
 - Legend für diskrete Line Series und Scatter-Kategorien
 - Continuous Color Scale für numerische Scatter-Color-Encodings
 - Legend Interaction mit Multiple-, Single- und deaktivierter Auswahl
+- formatierte Standard-Tooltips für Scatter, Line und Bar
 
 ### Inspector Foundation
 

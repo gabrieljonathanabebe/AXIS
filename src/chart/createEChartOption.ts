@@ -10,6 +10,7 @@ import type { ChartQueryResult } from '../api/chartQuery'
 import type { ChartTheme } from './chartTheme'
 import { createAxisLabelFormatter } from './createAxisLabelFormatter'
 import { createScatterVisualMaps } from './createScatterVisualMaps'
+import { createTooltipFormatter } from './createTooltipFormatter'
 
 type ChartValue = string | number | null | undefined
 
@@ -248,6 +249,7 @@ export function createEChartOption(
       show: interaction.tooltip.enabled,
       trigger: interaction.tooltip.trigger,
       showDelay: interaction.tooltip.delay,
+      formatter: createTooltipFormatter(chartType, spec),
       backgroundColor: theme.tooltip.background,
       borderColor: theme.tooltip.borderColor,
       borderWidth: theme.tooltip.borderWidth,
