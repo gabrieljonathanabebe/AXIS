@@ -173,6 +173,11 @@ Nur verändern, wenn sich permanente Regeln für Coding Agents ändern.
 
 ## 7. Dokumentationswahrheit
 
+Für Aussagen über den implementierten Ist-Zustand ist der
+verifizierte Code maßgeblich. Bei Abweichungen die Dokumentation
+gezielt an den Code angleichen; geplante Architektur bleibt als
+Planung gekennzeichnet.
+
 Niemals Funktionalität als abgeschlossen dokumentieren, nur weil sie
 Teil eines Prompts oder Plans war.
 
@@ -218,10 +223,17 @@ Der Vorschlag soll als kompakter Copy-Paste-Block erfolgen:
 ```bash
 npm run format
 npm run build
-git add . && git commit -m "<type>: <description>" && git push
+git status --short
+git add <betroffene-dateien>
+git diff --cached --check
+git diff --cached --stat
+git commit -m "<type>: <description>"
+git push
 ```
 
 Commit Message passend zur Änderung wählen.
+Im Vorschlag konkrete Dateipfade einsetzen. Generierte Dateien und
+fremde Änderungen nicht automatisch mitstagen.
 
 Keine Git-Checkpoints mitten in einer noch unvollständigen Änderung
 vorschlagen.

@@ -119,13 +119,15 @@ nicht Teil des Domain Models.
 
 - FastAPI
 - Python
+- Polars für CSV-Daten und gruppierte Chart-Abfragen
 
-Aktuelle analytische Datenhaltung kann zunächst einfach bleiben.
+Datasets liegen aktuell als Polars-DataFrames im In-Memory-Store.
+Line- und Bar-Charts nutzen serverseitige Gruppierungsaggregationen.
+Scatter rendert bisher einen begrenzten Ausschnitt der Rohdaten.
 
 Langfristig vorgesehen:
 
 - DuckDB
-- Polars
 - NumPy
 - scikit-learn
 - optional statsmodels
@@ -144,8 +146,8 @@ flowchart TB
 
     API --> Engine[Cevyn Data Engine]
 
-    Engine --> DuckDB[DuckDB]
-    Engine --> Polars[Polars]
+    Engine --> Polars[Polars current]
+    Engine --> DuckDB[DuckDB later]
     Engine --> ML[ML Layer]
 
     ML --> SK[scikit-learn]
@@ -155,7 +157,7 @@ flowchart TB
     Metadata --> Postgres[PostgreSQL later]
 ```
 
-DuckDB und Polars müssen nicht sofort eingeführt werden.
+Polars ist bereits im Einsatz. DuckDB ist noch nicht eingeführt.
 
 Die Data Engine soll so strukturiert werden, dass die aktuelle
 Execution Engine später ausgetauscht oder erweitert werden kann.

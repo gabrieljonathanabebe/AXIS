@@ -147,12 +147,13 @@ Backend:
 
 - FastAPI
 - Python
+- Polars für CSV-Daten und gruppierte Chart-Abfragen
 
 Data Operations sollen möglichst unabhängig von der langfristigen
 Execution Engine modelliert werden.
 
-DuckDB und Polars können später eingeführt werden, wenn sie einen
-konkreten Nutzen bringen.
+Datasets liegen aktuell als Polars-DataFrames im In-Memory-Store.
+DuckDB kann später bei konkretem Bedarf eingeführt werden.
 
 Keine Architekturkomplexität nur für hypothetische Skalierung
 einführen.
@@ -261,8 +262,17 @@ Format:
 ```bash
 npm run format
 npm run build
-git add . && git commit -m "<type>: <description>" && git push
+git status --short
+git add <betroffene-dateien>
+git diff --cached --check
+git diff --cached --stat
+git commit -m "<type>: <description>"
+git push
 ```
+
+Im Vorschlag die Platzhalter durch konkrete Dateipfade ersetzen.
+Generierte Dateien wie `__pycache__` und fremde Änderungen nicht
+automatisch mitstagen.
 
 Geeignete Commit Prefixes:
 

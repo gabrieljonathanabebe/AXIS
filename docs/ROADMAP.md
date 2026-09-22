@@ -35,7 +35,7 @@ erweitert werden.
 - Dataset State
 - Field / Schema Grundlage
 - grundlegende Type Detection
-- Data View Grundlage
+- Rows-Preview-API und DataTable-Komponente ohne App-Anbindung
 
 ### Visualization Core
 
@@ -47,7 +47,7 @@ erweitert werden.
 - Scatter Size Encoding
 - Scatter Color Encoding
 - Line Series
-- Aggregation über Backend
+- gruppierte Line-/Bar-Aggregation über Polars im Backend
 
 ### Inspector Foundation
 
@@ -128,7 +128,8 @@ Canvas
 Inspector
 ```
 
-Data übernimmt zunächst die bereits bestehende Data View.
+Data bindet zunächst die vorhandene DataTable-Komponente und die
+Rows-Preview-API als erreichbare Data View ein.
 
 AI und Share werden architektonisch berücksichtigt, müssen aber noch
 nicht vollständig implementiert werden.
@@ -283,9 +284,8 @@ Open Project
 Wenn aktuelle Datenhaltung zum Bottleneck wird:
 
 - DuckDB
-- Polars
 - größere Datasets
-- serverseitige Aggregationen
+- weitere serverseitige Analysen und Transformationen
 - Joins
 - Pivot
 - komplexere Transformationspipelines

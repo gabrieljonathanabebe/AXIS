@@ -159,16 +159,21 @@ Interaction
 Ein Widget repräsentiert ein Feature oder eine logisch
 zusammengehörige Property-Gruppe.
 
+Inspector-Widgets sind unabhängig vom Chart-Zustand auf- und
+zuklappbar. Eine optionale Eye-Aktion im Header steuert die
+Sichtbarkeit des Features im Chart. Zugeklappt und ausgeblendet sind
+verschiedene Zustände. Die Eigenschaften bleiben auch bei
+ausgeblendetem Feature editierbar.
+
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
 Beispiel:
 
 ```text
 Labels
-├── Enabled
 ├── Position
-├── Format
 ├── Font Size
+├── Weight
 └── Color
 ```
 
@@ -190,8 +195,6 @@ Verwenden:
 
 Beispiele:
 
-- Tooltip Enabled
-- Animation Enabled
 - Area Fill Enabled
 - Border Enabled
 
@@ -204,9 +207,13 @@ Bevorzugt:
 Beispiele:
 
 - Grid
-- Markers
-- Legend Visibility
-- Axis Visibility
+- Legend
+- Labels
+- Chart Title
+- X/Y Axis
+- Tooltip
+- Zoom
+- Animation
 
 ### Wenige exklusive Optionen
 
