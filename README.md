@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+# Cevyn
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cevyn is a visual data analytics platform for transforming raw data
+into analysis, visualizations, interactive dashboards and, eventually,
+machine-learning workflows.
 
-Currently, two official plugins are available:
+The goal is to provide a visual-first analytics workflow without
+requiring users to write Python, SQL or a proprietary query language
+for common analytical tasks.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+> Cevyn is currently under active development.
 
-## React Compiler
+## Product Direction
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The long-term workflow is:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+Import
+→ Understand
+→ Clean
+→ Transform
+→ Calculate
+→ Analyze
+→ Visualize
+→ Build Dashboard
+→ Save / Share
+→ ML / AI
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Cevyn is organized around several product workspaces:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Visualize** — charts, dashboards, KPIs and interactions
+- **Data** — data inspection, profiling, cleaning and transformations
+- **AI** — forecasting, clustering, anomaly detection and ML
+- **Share** — project files, exports and published dashboards
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The current development focus is the Visualization Core and the
+transition toward the first complete Data-to-Dashboard workflow.
+
+## Tech Stack
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- Apache ECharts
+- dnd-kit
+- Lucide React
+- Custom CSS
+
+### Backend
+
+- FastAPI
+- Python
+
+Planned analytical infrastructure includes DuckDB and Polars when the
+current data layer reaches its practical limits.
+
+## Documentation
+
+The repository documentation acts as the project's source of truth:
+
+- [Product Vision](docs/PRODUCT_VISION.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Design System](docs/DESIGN_SYSTEM.md)
+- [Development Guidelines](docs/DEVELOPMENT.md)
+- [Roadmap](docs/ROADMAP.md)
+
+Instructions for coding agents are defined in
+[AGENTS.md](AGENTS.md).
+
+## Status
+
+Cevyn is currently in active development and is not yet intended for
+production use.
