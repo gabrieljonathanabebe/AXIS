@@ -402,6 +402,11 @@ Inspector
 → Interaction
 ```
 
+Die Legend Interaction erscheint nur bei einer relevanten Legend. Der
+Eye-Button aktiviert oder deaktiviert die Auswahl, ohne die sichtbare
+Legend auszublenden. Als Auswahlmodi stehen `Multiple` und `Single`
+zur Verfügung.
+
 ## 11. Color Scale
 
 Color Scale erklärt kontinuierliche numerische Color Encodings.

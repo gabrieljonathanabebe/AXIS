@@ -50,6 +50,7 @@ erweitert werden.
 - gruppierte Line-/Bar-Aggregation über Polars im Backend
 - Legend für diskrete Line Series und Scatter-Kategorien
 - Continuous Color Scale für numerische Scatter-Color-Encodings
+- Legend Interaction mit Multiple-, Single- und deaktivierter Auswahl
 
 ### Inspector Foundation
 
@@ -79,7 +80,6 @@ Aktueller Fokus:
 
 ### Visualization Completion
 
-- relevante Legend Interaction
 - Inspector-Polish für Scatter, Line und Bar
 
 ### Build Panel Cleanup

@@ -2,6 +2,7 @@ import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
 import ColorScaleWidget from './appearance/ColorScaleWidget'
 import GridWidget from './appearance/GridWidget'
+import { isLegendRelevant } from '../../chart/isLegendRelevant'
 import LabelsWidget from './appearance/LabelsWidget'
 import LegendWidget from './appearance/LegendWidget'
 import MarkSeriesWidget from './appearance/MarkSeriesWidget'
@@ -21,11 +22,7 @@ function AppearanceInspectorTab({
   // CONSTANTS
   const { appearance } = chart.spec
   const { encoding } = chart.spec.data
-  const showLegend =
-    ((chart.type === 'line' || chart.type == 'bar') &&
-      Boolean(encoding.series)) ||
-    (chart.type === 'scatter' &&
-      encoding.color?.semantic_type === 'categorical')
+  const showLegend = isLegendRelevant(chart)
   const showColorScale = encoding.color?.semantic_type === 'numeric'
   // RETURN TSX COMPONENT
   return (

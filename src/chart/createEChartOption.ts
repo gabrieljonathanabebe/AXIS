@@ -205,6 +205,9 @@ export function createEChartOption(
         color: appearance.legend.textColor,
         fontSize: appearance.legend.fontSize,
       },
+      selectedMode: interaction.legend.enabled
+        ? interaction.legend.selectionMode
+        : false,
       itemGap: appearance.legend.gap,
       orient: legendVertical ? 'vertical' : 'horizontal',
       top:

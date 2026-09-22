@@ -113,6 +113,10 @@ export function createDefaultChartSpec(
       },
     },
     interaction: {
+      legend: {
+        enabled: true,
+        selectionMode: 'multiple',
+      },
       tooltip: {
         enabled: true,
         trigger: type === 'scatter' ? 'item' : 'axis',

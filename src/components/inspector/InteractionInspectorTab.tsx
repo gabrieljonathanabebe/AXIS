@@ -1,4 +1,6 @@
 import AnimationWidget from './interaction/AnimationWidget'
+import { isLegendRelevant } from '../../chart/isLegendRelevant'
+import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import TooltipWidget from './interaction/TooltipWidget'
 import ZoomWidget from './interaction/ZoomWidget'
 
@@ -14,9 +16,17 @@ function InteractionInspectorTab({
   onSetInteraction,
 }: InteractionInspectorTabProps) {
   const { interaction } = chart.spec
-
+  const showLegendInteraction = isLegendRelevant(chart)
   return (
     <div className="stack inspector-tab-content">
+      {showLegendInteraction ? (
+        <LegendInteractionWidget
+          value={interaction.legend}
+          onChange={(legend) => {
+            onSetInteraction('legend', legend)
+          }}
+        />
+      ) : null}
       <TooltipWidget
         value={interaction.tooltip}
         onChange={(tooltip) => {

@@ -68,6 +68,10 @@ export type ValueFormat = 'auto' | 'number' | 'percent' | 'currency'
 export type AnimationEasing = 'linear' | 'cubicOut' | 'cubicInOut'
 
 export type ChartInteractionSpec = {
+  legend: {
+    enabled: boolean
+    selectionMode: LegendSelectionMode
+  }
   tooltip: {
     enabled: boolean
     trigger: TooltipTrigger
@@ -157,6 +161,8 @@ export type LegendAppearance = {
   padding: number
   inactiveColor: string
 }
+
+export type LegendSelectionMode = 'multiple' | 'single'
 
 // ===== SCATTER ===============================================================
 
