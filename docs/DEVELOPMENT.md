@@ -201,6 +201,14 @@ npm run format
 npm run build
 ```
 
+Bei der Arbeit in Vertical Slices werden diese beiden Befehle einmalig
+am Ende des vollständigen Slices ausgeführt, nicht nach jedem einzelnen
+Implementierungsblock.
+
+Während eines Slices nur gezielte Zwischenprüfungen ausführen, wenn sie
+für den nächsten Block erforderlich sind. Diese ersetzen die einmalige
+abschließende Verification nicht.
+
 Fehler, die durch die aktuelle Änderung verursacht wurden, vor
 Abschluss beheben.
 
@@ -302,3 +310,73 @@ Keine unnötigen langen Erklärungen während Routineänderungen.
 
 Bei neuen oder architekturrelevanten Konzepten nachvollziehbar
 erklären, warum eine Lösung gewählt wurde.
+
+## 18. Vertical Slices und Chat-Übergaben
+
+Ein Vertical Slice wird innerhalb eines einzelnen Chats bearbeitet.
+
+Innerhalb eines Slices in wenigen sinnvollen Implementierungsblöcken
+arbeiten. Ein Block soll einen zusammenhängenden Teil des Datenflusses
+oder Verhaltens abdecken und einen nachvollziehbaren Zwischenstand
+erzeugen.
+
+Nicht jede einzelne Zeile als eigenen Schritt behandeln. Gleichzeitig
+nicht den gesamten Slice in einem einzigen großen Schritt umsetzen.
+
+Wenn der Nutzer den Anwendungscode selbst eingibt:
+
+- pro Block konkrete Dateipfade und zusammenhängenden Code angeben;
+- nach dem Block den gespeicherten Ist-Zustand prüfen;
+- erst dann mit dem nächsten Block fortfahren.
+
+Graphify ist derzeit kein verpflichtender Teil des Workflows und wird
+nicht routinemäßig vor Codebase-Fragen ausgeführt.
+
+Nach Abschluss eines Vertical Slices:
+
+1. Verification und Dokumentationspflege abschließen;
+2. einen Git-Checkpoint vorschlagen;
+3. eine kurze Übergabe für den nächsten Chat formulieren.
+
+Die Übergabe besteht aus höchstens wenigen Stichpunkten und enthält:
+
+- den abgeschlossenen Stand;
+- wichtige dauerhafte Entscheidungen;
+- den nächsten geplanten Vertical Slice;
+- nur die dafür unmittelbar relevanten Dateien oder offenen Punkte.
+
+Der nächste Vertical Slice beginnt in einem neuen Chat. Sein Kontext
+kommt aus der aktuellen Projektdokumentation und der kurzen Übergabe aus
+dem vorherigen Chat.
+
+Temporäre Arbeitsschritte gehören nicht in die Projektdokumentation.
+Tatsächliche Änderungen am Entwicklungsstand werden weiterhin in
+`ROADMAP.md` festgehalten; dauerhafte Architekturentscheidungen in
+`ARCHITECTURE.md`.
+
+## 19. Code Structure
+
+Längere TypeScript- und Python-Module durch kurze Abschnittsmarker
+strukturieren, wenn sie mehrere klar getrennte Bereiche enthalten.
+
+Beispiel:
+
+```ts
+// ===== TYPES ================================================================
+// ===== CONSTANTS ============================================================
+// ===== HELPERS ==============================================================
+// ===== FUNCTION =============================================================
+// ===== RETURN ===============================================================
+```
+
+Die Bezeichnungen sind kurz, englisch und beschreiben die tatsächliche
+Verantwortung des folgenden Abschnitts. Keine Marker einfügen, wenn eine
+Datei oder Funktion bereits ohne sie unmittelbar erfassbar ist.
+
+Properties in Options- und Konfigurationsobjekten alphabetisch sortieren,
+wenn ihre Reihenfolge keine Semantik besitzt. Das gilt auch für neu
+angelegte ECharts-Option-Builder.
+
+Spreads und andere reihenfolgeabhängige Properties dort platzieren, wo das
+beabsichtigte Überschreibungsverhalten erhalten bleibt. Lesbarkeit und
+korrektes Verhalten haben Vorrang vor mechanischer Sortierung.

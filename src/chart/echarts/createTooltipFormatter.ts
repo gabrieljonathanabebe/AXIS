@@ -1,4 +1,4 @@
-import type { ChartSpec, ChartType } from '../types/chart'
+import type { ChartSpec, ChartType } from '../../types/chart'
 
 type TooltipValue = string | number | null | undefined
 
@@ -51,6 +51,7 @@ export function createTooltipFormatter(
   spec: ChartSpec,
 ): TooltipFormatter {
   const { encoding } = spec.data
+  const hasBarColor = chartType === 'bar' && Boolean(encoding.color)
   return (params) => {
     const entries = asParams(params)
     const first = entries[0]
@@ -76,13 +77,20 @@ export function createTooltipFormatter(
     }
 
     const heading = first.axisValue ?? first.name ?? ''
-    const rows = entries.map((entry) => {
-      const value = Array.isArray(entry.value) ? entry.value[1] : entry.value
+    const rows = entries.flatMap((entry) => {
+      const rawValue = entry.value
+      const values = Array.isArray(rawValue) ? rawValue : null
+      const value = Array.isArray(rawValue) ? rawValue[1] : rawValue
       const label = encoding.series
         ? entry.seriesName || encoding.y?.name || 'Value'
         : encoding.y?.name || 'Value'
+      const valueRow = createRow(label, value, entry.marker)
 
-      return createRow(label, value, entry.marker)
+      if (!hasBarColor || !encoding.color || !values) {
+        return [valueRow]
+      }
+
+      return [valueRow, createRow(encoding.color.name, values[2])]
     })
 
     return [

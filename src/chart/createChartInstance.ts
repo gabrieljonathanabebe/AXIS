@@ -23,6 +23,7 @@ export function createDefaultChartSpec(
     data: {
       encoding: getDefaultEncoding(type, dataset),
       aggregation: definition.defaultAggregation,
+      colorAggregation: 'mean',
     },
     appearance: {
       color: '#1E90FF',

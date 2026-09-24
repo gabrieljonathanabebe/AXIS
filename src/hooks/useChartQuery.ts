@@ -24,6 +24,8 @@ export function useChartQuery(
   const y = query?.y
   const series = query?.series
   const aggregation = query?.aggregation
+  const color = query?.color
+  const colorAggregation = query?.color_aggregation
 
   useEffect(() => {
     if (!datasetId || !x || !y || !aggregation) {
@@ -32,7 +34,14 @@ export function useChartQuery(
     let active = true
     setState({ result: null, isLoading: true, error: null })
 
-    fetchChartQuery(datasetId, { x, y, series: series ?? null, aggregation })
+    fetchChartQuery(datasetId, {
+      x,
+      y,
+      series: series ?? null,
+      color: color ?? null,
+      color_aggregation: colorAggregation ?? null,
+      aggregation,
+    })
       .then((result) => {
         if (active) {
           setState({ result, isLoading: false, error: null })
@@ -50,7 +59,7 @@ export function useChartQuery(
     return () => {
       active = false
     }
-  }, [datasetId, x, y, series, aggregation])
+  }, [datasetId, x, y, series, color, colorAggregation, aggregation])
   if (!datasetId || !query) {
     return { result: null, isLoading: false, error: null }
   }

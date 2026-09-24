@@ -194,6 +194,32 @@ UI
 Raw ECharts Options sollen nicht unkontrolliert über React-Komponenten
 verteilt werden.
 
+### ECharts Adapter
+
+Renderer-spezifischer Code liegt unter `src/chart/echarts`.
+
+`createEChartOption` ist ein kleiner Orchestrator. Er kombiniert allgemeine
+Optionen wie Titel, Tooltip, Legend und Interaktion mit dem
+charttypspezifischen Content.
+
+Chart-Content wird über eine typsichere Registry erzeugt:
+
+```text
+ChartType
+→ ChartContentBuilder
+→ Series sowie optionale Visual Maps und Achsen
+```
+
+Aktuell existieren getrennte Builder für:
+
+- Scatter-Content auf Basis der geladenen Rohdaten;
+- aggregierten Line-/Bar-Content auf Basis des Backend-Resultsets.
+
+Neue Charttypen erhalten einen eigenen Builder oder verwenden einen
+gemeinsamen Builder, wenn Datenvertrag und Renderingstruktur tatsächlich
+identisch sind. Die Registry stellt sicher, dass jeder `ChartType` einem
+Builder zugeordnet ist.
+
 ## 7. ChartDefinition vs. ChartSpec
 
 ### ChartDefinition
@@ -349,6 +375,18 @@ ECharts kann dafür intern `visualMap` verwenden.
 Der Begriff `visualMap` soll jedoch nicht das Cevyn Domain Model
 bestimmen.
 
+### Color Channel Ownership
+
+Ein explizites Color-Encoding besitzt Vorrang vor Series:
+
+- numerisches Color verwendet eine kontinuierliche Color Scale;
+- diskretes Color verwendet eine kategorische Palette und Legend;
+- ohne Color kann Series den kategorischen Farbkanal übernehmen.
+
+Series bleibt bei gleichzeitigem numerischem Color als Gruppierung erhalten,
+besitzt aber nicht mehr den Farbkanal. Deshalb wird in diesem Fall keine
+farbige Series-Legend angezeigt.
+
 ## 11. Data Architecture
 
 Der analytische Datenfluss lautet grundsätzlich:
@@ -372,6 +410,28 @@ flowchart LR
 ```
 
 Nicht jeder Workflow benötigt jeden Schritt.
+
+### Aggregated Chart Query
+
+Line- und Bar-Charts verwenden ein gruppiertes Backend-Resultset. Der Request
+enthält:
+
+- `x` und `y`;
+- optional `series`;
+- `aggregation` für den Y-Wert;
+- optional `color` und `color_aggregation`.
+
+Das Resultset enthält pro Gruppe:
+
+- `x`;
+- optional `series`;
+- `value`;
+- optional `color_value`.
+
+`color_value` ist ein zusätzlich aggregiertes Ergebnisfeld und verändert
+weder die Gruppierung noch `value`. Color darf dasselbe Feld wie Y mit einer
+eigenen Aggregation redundant codieren, aber nicht dasselbe Feld wie X oder
+Series verwenden.
 
 ## 12. Calculated Fields
 

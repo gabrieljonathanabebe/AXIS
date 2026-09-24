@@ -47,9 +47,12 @@ erweitert werden.
 - Scatter Size Encoding
 - Scatter Color Encoding
 - Line Series
+- Bar Series
 - gruppierte Line-/Bar-Aggregation über Polars im Backend
-- Legend für diskrete Line Series und Scatter-Kategorien
+- Legend für diskrete Line-/Bar-Series und Scatter-Kategorien
 - Continuous Color Scale für numerische Scatter-Color-Encodings
+- backend-aggregiertes numerisches Color-Encoding für Bar-Charts
+- unabhängige Value- und Color-Aggregation für Bar-Charts
 - Legend Interaction mit Multiple-, Single- und deaktivierter Auswahl
 - formatierte Standard-Tooltips für Scatter, Line und Bar
 
@@ -74,6 +77,7 @@ erweitert werden.
 - ChartSpec-orientierte Chart-Konfiguration
 - ChartInstance-Grundlage
 - Trennung von Chart Spec und Layout als Zielstruktur
+- modularer ECharts-Adapter mit Registry für charttypspezifischen Content
 
 ## 4. Current
 

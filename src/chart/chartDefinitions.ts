@@ -123,6 +123,20 @@ export const chartDefinitions = {
         recommendedTypes: ['numeric'],
         supportedTypes: [],
       },
+      {
+        key: 'series',
+        label: 'Series',
+        required: false,
+        recommendedTypes: ['categorical'],
+        supportedTypes: [],
+      },
+      {
+        key: 'color',
+        label: 'Color',
+        required: false,
+        recommendedTypes: ['numeric'],
+        supportedTypes: [],
+      },
     ],
   },
 } satisfies Record<ChartType, ChartDefinition>

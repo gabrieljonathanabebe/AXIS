@@ -53,6 +53,8 @@ class ChartQueryRequest(BaseModel):
     x: str
     y: str
     series: str | None = None
+    color: str | None = None
+    color_aggregation: GroupAggregation | None = None
     aggregation: GroupAggregation
 
 
@@ -60,6 +62,7 @@ class ChartQueryPoint(BaseModel):
     x: str | None
     series: str | None
     value: float | None
+    color_value: float | None = None
 
 
 class ChartQueryResult(BaseModel):

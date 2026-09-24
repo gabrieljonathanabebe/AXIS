@@ -5,8 +5,9 @@ import { useChartCollection } from './useChartCollection'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import type { ActiveDrag, DragPayload } from '../types/ui'
 import type {
-  Aggregation,
+  ChartAggregationKey,
   ChartAppearanceSpec,
+  ChartDataSpec,
   ChartEncoding,
   ChartInteractionSpec,
   DataField,
@@ -106,14 +107,17 @@ export function useChartWorkspace({
     assignFieldToEncoding(encodingKey, field)
   }
 
-  function setAggregation(aggregation: Aggregation): void {
+  function setAggregation<TKey extends ChartAggregationKey>(
+    key: TKey,
+    aggregation: ChartDataSpec[TKey],
+  ): void {
     updateSelectedChart((chart) => ({
       ...chart,
       spec: {
         ...chart.spec,
         data: {
           ...chart.spec.data,
-          aggregation,
+          [key]: aggregation,
         },
       },
     }))

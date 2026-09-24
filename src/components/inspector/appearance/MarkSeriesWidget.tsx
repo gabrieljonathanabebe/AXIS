@@ -3,6 +3,7 @@ import { Circle, Diamond, Paintbrush, Square, Triangle } from 'lucide-react'
 import { categoricalColorPalettes } from '../../../chart/colorPalettes'
 import ColorControl from '../../ui/ColorControl'
 import ControlRow from '../../ui/ControlRow'
+import { getColorEncodingMode } from '../../../chart/getColorEncodingMode'
 import PaletteControl from '../../ui/PaletteControl'
 import SegmentedControl from '../../ui/SegmentedControl'
 import Slider from '../../ui/Slider'
@@ -45,16 +46,11 @@ function MarkSeriesWidget({
   // CONSTANTS
   const { appearance } = chart.spec
   const hasSizeEncoding = Boolean(chart.spec.data.encoding.size)
-  const hasLineSeries =
-    chart.type === 'line' && Boolean(chart.spec.data.encoding.series)
-  const colorField = chart.spec.data.encoding.color
-  const hasColorEncoding = Boolean(colorField)
-  const hasCategoricalColorEncoding =
-    colorField?.semantic_type === 'categorical' || hasLineSeries
+  const colorEncodingMode = getColorEncodingMode(chart.spec.data.encoding)
   // RETURN
   return (
     <InspectorWidget title="Mark / Series" icon={<Paintbrush size={16} />}>
-      {!hasColorEncoding && !hasLineSeries ? (
+      {colorEncodingMode === 'constant' ? (
         <ControlRow label="Color">
           <ColorControl
             label="Chart color"
@@ -65,7 +61,7 @@ function MarkSeriesWidget({
           />
         </ControlRow>
       ) : null}
-      {hasCategoricalColorEncoding ? (
+      {colorEncodingMode === 'categorical' ? (
         <ControlRow label="Palette">
           <PaletteControl
             label="Categorical color palette"

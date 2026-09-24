@@ -2,12 +2,12 @@ import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
 import { useEffect, useRef } from 'react'
 
-import { createEChartOption } from '../../chart/createEChartOption'
+import { createEChartOption } from '../../chart/echarts/createEChartOption'
 import { useChartQuery } from '../../hooks/useChartQuery'
 
 import type { ChartInstance, Dataset } from '../../types/chart'
 import type { ChartQueryRequest } from '../../api/chartQuery'
-import type { ChartTheme } from '../../chart/chartTheme'
+import type { ChartTheme } from '../../chart/echarts/chartTheme'
 
 type EChartCanvasProps = {
   chart: ChartInstance
@@ -54,7 +54,10 @@ function readChartTheme(): ChartTheme {
 function EChartCanvas({ chart, dataset, datasetId }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
-  const { encoding, aggregation } = chart.spec.data
+  const { encoding, aggregation, colorAggregation } = chart.spec.data
+  const colorField =
+    chart.type === 'bar' ? (encoding.color?.name ?? null) : null
+
   const query: ChartQueryRequest | null =
     chart.type !== 'scatter' &&
     aggregation !== 'none' &&
@@ -64,6 +67,8 @@ function EChartCanvas({ chart, dataset, datasetId }: EChartCanvasProps) {
           x: encoding.x.name,
           y: encoding.y.name,
           series: encoding.series?.name ?? null,
+          color: colorField,
+          color_aggregation: colorField ? colorAggregation : null,
           aggregation,
         }
       : null

@@ -4,45 +4,18 @@ import type {
 } from 'echarts'
 
 import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
+import { getNumericDomain } from './getNumericDomain'
 
 import type {
   ChartAppearanceSpec,
   ChartEncoding,
   Dataset,
-} from '../types/chart'
-
-type NumericDomain = {
-  min: number
-  max: number
-}
+} from '../../types/chart'
 
 type CreateScatterVisualMapsParams = {
   rows: Dataset['rows']
   encoding: ChartEncoding
   appearance: ChartAppearanceSpec
-}
-
-function getNumericDomain(
-  rows: Dataset['rows'],
-  fieldName: string,
-): NumericDomain | null {
-  const values = rows.flatMap((row) => {
-    const value = row[fieldName]
-
-    return typeof value === 'number' && Number.isFinite(value) ? [value] : []
-  })
-
-  if (values.length === 0) {
-    return null
-  }
-
-  const min = Math.min(...values)
-  const max = Math.max(...values)
-
-  return {
-    min,
-    max: min === max ? min + 1 : max,
-  }
 }
 
 function createSizeVisualMap(
@@ -56,7 +29,7 @@ function createSizeVisualMap(
     return null
   }
 
-  const domain = getNumericDomain(rows, fieldName)
+  const domain = getNumericDomain(rows.map((row) => row[fieldName]))
 
   if (!domain) {
     return null
@@ -67,7 +40,7 @@ function createSizeVisualMap(
     type: 'continuous',
     dimension: 2,
     min: domain.min,
-    max: domain.max,
+    max: domain.min === domain.max ? domain.min + 1 : domain.max,
     inRange: {
       symbolSize: [
         appearance.scatter.sizeRange.min,

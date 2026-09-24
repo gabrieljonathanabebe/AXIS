@@ -1,17 +1,20 @@
-import type { Aggregation } from '../types/chart'
+import type { GroupAggregation } from '../types/chart'
 import { post } from './client'
 
 export type ChartQueryRequest = {
   x: string
   y: string
   series: string | null
-  aggregation: Exclude<Aggregation, 'none'>
+  color: string | null
+  color_aggregation: GroupAggregation | null
+  aggregation: GroupAggregation
 }
 
 export type ChartQueryPoint = {
   x: string | null
   series: string | null
   value: number | null
+  color_value: number | null
 }
 
 export type ChartQueryResult = {

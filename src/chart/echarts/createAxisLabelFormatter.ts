@@ -1,4 +1,4 @@
-import type { AxisAppearance } from '../types/chart'
+import type { AxisAppearance } from '../../types/chart'
 
 type AxisLabelValue = string | number
 

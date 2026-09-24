@@ -1,51 +1,32 @@
-export type DataField = {
-  name: string
-  physical_type: PhysicalType
-  semantic_type: SemanticType
-}
-
-export type DataValue = string | number | null
-
-export type DataRow = Record<string, DataValue>
-
-export type Dataset = {
-  fields: DataField[]
-  rows: DataRow[]
-}
-
-export type ChartType = 'scatter' | 'line' | 'bar'
-
+// ===== AGGREGATION ===========================================================
 export type Aggregation =
   'none' | 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count'
 
-export type ChartEncoding = {
-  x?: DataField
-  y?: DataField
-  color?: DataField
-  size?: DataField
-  series?: DataField
+export type GroupAggregation = Exclude<Aggregation, 'none'>
+
+// ===== AXIS ==================================================================
+export type AxisAppearance = {
+  enabled: boolean
+  title: string
+  min: number | null
+  max: number | null
+  format: AxisFormat
+  currency: CurrencyCode
 }
 
-export type PhysicalType =
-  'integer' | 'float' | 'string' | 'boolean' | 'date' | 'datetime'
+export type AxisFormat = 'auto' | 'number' | 'percent' | 'currency' | 'date'
 
-export type SemanticType = 'numeric' | 'categorical' | 'temporal' | 'identifier'
-
+// ===== BAR ===================================================================
 export type BarAppearance = {
   borderRadius: number
   barWidth: number
 }
 
-export type ChartTitleAppearance = {
-  enabled: boolean
-  text: string
-  alignment: 'left' | 'center' | 'right'
-}
-
-export type ChartDataSpec = {
-  encoding: ChartEncoding
-  aggregation: Aggregation
-}
+// ===== CHART =================================================================
+export type ChartAggregationKey = keyof Pick<
+  ChartDataSpec,
+  'aggregation' | 'colorAggregation'
+>
 
 export type ChartAppearanceSpec = {
   color: string
@@ -61,11 +42,26 @@ export type ChartAppearanceSpec = {
   bar: BarAppearance
 }
 
-export type TooltipTrigger = 'item' | 'axis'
+export type ChartDataSpec = {
+  encoding: ChartEncoding
+  aggregation: Aggregation
+  colorAggregation: GroupAggregation
+}
 
-export type ValueFormat = 'auto' | 'number' | 'percent' | 'currency'
+export type ChartEncoding = {
+  x?: DataField
+  y?: DataField
+  color?: DataField
+  size?: DataField
+  series?: DataField
+}
 
-export type AnimationEasing = 'linear' | 'cubicOut' | 'cubicInOut'
+export type ChartInstance = {
+  id: string
+  type: ChartType
+  spec: ChartSpec
+  layout: ChartLayout
+}
 
 export type ChartInteractionSpec = {
   legend: {
@@ -91,12 +87,6 @@ export type ChartInteractionSpec = {
   }
 }
 
-export type ChartSpec = {
-  data: ChartDataSpec
-  appearance: ChartAppearanceSpec
-  interaction: ChartInteractionSpec
-}
-
 export type ChartLayout = {
   x: number
   y: number
@@ -104,21 +94,59 @@ export type ChartLayout = {
   height: number
 }
 
-export type ChartInstance = {
-  id: string
-  type: ChartType
-  spec: ChartSpec
-  layout: ChartLayout
+export type ChartSpec = {
+  data: ChartDataSpec
+  appearance: ChartAppearanceSpec
+  interaction: ChartInteractionSpec
 }
 
-// ===== BASIC APPEARANCE TYPES ================================================
+export type ChartTitleAppearance = {
+  enabled: boolean
+  text: string
+  alignment: 'left' | 'center' | 'right'
+}
 
-export type LineStyle = 'solid' | 'dashed' | 'dotted'
+export type ChartType = 'scatter' | 'line' | 'bar'
 
-export type AxisFormat = 'auto' | 'number' | 'percent' | 'currency' | 'date'
+// ===== COLOR =================================================================
+export type ColorScaleAppearance = {
+  categorical: {
+    palette: string[]
+  }
+  continuous: {
+    startColor: string
+    endColor: string
+    visible: boolean
+    position: 'left' | 'right'
+    orientation: 'vertical' | 'horizontal'
+    min: number | null
+    max: number | null
+    labels: boolean
+  }
+}
 
+// ===== DATA ==================================================================
+export type DataField = {
+  name: string
+  physical_type: PhysicalType
+  semantic_type: SemanticType
+}
+
+export type DataRow = Record<string, DataValue>
+
+export type Dataset = {
+  fields: DataField[]
+  rows: DataRow[]
+}
+
+export type DataValue = string | number | null
+
+// ===== FORMAT ================================================================
 export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'JPY'
 
+export type ValueFormat = 'auto' | 'number' | 'percent' | 'currency'
+
+// ===== GRID ================================================================
 export type GridAppearance = {
   enabled: boolean
   color: string
@@ -126,15 +154,12 @@ export type GridAppearance = {
   lineStyle: LineStyle
 }
 
-export type AxisAppearance = {
-  enabled: boolean
-  title: string
-  min: number | null
-  max: number | null
-  format: AxisFormat
-  currency: CurrencyCode
-}
+// ===== INTERACTION ===========================================================
+export type TooltipTrigger = 'item' | 'axis'
 
+export type AnimationEasing = 'linear' | 'cubicOut' | 'cubicInOut'
+
+// ===== LABEL =================================================================
 export type LabelPosition = 'top' | 'right' | 'inside'
 
 export type LabelFontWeight = 'light' | 'medium' | 'bold'
@@ -146,6 +171,7 @@ export type LabelsAppearance = {
   fontSize: number
   fontWeight: LabelFontWeight
 }
+
 // ===== LEGEND ================================================================
 export type LegendAppearance = {
   visible: boolean
@@ -164,10 +190,20 @@ export type LegendAppearance = {
 
 export type LegendSelectionMode = 'multiple' | 'single'
 
+// ===== LINE ==================================================================
+export type LineAppearance = {
+  lineWidth: number
+  lineStyle: LineStyle
+  smooth: boolean
+  showSymbol: boolean
+  areaFill: boolean
+  areaColor: string
+  areaOpacity: number
+}
+
+export type LineStyle = 'solid' | 'dashed' | 'dotted'
+
 // ===== SCATTER ===============================================================
-
-export type ScatterSymbol = 'circle' | 'rect' | 'triangle' | 'diamond'
-
 export type ScatterAppearance = {
   pointSize: number
   sizeRange: ScatterSizeRange
@@ -180,29 +216,10 @@ export type ScatterSizeRange = {
   max: number
 }
 
-export type ColorScaleAppearance = {
-  categorical: {
-    palette: string[]
-  }
-  continuous: {
-    startColor: string
-    endColor: string
-    visible: boolean
-    position: 'left' | 'right'
-    orientation: 'vertical' | 'horizontal'
-    min: number | null
-    max: number | null
-    labels: boolean
-  }
-}
+export type ScatterSymbol = 'circle' | 'rect' | 'triangle' | 'diamond'
 
-// ===== LINE ==================================================================
-export type LineAppearance = {
-  lineWidth: number
-  lineStyle: LineStyle
-  smooth: boolean
-  showSymbol: boolean
-  areaFill: boolean
-  areaColor: string
-  areaOpacity: number
-}
+// ===== TYPES =================================================================
+export type PhysicalType =
+  'integer' | 'float' | 'string' | 'boolean' | 'date' | 'datetime'
+
+export type SemanticType = 'numeric' | 'categorical' | 'temporal' | 'identifier'

@@ -1,13 +1,17 @@
 import type {
-  Aggregation,
+  ChartAggregationKey,
   ChartAppearanceSpec,
+  ChartDataSpec,
   ChartEncoding,
   ChartInstance,
   ChartInteractionSpec,
   DataField,
 } from '../../types/chart'
 
-export type SetAggregation = (aggregation: Aggregation) => void
+export type SetAggregation = <TKey extends ChartAggregationKey>(
+  key: TKey,
+  aggregation: ChartDataSpec[TKey],
+) => void
 
 export type SetAppearance = <TKey extends keyof ChartAppearanceSpec>(
   key: TKey,
