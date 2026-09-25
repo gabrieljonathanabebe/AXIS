@@ -1,5 +1,6 @@
 import AnimationWidget from './interaction/AnimationWidget'
 import { isLegendRelevant } from '../../chart/isLegendRelevant'
+import { isRadialChartType } from '../../chart/isRadialChartType'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import TooltipWidget from './interaction/TooltipWidget'
 import ZoomWidget from './interaction/ZoomWidget'
@@ -16,6 +17,7 @@ function InteractionInspectorTab({
   onSetInteraction,
 }: InteractionInspectorTabProps) {
   const { interaction } = chart.spec
+  const isRadialChart = isRadialChartType(chart.type)
   const showLegendInteraction = isLegendRelevant(chart)
   return (
     <div className="stack inspector-tab-content">
@@ -28,17 +30,20 @@ function InteractionInspectorTab({
         />
       ) : null}
       <TooltipWidget
+        showTrigger={!isRadialChart}
         value={interaction.tooltip}
         onChange={(tooltip) => {
           onSetInteraction('tooltip', tooltip)
         }}
       />
-      <ZoomWidget
-        value={interaction.zoom}
-        onChange={(zoom) => {
-          onSetInteraction('zoom', zoom)
-        }}
-      />
+      {!isRadialChart ? (
+        <ZoomWidget
+          value={interaction.zoom}
+          onChange={(zoom) => {
+            onSetInteraction('zoom', zoom)
+          }}
+        />
+      ) : null}
       <AnimationWidget
         value={interaction.animation}
         onChange={(animation) => {

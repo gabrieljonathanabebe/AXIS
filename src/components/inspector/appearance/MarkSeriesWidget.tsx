@@ -46,7 +46,10 @@ function MarkSeriesWidget({
   // CONSTANTS
   const { appearance } = chart.spec
   const hasSizeEncoding = Boolean(chart.spec.data.encoding.size)
-  const colorEncodingMode = getColorEncodingMode(chart.spec.data.encoding)
+  const colorEncodingMode = getColorEncodingMode(
+    chart.type,
+    chart.spec.data.encoding,
+  )
   // RETURN
   return (
     <InspectorWidget title="Mark / Series" icon={<Paintbrush size={16} />}>

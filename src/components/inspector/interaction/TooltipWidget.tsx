@@ -7,8 +7,9 @@ import InspectorWidget from '../InspectorWidget'
 import type { ChartInteractionSpec, TooltipTrigger } from '../../../types/chart'
 
 type TooltipWidgetProps = {
-  value: ChartInteractionSpec['tooltip']
   onChange: (value: ChartInteractionSpec['tooltip']) => void
+  showTrigger?: boolean
+  value: ChartInteractionSpec['tooltip']
 }
 
 const triggerOptions = [
@@ -16,7 +17,11 @@ const triggerOptions = [
   { label: 'Axis', value: 'axis' },
 ] satisfies { label: string; value: TooltipTrigger }[]
 
-function TooltipWidget({ value, onChange }: TooltipWidgetProps) {
+function TooltipWidget({
+  onChange,
+  showTrigger = true,
+  value,
+}: TooltipWidgetProps) {
   return (
     <InspectorWidget
       title="Tooltip"
@@ -28,19 +33,21 @@ function TooltipWidget({ value, onChange }: TooltipWidgetProps) {
         },
       }}
     >
-      <ControlRow label="Trigger">
-        <SegmentedControl
-          label="Tooltip trigger"
-          options={triggerOptions}
-          value={value.trigger}
-          onValueChange={(trigger) => {
-            onChange({
-              ...value,
-              trigger,
-            })
-          }}
-        />
-      </ControlRow>
+      {showTrigger ? (
+        <ControlRow label="Trigger">
+          <SegmentedControl
+            label="Tooltip trigger"
+            options={triggerOptions}
+            value={value.trigger}
+            onValueChange={(trigger) => {
+              onChange({
+                ...value,
+                trigger,
+              })
+            }}
+          />
+        </ControlRow>
+      ) : null}
     </InspectorWidget>
   )
 }

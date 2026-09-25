@@ -13,11 +13,14 @@ import type {
   LabelsAppearance,
 } from '../../../types/chart'
 
+// ===== TYPES =================================================================
 type LabelsWidgetProps = {
-  value: LabelsAppearance
+  isRadial?: boolean
   onChange: (value: LabelsAppearance) => void
+  value: LabelsAppearance
 }
 
+// ===== CONSTANTS =============================================================
 const fontWeightOptions = [
   { label: 'Light', value: 'light' },
   { label: 'Medium', value: 'medium' },
@@ -25,9 +28,9 @@ const fontWeightOptions = [
 ] satisfies { label: string; value: LabelFontWeight }[]
 
 const fontWeightValues = {
-  light: 300,
+  light: 200,
   medium: 500,
-  bold: 700,
+  bold: 800,
 } satisfies Record<LabelFontWeight, number>
 
 const positionOptions = [
@@ -36,7 +39,20 @@ const positionOptions = [
   { label: 'Inside', value: 'inside' },
 ] satisfies { label: string; value: LabelPosition }[]
 
-function LabelsWidget({ value, onChange }: LabelsWidgetProps) {
+const radialPositionOptions = [
+  { label: 'Outside', value: 'right' },
+  { label: 'Inside', value: 'inside' },
+] satisfies { label: string; value: LabelPosition }[]
+
+// ===== COMPONENT =============================================================
+function LabelsWidget({
+  isRadial = false,
+  onChange,
+  value,
+}: LabelsWidgetProps) {
+  const activePositionOptions = isRadial
+    ? radialPositionOptions
+    : positionOptions
   return (
     <InspectorWidget
       title="Labels"
@@ -101,7 +117,7 @@ function LabelsWidget({ value, onChange }: LabelsWidgetProps) {
       <ControlRow label="Position">
         <SelectControl
           label="Label position"
-          options={positionOptions}
+          options={activePositionOptions}
           value={value.position}
           onChange={(position) => {
             onChange({

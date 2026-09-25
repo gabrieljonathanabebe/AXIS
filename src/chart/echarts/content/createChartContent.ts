@@ -1,5 +1,6 @@
 import type { ChartType } from '../../../types/chart'
 import { createAggregatedChartContent } from './createAggregatedChartContent'
+import { createPieChartContent } from './createPieChartContent'
 import { createScatterChartContent } from './createScatterChartContent'
 
 import type {
@@ -10,7 +11,9 @@ import type {
 
 const chartContentBuilders = {
   bar: createAggregatedChartContent,
+  donut: createPieChartContent,
   line: createAggregatedChartContent,
+  pie: createPieChartContent,
   scatter: createScatterChartContent,
 } satisfies Record<ChartType, ChartContentBuilder>
 

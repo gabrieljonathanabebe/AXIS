@@ -1,26 +1,19 @@
-import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
-import type { ChartType } from '../../types/chart'
 import { useDraggable } from '@dnd-kit/core'
+import type { LucideIcon } from 'lucide-react'
+
+import { chartDefinitionList } from '../../chart/chartDefinitions'
 import WidgetButton from '../ui/WidgetButton'
+
+import type { ChartType } from '../../types/chart'
 
 type ChartPickerProps = {
   onSelectChartType: (type: ChartType) => void
 }
 
-const chartTypes: {
-  type: ChartType
-  label: string
-  icon: typeof ChartScatter
-}[] = [
-  { type: 'scatter', label: 'Scatter', icon: ChartScatter },
-  { type: 'line', label: 'Line', icon: ChartLine },
-  { type: 'bar', label: 'Bar', icon: ChartColumn },
-]
-
 type DraggableChartTypeProps = {
   type: ChartType
   label: string
-  icon: typeof ChartScatter
+  icon: LucideIcon
   onSelectChartType: (type: ChartType) => void
 }
 
@@ -57,7 +50,7 @@ function DraggableChartType({
 function ChartPicker({ onSelectChartType }: ChartPickerProps) {
   return (
     <div className="chart-type-picker auto-grid">
-      {chartTypes.map(({ type, label, icon }) => (
+      {chartDefinitionList.map(({ type, label, icon }) => (
         <DraggableChartType
           type={type}
           label={label}

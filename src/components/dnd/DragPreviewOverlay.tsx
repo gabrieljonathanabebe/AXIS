@@ -1,26 +1,13 @@
-import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
 import { DragOverlay } from '@dnd-kit/core'
+
+import { getChartDefinition } from '../../chart/chartDefinitions'
 import DataTypeIcon from '../data/DataTypeIcon'
 import IconBadge from '../ui/IconBadge'
+
 import type { ActiveDrag } from '../../types/ui'
 
 type DragPreviewOverlayProps = {
   activeDrag: ActiveDrag
-}
-
-const chartTypeMeta = {
-  scatter: {
-    label: 'Scatter',
-    icon: ChartScatter,
-  },
-  line: {
-    label: 'Line',
-    icon: ChartLine,
-  },
-  bar: {
-    label: 'Bar',
-    icon: ChartColumn,
-  },
 }
 
 function DragPreviewOverlay({ activeDrag }: DragPreviewOverlayProps) {
@@ -35,7 +22,9 @@ function DragPreviewOverlay({ activeDrag }: DragPreviewOverlayProps) {
       ) : activeDrag?.kind === 'chart-type' ? (
         <div className="widget chart-type-option stack center chart-type-drag-overlay">
           {(() => {
-            const { label, icon: Icon } = chartTypeMeta[activeDrag.chartType]
+            const { label, icon: Icon } = getChartDefinition(
+              activeDrag.chartType,
+            )
             return (
               <>
                 <Icon size={22} />

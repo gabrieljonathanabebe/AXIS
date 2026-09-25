@@ -106,7 +106,7 @@ export type ChartTitleAppearance = {
   alignment: 'left' | 'center' | 'right'
 }
 
-export type ChartType = 'scatter' | 'line' | 'bar'
+export type ChartType = 'scatter' | 'line' | 'bar' | 'pie' | 'donut'
 
 // ===== COLOR =================================================================
 export type ColorScaleAppearance = {

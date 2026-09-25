@@ -51,7 +51,21 @@ export function useChartCollection(dataset: Dataset) {
       type,
       spec: {
         ...chart.spec,
+        appearance: {
+          ...chart.spec.appearance,
+          labels: {
+            ...chart.spec.appearance.labels,
+            position: defaultSpec.appearance.labels.position,
+          },
+        },
         data: defaultSpec.data,
+        interaction: {
+          ...chart.spec.interaction,
+          tooltip: {
+            ...chart.spec.interaction.tooltip,
+            trigger: defaultSpec.interaction.tooltip.trigger,
+          },
+        },
       },
     }))
   }

@@ -1,4 +1,10 @@
-import { ChartColumn, ChartLine, ChartScatter } from 'lucide-react'
+import {
+  ChartColumn,
+  ChartLine,
+  ChartPie,
+  ChartScatter,
+  Donut,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type {
   Aggregation,
@@ -7,6 +13,7 @@ import type {
   SemanticType,
 } from '../types/chart'
 
+// ===== TYPES =================================================================
 export type EncodingKey = keyof ChartEncoding
 
 export type CompatibilityLevel = 'recommended' | 'supported' | 'invalid'
@@ -30,6 +37,24 @@ export type ChartDefinition = {
   defaultAggregation: Aggregation
   supportedAggregations: Aggregation[]
 }
+
+// ===== CONSTANTS =============================================================
+const radialEncodings = [
+  {
+    key: 'x',
+    label: 'Category',
+    recommendedTypes: ['categorical'],
+    required: true,
+    supportedTypes: ['temporal'],
+  },
+  {
+    key: 'y',
+    label: 'Value',
+    recommendedTypes: ['numeric'],
+    required: true,
+    supportedTypes: [],
+  },
+] satisfies EncodingDefinition[]
 
 export const chartDefinitions = {
   scatter: {
@@ -139,10 +164,29 @@ export const chartDefinitions = {
       },
     ],
   },
+  pie: {
+    defaultAggregation: 'sum',
+    encodings: radialEncodings,
+    icon: ChartPie,
+    inspectorSections: ['data', 'appearance', 'interaction'],
+    label: 'Pie',
+    supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
+    type: 'pie',
+  },
+  donut: {
+    defaultAggregation: 'sum',
+    encodings: radialEncodings,
+    icon: Donut,
+    inspectorSections: ['data', 'appearance', 'interaction'],
+    label: 'Donut',
+    supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
+    type: 'donut',
+  },
 } satisfies Record<ChartType, ChartDefinition>
 
 export const chartDefinitionList = Object.values(chartDefinitions)
 
+// ===== FUNCTIONS =============================================================
 export function getChartDefinition(type: ChartType): ChartDefinition {
   return chartDefinitions[type]
 }

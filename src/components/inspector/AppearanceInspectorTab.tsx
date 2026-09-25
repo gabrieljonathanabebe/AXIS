@@ -3,6 +3,7 @@ import ChartTitleWidget from './appearance/ChartTitleWidget'
 import ColorScaleWidget from './appearance/ColorScaleWidget'
 import GridWidget from './appearance/GridWidget'
 import { isLegendRelevant } from '../../chart/isLegendRelevant'
+import { isRadialChartType } from '../../chart/isRadialChartType'
 import LabelsWidget from './appearance/LabelsWidget'
 import LegendWidget from './appearance/LegendWidget'
 import MarkSeriesWidget from './appearance/MarkSeriesWidget'
@@ -19,12 +20,14 @@ function AppearanceInspectorTab({
   onSetAppearance,
   onSetChartAppearance,
 }: AppearanceInspectorTabProps) {
-  // CONSTANTS
+  // ===== CONSTANTS ===========================================================
   const { appearance } = chart.spec
   const { encoding } = chart.spec.data
+  const isRadialChart = isRadialChartType(chart.type)
+  const showColorScale =
+    !isRadialChart && encoding.color?.semantic_type === 'numeric'
   const showLegend = isLegendRelevant(chart)
-  const showColorScale = encoding.color?.semantic_type === 'numeric'
-  // RETURN TSX COMPONENT
+  // ===== RETURN ==============================================================
   return (
     <div className="stack inspector-tab-content">
       <ChartTitleWidget
@@ -34,6 +37,7 @@ function AppearanceInspectorTab({
         }}
       />
       <LabelsWidget
+        isRadial={isRadialChart}
         value={appearance.labels}
         onChange={(labels) => {
           onSetAppearance('labels', labels)
@@ -61,26 +65,30 @@ function AppearanceInspectorTab({
           }}
         />
       ) : null}
-      <GridWidget
-        value={appearance.grid}
-        onChange={(grid) => {
-          onSetAppearance('grid', grid)
-        }}
-      />
-      <AxisWidget
-        orientation="x"
-        value={appearance.xAxis}
-        onChange={(xAxis) => {
-          onSetAppearance('xAxis', xAxis)
-        }}
-      />
-      <AxisWidget
-        orientation="y"
-        value={appearance.yAxis}
-        onChange={(yAxis) => {
-          onSetAppearance('yAxis', yAxis)
-        }}
-      />
+      {!isRadialChart ? (
+        <>
+          <GridWidget
+            value={appearance.grid}
+            onChange={(grid) => {
+              onSetAppearance('grid', grid)
+            }}
+          />
+          <AxisWidget
+            orientation="x"
+            value={appearance.xAxis}
+            onChange={(xAxis) => {
+              onSetAppearance('xAxis', xAxis)
+            }}
+          />
+          <AxisWidget
+            orientation="y"
+            value={appearance.yAxis}
+            onChange={(yAxis) => {
+              onSetAppearance('yAxis', yAxis)
+            }}
+          />
+        </>
+      ) : null}
     </div>
   )
 }

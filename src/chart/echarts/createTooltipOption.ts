@@ -3,6 +3,7 @@ import type { TooltipComponentOption } from 'echarts'
 import type { ChartSpec, ChartType } from '../../types/chart'
 import type { ChartTheme } from './chartTheme'
 import { createTooltipFormatter } from './createTooltipFormatter'
+import { isRadialChartType } from '../isRadialChartType'
 
 // ===== TYPES =================================================================
 type CreateTooltipOptionsParams = {
@@ -34,6 +35,6 @@ export function createTooltipOption({
       color: theme.text,
       fontSize: theme.tooltip.fontSize,
     },
-    trigger: tooltip.trigger,
+    trigger: isRadialChartType(chartType) ? 'item' : tooltip.trigger,
   }
 }

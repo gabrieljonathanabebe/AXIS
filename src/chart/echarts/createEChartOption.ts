@@ -9,6 +9,7 @@ import { createDataZoomOption } from './createDataZoomOption'
 import { createLegendOption } from './createLegendOption'
 import { createTitleOption } from './createTitleOption'
 import { createTooltipOption } from './createTooltipOption'
+import { isRadialChartType } from '../isRadialChartType'
 
 // ===== FUNCTION ==============================================================
 export function createEChartOption(
@@ -20,7 +21,8 @@ export function createEChartOption(
 ): EChartsOption {
   // ===== CONSTANTS ===========================================================
   const { appearance, interaction } = spec
-  const colorEncodingMode = getColorEncodingMode(spec.data.encoding)
+  const colorEncodingMode = getColorEncodingMode(chartType, spec.data.encoding)
+  const isRadialChart = isRadialChartType(chartType)
   const content = createChartContent({
     chartType,
     dataset,
@@ -39,14 +41,18 @@ export function createEChartOption(
       colorEncodingMode === 'categorical'
         ? appearance.colorScale.categorical.palette
         : [appearance.color],
-    dataZoom: createDataZoomOption(interaction.zoom),
-    grid: {
-      bottom: 72,
-      containLabel: false,
-      left: 72,
-      right: 56,
-      top: 56,
-    },
+    dataZoom: isRadialChart
+      ? undefined
+      : createDataZoomOption(interaction.zoom),
+    grid: isRadialChart
+      ? undefined
+      : {
+          bottom: 72,
+          containLabel: false,
+          left: 72,
+          right: 56,
+          top: 56,
+        },
     legend: createLegendOption({
       appearance: appearance.legend,
       colorEncodingMode,

@@ -21,7 +21,7 @@ export function createAggregatedChartContent(
   const { encoding } = spec.data
   const points = queryResult?.points ?? []
   const categories = Array.from(new Set(points.map((point) => point.x ?? '')))
-  const colorEncodingMode = getColorEncodingMode(encoding)
+  const colorEncodingMode = getColorEncodingMode(chartType, encoding)
   const hasBarColor = chartType === 'bar' && colorEncodingMode === 'continuous'
   const seriesNames = encoding.series
     ? Array.from(new Set(points.map((point) => point.series)))

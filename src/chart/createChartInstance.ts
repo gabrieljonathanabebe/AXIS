@@ -7,6 +7,7 @@ import type {
   ChartType,
   Dataset,
 } from '../types/chart'
+import { isRadialChartType } from './isRadialChartType'
 
 type CreateChartInstanceParams = {
   type: ChartType
@@ -19,6 +20,7 @@ export function createDefaultChartSpec(
   dataset: Dataset,
 ): ChartSpec {
   const definition = getChartDefinition(type)
+  const isRadialChart = isRadialChartType(type)
   return {
     data: {
       encoding: getDefaultEncoding(type, dataset),
@@ -32,8 +34,8 @@ export function createDefaultChartSpec(
           palette: [...DEFAULT_CATEGORICAL_PALETTE],
         },
         continuous: {
-          startColor: '#BFE3FF',
-          endColor: '#1E90FF',
+          startColor: '#fe0314',
+          endColor: '#00fa2e',
           visible: true,
           position: 'right',
           orientation: 'vertical',
@@ -85,7 +87,7 @@ export function createDefaultChartSpec(
       },
       labels: {
         enabled: false,
-        position: type === 'scatter' ? 'right' : 'top',
+        position: type === 'scatter' || isRadialChart ? 'right' : 'top',
         color: '#eef4ff',
         fontSize: 12,
         fontWeight: 'medium',
@@ -120,7 +122,7 @@ export function createDefaultChartSpec(
       },
       tooltip: {
         enabled: true,
-        trigger: type === 'scatter' ? 'item' : 'axis',
+        trigger: type === 'scatter' || isRadialChart ? 'item' : 'axis',
         fields: [],
         valueFormat: 'auto',
         delay: 0,
