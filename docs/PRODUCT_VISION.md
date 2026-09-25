@@ -2,49 +2,49 @@
 
 ## 1. Vision
 
-Cevyn ist eine moderne visuelle Data-Analytics-Plattform.
+Cevyn ist ein visual-first Visual-Analytics-Workspace.
 
-Das langfristige Ziel ist, Rohdaten innerhalb eines zusammenhängenden
-Workflows in verständliche Daten, Analysen, Visualisierungen,
-Dashboards und Machine-Learning-Ergebnisse zu überführen.
+Das Kernprodukt ist die verständliche, ausdrucksstarke und interaktive
+Visualisierung von Daten. Cevyn nutzt Apache ECharts dafür tiefgehend,
+ohne dessen Renderer-Modell zum Produktmodell zu machen.
+
+Cevyn ist keine breite Data-/Analytics-Plattform, keine umfangreiche
+ETL-Lösung und kein Fabric-Klon. Data Handling, AI und spätere
+ML-Fähigkeiten dienen der visuellen Analyse und bleiben auf diesen
+Kontext begrenzt.
 
 Der Nutzer soll dafür möglichst wenig oder keinen Code schreiben
 müssen.
 
-Cevyn ist langfristig nicht nur ein Chart Builder.
-
-Der Visualization Builder bildet den ersten produktiven Layer einer
-größeren Analytics-Plattform.
+Cevyn geht über einen isolierten Chart Builder hinaus, indem Charts zu
+interaktiven Dashboards und geteilten Analyseergebnissen verbunden
+werden.
 
 ## 2. Core Workflow
 
 Der grundlegende Produktfluss ist:
 
 ```text
-Import
+Data
 → Understand
-→ Clean
-→ Transform
-→ Calculate
-→ Analyze
+→ Explore
 → Visualize
-→ Build Dashboard
-→ Save / Share
-→ ML / AI
+→ Dashboard
+→ Share
 ```
 
-Rohdaten müssen nicht bereits exakt die Struktur besitzen, die für
-eine Analyse oder Visualisierung benötigt wird.
-
-Cevyn soll Nutzern ermöglichen, die benötigte analytische Struktur
-visuell zu erzeugen.
+Rohdaten müssen nicht bereits exakt die Struktur besitzen, die eine
+Visualisierung benötigt. Cevyn bietet dafür gezieltes Profiling,
+semantische Rollen, Aggregationen und leichte Transformationen, aber
+keine allgemeine Datenintegrations- oder ETL-Umgebung.
 
 ## 3. Product Principles
 
 ### Visual First
 
-Komplexe Datenoperationen sollen möglichst über verständliche visuelle
-Interaktionen zugänglich sein.
+Charts und Dashboards sind das Zentrum des Produkts. Datenverständnis,
+Explore und AI führen in dieselbe Visualisierungsengine und dieselben
+ChartSpecs.
 
 ### Progressive Complexity
 
@@ -53,12 +53,15 @@ Einfache Aufgaben sollen einfach bleiben.
 Fortgeschrittene Optionen werden erst sichtbar, wenn sie benötigt
 werden.
 
+Dashboard, hochwertige Interaktion und geringe Komplexität haben
+Vorrang vor einer möglichst breiten Feature-Sammlung.
+
 ### One Shared Data Model
 
-Data, Visualize und AI arbeiten auf denselben Datasets, Fields,
-Calculated Fields, Metrics und Transformationsdefinitionen.
+Manuelles Bauen, AI Commands und Explore arbeiten auf denselben
+Datasets, Fields, ChartSpecs, Dashboard-Objekten und Cevyn Actions.
 
-Keine isolierten Datenmodelle pro Workspace.
+Keine isolierten Datenmodelle pro Nutzungsmodus.
 
 ### Direct Manipulation
 
@@ -93,42 +96,38 @@ Die visuelle Sprache unterstützt die Analyse und ist kein Selbstzweck.
 
 ## 4. Product Structure
 
-Cevyn wird langfristig in Workspaces organisiert.
+Cevyn unterstützt drei komplementäre Nutzungsmodi:
+
+- manuell bauen;
+- Cevyn in natürlicher Sprache fragen;
+- Explore für automatisch erzeugte Analysevorschläge nutzen.
+
+Alle drei Modi münden in dieselbe Chart- und Dashboard-Engine.
 
 ```mermaid
 flowchart LR
-    C[Cevyn]
-
-    C --> V[Visualize]
-    C --> D[Data]
-    C --> A[AI]
-    C --> S[Share]
-
-    V --> V1[Charts]
-    V --> V2[Dashboards]
-    V --> V3[KPIs]
-
-    D --> D1[Profiling]
-    D --> D2[Cleaning]
-    D --> D3[Transformations]
-
-    A --> A1[Forecasting]
-    A --> A2[Machine Learning]
-    A --> A3[Advanced Analysis]
-
-    S --> S1[Project Files]
-    S --> S2[Export]
-    S --> S3[Publishing]
+    D[Data] --> U[Understand]
+    U --> M[Manual Build]
+    U --> A[Ask Cevyn]
+    U --> E[Explore]
+    M --> V[Visualize]
+    A --> V
+    E --> V
+    V --> B[Dashboard]
+    B --> S[Share]
 ```
 
-Die Workspaces sind keine voneinander getrennten Anwendungen.
+Die Modi sind keine voneinander getrennten Anwendungen. Sie verwenden
+einen gemeinsamen Project State, gemeinsame Actions und dieselben
+ChartSpecs.
 
-Sie verwenden einen gemeinsamen Project State und eine gemeinsame
-Data Engine.
+## 5. Visual Analytics Workspace
 
-## 5. Visualize Workspace
+Visualize ist der zentrale Analyse- und Dashboard-Workspace.
 
-Visualize ist der visuelle Analyse- und Dashboard-Workspace.
+Apache ECharts wird nicht nur als einfacher Chart-Renderer genutzt.
+Encodings, Series, Interaktionen, Zoom, Selections und koordinierte
+Dashboard-Zustände sollen seine Fähigkeiten gezielt ausschöpfen.
 
 Die grundlegende Oberfläche besteht aus:
 
@@ -191,26 +190,29 @@ Appearance
 Interaction
 ```
 
-## 6. Cevyn Data
+## 6. Data Handling für Visual Analytics
 
-Cevyn Data ist der Workspace für Datenverständnis und
-Datenvorbereitung.
-
-Langfristige Fähigkeiten:
+Data Handling ist bewusst auf die Anforderungen visueller Analyse
+begrenzt. Cevyn soll Daten verständlich und visualisierbar machen,
+aber keine allgemeine ETL- oder Data-Engineering-Plattform werden.
 
 ### Data View
 
 Tabellarische Ansicht des Datasets.
 
-### Schema
+### Semantische Rollen und Typen
 
 - Physical Types
 - Semantic Types
+- visuelle Rollen und Feldverwendung
 - Type Override
-- Rename
 - Field Metadata
 
-### Profiling
+### Deterministisches Profiling
+
+Data Profiling wird zunächst deterministisch im Python-Backend
+ausgeführt. AI kann Ergebnisse später priorisieren und erklären,
+ersetzt aber nicht ihre Berechnung.
 
 Beispiele:
 
@@ -219,32 +221,24 @@ Beispiele:
 - Unique Values
 - Min / Max
 - Mean / Median
+- Summary Statistics
 - Distribution
 - Category Frequency
 
-### Cleaning
-
-Beispiele:
+### Datenqualität
 
 - Missing Values
 - Duplicates
 - Invalid Values
-- Whitespace
-- Replace Values
 - Type Conversion
 
-### Transformations
-
-Beispiele:
+### Begrenzte Operationen und Transformationen
 
 - Filter
 - Sort
-- Calculated Fields
 - Group / Aggregate
-- Join
-- Pivot
-- Split Column
-- Combine Columns
+- leichte Calculated Fields
+- einfache Ableitungen für Encodings und Visualisierungen
 
 ### Calculated Fields
 
@@ -276,8 +270,8 @@ Langfristig sollen mindestens folgende Kategorien unterstützt werden:
 - Type Conversion
 
 Calculated Fields sollen intern als strukturierte Expression bzw. AST
-repräsentiert werden und nicht von einer bestimmten Execution Engine
-abhängen.
+repräsentiert werden. Ihr Scope bleibt auf leichte, für Visual Analytics
+benötigte Transformationen begrenzt.
 
 ## 7. Canonical Data Use Case
 
@@ -359,7 +353,7 @@ Metrics sollen langfristig in:
 - KPI Cards
 - Tables
 - Dashboards
-- AI Analyses
+- Explore-Ergebnisse
 
 wiederverwendbar sein.
 
@@ -370,11 +364,12 @@ Aktueller Core:
 - Scatter
 - Line
 - Bar
+- Pie
+- Donut
 
 Langfristig mögliche Visualisierungen:
 
 - Area
-- Pie / Donut
 - Heatmap
 - Boxplot
 - Treemap
@@ -402,12 +397,14 @@ Zusätzlich native Dashboard Visuals:
 
 Nicht die Anzahl der Charttypen ist das primäre Produktziel.
 
-Data Workflow, Berechnungen, Dashboards und Wiederverwendbarkeit haben
-höhere Priorität als eine möglichst große Chartbibliothek.
+Ausdrucksstarke Chart-Konfiguration, Dashboard-Interaktion und geringe
+Komplexität haben höhere Priorität als eine möglichst große
+Chartbibliothek.
 
 ## 10. Dashboards
 
-Cevyn soll mehrere Visualisierungen auf einer Canvas unterstützen.
+Cevyn soll interaktive Multi-Chart-Dashboards auf einer gemeinsamen
+Canvas unterstützen.
 
 Beispiel:
 
@@ -425,53 +422,50 @@ Langfristige Interaktionen:
 
 - Filtering
 - Cross Filtering
+- Cross Highlighting
 - Selection
+- Drill-down
 - Zoom
+- Pan
 - Tooltip
 - Legend Interaction
-- Dashboard Controls
+- gemeinsame Filter und Dashboard Controls
 
-## 11. Cevyn AI
+## 11. AI Commands und Explore
 
-Cevyn AI erweitert die gemeinsame Data Engine um Machine Learning und
-fortgeschrittene Analyse.
+### Ask Cevyn
 
-Geplante Bereiche:
-
-- Forecasting
-- Clustering
-- Anomaly Detection
-- Regression
-- Classification
-- Feature Importance
-
-Machine-Learning-Ergebnisse sollen wieder in den normalen
-Cevyn-Workflow zurückfließen können.
+AI Commands übersetzen natürliche Sprache in bestehende Cevyn Actions
+und ChartSpecs. AI erzeugt niemals direkt ECharts-Code und umgeht nicht
+das Cevyn Domain Model.
 
 Beispiel:
+
+> Show revenue by month and highlight the strongest decline.
+
+Das Ergebnis besteht aus nachvollziehbaren, editierbaren Aktionen und
+wird über dieselbe Chart Engine wie manuell erstellte Visualisierungen
+gerendert.
+
+### Explore
+
+Explore ist ein zentrales Produktfeature für geführte visuelle Analyse:
 
 ```text
-Customer Dataset
-→ Clustering
-→ cluster_id
-→ Color Encoding im Scatter Plot
+Python erzeugt Candidate Insights
+→ AI priorisiert und erklärt
+→ Cevyn visualisiert über dieselbe Chart Engine
 ```
 
-### AI Assistant
+Statistische Berechnungen, Profiling und Candidate Generation bleiben
+deterministisch und nachvollziehbar. AI unterstützt Auswahl,
+Orchestrierung und Erklärung.
 
-Langfristig kann ein AI Assistant Analysefragen unterstützen.
+### Machine Learning
 
-Beispiel:
-
-> Why did revenue fall in August?
-
-Grundprinzip:
-
-Statistische Berechnungen und Datenoperationen werden von der Data
-Engine ausgeführt.
-
-Ein LLM kann Ergebnisse orchestrieren und erklären, soll aber nicht
-die eigentliche analytische Berechnung ersetzen.
+ML bleibt eine langfristige Erweiterung von Visual Analytics. Mögliche
+Ergebnisse wie Forecasts, Cluster oder Anomalien fließen in Charts und
+Dashboards zurück. Cevyn wird kein eigenständiges ML-Studio.
 
 ## 12. Cevyn Share
 
@@ -517,7 +511,7 @@ Dazu können gehören:
 - Project Metadata
 - Datasets
 - Calculated Fields
-- Transformations
+- leichte Transformationsdefinitionen
 - Metrics
 - ChartSpecs
 - Chart Layouts
@@ -532,18 +526,21 @@ Parquet-Daten und Assets enthalten.
 
 ## 14. Long-Term Positioning
 
-Cevyn soll sich von einem Chart Builder zu einer visuellen
-Analytics-Plattform entwickeln.
+Cevyn entwickelt sich von einem Chart Builder zu einem visual-first
+Visual-Analytics-Workspace.
 
 Kurz:
 
 ```text
-Raw Data
-→ Analysis
-→ Visualizations
-→ Dashboards
-→ Models
+Data
+→ Understand
+→ Explore
+→ Visualize
+→ Dashboard
+→ Share
 ```
 
-ohne dass Nutzer für typische Workflows zwingend Python, SQL oder
-eine proprietäre Formelsprache schreiben müssen.
+Der Schwerpunkt liegt auf ausdrucksstarker Visualisierung,
+hochwertiger Dashboard-Interaktion und geringer Komplexität. Cevyn
+bleibt bewusst fokussierter als eine breite Data-Plattform, eine
+umfangreiche ETL-Lösung oder ein Fabric-ähnliches System.

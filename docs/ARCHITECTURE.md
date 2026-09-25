@@ -6,9 +6,10 @@ Die Architektur von Cevyn soll:
 
 - modular bleiben;
 - externe Libraries vom Domain Model trennen;
-- mehrere Workspaces auf einem gemeinsamen Core ermöglichen;
+- mehrere Produktmodi auf einem gemeinsamen Core ermöglichen;
 - Visualisierungen unabhängig vom Renderer beschreiben;
-- Data Transformations unabhängig von der Execution Engine definieren;
+- Data Handling auf Visual Analytics begrenzen;
+- AI über validierte Cevyn Actions in den Core integrieren;
 - Project State serialisierbar halten;
 - spätere Persistenz und `.cevyn`-Dateien ermöglichen.
 
@@ -20,81 +21,67 @@ Microservices sind aktuell nicht vorgesehen.
 
 ```mermaid
 flowchart TB
-    Shell[App Shell]
+    Shell[Visual Analytics Workspace]
 
-    Shell --> Visualize[Visualize Workspace]
-    Shell --> Data[Data Workspace]
-    Shell --> AI[AI Workspace]
-    Shell --> Share[Share Workspace]
+    Shell --> Manual[Manual Build]
+    Shell --> Ask[Ask Cevyn]
+    Shell --> Explore[Explore]
 
-    Visualize --> Core[Shared Domain Core]
-    Data --> Core
-    AI --> Core
-    Share --> Core
+    Manual --> Core[Shared Domain Core]
+    Ask --> Actions[Cevyn Actions]
+    Explore --> Actions
+    Actions --> Core
 
     Core --> Dataset[Dataset Model]
-    Core --> Transform[Transformations]
-    Core --> Calculated[Calculated Fields]
-    Core --> Metrics[Metrics]
+    Core --> Profile[Profiles]
     Core --> Charts[Chart Specs]
+    Core --> Dashboard[Dashboard State]
     Core --> Project[Project State]
 ```
 
-Workspaces sind unterschiedliche UX-Kontexte.
-
+Die Produktmodi sind unterschiedliche Zugänge zum selben Workspace.
 Sie verwenden keine voneinander isolierten Datenmodelle.
 
 ## 3. App Shell
 
-Die langfristige App Shell besteht aus:
+Die langfristige App Shell rahmt einen gemeinsamen
+Visual-Analytics-Workspace:
 
 ```text
 AppShell
 ├── TopBar
-├── NavigationRail
-└── ActiveWorkspace
-```
-
-Die Navigation Rail wechselt zwischen Workspaces.
-
-Ein Workspace ersetzt den zentralen Arbeitsbereich.
-
-Data oder AI werden nicht als zusätzliche horizontale Panels neben
-Build Panel, Canvas und Inspector geöffnet.
-
-### Visualize
-
-```text
-Navigation Rail
-│
-└── Visualize Workspace
+└── VisualAnalyticsWorkspace
     ├── Build Panel
     ├── Canvas
     └── Inspector
 ```
 
-### Data
+Data Understanding, Ask Cevyn und Explore werden als integrierte Modi
+oder fokussierte Ansichten angebunden. Sie bilden keine unabhängige
+Suite neben dem Visual-Analytics-Workspace.
+
+### Manual Build
 
 ```text
-Navigation Rail
-│
-└── Data Workspace
-    ├── Data View
-    ├── Profile
-    └── Transformations
+Build Panel
+→ Canvas
+→ Inspector
 ```
 
-### AI
+### Ask Cevyn
 
 ```text
-Navigation Rail
-│
-└── AI Workspace
-    ├── Forecast
-    ├── Clustering
-    ├── Anomaly Detection
-    ├── Regression
-    └── Classification
+Natural Language
+→ validated Cevyn Actions
+→ ChartSpec / Dashboard State
+```
+
+### Explore
+
+```text
+Deterministic Candidate Insights
+→ AI Ranking / Explanation
+→ ChartSpec
 ```
 
 ## 4. Technical Stack
@@ -122,16 +109,15 @@ nicht Teil des Domain Models.
 - Polars für CSV-Daten und gruppierte Chart-Abfragen
 
 Datasets liegen aktuell als Polars-DataFrames im In-Memory-Store.
-Line- und Bar-Charts nutzen serverseitige Gruppierungsaggregationen.
+Line-, Bar-, Pie- und Donut-Charts nutzen serverseitige
+Gruppierungsaggregationen.
 Scatter rendert bisher einen begrenzten Ausschnitt der Rohdaten.
 
-Langfristig vorgesehen:
+Bei konkretem Bedarf vorgesehen:
 
 - DuckDB
-- NumPy
-- scikit-learn
-- optional statsmodels
-- PyTorch nur bei konkretem Bedarf
+- NumPy, scikit-learn oder statsmodels für klar begrenzte statistische
+  und spätere ML-Erweiterungen der visuellen Analyse
 
 PostgreSQL kann später für Application Metadata und persistente
 Projects verwendet werden.
@@ -140,18 +126,31 @@ Projects verwendet werden.
 
 ```mermaid
 flowchart TB
-    UI[React + TypeScript]
+    UI[Visual Analytics Workspace]
+    Core[Shared Domain Core]
+    Adapter[ECharts Adapter]
+    API[FastAPI API]
+    Query[Visual Query Engine]
+    Profile[Deterministic Profiling]
+    Candidates[Candidate Insights]
+    Prompt[Natural Language]
+    AI[AI Ranking / Explanation]
+    Actions[Validated Cevyn Actions]
 
-    UI --> API[FastAPI API]
+    UI --> Core
+    Core --> Adapter
+    UI --> API
+    API --> Query
+    API --> Profile
+    API --> Candidates
+    Candidates --> AI
+    Prompt --> AI
+    AI --> Actions
+    Actions --> Core
 
-    API --> Engine[Cevyn Data Engine]
-
-    Engine --> Polars[Polars current]
-    Engine --> DuckDB[DuckDB later]
-    Engine --> ML[ML Layer]
-
-    ML --> SK[scikit-learn]
-    ML --> Stats[statsmodels optional]
+    Query --> Polars[Polars current]
+    Profile --> Polars
+    Candidates --> Polars
 
     API --> Metadata[Application Metadata]
     Metadata --> Postgres[PostgreSQL later]
@@ -159,8 +158,13 @@ flowchart TB
 
 Polars ist bereits im Einsatz. DuckDB ist noch nicht eingeführt.
 
-Die Data Engine soll so strukturiert werden, dass die aktuelle
-Execution Engine später ausgetauscht oder erweitert werden kann.
+Backend-Komponenten bleiben auf Profiling, Visual Queries, leichte
+Transformationen und Candidate Generation begrenzt. Eine andere
+Execution Engine wird erst bei einem konkreten Skalierungsbedarf
+eingeführt.
+
+AI erzeugt keine ECharts-Optionen. AI-Ausgaben werden als Cevyn Actions
+validiert und verändern ausschließlich das bestehende Domain Model.
 
 ## 6. Chart Architecture
 
@@ -389,7 +393,9 @@ farbige Series-Legend angezeigt.
 
 ## 11. Data Architecture
 
-Der analytische Datenfluss lautet grundsätzlich:
+Der Datenfluss ist auf Visual Analytics begrenzt. Er unterstützt
+Verständnis, Visual Queries und leichte Vorbereitung, aber keine
+allgemeinen ETL-Pipelines.
 
 ```mermaid
 flowchart LR
@@ -411,10 +417,25 @@ flowchart LR
 
 Nicht jeder Workflow benötigt jeden Schritt.
 
+### Deterministic Profiling
+
+Profiling wird zunächst im Python-Backend ausgeführt:
+
+```text
+Dataset
+→ Physical und Semantic Types
+→ Summary Statistics
+→ Missing Values und Duplicates
+→ Profile Result
+```
+
+Profile Results sind deterministische Datenprodukte. AI kann sie
+priorisieren und erklären, berechnet sie aber nicht selbst.
+
 ### Aggregated Chart Query
 
-Line- und Bar-Charts verwenden ein gruppiertes Backend-Resultset. Der Request
-enthält:
+Line-, Bar-, Pie- und Donut-Charts verwenden ein gruppiertes
+Backend-Resultset. Der Request enthält:
 
 - `x` und `y`;
 - optional `series`;
@@ -433,9 +454,31 @@ weder die Gruppierung noch `value`. Color darf dasselbe Feld wie Y mit einer
 eigenen Aggregation redundant codieren, aber nicht dasselbe Feld wie X oder
 Series verwenden.
 
+### Explore Candidate Pipeline
+
+Explore verwendet denselben Daten- und Chartpfad wie manuell erstellte
+Visualisierungen:
+
+```text
+Dataset und Profile Results
+→ Python Candidate Generation
+→ Candidate Insights
+→ AI Ranking / Explanation
+→ validated Cevyn Actions
+→ ChartSpec
+→ ECharts Adapter
+```
+
+Candidate Generation bleibt deterministisch. AI priorisiert und
+erklärt Kandidaten, erzeugt aber weder analytische Ergebnisse noch
+direkten ECharts-Code.
+
 ## 12. Calculated Fields
 
 Calculated Fields sind Row-Level Expressions.
+
+Sie bleiben auf leichte Ableitungen begrenzt, die für Encodings,
+Aggregationen und visuelle Analyse benötigt werden.
 
 Beispiel:
 
@@ -553,36 +596,32 @@ Inkompatible Fields sollen nicht zwingend global versteckt werden.
 
 Drop Targets können den Zustand visuell kommunizieren.
 
-## 16. Workspace Data Sharing
+## 16. Shared State Across Product Modes
 
-Alle Workspaces verwenden denselben Shared Core.
+Alle Produktmodi verwenden denselben Shared Core.
 
 ```mermaid
 flowchart TB
     Core[Shared Data Model]
 
-    Data[Data Workspace]
-    Visualize[Visualize Workspace]
-    AI[AI Workspace]
+    Manual[Manual Build]
+    Ask[Ask Cevyn]
+    Explore[Explore]
 
-    Data --> Core
-    Visualize --> Core
-    AI --> Core
+    Manual --> Core
+    Ask --> Core
+    Explore --> Core
 
-    Core --> Result[Calculated Fields / Metrics / Fields]
+    Core --> Result[Fields / Metrics / ChartSpecs / Dashboard State]
 
-    Result --> Data
-    Result --> Visualize
-    Result --> AI
+    Result --> Manual
+    Result --> Ask
+    Result --> Explore
 ```
 
-Beispiel:
-
-Ein Calculated Field, das in Cevyn Data erzeugt wurde, steht direkt in
-Visualize zur Verfügung.
-
-Ein ML-Ergebnis wie `cluster_id` kann später wiederum als Field für
-Visualisierungen verwendet werden.
+Eine manuelle Änderung, ein AI Command und ein Explore-Vorschlag
+erzeugen dieselben Actions und ChartSpecs. Dadurch bleiben Ergebnisse
+editierbar und zwischen den Modi konsistent.
 
 ## 17. Project State
 
@@ -591,12 +630,14 @@ Langfristiges Domain Model:
 ```text
 Project
 ├── Dataset[]
-├── Transformation[]
+├── DataProfile[]
+├── LightTransformation[]
 ├── CalculatedField[]
 ├── Metric[]
-├── Visualization[]
+├── ChartInstance[]
 ├── Dashboard[]
-└── Analysis[]
+├── SharedFilter[]
+└── SelectionState
 ```
 
 Ein Wert soll möglichst einmal definiert und anschließend
@@ -609,7 +650,7 @@ Profit = Revenue - Cost
 
 ├── Bar Chart
 ├── KPI
-└── Forecast
+└── Dashboard Filter
 ```
 
 ## 18. Persistence
@@ -688,5 +729,5 @@ Bei neuen Features zuerst fragen:
 > Gehört diese Funktion in das bestehende Domain Model oder entsteht
 > gerade unnötig eine zweite parallele Struktur?
 
-Gemeinsame Konzepte sollen zentral modelliert und von mehreren
-Workspaces wiederverwendet werden.
+Gemeinsame Konzepte sollen zentral modelliert und von Manual Build,
+Ask Cevyn und Explore wiederverwendet werden.

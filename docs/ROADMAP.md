@@ -24,8 +24,8 @@ unter `Completed` stehen.
 Cevyn befindet sich aktuell im Aufbau des Visualization Core.
 
 Der bestehende Chart Builder soll zunächst stabil abgeschlossen und
-anschließend um Data Workflow, Multi-Chart Dashboards und Persistence
-erweitert werden.
+anschließend zu einem interaktiven Multi-Chart-Dashboard ausgebaut
+werden. Data Handling bleibt auf Visual Analytics begrenzt.
 
 ## 3. Completed
 
@@ -42,19 +42,22 @@ erweitert werden.
 - Scatter Chart
 - Line Chart
 - Bar Chart
+- Pie Chart
+- Donut Chart
 - Apache ECharts Integration
 - X/Y Encodings
 - Scatter Size Encoding
 - Scatter Color Encoding
 - Line Series
 - Bar Series
-- gruppierte Line-/Bar-Aggregation über Polars im Backend
-- Legend für diskrete Line-/Bar-Series und Scatter-Kategorien
+- Pie-/Donut-Series über einen gemeinsamen radialen Content-Builder
+- gruppierte Line-/Bar-/Pie-/Donut-Aggregation über Polars im Backend
+- Legend für diskrete Series, Scatter-Kategorien und radiale Kategorien
 - Continuous Color Scale für numerische Scatter-Color-Encodings
 - backend-aggregiertes numerisches Color-Encoding für Bar-Charts
 - unabhängige Value- und Color-Aggregation für Bar-Charts
 - Legend Interaction mit Multiple-, Single- und deaktivierter Auswahl
-- formatierte Standard-Tooltips für Scatter, Line und Bar
+- formatierte Standard-Tooltips für Scatter, Line, Bar, Pie und Donut
 
 ### Inspector Foundation
 
@@ -85,7 +88,7 @@ Aktueller Fokus:
 
 ### Visualization Completion
 
-- Inspector-Polish für Scatter, Line und Bar
+- Inspector-Polish für Scatter, Line, Bar, Pie und Donut
 
 ### Build Panel Cleanup
 
@@ -109,86 +112,32 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-## 5. Next – App Shell
+Priorität nach Abschluss des aktuellen Slices:
+
+1. Multi-Chart Canvas;
+2. Dashboard Objects und Interaktion;
+3. Understand und fokussiertes Data Handling;
+4. Project Persistence und Share;
+5. Ask Cevyn und Explore.
+
+## 5. Next – Visual Analytics Workspace Shell
 
 Nach Abschluss des aktuellen Visualization Core:
 
 ```text
 AppShell
 ├── TopBar
-├── NavigationRail
-└── ActiveWorkspace
+└── VisualAnalyticsWorkspace
+    ├── Build Panel
+    ├── Canvas
+    └── Inspector
 ```
 
-Erste Workspaces:
+Manual Build bleibt der erste vollständig nutzbare Modus. Understand,
+Ask Cevyn und Explore werden später als integrierte Modi oder
+fokussierte Ansichten angebunden, nicht als separate Produktsuite.
 
-```text
-Visualize
-Data
-```
-
-Visualize übernimmt:
-
-```text
-Build Panel
-Canvas
-Inspector
-```
-
-Data bindet zunächst die vorhandene DataTable-Komponente und die
-Rows-Preview-API als erreichbare Data View ein.
-
-AI und Share werden architektonisch berücksichtigt, müssen aber noch
-nicht vollständig implementiert werden.
-
-## 6. Next – Cevyn Data MVP
-
-### Type Handling
-
-- bessere Semantic Type Detection
-- Type Override
-
-### Calculated Fields
-
-Erste Operationen:
-
-```text
-Numeric:
-+ - × ÷
-
-Text:
-Combine Fields
-```
-
-Canonical Use Case:
-
-```text
-Home Goals + ":" + Away Goals
-→ Result
-```
-
-Calculated Fields erscheinen anschließend als normale Fields:
-
-```text
-ƒx Result
-```
-
-### Basic Data Operations
-
-- Filter
-- Sort
-- einfache Data Profiling Informationen
-
-Später:
-
-- Missing Values
-- Duplicates
-- Replace Values
-- Split Column
-- Join
-- Pivot
-
-## 7. Next – Multi-Chart Canvas
+## 6. Next – Multi-Chart Canvas
 
 Ziel:
 
@@ -220,9 +169,8 @@ Noch nicht Teil des ersten Multi-Chart-MVP:
 - Multi Select
 - Layers Panel
 - komplexes Snapping
-- Cross Filtering
 
-## 8. Next – Dashboard Objects
+## 7. Next – Dashboard Objects und Interaktion
 
 Nach bzw. gemeinsam mit Multi-Chart:
 
@@ -230,8 +178,15 @@ Nach bzw. gemeinsam mit Multi-Chart:
 - Text
 - Filter
 - grundlegende Dashboard Controls
+- gemeinsame Filter
+- Linked Visualizations
+- Selection und Selection Propagation
+- Cross Filtering
+- Cross Highlighting
+- Zoom und Pan
+- Drill-down
 
-Später:
+Später innerhalb dieses Bereichs:
 
 - Date Range
 - Numeric Range
@@ -240,6 +195,53 @@ Später:
 - Comparison Card
 - Progress
 - Status
+
+## 8. Next – Understand / Data Handling MVP
+
+### Deterministic Profiling
+
+Zunächst im Python-Backend:
+
+- Summary Statistics
+- Missing Values
+- Duplicates
+- Category Frequency
+- Distribution
+
+### Type Handling
+
+- bessere Semantic Type Detection
+- Type Override
+- semantische Rollen für Visualisierungen
+
+### Light Data Operations
+
+- Filter
+- Sort
+- Group / Aggregate
+- leichte Ableitungen für Encodings
+
+### Calculated Fields
+
+Erste Operationen:
+
+```text
+Numeric: + - × ÷
+Text: Combine Fields
+```
+
+Canonical Use Case:
+
+```text
+Home Goals + ":" + Away Goals
+→ Result
+```
+
+Calculated Fields erscheinen anschließend als normale Fields:
+
+```text
+ƒx Result
+```
 
 ## 9. Next – Project Persistence
 
@@ -286,16 +288,16 @@ Save Project
 Open Project
 ```
 
-## 10. Later – Data Engine
+## 10. Later – Data Scale and Visual Query Engine
 
 Wenn aktuelle Datenhaltung zum Bottleneck wird:
 
 - DuckDB
 - größere Datasets
-- weitere serverseitige Analysen und Transformationen
-- Joins
-- Pivot
-- komplexere Transformationspipelines
+- performantere aggregierte Visual Queries
+- Sampling und Caching
+- skalierbares deterministisches Profiling
+- Candidate Generation für Explore
 - Parquet
 
 Keine vorschnelle Migration nur aus Architekturgründen.
@@ -304,7 +306,6 @@ Keine vorschnelle Migration nur aus Architekturgründen.
 
 Nach einem vollständigen End-to-End-Workflow:
 
-- Pie / Donut
 - Heatmap
 - Boxplot
 
@@ -322,37 +323,40 @@ Danach bei Bedarf:
 Neue Charttypen haben geringere Priorität als ein vollständiger
 Data-to-Dashboard-Workflow.
 
-## 12. Later – Dashboard Interaction
+## 12. Later – Ask Cevyn und Explore
 
-- Cross Filtering
-- Cross Highlighting
-- Dashboard-wide Filters
-- Selection Propagation
-- Linked Visualizations
+### Action Foundation
 
-## 13. Later – Cevyn AI
+- zentrale Registry für validierbare Cevyn Actions
+- Actions für ChartSpecs, Dashboard State und gemeinsame Filter
+- deterministische Ausführung und nachvollziehbare Änderungen
 
-Erste mögliche Module:
-
-- Forecasting
-- Clustering
-- Anomaly Detection
-- Regression
-- Classification
-- Feature Importance
-
-Machine-Learning-Ergebnisse sollen wieder als Daten in den normalen
-Cevyn-Workflow zurückfließen können.
-
-Beispiel:
+### Ask Cevyn
 
 ```text
-Clustering
-→ cluster_id
-→ Scatter Color
+Natural Language
+→ validated Cevyn Actions
+→ ChartSpec / Dashboard State
 ```
 
-## 14. Later – Share
+AI erzeugt keinen direkten ECharts-Code.
+
+### Explore
+
+```text
+Python Candidate Generation
+→ Candidate Insights
+→ AI Ranking / Explanation
+→ Cevyn Actions
+→ ChartSpec
+```
+
+### Machine Learning
+
+Forecasts, Cluster oder Anomalien bleiben spätere Erweiterungen von
+Visual Analytics und werden kein eigenständiges ML-Studio.
+
+## 13. Later – Share
 
 ### Export
 
@@ -377,49 +381,40 @@ Später:
 - Comments
 - Version History
 
-## 15. Long-Term Flow
+## 14. Long-Term Flow
 
 Der langfristige vollständige Workflow:
 
 ```mermaid
 flowchart LR
-    Import[Import]
+    Data[Data]
     Understand[Understand]
-    Clean[Clean]
-    Transform[Transform]
-    Calculate[Calculate]
-    Analyze[Analyze]
+    Explore[Explore]
     Visualize[Visualize]
     Dashboard[Dashboard]
-    Save[Save / Share]
-    AI[ML / AI]
+    Share[Share]
 
-    Import --> Understand
-    Understand --> Clean
-    Clean --> Transform
-    Transform --> Calculate
-    Calculate --> Analyze
-    Analyze --> Visualize
+    Data --> Understand
+    Understand --> Explore
+    Explore --> Visualize
     Visualize --> Dashboard
-    Dashboard --> Save
-    Analyze --> AI
-    AI --> Visualize
+    Dashboard --> Share
 ```
 
-## 16. MVP Definition
+## 15. MVP Definition
 
 Der erste echte Cevyn-MVP soll mindestens folgenden Workflow
 ermöglichen:
 
 ```text
 Upload Dataset
-→ Inspect Data
-→ Correct Types
-→ Create Calculated Fields
+→ Understand Data
+→ Review Types and Profile
 → Filter / Aggregate
 → Create Visualizations
 → Create Multiple Visualizations
 → Arrange Dashboard
+→ Use Shared Filters and Selection
 → Save Project
 → Reopen Project
 ```
@@ -427,4 +422,4 @@ Upload Dataset
 Das Ziel ist nicht maximale Feature-Anzahl.
 
 Das Ziel ist ein vollständiger, verständlicher und wiederholbarer
-End-to-End-Workflow.
+Visual-Analytics-Workflow.
