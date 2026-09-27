@@ -12,6 +12,12 @@
   border: var(--border-width-thin) dashed var(--color-border-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.chart-stage.is-selected {
+  border-style: solid;
+  border-color: var(--color-border-accent);
 }
 
 .chart-encoding-overlay {
@@ -150,4 +156,113 @@
 
 .chart-stage.is-dragging-field .chart-encoding-overlay {
   pointer-events: auto;
+}
+
+.chart-layout-handle {
+  position: absolute;
+  z-index: 3;
+  touch-action: none;
+  transition: background var(--transition-fast);
+}
+
+.chart-move-handle {
+  top: var(--space-2);
+  right: var(--chart-canvas-inset);
+  left: var(--chart-canvas-inset);
+  display: grid;
+  place-items: center;
+  height: calc(var(--chart-canvas-inset) - var(--space-2));
+  color: var(--color-text-secondary);
+  cursor: grab;
+}
+
+.chart-move-handle svg {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.chart-stage:hover .chart-move-handle svg,
+.chart-stage.is-selected .chart-move-handle svg {
+  opacity: 1;
+}
+
+.chart-n-handle,
+.chart-s-handle {
+  right: var(--chart-canvas-inset);
+  left: var(--chart-canvas-inset);
+  height: var(--space-2);
+  cursor: ns-resize;
+}
+
+.chart-n-handle {
+  top: 0;
+}
+
+.chart-s-handle {
+  bottom: 0;
+}
+
+.chart-e-handle,
+.chart-w-handle {
+  top: var(--chart-canvas-inset);
+  bottom: var(--chart-canvas-inset);
+  width: var(--space-2);
+  cursor: ew-resize;
+}
+
+.chart-e-handle {
+  right: 0;
+}
+
+.chart-w-handle {
+  left: 0;
+}
+
+.chart-ne-handle,
+.chart-nw-handle,
+.chart-se-handle,
+.chart-sw-handle {
+  width: var(--chart-canvas-inset);
+  height: var(--chart-canvas-inset);
+}
+
+.chart-ne-handle {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+
+.chart-nw-handle {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.chart-se-handle {
+  right: 0;
+  bottom: 0;
+  cursor: nwse-resize;
+}
+
+.chart-sw-handle {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}
+
+.chart-layout-handle:not(.chart-move-handle):hover {
+  background: var(--color-accent-soft);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chart-stage {
+    animation: chart-stage-enter 900ms ease-out;
+  }
+}
+
+@keyframes chart-stage-enter {
+  from {
+    background: var(--color-accent-soft);
+    box-shadow: var(--shadow-accent);
+  }
 }

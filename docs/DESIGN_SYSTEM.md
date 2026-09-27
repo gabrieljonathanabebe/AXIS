@@ -450,6 +450,9 @@ Serienwerten. Scatter zeigt die tatsächlich belegten X-, Y-, Size- und
 Color-Encodings. Inhalte aus Datasets werden vor der Ausgabe als HTML
 escaped.
 
+Tooltips werden an `body` angehängt und daher nicht vom Chart-Rahmen
+abgeschnitten.
+
 ## 13. Reuse Rules
 
 Vor dem Erstellen neuer UI:
@@ -536,5 +539,30 @@ Field
 
 Chart-Drag und ECharts-Interaktionen müssen getrennt bleiben.
 
-Für Dashboard Objects soll ein eigener Drag Handle verwendet werden,
-damit Zoom, Tooltip und Selection im Chart nicht gestört werden.
+Dashboard Objects werden nicht über ihre gesamte Fläche gezogen, damit
+Zoom, Tooltip und Selection im Chart nicht gestört werden.
+
+### Chart Layout Handles
+
+Charts auf der Canvas verwenden Layout-Zonen im freien Rand um den Plot:
+
+- Move: obere Leiste, Cursor `grab`, Grip-Icon bei Hover oder Auswahl;
+- Resize: schmale Zonen an allen vier Kanten und größere Zonen an den
+  vier Ecken mit passendem Resize-Cursor und dezentem Hover-Highlight.
+
+Move und Resize rasten während des Drags live im Canvas-Grid ein.
+
+### Selection
+
+Ein selektierter Chart erhält einen durchgezogenen statt gestrichelten
+Rahmen in Akzentfarbe. Ein Klick auf freie Canvas-Fläche hebt die
+Auswahl auf.
+
+Neu hinzugefügte Charts werden ins Bild gescrollt und einmalig kurz
+hervorgehoben. Bei `prefers-reduced-motion` entfällt die Animation.
+
+### Drop Targets
+
+Drop Targets tragen ihre Bedeutung als typisiertes `DropTarget`.
+`EmptyState` kann über `dropId` und `dropTarget` selbst als Drop Target
+dienen.

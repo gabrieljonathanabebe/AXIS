@@ -14,6 +14,7 @@ function InspectorPanel({
   onSetAppearance,
   onSetInteraction,
   onSetChartAppearance,
+  onSetChartType,
   onSetEncodingField,
 }: InspectorPanelProps) {
   return (
@@ -32,6 +33,7 @@ function InspectorPanel({
           onSetAppearance={onSetAppearance}
           onSetInteraction={onSetInteraction}
           onSetChartAppearance={onSetChartAppearance}
+          onSetChartType={onSetChartType}
           onSetEncodingField={onSetEncodingField}
         />
       ) : (

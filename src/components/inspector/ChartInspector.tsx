@@ -15,6 +15,7 @@ function ChartInspector({
   onSetAppearance,
   onSetInteraction,
   onSetChartAppearance,
+  onSetChartType,
   onSetEncodingField,
 }: ChartInspectorProps) {
   const [activeTab, setActiveTab] = useState<InspectorTab>('data')
@@ -28,6 +29,7 @@ function ChartInspector({
             chart={chart}
             fields={fields}
             onSetAggregation={onSetAggregation}
+            onSetChartType={onSetChartType}
             onSetEncodingField={onSetEncodingField}
           />
         ),

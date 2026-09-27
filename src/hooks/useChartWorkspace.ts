@@ -1,40 +1,57 @@
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { useState } from 'react'
+import { useReducer, useState } from 'react'
+
+import {
+  createChartInstance,
+  createDefaultChartSpec,
+} from '../chart/createChartInstance'
 import { createDemoDataset } from '../data/createDemoDataset'
-import { useChartCollection } from './useChartCollection'
+import {
+  initialWorkspaceState,
+  workspaceReducer,
+} from '../workspace/workspaceReducer'
+import {
+  DEFAULT_CHART_SIZE,
+  findFreeChartLayout,
+} from '../workspace/chartLayout'
+
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import type { ActiveDrag, DragPayload } from '../types/ui'
+import type { ActiveDrag, DragPayload, DropTarget } from '../types/ui'
+import type { WorkspaceAction } from '../types/workspace'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
   ChartDataSpec,
   ChartEncoding,
   ChartInteractionSpec,
+  ChartMarkKey,
+  ChartLayout,
+  ChartType,
   DataField,
   Dataset,
 } from '../types/chart'
 
+// ===== TYPES =================================================================
 type UseChartWorkspaceParams = {
   dataset?: Dataset | null
 }
 
+type CreateChartAction = (chartId: string) => WorkspaceAction
+
+// ===== FUNCTION ==============================================================
 export function useChartWorkspace({
   dataset: externalDataset,
 }: UseChartWorkspaceParams = {}) {
   const [demoDataset] = useState<Dataset>(() => createDemoDataset())
   const dataset = externalDataset ?? demoDataset
 
-  const {
-    charts,
-    selectedChart,
-    selectedChartId,
-    removeSelectedChart,
-    selectChart,
-    selectChartType,
-    updateChart,
-    updateSelectedChart,
-  } = useChartCollection(dataset)
-
+  const [workspace, dispatch] = useReducer(
+    workspaceReducer,
+    initialWorkspaceState,
+  )
+  const { charts, selectedChartId } = workspace
+  const selectedChart =
+    charts.find((chart) => chart.id === selectedChartId) ?? null
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
   const sensors = useSensors(
@@ -45,19 +62,60 @@ export function useChartWorkspace({
     }),
   )
 
+  function dispatchForSelectedChart(createAction: CreateChartAction): void {
+    if (selectedChartId) {
+      dispatch(createAction(selectedChartId))
+    }
+  }
+
+  function addChart(type: ChartType): void {
+    dispatch({
+      type: 'chart/add',
+      chart: createChartInstance({
+        type,
+        dataset,
+        layout: findFreeChartLayout(charts, DEFAULT_CHART_SIZE),
+      }),
+    })
+  }
+
+  function duplicateSelectedChart(): void {
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/duplicate',
+      chartId,
+      newChartId: crypto.randomUUID(),
+    }))
+  }
+
+  function removeSelectedChart(): void {
+    dispatchForSelectedChart((chartId) => ({ type: 'chart/remove', chartId }))
+  }
+
+  function selectChart(chartId: string | null): void {
+    dispatch({ type: 'chart/select', chartId })
+  }
+
+  function setChartType(type: ChartType): void {
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/setType',
+      chartId,
+      chartType: type,
+      defaultSpec: createDefaultChartSpec(type, dataset),
+    }))
+  }
+
+  function updateChartLayout(chartId: string, layout: ChartLayout): void {
+    dispatch({ type: 'chart/updateLayout', chartId, patch: layout })
+  }
+
   function updateAppearance<TKey extends keyof ChartAppearanceSpec>(
     key: TKey,
     value: ChartAppearanceSpec[TKey],
   ): void {
-    updateSelectedChart((chart) => ({
-      ...chart,
-      spec: {
-        ...chart.spec,
-        appearance: {
-          ...chart.spec.appearance,
-          [key]: value,
-        },
-      },
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateAppearance',
+      chartId,
+      patch: { [key]: value },
     }))
   }
 
@@ -65,15 +123,10 @@ export function useChartWorkspace({
     key: TKey,
     value: ChartInteractionSpec[TKey],
   ): void {
-    updateSelectedChart((chart) => ({
-      ...chart,
-      spec: {
-        ...chart.spec,
-        interaction: {
-          ...chart.spec.interaction,
-          [key]: value,
-        },
-      },
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateInteraction',
+      chartId,
+      patch: { [key]: value },
     }))
   }
 
@@ -81,18 +134,10 @@ export function useChartWorkspace({
     key: keyof ChartEncoding,
     field: DataField | undefined,
   ): void {
-    updateSelectedChart((chart) => ({
-      ...chart,
-      spec: {
-        ...chart.spec,
-        data: {
-          ...chart.spec.data,
-          encoding: {
-            ...chart.spec.data.encoding,
-            [key]: field,
-          },
-        },
-      },
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateEncoding',
+      chartId,
+      patch: { [key]: field },
     }))
   }
 
@@ -111,38 +156,26 @@ export function useChartWorkspace({
     key: TKey,
     aggregation: ChartDataSpec[TKey],
   ): void {
-    updateSelectedChart((chart) => ({
-      ...chart,
-      spec: {
-        ...chart.spec,
-        data: {
-          ...chart.spec.data,
-          [key]: aggregation,
-        },
-      },
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateAggregation',
+      chartId,
+      patch: { [key]: aggregation },
     }))
   }
 
   function setChartAppearance<
-    TChartKey extends 'scatter' | 'line' | 'bar',
-    TOptionKey extends keyof ChartAppearanceSpec[TChartKey],
+    TMark extends ChartMarkKey,
+    TOptionKey extends keyof ChartAppearanceSpec[TMark],
   >(
-    chartKey: TChartKey,
+    mark: TMark,
     optionKey: TOptionKey,
-    value: ChartAppearanceSpec[TChartKey][TOptionKey],
+    value: ChartAppearanceSpec[TMark][TOptionKey],
   ): void {
-    updateSelectedChart((chart) => ({
-      ...chart,
-      spec: {
-        ...chart.spec,
-        appearance: {
-          ...chart.spec.appearance,
-          [chartKey]: {
-            ...chart.spec.appearance[chartKey],
-            [optionKey]: value,
-          },
-        },
-      },
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateMarkAppearance',
+      chartId,
+      mark,
+      patch: { [optionKey]: value },
     }))
   }
 
@@ -152,48 +185,53 @@ export function useChartWorkspace({
     return event.active.data.current?.payload ?? null
   }
 
+  function getDropTarget(event: DragEndEvent): DropTarget | null {
+    return event.over?.data.current?.target ?? null
+  }
+
   function handleDragStart(event: DragStartEvent): void {
     setActiveDrag(getDragPayload(event))
   }
 
   function handleDragEnd(event: DragEndEvent): void {
     const payload = getDragPayload(event)
-    const overId = String(event.over?.id)
+    const target = getDropTarget(event)
     setActiveDrag(null)
-    if (payload?.kind === 'chart-type' && overId === 'chart-drop-zone') {
-      selectChartType(payload.chartType)
+    if (payload?.kind === 'chart-type' && target?.kind === 'canvas') {
+      addChart(payload.chartType)
       return
     }
-    if (payload?.kind === 'field') {
-      if (overId === 'axis:x') {
-        assignFieldToEncoding('x', payload.field)
-      }
-      if (overId === 'axis:y') {
-        assignFieldToEncoding('y', payload.field)
-      }
+    if (payload?.kind === 'field' && target?.kind === 'encoding') {
+      dispatch({ type: 'chart/select', chartId: target.chartId })
+      dispatch({
+        type: 'chart/updateEncoding',
+        chartId: target.chartId,
+        patch: { [target.encodingKey]: payload.field },
+      })
     }
   }
 
   return {
     activeDrag,
+    addChart,
     charts,
     dataset,
+    duplicateSelectedChart,
     handleDragEnd,
     handleDragStart,
-    resetChart: removeSelectedChart,
+    removeSelectedChart,
     selectedChart,
     selectedChartId,
     selectedField,
     selectChart,
-    selectChartType,
     sensors,
     setAggregation,
     setChartAppearance,
+    setChartType,
     setEncodingField,
     setSelectedField,
     updateAppearance,
-    updateChart,
+    updateChartLayout,
     updateInteraction,
-    updateSelectedChart,
   }
 }

@@ -257,12 +257,9 @@ ChartDefinition ist die Regel.
 
 ChartSpec ist die konkrete Konfiguration.
 
-## 8. Chart Instances
+## 8. Chart Instances und Workspace State
 
-Für Multi-Chart-Dashboards sollen Visualisierung und Layout getrennt
-bleiben.
-
-Konzeptionell:
+Für Multi-Chart-Dashboards bleiben Visualisierung und Layout getrennt:
 
 ```ts
 type ChartLayout = {
@@ -280,15 +277,77 @@ type ChartInstance = {
 }
 ```
 
-Langfristig:
+Der Workspace hält alle Chart-Instanzen und die aktuelle Auswahl:
 
 ```text
-Workspace
+WorkspaceState
 ├── charts: ChartInstance[]
-└── selectedChartId
+└── selectedChartId: string | null
 ```
 
 Der Inspector arbeitet auf dem selektierten Objekt.
+
+### Workspace Actions
+
+Änderungen am Workspace laufen ausschließlich über typisierte,
+serialisierbare `WorkspaceAction`s und den reinen `workspaceReducer`
+(`src/workspace/workspaceReducer.ts`):
+
+```text
+UI Event
+→ WorkspaceAction
+→ workspaceReducer
+→ WorkspaceState
+→ Render
+```
+
+Aktuelle Actions:
+
+- `chart/add`, `chart/duplicate`, `chart/remove`, `chart/select`;
+- `chart/setType`;
+- `chart/updateAggregation`, `chart/updateEncoding`;
+- `chart/updateAppearance`, `chart/updateMarkAppearance`;
+- `chart/updateInteraction`;
+- `chart/updateLayout`.
+
+Regeln:
+
+- Jede Chart-Action adressiert ihren Chart explizit über `chartId`.
+- `update*`-Actions tragen einen `patch` statt einzelner Key/Value-Paare.
+- Der Reducer bleibt deterministisch. Nicht-deterministische oder
+  dataset-abhängige Werte wie neue IDs, Default Specs und freie
+  Layout-Positionen werden vor dem Dispatch erzeugt und in der Action
+  übergeben.
+- Reiner UI-State wie Drag-Zustand oder selektiertes Field gehört nicht
+  in den Workspace State.
+
+Die Actions sind die gemeinsame Grundlage für manuelle Bedienung und
+später für Ask Cevyn und Explore (siehe Abschnitt 16). Eine
+Validierungsschicht für AI-generierte Actions ist noch nicht
+implementiert.
+
+### Canvas Layout
+
+`ChartLayout` wird in Grid-Zellen angegeben, nicht in Pixeln. Die Canvas
+verwendet ein 24-spaltiges Grid mit fester Zeilenhöhe
+(`src/workspace/chartLayout.ts`).
+
+- Neue und duplizierte Charts werden auf der ersten freien Fläche
+  platziert.
+- Move und Resize sind reine Layout-Funktionen mit Grenzen für
+  Grid-Rand und Mindestgröße.
+- Während eines Drags wird nur eine lokale Vorschau gerendert. Beim
+  Loslassen entsteht genau eine `chart/updateLayout`-Action.
+- Überlappende Charts werden aktuell nicht automatisch aufgelöst.
+
+### Drag and Drop
+
+Drag Sources und Drop Targets beschreiben ihre Bedeutung über typisierte
+Daten statt über ID-Strings:
+
+- `DragPayload`: `field`, `chart-type` oder `chart-layout`;
+- `DropTarget`: `canvas` oder `encoding` mit `chartId` und
+  `encodingKey`.
 
 ## 9. Inspector Architecture
 
@@ -453,6 +512,9 @@ Das Resultset enthält pro Gruppe:
 weder die Gruppierung noch `value`. Color darf dasselbe Feld wie Y mit einer
 eigenen Aggregation redundant codieren, aber nicht dasselbe Feld wie X oder
 Series verwenden.
+
+Der Request wird in der Chart-Domäne aus der `ChartInstance` abgeleitet
+(`createChartQuery`) und nicht in React-Komponenten zusammengesetzt.
 
 ### Explore Candidate Pipeline
 
@@ -622,6 +684,9 @@ flowchart TB
 Eine manuelle Änderung, ein AI Command und ein Explore-Vorschlag
 erzeugen dieselben Actions und ChartSpecs. Dadurch bleiben Ergebnisse
 editierbar und zwischen den Modi konsistent.
+
+Implementiert ist aktuell die Action-Grundlage für Charts im Workspace
+(siehe Abschnitt 8). Ask Cevyn und Explore nutzen sie noch nicht.
 
 ## 17. Project State
 

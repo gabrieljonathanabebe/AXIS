@@ -3,6 +3,7 @@ import { getChartDefinition } from './chartDefinitions'
 import { getDefaultEncoding } from './getDefaultEncoding'
 import type {
   ChartInstance,
+  ChartLayout,
   ChartSpec,
   ChartType,
   Dataset,
@@ -12,6 +13,7 @@ import { isRadialChartType } from './isRadialChartType'
 type CreateChartInstanceParams = {
   type: ChartType
   dataset: Dataset
+  layout: ChartLayout
   id?: string
 }
 
@@ -144,17 +146,13 @@ export function createDefaultChartSpec(
 export function createChartInstance({
   type,
   dataset,
+  layout,
   id = crypto.randomUUID(),
 }: CreateChartInstanceParams): ChartInstance {
   return {
     id,
     type,
     spec: createDefaultChartSpec(type, dataset),
-    layout: {
-      x: 0,
-      y: 0,
-      width: 1,
-      height: 1,
-    },
+    layout,
   }
 }

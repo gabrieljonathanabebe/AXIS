@@ -5,6 +5,8 @@ import type {
   ChartEncoding,
   ChartInstance,
   ChartInteractionSpec,
+  ChartMarkKey,
+  ChartType,
   DataField,
 } from '../../types/chart'
 
@@ -24,13 +26,15 @@ export type SetInteraction = <TKey extends keyof ChartInteractionSpec>(
 ) => void
 
 export type SetChartAppearance = <
-  TChartKey extends 'scatter' | 'line' | 'bar',
+  TChartKey extends ChartMarkKey,
   TOptionKey extends keyof ChartAppearanceSpec[TChartKey],
 >(
   chartKey: TChartKey,
   optionKey: TOptionKey,
   value: ChartAppearanceSpec[TChartKey][TOptionKey],
 ) => void
+
+export type SetChartType = (type: ChartType) => void
 
 export type SetEncodingField = (
   axis: keyof ChartEncoding,
@@ -42,6 +46,7 @@ export type ChartInspectorProps = {
   fields: DataField[]
   onSetAggregation: SetAggregation
   onSetAppearance: SetAppearance
+  onSetChartType: SetChartType
   onSetInteraction: SetInteraction
   onSetChartAppearance: SetChartAppearance
   onSetEncodingField: SetEncodingField

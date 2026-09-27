@@ -2,11 +2,11 @@ import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
 import { useEffect, useRef } from 'react'
 
+import { createChartQuery } from '../../chart/createChartQuery'
 import { createEChartOption } from '../../chart/echarts/createEChartOption'
 import { useChartQuery } from '../../hooks/useChartQuery'
 
 import type { ChartInstance, Dataset } from '../../types/chart'
-import type { ChartQueryRequest } from '../../api/chartQuery'
 import type { ChartTheme } from '../../chart/echarts/chartTheme'
 
 type EChartCanvasProps = {
@@ -54,35 +54,20 @@ function readChartTheme(): ChartTheme {
 function EChartCanvas({ chart, dataset, datasetId }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
-  const { encoding, aggregation, colorAggregation } = chart.spec.data
-  const colorField =
-    chart.type === 'bar' ? (encoding.color?.name ?? null) : null
-
-  const query: ChartQueryRequest | null =
-    chart.type !== 'scatter' &&
-    aggregation !== 'none' &&
-    encoding.x &&
-    encoding.y
-      ? {
-          x: encoding.x.name,
-          y: encoding.y.name,
-          series: encoding.series?.name ?? null,
-          color: colorField,
-          color_aggregation: colorField ? colorAggregation : null,
-          aggregation,
-        }
-      : null
-
+  const query = createChartQuery(chart)
   const { result, isLoading, error } = useChartQuery(datasetId, query)
 
   useEffect(() => {
-    if (!containerRef.current) {
+    const container = containerRef.current
+    if (!container) {
       return
     }
-    const chart = echarts.init(containerRef.current)
+    const chart = echarts.init(container)
     chartRef.current = chart
-
+    const resizeObserver = new ResizeObserver(() => chart.resize())
+    resizeObserver.observe(container)
     return () => {
+      resizeObserver.disconnect()
       chart.dispose()
       chartRef.current = null
     }

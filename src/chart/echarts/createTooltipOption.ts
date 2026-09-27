@@ -20,6 +20,7 @@ export function createTooltipOption({
 }: CreateTooltipOptionsParams): TooltipComponentOption {
   const { tooltip } = spec.interaction
   return {
+    appendTo: 'body',
     backgroundColor: theme.tooltip.background,
     borderColor: theme.tooltip.borderColor,
     borderWidth: theme.tooltip.borderWidth,

@@ -23,9 +23,9 @@ unter `Completed` stehen.
 
 Cevyn befindet sich aktuell im Aufbau des Visualization Core.
 
-Der bestehende Chart Builder soll zunächst stabil abgeschlossen und
-anschließend zu einem interaktiven Multi-Chart-Dashboard ausgebaut
-werden. Data Handling bleibt auf Visual Analytics begrenzt.
+Die Canvas unterstützt bereits mehrere Charts mit Layout. Als Nächstes
+wird sie zu einem interaktiven Multi-Chart-Dashboard ausgebaut. Data
+Handling bleibt auf Visual Analytics begrenzt.
 
 ## 3. Completed
 
@@ -75,11 +75,28 @@ werden. Data Handling bleibt auf Visual Analytics begrenzt.
 - ScrubbableNumber
 - grundlegende Inspector Controls
 
+### Multi-Chart Canvas MVP
+
+- mehrere Charts gleichzeitig auf der Canvas
+- Add per Klick oder Drag aus dem Chart Picker
+- Select per Klick, Deselect per Klick auf freie Canvas-Fläche
+- Move über eine obere Griffleiste
+- Resize über alle Kanten und Ecken
+- Einrasten im 24-spaltigen Grid mit Live-Vorschau
+- Duplicate und Delete für den selektierten Chart
+- Charttyp-Wechsel im Inspector
+- Field-Drop auf die Achsen eines beliebigen Charts
+- neuer Chart wird ins Bild gescrollt und kurz hervorgehoben
+- Tooltips werden nicht mehr vom Chart-Rahmen abgeschnitten
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
-- ChartInstance-Grundlage
-- Trennung von Chart Spec und Layout als Zielstruktur
+- ChartInstance mit getrennter Spec und Layout
+- Workspace State mit typisierten, serialisierbaren Workspace Actions
+  und reinem Reducer
+- Ableitung der Backend-Chart-Query aus der ChartInstance
+- typisierte Drag Payloads und Drop Targets
 - modularer ECharts-Adapter mit Registry für charttypspezifischen Content
 
 ## 4. Current
@@ -112,13 +129,12 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des aktuellen Slices:
+Priorität nach Abschluss des Multi-Chart Canvas MVP:
 
-1. Multi-Chart Canvas;
-2. Dashboard Objects und Interaktion;
-3. Understand und fokussiertes Data Handling;
-4. Project Persistence und Share;
-5. Ask Cevyn und Explore.
+1. Dashboard Objects und Interaktion;
+2. Understand und fokussiertes Data Handling;
+3. Project Persistence und Share;
+4. Ask Cevyn und Explore.
 
 ## 5. Next – Visual Analytics Workspace Shell
 
@@ -137,38 +153,19 @@ Manual Build bleibt der erste vollständig nutzbare Modus. Understand,
 Ask Cevyn und Explore werden später als integrierte Modi oder
 fokussierte Ansichten angebunden, nicht als separate Produktsuite.
 
-## 6. Next – Multi-Chart Canvas
+## 6. Later – Multi-Chart Canvas Ausbau
 
-Ziel:
+Das Multi-Chart Canvas MVP ist abgeschlossen (siehe Completed).
 
-Mehrere Dashboard Objects auf einer Canvas.
+Mögliche Erweiterungen:
 
-MVP-Funktionen:
-
-- Add
-- Select
-- Move
-- Resize
-- Duplicate
-- Delete
-
-Grundmodell:
-
-```text
-ChartInstance
-├── id
-├── type
-├── spec
-└── layout
-```
-
-Noch nicht Teil des ersten Multi-Chart-MVP:
-
+- Kollisionsauflösung bzw. Verdrängen überlappender Charts
+- Charttyp per Drop auf einen bestehenden Chart ersetzen
 - Smart Guides
 - Groups
 - Multi Select
 - Layers Panel
-- komplexes Snapping
+- Tastaturbedienung für Move und Resize
 
 ## 7. Next – Dashboard Objects und Interaktion
 
@@ -423,3 +420,19 @@ Das Ziel ist nicht maximale Feature-Anzahl.
 
 Das Ziel ist ein vollständiger, verständlicher und wiederholbarer
 Visual-Analytics-Workflow.
+
+## 16. Known Technical Debt
+
+Bekannte offene Punkte, die nicht Teil eines abgeschlossenen Slices
+waren:
+
+- `tsconfig.app.json` aktiviert keinen `strict`-Mode, Null-Checks werden
+  daher nicht erzwungen.
+- `npm run lint` meldet bestehende Fehler in `Popover`,
+  `ScrubbableNumber`, `Slider` und `useChartQuery`.
+- Scatter rendert nur die ersten 100 Zeilen, die das Frontend über die
+  Rows-API lädt.
+- Encodings speichern Kopien von `DataField` statt Referenzen auf Fields.
+- Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
+  eines Projekts muss dieses Verhalten auf neu hinzugefügte Charts
+  begrenzt werden.

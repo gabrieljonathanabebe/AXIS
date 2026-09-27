@@ -36,6 +36,8 @@ function DraggableChartType({
   return (
     <WidgetButton
       ref={setNodeRef}
+      aria-label={`Add ${label} chart`}
+      title={`Add ${label} chart`}
       className={`chart-type-option stack center ${isDragging ? 'is-dragging' : ''}`}
       onClick={() => onSelectChartType(type)}
       {...listeners}

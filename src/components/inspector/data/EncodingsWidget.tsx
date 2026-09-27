@@ -1,6 +1,9 @@
 import { Database } from 'lucide-react'
 
-import { getChartDefinition } from '../../../chart/chartDefinitions'
+import {
+  chartDefinitionList,
+  getChartDefinition,
+} from '../../../chart/chartDefinitions'
 import { getCompatibleFields } from '../../../chart/getCompatibleFields'
 import ControlRow from '../../ui/ControlRow'
 import SelectControl from '../../ui/SelectControl'
@@ -10,18 +13,31 @@ import type { ChartInspectorProps } from '../types'
 
 type EncodingsWidgetProps = Pick<
   ChartInspectorProps,
-  'chart' | 'fields' | 'onSetEncodingField'
+  'chart' | 'fields' | 'onSetChartType' | 'onSetEncodingField'
 >
 
 function EncodingsWidget({
   chart,
   fields,
+  onSetChartType,
   onSetEncodingField,
 }: EncodingsWidgetProps) {
   const definition = getChartDefinition(chart.type)
   const { encoding: activeEncoding } = chart.spec.data
+  const chartTypeOptions = chartDefinitionList.map(({ label, type }) => ({
+    label,
+    value: type,
+  }))
   return (
     <InspectorWidget title="Encodings" icon={<Database size={16} />}>
+      <ControlRow label="Chart">
+        <SelectControl
+          label="Chart type"
+          options={chartTypeOptions}
+          value={chart.type}
+          onChange={onSetChartType}
+        />
+      </ControlRow>
       {definition.encodings.map((encoding) => {
         const compatibleFields = getCompatibleFields(
           definition.type,

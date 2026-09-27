@@ -17,21 +17,28 @@ function App() {
   } = useDatasets()
   const {
     activeDrag,
+    addChart,
+    charts,
     dataset,
+    duplicateSelectedChart,
     handleDragEnd,
     handleDragStart,
-    resetChart,
+    removeSelectedChart,
     selectedChart,
+    selectedChartId,
     selectedField,
-    selectChartType,
+    selectChart,
     sensors,
     setAggregation,
     setChartAppearance,
+    setChartType,
     setEncodingField,
     setSelectedField,
     updateAppearance,
+    updateChartLayout,
     updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
+
   return (
     <DndContext
       sensors={sensors}
@@ -45,18 +52,22 @@ function App() {
           isUploading={isUploading}
           selectedField={selectedField}
           uploadError={uploadError}
-          onSelectChartType={selectChartType}
+          onSelectChartType={addChart}
           onSelectField={setSelectedField}
           onUploadFile={async (file) => {
             await uploadFile(file)
           }}
         />
         <CanvasPanel
-          chart={selectedChart}
+          charts={charts}
           dataset={dataset}
           datasetId={activeDatasetSummary?.id ?? null}
           isDraggingField={activeDrag?.kind === 'field'}
-          onResetChart={resetChart}
+          selectedChartId={selectedChartId}
+          onDuplicateChart={duplicateSelectedChart}
+          onRemoveChart={removeSelectedChart}
+          onSelectChart={selectChart}
+          onUpdateChartLayout={updateChartLayout}
         />
         <InspectorPanel
           chart={selectedChart}
@@ -65,6 +76,7 @@ function App() {
           onSetAppearance={updateAppearance}
           onSetInteraction={updateInteraction}
           onSetChartAppearance={setChartAppearance}
+          onSetChartType={setChartType}
           onSetEncodingField={setEncodingField}
         />
       </main>

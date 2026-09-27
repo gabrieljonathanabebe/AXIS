@@ -94,6 +94,11 @@ export type ChartLayout = {
   height: number
 }
 
+export type ChartMarkKey = keyof Pick<
+  ChartAppearanceSpec,
+  'bar' | 'line' | 'scatter'
+>
+
 export type ChartSpec = {
   data: ChartDataSpec
   appearance: ChartAppearanceSpec
