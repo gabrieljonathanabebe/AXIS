@@ -26,13 +26,6 @@
   --color-border-strong: rgba(148, 163, 184, 0.28);
   --color-border-accent: rgba(79, 156, 255, 0.42);
 
-  --color-glass-tint-subtle: rgba(255, 255, 255, 0.035);
-  --color-glass-tint-default: rgba(255, 255, 255, 0.045);
-  --color-glass-tint-strong: rgba(255, 255, 255, 0.07);
-
-  --color-glow-primary: rgba(255, 255, 255, 0.16);
-  --color-glow-secondary: rgba(199, 204, 210, 0.12);
-
   --color-accent: #178bff;
   --color-accent-hover: #178bff;
   --color-accent-soft: rgba(79, 156, 255, 0.18);
@@ -42,6 +35,43 @@
   --shadow-lg: 0 28px 90px rgba(0, 0, 0, 0.42);
   --shadow-accent:
     0 0 0 1px rgba(23, 139, 255, 0.22), 0 0 24px rgba(23, 139, 255, 0.18);
+
+  --background-ambient:
+    radial-gradient(
+      ellipse 60% 50% at 12% 0%,
+      rgba(23, 139, 255, 0.1),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 88% 100%,
+      rgba(139, 92, 246, 0.08),
+      transparent 70%
+    );
+
+  --glass-fill-thin: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.055),
+    rgba(255, 255, 255, 0.02)
+  );
+  --glass-fill-regular: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.075),
+    rgba(255, 255, 255, 0.03)
+  );
+  --glass-fill-thick: linear-gradient(
+    180deg,
+    rgba(22, 26, 34, 0.84),
+    rgba(12, 15, 21, 0.8)
+  );
+  --glass-border: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 255, 255, 0.06) 38%,
+    rgba(255, 255, 255, 0.03) 62%,
+    rgba(255, 255, 255, 0.14)
+  );
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 48px rgba(0, 0, 0, 0.38);
 }
 
 [data-theme='light'] {
@@ -71,13 +101,6 @@
   --color-border-strong: rgba(47, 72, 103, 0.36);
   --color-border-accent: rgba(23, 139, 255, 0.42);
 
-  --color-glass-tint-subtle: rgba(38, 104, 166, 0.025);
-  --color-glass-tint-default: rgba(38, 104, 166, 0.05);
-  --color-glass-tint-strong: rgba(38, 104, 166, 0.08);
-
-  --color-glow-primary: rgba(255, 255, 255, 0.42);
-  --color-glow-secondary: rgba(23, 139, 255, 0.13);
-
   --color-accent: #087fe7;
   --color-accent-hover: #006fce;
   --color-accent-soft: rgba(8, 127, 231, 0.14);
@@ -87,4 +110,41 @@
   --shadow-lg: 0 28px 90px rgba(47, 72, 103, 0.2);
   --shadow-accent:
     0 0 0 1px rgba(8, 127, 231, 0.2), 0 0 24px rgba(8, 127, 231, 0.14);
+
+  --background-ambient:
+    radial-gradient(
+      ellipse 60% 50% at 12% 0%,
+      rgba(8, 127, 231, 0.12),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 88% 100%,
+      rgba(139, 92, 246, 0.08),
+      transparent 70%
+    );
+
+  --glass-fill-thin: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.62),
+    rgba(255, 255, 255, 0.42)
+  );
+  --glass-fill-regular: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.72),
+    rgba(255, 255, 255, 0.5)
+  );
+  --glass-fill-thick: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92),
+    rgba(248, 251, 255, 0.86)
+  );
+  --glass-border: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(47, 72, 103, 0.1) 45%,
+    rgba(47, 72, 103, 0.16)
+  );
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-shadow:
+    0 1px 2px rgba(47, 72, 103, 0.1), 0 16px 48px rgba(47, 72, 103, 0.16);
 }

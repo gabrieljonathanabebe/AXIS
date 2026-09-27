@@ -1,9 +1,7 @@
 .widget {
-  --corner-glow-size: 14%;
   --widget-surface: var(--color-surface-subtle);
-
   color: var(--color-text-primary);
-  background: var(--effect-corner-glow), var(--widget-surface);
+  background: var(--widget-surface);
   border: var(--border-width-thin) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   transition:

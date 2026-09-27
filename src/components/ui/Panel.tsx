@@ -21,7 +21,7 @@ function Panel({
 }: PanelProps) {
   return (
     <Element
-      className={`panel ${isScrollable ? 'is-scrollable' : ''} ${className}`}
+      className={`panel glass glass-thin ${isScrollable ? 'is-scrollable' : ''} ${className}`}
     >
       <header className="panel-header">
         <div>

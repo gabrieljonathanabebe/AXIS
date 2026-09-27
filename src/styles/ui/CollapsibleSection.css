@@ -1,5 +1,4 @@
 .collapsible-section {
-  --widget-surface: var(--color-surface-subtle);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   flex: 0 0 auto;

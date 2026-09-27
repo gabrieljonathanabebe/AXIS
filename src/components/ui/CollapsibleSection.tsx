@@ -20,7 +20,7 @@ function CollapsibleSection({
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <Widget className="collapsible-section">
+    <Widget className="collapsible-section glass">
       <Button
         className="collapsible-section-trigger"
         type="button"

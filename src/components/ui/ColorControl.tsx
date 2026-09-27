@@ -148,7 +148,7 @@ function ColorControl({
         <Popover
           label={`${label} color`}
           open={isOpen}
-          className="color-control-popover"
+          className="color-control-popover glass glass-thick"
           onOpenChange={setIsOpen}
           renderTrigger={(triggerProps) => (
             <Button
@@ -192,7 +192,7 @@ function ColorControl({
         <Popover
           label={`${label} custom color`}
           open={isOpen}
-          className="color-control-popover"
+          className="color-control-popover glass glass-thick"
           onOpenChange={setIsOpen}
           renderTrigger={(triggerProps) => (
             <Button

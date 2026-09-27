@@ -28,6 +28,43 @@ Nicht erwünscht:
 
 Daten und Inhalt bleiben visuell dominant.
 
+### Liquid Glass Surfaces
+
+Glasflächen werden zentral über die Klasse `.glass`
+(`src/styles/glass.css`) und die `--glass-*`-Tokens umgesetzt, nicht
+pro Komponente.
+
+| Stufe   | Klassen             | Verwendung                              | Blur        |
+| ------- | ------------------- | --------------------------------------- | ----------- |
+| thin    | `glass glass-thin`  | Panels                                  | `--blur-md` |
+| regular | `glass`             | Inspector Widgets, Collapsible Sections | keiner      |
+| thick   | `glass glass-thick` | Dropdowns, Popover                      | `--blur-lg` |
+
+Bestandteile:
+
+- `--glass-fill-*`: leichter vertikaler Verlauf, oben heller;
+- `--glass-border`: Lichtkante als Verlaufsring, oben links hell;
+- `--glass-highlight`: feine innere Glanzlinie an der Oberkante;
+- `--glass-shadow`: naher Kontaktschatten plus weiter Tiefenschatten;
+- `--background-ambient`: weiche Farbflächen hinter der App, damit das
+  Glas sichtbar Licht bricht.
+
+Regeln:
+
+- Blur nur auf Panels und Overlays, nicht auf verschachtelten Elementen.
+- Bei scrollenden Containern sitzt `.glass` auf der äußeren,
+  nicht scrollenden Hülle.
+- Kleine Elemente wie Chips erhalten nur `--glass-highlight`, kein
+  volles Glas.
+- Bei `prefers-reduced-transparency` werden Glasflächen deckend.
+
+### Typografie
+
+Cevyn verwendet `Inter Variable`, lokal eingebunden über
+`@fontsource-variable/inter`. Überschriften nutzen Semibold mit leicht
+reduziertem Zeichenabstand. Numerische Werte in Controls und Tooltips
+verwenden `tabular-nums`.
+
 ## 2. Electric Blue
 
 Electric Blue wird sparsam verwendet für:

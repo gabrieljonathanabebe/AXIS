@@ -37,7 +37,7 @@ function SelectControl<TValue extends string>({
       <Popover
         label={`${label} options`}
         open={isOpen}
-        className="options-menu-popover"
+        className="options-menu-popover glass glass-thick"
         placement="bottom-start"
         role="listbox"
         matchTriggerWidth

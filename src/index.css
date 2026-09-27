@@ -24,6 +24,7 @@
 @import './styles/ui/TextInput.css';
 @import './styles/ui/Toggle.css';
 
+@import './styles/glass.css';
 @import './styles/utilities.css';
 @import './styles/App.css';
 

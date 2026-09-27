@@ -4,17 +4,13 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-2);
-  background:
-    linear-gradient(135deg, var(--color-glass-tint-subtle), transparent 42%),
-    var(--color-surface-overlay);
-  border: var(--border-width-thin) solid var(--color-border-default);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(var(--blur-lg)) saturate(220%);
-  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(220%);
+  background: transparent;
+  border: none;
 }
 
 .options-menu-popover {
   z-index: 100;
+  border-radius: var(--radius-md);
 }
 
 .options-menu-item {

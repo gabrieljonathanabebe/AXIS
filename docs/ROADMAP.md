@@ -77,6 +77,9 @@ Handling bleibt auf Visual Analytics begrenzt.
 - ScrubbableNumber
 - FontWeightControl
 - RotationDial mit Shift-Snapping und präziser Zahleneingabe
+- zentrale Liquid-Glass-Surfaces (`.glass` in drei Stufen) mit
+  Lichtkante, Ambient-Hintergrund und Reduced-Transparency-Fallback
+- lokal eingebundene Schrift Inter Variable
 - grundlegende Inspector Controls
 
 ### Multi-Chart Canvas MVP
@@ -437,6 +440,7 @@ waren:
 - Scatter rendert nur die ersten 100 Zeilen, die das Frontend über die
   Rows-API lädt.
 - Encodings speichern Kopien von `DataField` statt Referenzen auf Fields.
+- `DataTable` nutzt noch den alten Surface-Stil statt `.glass`.
 - In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte
   breiter als das Fenster werden. Die Ursache ist noch nicht geklärt.
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden

@@ -28,7 +28,7 @@ function InspectorWidget({
   const contentId = useId()
 
   return (
-    <Widget className="inspector-widget">
+    <Widget className="inspector-widget glass">
       <div className="inspector-widget-header">
         <button
           className="inspector-widget-trigger"
