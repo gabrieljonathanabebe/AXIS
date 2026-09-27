@@ -9,6 +9,7 @@ import { getChartDefinition } from '../../chart/chartDefinitions'
 
 import type { CSSProperties } from 'react'
 import type { ChartEncoding, ChartInstance, Dataset } from '../../types/chart'
+import type { DataSelection } from '../../types/workspace'
 
 type ChartStageProps = {
   chart: ChartInstance
@@ -16,8 +17,11 @@ type ChartStageProps = {
   datasetId: string | null
   isDraggingField: boolean
   isSelected: boolean
+  selection: DataSelection | null
   style: CSSProperties
+  onClearSelection: () => void
   onSelect: (chartId: string) => void
+  onSelectData: (selection: DataSelection) => void
 }
 
 type AxisDropZoneProps = {
@@ -106,8 +110,11 @@ function ChartStage({
   datasetId,
   isDraggingField,
   isSelected,
+  selection,
   style,
+  onClearSelection,
   onSelect,
+  onSelectData,
 }: ChartStageProps) {
   const stageRef = useRef<HTMLDivElement | null>(null)
   const definition = getChartDefinition(chart.type)
@@ -146,7 +153,14 @@ function ChartStage({
           label={yLabel}
         />
       </div>
-      <EChartCanvas chart={chart} dataset={dataset} datasetId={datasetId} />
+      <EChartCanvas
+        chart={chart}
+        dataset={dataset}
+        datasetId={datasetId}
+        onClearSelection={onClearSelection}
+        onSelectData={onSelectData}
+        selection={selection}
+      />
       {layoutHandleModes.map((mode) => (
         <ChartLayoutHandle chartId={chart.id} key={mode} mode={mode} />
       ))}

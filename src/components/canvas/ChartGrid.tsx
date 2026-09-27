@@ -12,6 +12,7 @@ import ChartStage from './ChartStage'
 
 import type { ChartInstance, ChartLayout, Dataset } from '../../types/chart'
 import type { ChartLayoutMode, DragPayload, DropTarget } from '../../types/ui'
+import type { DataSelection } from '../../types/workspace'
 
 // ===== TYPES =================================================================
 type ChartGridProps = {
@@ -20,7 +21,10 @@ type ChartGridProps = {
   datasetId: string | null
   isDraggingField: boolean
   selectedChartId: string | null
+  selection: DataSelection | null
+  onClearSelection: () => void
   onSelectChart: (chartId: string | null) => void
+  onSelectData: (selection: DataSelection) => void
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
 }
 
@@ -98,7 +102,10 @@ function ChartGrid({
   datasetId,
   isDraggingField,
   selectedChartId,
+  selection,
+  onClearSelection,
   onSelectChart,
+  onSelectData,
   onUpdateChartLayout,
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
@@ -177,8 +184,11 @@ function ChartGrid({
             isDraggingField={isDraggingField}
             isSelected={chart.id === selectedChartId}
             key={chart.id}
+            selection={selection}
             style={getGridArea(layout)}
             onSelect={onSelectChart}
+            onClearSelection={onClearSelection}
+            onSelectData={onSelectData}
           />
         )
       })}

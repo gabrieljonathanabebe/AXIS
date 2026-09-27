@@ -5,9 +5,12 @@ import type { ColorEncodingMode } from '../../getColorEncodingMode'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 
 // ===== TYPES =================================================================
-export type AggregatedSeriesData = Array<
-  number | null | [string, number | null, number | null]
->
+type AggregatedValue = number | null | [string, number | null, number | null]
+
+export type AggregatedSeriesData = Array<{
+  itemStyle: { opacity?: number }
+  value: AggregatedValue
+} | null>
 
 type AggregatedChartType = 'bar' | 'line'
 

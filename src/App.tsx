@@ -19,6 +19,7 @@ function App() {
     activeDrag,
     addChart,
     charts,
+    clearSelection,
     dataset,
     duplicateSelectedChart,
     handleDragEnd,
@@ -28,11 +29,13 @@ function App() {
     selectedChartId,
     selectedField,
     selectChart,
+    selection,
     sensors,
     setAggregation,
     setChartAppearance,
     setChartType,
     setEncodingField,
+    setSelection,
     setSelectedField,
     updateAppearance,
     updateChartLayout,
@@ -64,9 +67,12 @@ function App() {
           datasetId={activeDatasetSummary?.id ?? null}
           isDraggingField={activeDrag?.kind === 'field'}
           selectedChartId={selectedChartId}
+          selection={selection}
+          onClearSelection={clearSelection}
           onDuplicateChart={duplicateSelectedChart}
           onRemoveChart={removeSelectedChart}
           onSelectChart={selectChart}
+          onSelectData={setSelection}
           onUpdateChartLayout={updateChartLayout}
         />
         <InspectorPanel

@@ -1,9 +1,12 @@
 import { Copy, Trash2 } from 'lucide-react'
+
 import ChartGrid from './ChartGrid'
 import EmptyState from '../ui/EmptyState'
 import IconButton from '../ui/IconButton'
 import Panel from '../ui/Panel'
+
 import type { ChartInstance, ChartLayout, Dataset } from '../../types/chart'
+import type { DataSelection } from '../../types/workspace'
 
 type CanvasPanelProps = {
   charts: ChartInstance[]
@@ -11,9 +14,12 @@ type CanvasPanelProps = {
   datasetId: string | null
   isDraggingField: boolean
   selectedChartId: string | null
+  selection: DataSelection | null
+  onClearSelection: () => void
   onDuplicateChart: () => void
   onRemoveChart: () => void
   onSelectChart: (chartId: string | null) => void
+  onSelectData: (selection: DataSelection) => void
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
 }
 
@@ -23,9 +29,12 @@ function CanvasPanel({
   datasetId,
   isDraggingField,
   selectedChartId,
+  selection,
+  onClearSelection,
   onDuplicateChart,
   onRemoveChart,
   onSelectChart,
+  onSelectData,
   onUpdateChartLayout,
 }: CanvasPanelProps) {
   return (
@@ -53,8 +62,11 @@ function CanvasPanel({
           datasetId={datasetId}
           isDraggingField={isDraggingField}
           selectedChartId={selectedChartId}
+          selection={selection}
           onSelectChart={onSelectChart}
           onUpdateChartLayout={onUpdateChartLayout}
+          onClearSelection={onClearSelection}
+          onSelectData={onSelectData}
         />
       ) : (
         <EmptyState

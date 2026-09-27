@@ -3,6 +3,7 @@ import type { EChartsOption } from 'echarts'
 import type { ChartQueryResult } from '../../../api/chartQuery'
 import type { ChartSpec, ChartType, Dataset } from '../../../types/chart'
 import type { ChartTheme } from '../chartTheme'
+import type { DataSelection } from '../../../types/workspace'
 
 // ===== TYPES =================================================================
 export type ChartContent = {
@@ -16,6 +17,7 @@ export type ChartContentContext = {
   chartType: ChartType
   dataset: Dataset
   queryResult: ChartQueryResult | null
+  selection: DataSelection | null
   spec: ChartSpec
   theme: ChartTheme
 }

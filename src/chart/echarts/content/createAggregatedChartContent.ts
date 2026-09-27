@@ -1,17 +1,18 @@
-import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { createAxesOptions } from '../createAxesOptions'
 import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
 import {
   createAggregatedSeriesOption,
   type AggregatedSeriesData,
 } from './createAggregatedSeriesOption'
+import { getColorEncodingMode } from '../../getColorEncodingMode'
+import { getSelectionOpacity } from './getSelectionOpacity'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 export function createAggregatedChartContent(
   context: ChartContentContext,
 ): ChartContent {
-  const { chartType, queryResult, spec, theme } = context
+  const { chartType, queryResult, selection, spec, theme } = context
 
   if (chartType !== 'bar' && chartType !== 'line') {
     throw new Error(`Unsupported aggregated chart type: ${chartType}`)
@@ -36,14 +37,17 @@ export function createAggregatedChartContent(
 
     const data = categories.map<AggregatedSeriesData[number]>((category) => {
       const point = pointsByCategory.get(category)
-
       if (!point) {
         return null
       }
-
-      return hasBarColor
-        ? [category, point.value, point.color_value]
-        : point.value
+      return {
+        itemStyle: {
+          opacity: getSelectionOpacity(selection, encoding, category),
+        },
+        value: hasBarColor
+          ? [category, point.value, point.color_value]
+          : point.value,
+      }
     })
 
     return createAggregatedSeriesOption({

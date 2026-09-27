@@ -9,12 +9,14 @@ import type {
   ChartMarkKey,
   ChartSpec,
   ChartType,
+  DataValue,
 } from './chart'
 
 // ===== STATE =================================================================
 export type WorkspaceState = {
   charts: ChartInstance[]
   selectedChartId: string | null
+  selection: DataSelection | null
 }
 
 // ===== ACTIONS ===============================================================
@@ -73,3 +75,17 @@ export type WorkspaceAction =
       mark: ChartMarkKey
       patch: Partial<ChartAppearanceSpec[ChartMarkKey]>
     }
+  | {
+      type: 'selection/clear'
+    }
+  | {
+      type: 'selection/set'
+      selection: DataSelection
+    }
+
+// ===== SELECTION =============================================================
+export type DataSelection = {
+  sourceChartId: string
+  field: string
+  values: DataValue[]
+}

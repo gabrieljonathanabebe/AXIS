@@ -17,7 +17,6 @@ import {
 
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import type { ActiveDrag, DragPayload, DropTarget } from '../types/ui'
-import type { WorkspaceAction } from '../types/workspace'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
@@ -30,6 +29,7 @@ import type {
   DataField,
   Dataset,
 } from '../types/chart'
+import type { DataSelection, WorkspaceAction } from '../types/workspace'
 
 // ===== TYPES =================================================================
 type UseChartWorkspaceParams = {
@@ -49,7 +49,7 @@ export function useChartWorkspace({
     workspaceReducer,
     initialWorkspaceState,
   )
-  const { charts, selectedChartId } = workspace
+  const { charts, selectedChartId, selection } = workspace
   const selectedChart =
     charts.find((chart) => chart.id === selectedChartId) ?? null
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
@@ -93,6 +93,14 @@ export function useChartWorkspace({
 
   function selectChart(chartId: string | null): void {
     dispatch({ type: 'chart/select', chartId })
+  }
+
+  function setSelection(selection: DataSelection): void {
+    dispatch({ type: 'selection/set', selection })
+  }
+
+  function clearSelection(): void {
+    dispatch({ type: 'selection/clear' })
   }
 
   function setChartType(type: ChartType): void {
@@ -215,6 +223,7 @@ export function useChartWorkspace({
     activeDrag,
     addChart,
     charts,
+    clearSelection,
     dataset,
     duplicateSelectedChart,
     handleDragEnd,
@@ -224,12 +233,14 @@ export function useChartWorkspace({
     selectedChartId,
     selectedField,
     selectChart,
+    selection,
     sensors,
     setAggregation,
     setChartAppearance,
     setChartType,
     setEncodingField,
     setSelectedField,
+    setSelection,
     updateAppearance,
     updateChartLayout,
     updateInteraction,

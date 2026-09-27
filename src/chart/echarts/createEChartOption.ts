@@ -4,6 +4,7 @@ import type { ChartQueryResult } from '../../api/chartQuery'
 import type { ChartSpec, ChartType, Dataset } from '../../types/chart'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartTheme } from './chartTheme'
+import type { DataSelection } from '../../types/workspace'
 import { createChartContent } from './content/createChartContent'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createLegendOption } from './createLegendOption'
@@ -18,6 +19,7 @@ export function createEChartOption(
   dataset: Dataset,
   theme: ChartTheme,
   queryResult: ChartQueryResult | null,
+  selection: DataSelection | null,
 ): EChartsOption {
   // ===== CONSTANTS ===========================================================
   const { appearance, interaction } = spec
@@ -27,6 +29,7 @@ export function createEChartOption(
     chartType,
     dataset,
     queryResult,
+    selection,
     spec,
     theme,
   })

@@ -9,6 +9,7 @@ type ChartUpdater = (chart: ChartInstance) => ChartInstance
 export const initialWorkspaceState: WorkspaceState = {
   charts: [],
   selectedChartId: null,
+  selection: null,
 }
 
 // ===== HELPERS ===============================================================
@@ -40,6 +41,7 @@ function duplicateChart(
     layout: findFreeChartLayout(state.charts, sourceChart.layout),
   }
   return {
+    ...state,
     charts: [...state.charts, duplicate],
     selectedChartId: newChartId,
   }
@@ -82,6 +84,7 @@ export function workspaceReducer(
   switch (action.type) {
     case 'chart/add':
       return {
+        ...state,
         charts: [...state.charts, action.chart],
         selectedChartId: action.chart.id,
       }
@@ -89,11 +92,16 @@ export function workspaceReducer(
       return duplicateChart(state, action.chartId, action.newChartId)
     case 'chart/remove':
       return {
+        ...state,
         charts: state.charts.filter((chart) => chart.id !== action.chartId),
         selectedChartId:
           state.selectedChartId === action.chartId
             ? null
             : state.selectedChartId,
+        selection:
+          state.selection?.sourceChartId === action.chartId
+            ? null
+            : state.selection,
       }
     case 'chart/select': {
       const chartExists =
@@ -159,5 +167,13 @@ export function workspaceReducer(
           },
         },
       }))
+    case 'selection/clear':
+      return { ...state, selection: null }
+    case 'selection/set': {
+      const sourceExists = state.charts.some((chart) => {
+        return chart.id === action.selection.sourceChartId
+      })
+      return sourceExists ? { ...state, selection: action.selection } : state
+    }
   }
 }

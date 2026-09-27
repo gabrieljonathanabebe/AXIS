@@ -2,6 +2,7 @@ import type { PieSeriesOption } from 'echarts'
 
 import { isRadialChartType } from '../../isRadialChartType'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
+import { getSelectionOpacity } from './getSelectionOpacity'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -14,7 +15,7 @@ export function createPieChartContent(
   }
 
   // ===== CONSTANTS ===========================================================
-  const { chartType, queryResult, spec } = context
+  const { chartType, queryResult, selection, spec } = context
   const label = createSeriesLabelOption(spec.appearance.labels)
   const data: NonNullable<PieSeriesOption['data']> = (
     queryResult?.points ?? []
@@ -22,9 +23,15 @@ export function createPieChartContent(
     if (typeof point.value !== 'number') {
       return []
     }
-
     return [
       {
+        itemStyle: {
+          opacity: getSelectionOpacity(
+            selection,
+            spec.data.encoding,
+            point.x ?? 'No category',
+          ),
+        },
         name: point.x ?? 'No category',
         value: point.value,
       },
