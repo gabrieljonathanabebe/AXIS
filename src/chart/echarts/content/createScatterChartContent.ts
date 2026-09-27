@@ -2,17 +2,22 @@ import type { ScatterSeriesOption } from 'echarts'
 
 import type {
   ChartAppearanceSpec,
-  DataValue,
+  DataRow,
   Dataset,
+  DataValue,
 } from '../../../types/chart'
 import { createAxesOptions } from '../createAxesOptions'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
+import { DIMMED_OPACITY } from './selectionStyle'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
-type ScatterData = DataValue[][]
+type ScatterData = Array<{
+  itemStyle: { opacity: number } | undefined
+  value: DataValue[]
+}>
 
 type CreateScatterSeriesParams = {
   appearance: ChartAppearanceSpec
@@ -60,19 +65,31 @@ export function createScatterChartContent(
   context: ChartContentContext,
 ): ChartContent {
   // ===== CONSTANTS ===========================================================
-  const { chartType, dataset, spec, theme } = context
+  const { chartType, dataset, selection, spec, theme } = context
   const { appearance } = spec
   const { encoding } = spec.data
   const colorField = encoding.color
   const colorFieldName = colorField?.name
   const sizeFieldName = encoding.size?.name
+
+  function isRowSelected(row: DataRow): boolean {
+    if (!selection) {
+      return true
+    }
+    return selection.values.includes(String(row[selection.field] ?? ''))
+  }
   const rows = dataset.rows
-  const data = rows.map((row) => [
-    getValue(row, encoding.x?.name),
-    getValue(row, encoding.y?.name),
-    getValue(row, sizeFieldName),
-    getValue(row, colorFieldName),
-  ])
+
+  const data = rows.map((row) => ({
+    itemStyle: isRowSelected(row) ? undefined : { opacity: DIMMED_OPACITY },
+    value: [
+      getValue(row, encoding.x?.name),
+      getValue(row, encoding.y?.name),
+      getValue(row, sizeFieldName),
+      getValue(row, colorFieldName),
+    ],
+  }))
+
   const categoryFieldName =
     colorField?.semantic_type === 'categorical' ? colorField.name : null
   const categoryNames = categoryFieldName

@@ -19,15 +19,19 @@ export function createEChartOption(
   dataset: Dataset,
   theme: ChartTheme,
   queryResult: ChartQueryResult | null,
+  highlightResult: ChartQueryResult | null,
   selection: DataSelection | null,
+  chartId: string,
 ): EChartsOption {
   // ===== CONSTANTS ===========================================================
   const { appearance, interaction } = spec
   const colorEncodingMode = getColorEncodingMode(chartType, spec.data.encoding)
   const isRadialChart = isRadialChartType(chartType)
+  const isSelectionSource = selection?.sourceChartId === chartId
   const content = createChartContent({
     chartType,
     dataset,
+    highlightResult,
     queryResult,
     selection,
     spec,
@@ -70,6 +74,8 @@ export function createEChartOption(
     }),
     tooltip: createTooltipOption({
       chartType,
+      isSelectionSource,
+      selection,
       spec,
       theme,
     }),

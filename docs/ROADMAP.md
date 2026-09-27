@@ -23,7 +23,8 @@ unter `Completed` stehen.
 
 Cevyn befindet sich aktuell im Aufbau des Visualization Core.
 
-Die Canvas unterstützt bereits mehrere Charts mit Layout. Als Nächstes
+Die Canvas unterstützt bereits mehrere Charts mit Layout und eine erste
+Dashboard-Interaktion über globales Cross-Highlighting. Als Nächstes
 wird sie zu einem interaktiven Multi-Chart-Dashboard ausgebaut. Data
 Handling bleibt auf Visual Analytics begrenzt.
 
@@ -96,6 +97,22 @@ Handling bleibt auf Visual Analytics begrenzt.
 - neuer Chart wird ins Bild gescrollt und kurz hervorgehoben
 - Tooltips werden nicht mehr vom Chart-Rahmen abgeschnitten
 
+### Cross-Highlighting MVP
+
+- globale, feldbasierte Datenauswahl (`selection`) im Workspace State
+- Selection per Klick auf Kategorien in Line, Bar, Pie und Donut
+- Selection per Klick auf Scatter-Punkte mit kategorialem Color-Feld
+- erneuter Klick oder Klick auf leere Chart-Fläche hebt die Auswahl auf
+- alle Charts heben den Anteil der ausgewählten Zeilen hervor, auch wenn
+  sie das Selection-Feld nicht selbst codieren
+- Line und Bar: abgeblendete Basis mit überlagerter Highlight-Serie aus
+  einer gefilterten Backend-Query
+- Pie und Donut: Anzeige der gefilterten Verteilung mit stabilen Farben
+- Scatter: Abblenden nicht passender Zeilen im Frontend
+- Tooltip benennt die ausgewählte Kategorie, ohne Dopplung im
+  Quell-Chart
+- Backend-Chart-Query mit `filters`
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -136,12 +153,23 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des Multi-Chart Canvas MVP:
+Priorität nach Abschluss des Cross-Highlighting MVP:
 
-1. Dashboard Objects und Interaktion;
-2. Understand und fokussiertes Data Handling;
-3. Project Persistence und Share;
-4. Ask Cevyn und Explore.
+1. Brush Selection, vor allem für Scatter, mit Range-Selection und
+   Range-Filtern im Backend;
+2. Canvas festigen: Selection, Drag, Resize, Duplicate/Delete sowie
+   ChartInstance und Layout aufräumen; das Chart-Layout soll im
+   Inspector formatierbar werden;
+3. Workspace UX: kompakteres und einklappbares Build Panel,
+   einklappbarer Inspector, Focus Mode;
+4. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
+   Values, Cardinality;
+5. Build Panel mit dem Profiling verbinden;
+6. Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
+   Tooltips, weitere Encodings.
+
+Danach folgen Project Persistence und Share sowie Ask Cevyn und
+Explore.
 
 ## 5. Next – Visual Analytics Workspace Shell
 
@@ -184,9 +212,12 @@ Nach bzw. gemeinsam mit Multi-Chart:
 - grundlegende Dashboard Controls
 - gemeinsame Filter
 - Linked Visualizations
-- Selection und Selection Propagation
-- Cross Filtering
-- Cross Highlighting
+- Selection und Selection Propagation (Klick-Selection implementiert,
+  siehe Cross-Highlighting MVP)
+- Brush Selection und Range-Selection
+- Mehrfachauswahl
+- Cross Filtering (Backend-Filter vorhanden, Modus fehlt noch)
+- Cross Highlighting (MVP implementiert)
 - Zoom und Pan
 - Drill-down
 
@@ -446,3 +477,11 @@ waren:
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
   eines Projekts muss dieses Verhalten auf neu hinzugefügte Charts
   begrenzt werden.
+- Selection-Werte werden als Strings verglichen. Boolean-Felder
+  (`True` in Python gegenüber `true` in Polars), Float-Formatierung und
+  leere Kategorien (`''`, `(empty)`, `No category`) treffen daher nicht
+  in allen Charts einheitlich.
+- Die Selection unterstützt nur einen Wert; es gibt keine
+  Mehrfachauswahl.
+- `createEChartOption` hat acht positionale Parameter und sollte auf ein
+  Params-Objekt umgestellt werden.

@@ -217,12 +217,54 @@ ChartType
 Aktuell existieren getrennte Builder für:
 
 - Scatter-Content auf Basis der geladenen Rohdaten;
-- aggregierten Line-/Bar-Content auf Basis des Backend-Resultsets.
+- aggregierten Line-/Bar-Content auf Basis des Backend-Resultsets;
+- radialen Pie-/Donut-Content auf Basis des Backend-Resultsets.
 
 Neue Charttypen erhalten einen eigenen Builder oder verwenden einen
 gemeinsamen Builder, wenn Datenvertrag und Renderingstruktur tatsächlich
 identisch sind. Die Registry stellt sicher, dass jeder `ChartType` einem
 Builder zugeordnet ist.
+
+### Selection und Cross-Highlighting
+
+ECharts-Events werden ausschließlich im Adapter in die Domain übersetzt
+(`createSelectionFromEvent`). React-Komponenten sehen nur
+`DataSelection`, keine ECharts-Event-Parameter.
+
+```text
+ECharts click
+→ createSelectionFromEvent
+→ DataSelection
+→ selection/set
+→ WorkspaceState.selection
+→ alle Charts
+```
+
+Klickquellen:
+
+- Line, Bar, Pie und Donut: Kategorie des X-Felds;
+- Scatter: Kategorie eines kategorialen Color-Felds (Serienname).
+
+Ein erneuter Klick auf dieselbe Kategorie oder ein Klick auf eine leere
+Fläche im Chart hebt die Selection auf.
+
+Die Selection gilt global und unabhängig davon, ob ein Chart das
+Selection-Feld selbst codiert. Jeder Chart hebt den Anteil seiner eigenen
+Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
+
+- Line und Bar: Zusätzlich zur Basis-Query läuft eine Highlight-Query mit
+  der Selection als Filter. Die Basis-Serien werden abgeblendet, die
+  Highlight-Serien liegen auf einer versteckten zweiten X-Achse mit
+  denselben Kategorien darüber. Die Highlight-Linie verbindet Lücken.
+- Pie und Donut: Bei aktiver Selection werden nur die gefilterten Werte
+  gezeigt. Die Farben hängen am Kategorienamen der Basis-Query.
+- Scatter: Zeilen, die nicht zur Selection passen, werden im Frontend
+  abgeblendet, ohne zusätzliche Query.
+
+Der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie. Im
+Quell-Chart entfallen die Highlight-Zeilen, weil sie dort die Basiswerte
+nur wiederholen würden. Gemeinsame Konstanten wie die Abblend-Opacity
+liegen in `content/selectionStyle.ts`.
 
 ## 7. ChartDefinition vs. ChartSpec
 
@@ -277,15 +319,33 @@ type ChartInstance = {
 }
 ```
 
-Der Workspace hält alle Chart-Instanzen und die aktuelle Auswahl:
+Der Workspace hält alle Chart-Instanzen, die Editor-Auswahl und die
+Datenauswahl:
 
 ```text
 WorkspaceState
 ├── charts: ChartInstance[]
-└── selectedChartId: string | null
+├── selectedChartId: string | null
+└── selection: DataSelection | null
+```
+
+```ts
+type DataSelection = {
+  sourceChartId: string
+  field: string
+  values: DataValue[]
+}
 ```
 
 Der Inspector arbeitet auf dem selektierten Objekt.
+
+`selectedChartId` und `selection` sind getrennte Konzepte:
+
+- `selectedChartId` ist die Editor-Auswahl und bestimmt, welchen Chart
+  der Inspector bearbeitet.
+- `selection` ist die Datenauswahl für Dashboard-Interaktion. Sie ist
+  feldbasiert, an keine Achse gebunden und gilt für alle Charts
+  (siehe Abschnitt 6, Selection und Cross-Highlighting).
 
 ### Workspace Actions
 
@@ -308,7 +368,12 @@ Aktuelle Actions:
 - `chart/updateAggregation`, `chart/updateEncoding`;
 - `chart/updateAppearance`, `chart/updateMarkAppearance`;
 - `chart/updateInteraction`;
-- `chart/updateLayout`.
+- `chart/updateLayout`;
+- `selection/set`, `selection/clear`.
+
+`selection/set` wird ignoriert, wenn das Quell-Chart nicht existiert.
+`chart/remove` verwirft die Selection, wenn ihr Quell-Chart entfernt
+wird.
 
 Regeln:
 
@@ -499,7 +564,13 @@ Backend-Resultset. Der Request enthält:
 - `x` und `y`;
 - optional `series`;
 - `aggregation` für den Y-Wert;
-- optional `color` und `color_aggregation`.
+- optional `color` und `color_aggregation`;
+- `filters` als Liste von `{ field, values }`.
+
+Filter werden vor der Gruppierung angewendet und untereinander mit UND
+verknüpft. Der Vergleich erfolgt auf dem als String gecasteten Feldwert,
+damit Kategorien aus dem Resultset direkt als Filterwerte dienen können.
+Unbekannte Filterfelder werden wie andere Felder mit 422 abgelehnt.
 
 Das Resultset enthält pro Gruppe:
 
@@ -514,7 +585,10 @@ eigenen Aggregation redundant codieren, aber nicht dasselbe Feld wie X oder
 Series verwenden.
 
 Der Request wird in der Chart-Domäne aus der `ChartInstance` abgeleitet
-(`createChartQuery`) und nicht in React-Komponenten zusammengesetzt.
+(`createChartQuery`) und nicht in React-Komponenten zusammengesetzt. Bei
+aktiver Selection leitet `createHighlightQuery` daraus eine zweite
+Query ab, die die Selection als Filter trägt. Die Basis-Query bleibt
+dabei unverändert und wird nicht erneut geladen.
 
 ### Explore Candidate Pipeline
 
@@ -704,6 +778,9 @@ Project
 ├── SharedFilter[]
 └── SelectionState
 ```
+
+Vom `SelectionState` existiert aktuell eine erste Form als `selection`
+im `WorkspaceState` (Abschnitt 8).
 
 Ein Wert soll möglichst einmal definiert und anschließend
 wiederverwendet werden.

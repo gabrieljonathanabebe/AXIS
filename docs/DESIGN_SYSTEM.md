@@ -634,6 +634,19 @@ Auswahl auf.
 Neu hinzugefügte Charts werden ins Bild gescrollt und einmalig kurz
 hervorgehoben. Bei `prefers-reduced-motion` entfällt die Animation.
 
+### Data Selection Highlight
+
+Eine Datenauswahl im Chart wird über Kontrast statt über neue Farben
+kommuniziert:
+
+- nicht ausgewählte Elemente werden mit einheitlicher Opacity
+  (`DIMMED_OPACITY = 0.2`) abgeblendet;
+- ausgewählte Elemente behalten ihre Farbe; Kategorien wechseln durch
+  eine Auswahl nie ihre Farbe;
+- Elemente behalten ihre Position, damit keine Scheinanimation entsteht;
+- abgeblendete Serien zeigen keine Labels;
+- der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie.
+
 ### Drop Targets
 
 Drop Targets tragen ihre Bedeutung als typisiertes `DropTarget`.

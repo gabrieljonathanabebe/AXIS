@@ -16,6 +16,7 @@ export type ChartContent = {
 export type ChartContentContext = {
   chartType: ChartType
   dataset: Dataset
+  highlightResult: ChartQueryResult | null
   queryResult: ChartQueryResult | null
   selection: DataSelection | null
   spec: ChartSpec

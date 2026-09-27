@@ -2,7 +2,6 @@ import type { PieSeriesOption } from 'echarts'
 
 import { isRadialChartType } from '../../isRadialChartType'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
-import { getSelectionOpacity } from './getSelectionOpacity'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -15,24 +14,22 @@ export function createPieChartContent(
   }
 
   // ===== CONSTANTS ===========================================================
-  const { chartType, queryResult, selection, spec } = context
+  const { chartType, highlightResult, queryResult, selection, spec } = context
   const label = createSeriesLabelOption(spec.appearance.labels)
-  const data: NonNullable<PieSeriesOption['data']> = (
-    queryResult?.points ?? []
-  ).flatMap((point) => {
+  const palette = spec.appearance.colorScale.categorical.palette
+  const basePoints = queryResult?.points ?? []
+  const points = selection ? (highlightResult?.points ?? []) : basePoints
+  const categories = basePoints.map((point) => point.x ?? 'No category')
+  const data: NonNullable<PieSeriesOption['data']> = points.flatMap((point) => {
     if (typeof point.value !== 'number') {
       return []
     }
+    const name = point.x ?? 'No category'
+    const colorIndex = Math.max(categories.indexOf(name), 0)
     return [
       {
-        itemStyle: {
-          opacity: getSelectionOpacity(
-            selection,
-            spec.data.encoding,
-            point.x ?? 'No category',
-          ),
-        },
-        name: point.x ?? 'No category',
+        itemStyle: { color: palette[colorIndex % palette.length] },
+        name,
         value: point.value,
       },
     ]

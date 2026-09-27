@@ -1,6 +1,7 @@
 import polars as pl
 
 from app.models import (
+    ChartFilter,
     ChartQueryPoint,
     ChartQueryRequest,
     ChartQueryResult,
@@ -31,6 +32,17 @@ def build_aggregation_expression(
     if aggregation is GroupAggregation.MAX:
         return column.max().alias(result_name)
     raise ValueError(f"Unsupported aggregation: {aggregation}")
+
+
+def apply_chart_filters(
+    frame: pl.DataFrame,
+    filters: list[ChartFilter],
+) -> pl.DataFrame:
+    for chart_filter in filters:
+        frame = frame.filter(
+            pl.col(chart_filter.field).cast(pl.Utf8).is_in(chart_filter.values)
+        )
+    return frame
 
 
 def aggregate_chart_frame(
@@ -64,7 +76,8 @@ def aggregate_chart_frame(
 def build_chart_query_result(
     frame: pl.DataFrame, query: ChartQueryRequest
 ) -> ChartQueryResult:
-    aggregated = aggregate_chart_frame(frame, query)
+    filtered = apply_chart_filters(frame, query.filters)
+    aggregated = aggregate_chart_frame(filtered, query)
     if aggregated.height > MAX_CHART_POINTS:
         raise ValueError("Chart result exceeds 2000 points.")
     points: list[ChartQueryPoint] = []
@@ -98,6 +111,7 @@ def validate_chart_query(
         requested.append(query.series)
     if query.color is not None:
         requested.append(query.color)
+    requested.extend(chart_filter.field for chart_filter in query.filters)
     for name in requested:
         if name not in fields:
             raise ValueError(f"Unknown field: {name}")

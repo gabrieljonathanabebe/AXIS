@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   fetchChartQuery,
+  type ChartFilter,
   type ChartQueryRequest,
   type ChartQueryResult,
 } from '../api/chartQuery'
@@ -26,6 +27,7 @@ export function useChartQuery(
   const aggregation = query?.aggregation
   const color = query?.color
   const colorAggregation = query?.color_aggregation
+  const filtersKey = JSON.stringify(query?.filters ?? [])
 
   useEffect(() => {
     if (!datasetId || !x || !y || !aggregation) {
@@ -41,6 +43,7 @@ export function useChartQuery(
       color: color ?? null,
       color_aggregation: colorAggregation ?? null,
       aggregation,
+      filters: JSON.parse(filtersKey) as ChartFilter[],
     })
       .then((result) => {
         if (active) {
@@ -59,7 +62,16 @@ export function useChartQuery(
     return () => {
       active = false
     }
-  }, [datasetId, x, y, series, color, colorAggregation, aggregation])
+  }, [
+    datasetId,
+    x,
+    y,
+    series,
+    color,
+    colorAggregation,
+    aggregation,
+    filtersKey,
+  ])
   if (!datasetId || !query) {
     return { result: null, isLoading: false, error: null }
   }

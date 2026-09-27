@@ -2,7 +2,10 @@ import * as echarts from 'echarts'
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
 import { useEffect, useRef } from 'react'
 
-import { createChartQuery } from '../../chart/createChartQuery'
+import {
+  createChartQuery,
+  createHighlightQuery,
+} from '../../chart/createChartQuery'
 import { createEChartOption } from '../../chart/echarts/createEChartOption'
 import { createSelectionFromEvent } from '../../chart/echarts/createSelectionFromEvent'
 import { isSameSelection } from '../../workspace/dataSelection'
@@ -69,6 +72,8 @@ function EChartCanvas({
   const chartRef = useRef<ECharts | null>(null)
   const query = createChartQuery(chart)
   const { result, isLoading, error } = useChartQuery(datasetId, query)
+  const highlightQuery = createHighlightQuery(query, selection)
+  const { result: highlightResult } = useChartQuery(datasetId, highlightQuery)
 
   useEffect(() => {
     const container = containerRef.current
@@ -94,11 +99,14 @@ function EChartCanvas({
         dataset,
         readChartTheme(),
         result,
+        highlightResult,
         selection,
+        chart.id,
       ),
       true,
     )
-  }, [chart, dataset, result, selection])
+  }, [chart, dataset, highlightResult, result, selection])
+
   useEffect(() => {
     const instance = chartRef.current
     if (!instance) {

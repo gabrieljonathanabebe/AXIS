@@ -1,4 +1,6 @@
 import type { ChartSpec, ChartType } from '../../types/chart'
+import type { DataSelection } from '../../types/workspace'
+import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
 
 type TooltipValue = string | number | null | undefined
 
@@ -6,6 +8,7 @@ type TooltipParam = {
   axisValue?: TooltipValue
   marker?: string
   name?: string
+  seriesId?: string
   seriesName?: string
   value?: TooltipValue | TooltipValue[]
 }
@@ -46,10 +49,19 @@ function asParams(params: unknown): TooltipParam[] {
   return [params as TooltipParam]
 }
 
-export function createTooltipFormatter(
-  chartType: ChartType,
-  spec: ChartSpec,
-): TooltipFormatter {
+type CreateTooltipFormatterParams = {
+  chartType: ChartType
+  isSelectionSource: boolean
+  selection: DataSelection | null
+  spec: ChartSpec
+}
+
+export function createTooltipFormatter({
+  chartType,
+  isSelectionSource,
+  selection,
+  spec,
+}: CreateTooltipFormatterParams): TooltipFormatter {
   const { encoding } = spec.data
   const hasBarColor = chartType === 'bar' && Boolean(encoding.color)
   return (params) => {
@@ -81,9 +93,21 @@ export function createTooltipFormatter(
       const rawValue = entry.value
       const values = Array.isArray(rawValue) ? rawValue : null
       const value = Array.isArray(rawValue) ? rawValue[1] : rawValue
-      const label = encoding.series
+      const baseLabel = encoding.series
         ? entry.seriesName || encoding.y?.name || 'Value'
         : encoding.y?.name || 'Value'
+      const selectionLabel = selection?.values.join(', ') ?? ''
+      const isHighlight = Boolean(
+        selection && entry.seriesId?.startsWith(HIGHLIGHT_SERIES_PREFIX),
+      )
+      if (isHighlight && isSelectionSource) {
+        return []
+      }
+      const highlightLabel = encoding.series
+        ? `${selectionLabel} · ${baseLabel}`
+        : selectionLabel
+      const label = isHighlight ? highlightLabel : baseLabel
+
       const valueRow = createRow(label, value, entry.marker)
 
       if (!hasBarColor || !encoding.color || !values) {

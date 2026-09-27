@@ -49,6 +49,11 @@ class GroupAggregation(StrEnum):
     COUNT = "count"
 
 
+class ChartFilter(BaseModel):
+    field: str
+    values: list[str]
+
+
 class ChartQueryRequest(BaseModel):
     x: str
     y: str
@@ -56,6 +61,7 @@ class ChartQueryRequest(BaseModel):
     color: str | None = None
     color_aggregation: GroupAggregation | None = None
     aggregation: GroupAggregation
+    filters: list[ChartFilter] = []
 
 
 class ChartQueryPoint(BaseModel):
