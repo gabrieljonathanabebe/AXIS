@@ -35,7 +35,7 @@ function DraggableFieldChip({
       ref={setNodeRef}
       className={`field-chip cluster full-width ${isDragging ? 'is-dragging' : ''}`}
       isActive={isSelected}
-      title={`Type: ${field.semantic_type}`}
+      title={`${field.name} · ${field.semantic_type}`}
       onClick={() => onSelectField(field)}
       {...listeners}
       {...attributes}

@@ -309,6 +309,42 @@ Verwenden:
 
 `Text Input`
 
+### Moderne Control Patterns
+
+Cevyn bevorzugt direkte, visuelle Controls gegenüber Texteingaben und
+langen Dropdowns. Für neue Controls wird zuerst geprüft, ob eines der
+folgenden Patterns passt.
+
+Status: `implementiert`, `teilweise`, `geplant`.
+
+| Pattern                      | Beispiel in Cevyn               | Nutzen                                           | Status                                                       |
+| ---------------------------- | ------------------------------- | ------------------------------------------------ | ------------------------------------------------------------ |
+| Scrubbable Number            | Font Size, Radius, Opacity      | Wert direkt ziehen statt eintippen               | implementiert (`ScrubbableNumber`)                           |
+| Modifier Scrubbing           | Shift = grob, Alt = fein        | präzise Einstellung                              | teilweise (Shift rastet `RotationDial` in 15°-Schritten ein) |
+| Visual Position Picker       | Label Position                  | 3×3-Feld statt Dropdown                          | geplant                                                      |
+| XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                      |
+| Rotation Dial                | Axis Label Rotation             | drehen statt Gradzahl eintippen                  | implementiert (`RotationDial`)                               |
+| Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)        |
+| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | teilweise (X/Y-Achsen im Chart)                              |
+| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips im Build Panel)                       |
+| Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
+| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`)                              |
+| Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
+| Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`)                                   |
+| Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                      |
+| Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                      |
+| Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (automatische Achsentitel, Tick Count Auto/Custom) |
+
+Regeln:
+
+- Ein Pattern wird als wiederverwendbares Control in `components/ui`
+  gebaut und nicht als One-off in einem Widget.
+- Jedes visuelle Control bietet zusätzlich eine präzise Eingabe oder
+  Anzeige des Werts.
+- Der Status in dieser Tabelle wird erst angepasst, wenn das Pattern im
+  Code existiert.
+
 ## 8. ScrubbableNumber
 
 `ScrubbableNumber` ist ein wiederverwendbares numerisches Control.

@@ -58,6 +58,8 @@ Handling bleibt auf Visual Analytics begrenzt.
 - unabhängige Value- und Color-Aggregation für Bar-Charts
 - Legend Interaction mit Multiple-, Single- und deaktivierter Auswahl
 - formatierte Standard-Tooltips für Scatter, Line, Bar, Pie und Donut
+- Achsen-Formatierung: Titelfarbe, -größe und -gewicht, Tick Count
+  (Auto/Custom) und Label-Rotation für X und Y
 
 ### Inspector Foundation
 
@@ -73,6 +75,8 @@ Handling bleibt auf Visual Analytics begrenzt.
 - kompakte ColorControl-Variante
 - GradientControl für kontinuierliche Farbverläufe
 - ScrubbableNumber
+- FontWeightControl
+- RotationDial mit Shift-Snapping und präziser Zahleneingabe
 - grundlegende Inspector Controls
 
 ### Multi-Chart Canvas MVP
@@ -433,6 +437,8 @@ waren:
 - Scatter rendert nur die ersten 100 Zeilen, die das Frontend über die
   Rows-API lädt.
 - Encodings speichern Kopien von `DataField` statt Referenzen auf Fields.
+- In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte
+  breiter als das Fenster werden. Die Ursache ist noch nicht geklärt.
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
   eines Projekts muss dieses Verhalten auf neu hinzugefügte Charts
   begrenzt werden.

@@ -63,8 +63,11 @@ function Popover({
       matchTriggerWidth
         ? size({
             padding: 12,
-            apply({ rects, elements }) {
-              elements.floating.style.width = `${rects.reference.width}px`
+            apply({ availableWidth, elements, rects }) {
+              Object.assign(elements.floating.style, {
+                maxWidth: `${availableWidth}px`,
+                minWidth: `${rects.reference.width}px`,
+              })
             },
           })
         : undefined,

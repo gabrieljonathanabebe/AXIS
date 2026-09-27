@@ -64,6 +64,15 @@ export function createDefaultChartSpec(
         max: null,
         format: 'auto',
         currency: 'EUR',
+        labels: {
+          rotation: 0,
+          tickCount: null,
+        },
+        titleStyle: {
+          color: '#eef4ff',
+          fontSize: 12,
+          fontWeight: 'medium',
+        },
       },
       yAxis: {
         enabled: true,
@@ -72,6 +81,15 @@ export function createDefaultChartSpec(
         max: null,
         format: 'auto',
         currency: 'EUR',
+        labels: {
+          rotation: 0,
+          tickCount: null,
+        },
+        titleStyle: {
+          color: '#eef4ff',
+          fontSize: 12,
+          fontWeight: 'medium',
+        },
       },
       legend: {
         visible: true,

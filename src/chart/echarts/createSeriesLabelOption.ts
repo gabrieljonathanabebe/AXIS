@@ -1,15 +1,10 @@
 import type { LineSeriesOption } from 'echarts'
-import type { LabelFontWeight, LabelsAppearance } from '../../types/chart'
+
+import { FONT_WEIGHT_VALUES } from '../fontWeights'
+import type { LabelsAppearance } from '../../types/chart'
 
 // ===== TYPES =================================================================
 type SeriesLabelOption = NonNullable<LineSeriesOption['label']>
-
-// ===== CONSTANTS =============================================================
-const labelFontWeights = {
-  bold: 800,
-  light: 200,
-  medium: 500,
-} satisfies Record<LabelFontWeight, number>
 
 // ===== FUNCTION ==============================================================
 export function createSeriesLabelOption(
@@ -18,7 +13,7 @@ export function createSeriesLabelOption(
   return {
     color: appearance.color,
     fontSize: appearance.fontSize,
-    fontWeight: labelFontWeights[appearance.fontWeight],
+    fontWeight: FONT_WEIGHT_VALUES[appearance.fontWeight],
     position: appearance.position,
     show: appearance.enabled,
   }

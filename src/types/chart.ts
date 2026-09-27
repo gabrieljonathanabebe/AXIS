@@ -12,9 +12,22 @@ export type AxisAppearance = {
   max: number | null
   format: AxisFormat
   currency: CurrencyCode
+  labels: AxisLabelsAppearance
+  titleStyle: AxisTitleStyle
 }
 
 export type AxisFormat = 'auto' | 'number' | 'percent' | 'currency' | 'date'
+
+export type AxisLabelsAppearance = {
+  rotation: number
+  tickCount: number | null
+}
+
+export type AxisTitleStyle = {
+  color: string
+  fontSize: number
+  fontWeight: LabelFontWeight
+}
 
 // ===== BAR ===================================================================
 export type BarAppearance = {

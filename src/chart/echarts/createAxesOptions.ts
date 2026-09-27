@@ -1,6 +1,8 @@
+import { FONT_WEIGHT_VALUES } from '../fontWeights'
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 
 import type {
+  AxisTitleStyle,
   ChartAppearanceSpec,
   ChartEncoding,
   ChartType,
@@ -22,6 +24,27 @@ type AxesOptions = {
   yAxis: YAxisComponentOption
 }
 
+type AxisNameTextStyle = XAxisComponentOption['nameTextStyle']
+
+// ===== HELPERS ===============================================================
+function createAxisNameTextStyle(style: AxisTitleStyle): AxisNameTextStyle {
+  return {
+    color: style.color,
+    fontSize: style.fontSize,
+    fontWeight: FONT_WEIGHT_VALUES[style.fontWeight],
+  }
+}
+
+function getCategoryLabelInterval(
+  tickCount: number | null,
+  categoryCount: number,
+): number | 'auto' {
+  if (tickCount === null) {
+    return 'auto'
+  }
+  return Math.max(Math.ceil(categoryCount / tickCount) - 1, 0)
+}
+
 // ===== FUNCTION ==============================================================
 export function createAxesOptions({
   appearance,
@@ -30,11 +53,19 @@ export function createAxesOptions({
   encoding,
   theme,
 }: CreateAxesOptionsParams): AxesOptions {
+  const isCategoryXAxis = chartType !== 'scatter'
   return {
     xAxis: {
       axisLabel: {
         color: theme.text,
         formatter: createAxisLabelFormatter(appearance.xAxis),
+        interval: isCategoryXAxis
+          ? getCategoryLabelInterval(
+              appearance.xAxis.labels.tickCount,
+              categories.length,
+            )
+          : undefined,
+        rotate: appearance.xAxis.labels.rotation,
         show: appearance.xAxis.enabled,
       },
       axisLine: {
@@ -43,12 +74,13 @@ export function createAxesOptions({
       axisTick: {
         show: appearance.xAxis.enabled,
       },
-      data: chartType === 'scatter' ? undefined : categories,
+      data: isCategoryXAxis ? categories : undefined,
       max: appearance.xAxis.max ?? undefined,
       min: appearance.xAxis.min ?? undefined,
       name: appearance.xAxis.title.trim() || encoding.x?.name || '',
       nameGap: 32,
       nameLocation: 'middle',
+      nameTextStyle: createAxisNameTextStyle(appearance.xAxis.titleStyle),
       show: appearance.xAxis.enabled,
       splitLine: {
         lineStyle: {
@@ -59,12 +91,16 @@ export function createAxesOptions({
         },
         show: appearance.xAxis.enabled && appearance.grid.enabled,
       },
-      type: chartType === 'scatter' ? 'value' : 'category',
+      splitNumber: isCategoryXAxis
+        ? undefined
+        : (appearance.xAxis.labels.tickCount ?? undefined),
+      type: isCategoryXAxis ? 'category' : 'value',
     },
     yAxis: {
       axisLabel: {
         color: theme.text,
         formatter: createAxisLabelFormatter(appearance.yAxis),
+        rotate: appearance.yAxis.labels.rotation,
         show: appearance.yAxis.enabled,
       },
       axisLine: {
@@ -78,6 +114,7 @@ export function createAxesOptions({
       name: appearance.yAxis.title.trim() || encoding.y?.name || '',
       nameGap: 48,
       nameLocation: 'middle',
+      nameTextStyle: createAxisNameTextStyle(appearance.yAxis.titleStyle),
       show: appearance.yAxis.enabled,
       splitLine: {
         lineStyle: {
@@ -88,6 +125,7 @@ export function createAxesOptions({
         },
         show: appearance.yAxis.enabled && appearance.grid.enabled,
       },
+      splitNumber: appearance.yAxis.labels.tickCount ?? undefined,
       type: 'value',
     },
   }

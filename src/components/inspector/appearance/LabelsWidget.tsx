@@ -2,16 +2,12 @@ import { Tags } from 'lucide-react'
 
 import ColorControl from '../../ui/ColorControl'
 import ControlRow from '../../ui/ControlRow'
+import FontWeightControl from '../../ui/FontWeightControl'
 import ScrubbableNumber from '../../ui/ScrubbableNumber'
-import SegmentedControl from '../../ui/SegmentedControl'
 import SelectControl from '../../ui/SelectControl'
 import InspectorWidget from '../InspectorWidget'
 
-import type {
-  LabelFontWeight,
-  LabelPosition,
-  LabelsAppearance,
-} from '../../../types/chart'
+import type { LabelPosition, LabelsAppearance } from '../../../types/chart'
 
 // ===== TYPES =================================================================
 type LabelsWidgetProps = {
@@ -21,18 +17,6 @@ type LabelsWidgetProps = {
 }
 
 // ===== CONSTANTS =============================================================
-const fontWeightOptions = [
-  { label: 'Light', value: 'light' },
-  { label: 'Medium', value: 'medium' },
-  { label: 'Bold', value: 'bold' },
-] satisfies { label: string; value: LabelFontWeight }[]
-
-const fontWeightValues = {
-  light: 200,
-  medium: 500,
-  bold: 800,
-} satisfies Record<LabelFontWeight, number>
-
 const positionOptions = [
   { label: 'Top', value: 'top' },
   { label: 'Right', value: 'right' },
@@ -92,20 +76,9 @@ function LabelsWidget({
         />
       </ControlRow>
       <ControlRow label="Weight">
-        <SegmentedControl
+        <FontWeightControl
           label="Label font weight"
-          options={fontWeightOptions}
           value={value.fontWeight}
-          renderOption={(option) => (
-            <span
-              aria-hidden="true"
-              style={{
-                fontWeight: fontWeightValues[option.value],
-              }}
-            >
-              A
-            </span>
-          )}
           onValueChange={(fontWeight) => {
             onChange({
               ...value,
