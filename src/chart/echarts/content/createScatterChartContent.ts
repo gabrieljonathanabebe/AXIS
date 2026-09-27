@@ -2,7 +2,6 @@ import type { ScatterSeriesOption } from 'echarts'
 
 import type {
   ChartAppearanceSpec,
-  DataRow,
   Dataset,
   DataValue,
 } from '../../../types/chart'
@@ -10,6 +9,7 @@ import { createAxesOptions } from '../createAxesOptions'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { DIMMED_OPACITY } from './selectionStyle'
+import { isRowInSelection } from '../../../workspace/dataSelection'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -71,17 +71,12 @@ export function createScatterChartContent(
   const colorField = encoding.color
   const colorFieldName = colorField?.name
   const sizeFieldName = encoding.size?.name
-
-  function isRowSelected(row: DataRow): boolean {
-    if (!selection) {
-      return true
-    }
-    return selection.values.includes(String(row[selection.field] ?? ''))
-  }
   const rows = dataset.rows
 
   const data = rows.map((row) => ({
-    itemStyle: isRowSelected(row) ? undefined : { opacity: DIMMED_OPACITY },
+    itemStyle: isRowInSelection(row, selection)
+      ? undefined
+      : { opacity: DIMMED_OPACITY },
     value: [
       getValue(row, encoding.x?.name),
       getValue(row, encoding.y?.name),

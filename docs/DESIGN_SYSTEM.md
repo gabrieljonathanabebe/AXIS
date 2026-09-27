@@ -645,7 +645,10 @@ kommuniziert:
   eine Auswahl nie ihre Farbe;
 - Elemente behalten ihre Position, damit keine Scheinanimation entsteht;
 - abgeblendete Serien zeigen keine Labels;
-- der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie.
+- der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie;
+- ein Brush-Rechteck verwendet die Akzentfarbe als Rahmen und eine
+  schwach transparente Akzentfläche und bleibt sichtbar, solange seine
+  Selection aktiv ist.
 
 ### Drop Targets
 

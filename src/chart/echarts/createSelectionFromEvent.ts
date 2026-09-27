@@ -1,9 +1,34 @@
 import type { ECElementEvent } from 'echarts'
 
 import type { ChartInstance } from '../../types/chart'
-import type { DataSelection } from '../../types/workspace'
+import type { DataSelection, SelectionFilter } from '../../types/workspace'
+
+// ===== TYPES =================================================================
+type BrushEndEvent = {
+  areas: Array<{ coordRange?: number[][] }>
+}
 
 // ===== HELPERS ===============================================================
+function createRangeFilter(field: string, range: number[]): SelectionFilter {
+  return {
+    kind: 'range',
+    field,
+    min: Math.min(...range),
+    max: Math.max(...range),
+  }
+}
+
+function createValueSelection(
+  sourceChartId: string,
+  field: string,
+  value: string,
+): DataSelection {
+  return {
+    sourceChartId,
+    filters: [{ kind: 'values', field, values: [value] }],
+  }
+}
+
 function createScatterSelection(
   chart: ChartInstance,
   event: ECElementEvent,
@@ -12,11 +37,7 @@ function createScatterSelection(
   if (colorField?.semantic_type !== 'categorical' || !event.seriesName) {
     return null
   }
-  return {
-    sourceChartId: chart.id,
-    field: colorField.name,
-    values: [event.seriesName],
-  }
+  return createValueSelection(chart.id, colorField.name, event.seriesName)
 }
 
 // ===== FUNCTION ==============================================================
@@ -34,10 +55,24 @@ export function createSelectionFromEvent(
   if (!field) {
     return null
   }
+  return createValueSelection(chart.id, field.name, event.name)
+}
 
+export function createSelectionFromBrush(
+  chart: ChartInstance,
+  event: unknown,
+): DataSelection | null {
+  const { areas } = event as BrushEndEvent
+  const [xRange, yRange] = areas?.[0]?.coordRange ?? []
+  const { x, y } = chart.spec.data.encoding
+  if (!xRange || !yRange || !x || !y) {
+    return null
+  }
   return {
     sourceChartId: chart.id,
-    field: field.name,
-    values: [event.name],
+    filters: [
+      createRangeFilter(x.name, xRange),
+      createRangeFilter(y.name, yRange),
+    ],
   }
 }

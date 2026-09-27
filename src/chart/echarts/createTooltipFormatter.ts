@@ -1,5 +1,6 @@
 import type { ChartSpec, ChartType } from '../../types/chart'
 import type { DataSelection } from '../../types/workspace'
+import { formatSelectionLabel } from '../../workspace/dataSelection'
 import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
 
 type TooltipValue = string | number | null | undefined
@@ -96,7 +97,7 @@ export function createTooltipFormatter({
       const baseLabel = encoding.series
         ? entry.seriesName || encoding.y?.name || 'Value'
         : encoding.y?.name || 'Value'
-      const selectionLabel = selection?.values.join(', ') ?? ''
+      const selectionLabel = selection ? formatSelectionLabel(selection) : ''
       const isHighlight = Boolean(
         selection && entry.seriesId?.startsWith(HIGHLIGHT_SERIES_PREFIX),
       )

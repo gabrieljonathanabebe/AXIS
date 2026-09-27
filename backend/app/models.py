@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -49,9 +49,20 @@ class GroupAggregation(StrEnum):
     COUNT = "count"
 
 
-class ChartFilter(BaseModel):
+class ValuesChartFilter(BaseModel):
+    kind: Literal["values"]
     field: str
     values: list[str]
+
+
+class RangeChartFilter(BaseModel):
+    kind: Literal["range"]
+    field: str
+    min: float
+    max: float
+
+
+ChartFilter = ValuesChartFilter | RangeChartFilter
 
 
 class ChartQueryRequest(BaseModel):

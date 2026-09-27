@@ -8,6 +8,7 @@ from app.models import (
     DatasetSummary,
     GroupAggregation,
     PhysicalType,
+    RangeChartFilter,
 )
 
 MAX_CHART_POINTS = 2_000
@@ -34,14 +35,19 @@ def build_aggregation_expression(
     raise ValueError(f"Unsupported aggregation: {aggregation}")
 
 
+def build_filter_expression(chart_filter: ChartFilter) -> pl.Expr:
+    column = pl.col(chart_filter.field)
+    if isinstance(chart_filter, RangeChartFilter):
+        return column.is_between(chart_filter.min, chart_filter.max)
+    return column.cast(pl.Utf8).is_in(chart_filter.values)
+
+
 def apply_chart_filters(
     frame: pl.DataFrame,
     filters: list[ChartFilter],
 ) -> pl.DataFrame:
     for chart_filter in filters:
-        frame = frame.filter(
-            pl.col(chart_filter.field).cast(pl.Utf8).is_in(chart_filter.values)
-        )
+        frame = frame.filter(build_filter_expression(chart_filter))
     return frame
 
 
@@ -126,6 +132,12 @@ def validate_chart_query(
             PhysicalType.FLOAT,
         ):
             raise ValueError("Color must be numeric.")
+    for chart_filter in query.filters:
+        if not isinstance(chart_filter, RangeChartFilter):
+            continue
+        filter_type = fields[chart_filter.field].physical_type
+        if filter_type not in (PhysicalType.INTEGER, PhysicalType.FLOAT):
+            raise ValueError("Range filters require a numeric field.")
     if query.aggregation is not GroupAggregation.COUNT:
         y_type = fields[query.y].physical_type
         if y_type not in (PhysicalType.INTEGER, PhysicalType.FLOAT):

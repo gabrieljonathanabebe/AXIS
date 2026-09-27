@@ -7,7 +7,12 @@ import {
   createHighlightQuery,
 } from '../../chart/createChartQuery'
 import { createEChartOption } from '../../chart/echarts/createEChartOption'
-import { createSelectionFromEvent } from '../../chart/echarts/createSelectionFromEvent'
+import { syncBrush } from '../../chart/echarts/createBrushOption'
+import {
+  createSelectionFromBrush,
+  createSelectionFromEvent,
+} from '../../chart/echarts/createSelectionFromEvent'
+
 import { isSameSelection } from '../../workspace/dataSelection'
 import { useChartQuery } from '../../hooks/useChartQuery'
 
@@ -92,7 +97,11 @@ function EChartCanvas({
   }, [])
 
   useEffect(() => {
-    chartRef.current?.setOption(
+    const instance = chartRef.current
+    if (!instance) {
+      return
+    }
+    instance.setOption(
       createEChartOption(
         chart.type,
         chart.spec,
@@ -105,6 +114,7 @@ function EChartCanvas({
       ),
       true,
     )
+    syncBrush(instance, chart, selection)
   }, [chart, dataset, highlightResult, result, selection])
 
   useEffect(() => {
@@ -131,10 +141,22 @@ function EChartCanvas({
         onClearSelection()
       }
     }
+
+    function handleBrushEnd(event: unknown): void {
+      const nextSelection = createSelectionFromBrush(chart, event)
+      if (nextSelection) {
+        onSelectData(nextSelection)
+        return
+      }
+      onClearSelection()
+    }
+
     instance.on('click', handleClick)
+    instance.on('brushEnd', handleBrushEnd)
     zr.on('click', handleBackgroundClick)
     return () => {
       instance.off('click', handleClick)
+      instance.off('brushEnd', handleBrushEnd)
       zr.off('click', handleBackgroundClick)
     }
   }, [chart, onClearSelection, onSelectData, selection])

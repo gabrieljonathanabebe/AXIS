@@ -240,13 +240,30 @@ ECharts click
 → alle Charts
 ```
 
-Klickquellen:
+Eine Selection besteht aus einer Liste von Filtern, die gemeinsam gelten
+(UND). Ein Filter ist entweder eine Werteliste (`values`) oder ein
+numerischer Bereich (`range`).
 
-- Line, Bar, Pie und Donut: Kategorie des X-Felds;
-- Scatter: Kategorie eines kategorialen Color-Felds (Serienname).
+Quellen:
+
+- Klick in Line, Bar, Pie und Donut: Wertefilter auf die Kategorie des
+  X-Felds;
+- Klick in Scatter: Wertefilter auf die Kategorie eines kategorialen
+  Color-Felds (Serienname);
+- Brush in Scatter: zwei Bereichsfilter auf das X- und das Y-Feld
+  (`createSelectionFromBrush`).
 
 Ein erneuter Klick auf dieselbe Kategorie oder ein Klick auf eine leere
 Fläche im Chart hebt die Selection auf.
+
+Der Brush ist im Scatter immer aktiv: Ziehen erzeugt ein Rechteck,
+Mausrad-Zoom bleibt erhalten. Weil `setOption` den Brush-Zustand
+zurücksetzt, gleicht `syncBrush` nach jedem Rendering den Brush-Modus
+und das sichtbare Rechteck mit der Selection ab. Das Rechteck wird also
+aus dem Domain State gezeichnet und verschwindet, sobald die Selection
+aus einem anderen Chart stammt oder gelöscht wird. Das eigene Abblenden
+von ECharts (`outOfBrush`) ist deaktiviert; abgeblendet wird
+ausschließlich über die Selection.
 
 Die Selection gilt global und unabhängig davon, ob ein Chart das
 Selection-Feld selbst codiert. Jeder Chart hebt den Anteil seiner eigenen
@@ -261,7 +278,12 @@ Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
 - Scatter: Zeilen, die nicht zur Selection passen, werden im Frontend
   abgeblendet, ohne zusätzliche Query.
 
-Der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie. Im
+Die Bedeutung einer Selection (Zeilenzugehörigkeit, Vergleich,
+Beschriftung) liegt in `src/workspace/dataSelection.ts` und wird von
+Scatter, Tooltip und Canvas gemeinsam genutzt.
+
+Der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie bzw.
+dem ausgewählten Bereich. Im
 Quell-Chart entfallen die Highlight-Zeilen, weil sie dort die Basiswerte
 nur wiederholen würden. Gemeinsame Konstanten wie die Abblend-Opacity
 liegen in `content/selectionStyle.ts`.
@@ -330,10 +352,13 @@ WorkspaceState
 ```
 
 ```ts
+type SelectionFilter =
+  | { kind: 'values'; field: string; values: DataValue[] }
+  | { kind: 'range'; field: string; min: number; max: number }
+
 type DataSelection = {
   sourceChartId: string
-  field: string
-  values: DataValue[]
+  filters: SelectionFilter[]
 }
 ```
 
@@ -565,12 +590,16 @@ Backend-Resultset. Der Request enthält:
 - optional `series`;
 - `aggregation` für den Y-Wert;
 - optional `color` und `color_aggregation`;
-- `filters` als Liste von `{ field, values }`.
+- `filters` als Liste von Wertefiltern `{ kind: 'values', field,
+values }` und Bereichsfiltern `{ kind: 'range', field, min, max }`.
 
 Filter werden vor der Gruppierung angewendet und untereinander mit UND
-verknüpft. Der Vergleich erfolgt auf dem als String gecasteten Feldwert,
-damit Kategorien aus dem Resultset direkt als Filterwerte dienen können.
-Unbekannte Filterfelder werden wie andere Felder mit 422 abgelehnt.
+verknüpft. Wertefilter vergleichen auf dem als String gecasteten
+Feldwert, damit Kategorien aus dem Resultset direkt als Filterwerte
+dienen können. Bereichsfilter vergleichen numerisch inklusive der
+Grenzen und sind nur für numerische Felder erlaubt. Unbekannte
+Filterfelder und Bereichsfilter auf nicht numerischen Feldern werden mit
+422 abgelehnt.
 
 Das Resultset enthält pro Gruppe:
 

@@ -1,10 +1,18 @@
 import type { GroupAggregation } from '../types/chart'
 import { post } from './client'
 
-export type ChartFilter = {
-  field: string
-  values: string[]
-}
+export type ChartFilter =
+  | {
+      kind: 'values'
+      field: string
+      values: string[]
+    }
+  | {
+      kind: 'range'
+      field: string
+      min: number
+      max: number
+    }
 
 export type ChartQueryRequest = {
   aggregation: GroupAggregation

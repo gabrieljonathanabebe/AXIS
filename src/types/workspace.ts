@@ -84,8 +84,20 @@ export type WorkspaceAction =
     }
 
 // ===== SELECTION =============================================================
+export type SelectionFilter =
+  | {
+      kind: 'values'
+      field: string
+      values: DataValue[]
+    }
+  | {
+      kind: 'range'
+      field: string
+      min: number
+      max: number
+    }
+
 export type DataSelection = {
   sourceChartId: string
-  field: string
-  values: DataValue[]
+  filters: SelectionFilter[]
 }

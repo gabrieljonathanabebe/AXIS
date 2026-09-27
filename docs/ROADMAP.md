@@ -113,6 +113,18 @@ Handling bleibt auf Visual Analytics begrenzt.
   Quell-Chart
 - Backend-Chart-Query mit `filters`
 
+### Brush Selection
+
+- Selection als Liste von Werte- und Bereichsfiltern
+- Rechteck-Brush im Scatter, immer aktiv; Klick und Mausrad-Zoom bleiben
+  erhalten
+- Brush erzeugt Bereichsfilter auf X und Y, alle Charts heben den Anteil
+  der Zeilen im Rechteck hervor
+- Rechteck wird aus der Selection gezeichnet und verschwindet, wenn die
+  Selection gelöscht wird oder aus einem anderen Chart stammt
+- Rechteck in Akzentfarbe, ohne zusätzliches Abblenden durch ECharts
+- Backend-Bereichsfilter für numerische Felder
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -153,19 +165,17 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des Cross-Highlighting MVP:
+Priorität nach Abschluss von Cross-Highlighting und Brush Selection:
 
-1. Brush Selection, vor allem für Scatter, mit Range-Selection und
-   Range-Filtern im Backend;
-2. Canvas festigen: Selection, Drag, Resize, Duplicate/Delete sowie
+1. Canvas festigen: Selection, Drag, Resize, Duplicate/Delete sowie
    ChartInstance und Layout aufräumen; das Chart-Layout soll im
    Inspector formatierbar werden;
-3. Workspace UX: kompakteres und einklappbares Build Panel,
+2. Workspace UX: kompakteres und einklappbares Build Panel,
    einklappbarer Inspector, Focus Mode;
-4. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
+3. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
    Values, Cardinality;
-5. Build Panel mit dem Profiling verbinden;
-6. Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
+4. Build Panel mit dem Profiling verbinden;
+5. Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
    Tooltips, weitere Encodings.
 
 Danach folgen Project Persistence und Share sowie Ask Cevyn und
@@ -214,7 +224,8 @@ Nach bzw. gemeinsam mit Multi-Chart:
 - Linked Visualizations
 - Selection und Selection Propagation (Klick-Selection implementiert,
   siehe Cross-Highlighting MVP)
-- Brush Selection und Range-Selection
+- Brush Selection und Range-Selection (Scatter implementiert, Line und
+  Bar offen)
 - Mehrfachauswahl
 - Cross Filtering (Backend-Filter vorhanden, Modus fehlt noch)
 - Cross Highlighting (MVP implementiert)

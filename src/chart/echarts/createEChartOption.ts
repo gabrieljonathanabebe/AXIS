@@ -2,6 +2,7 @@ import type { EChartsOption } from 'echarts'
 
 import type { ChartQueryResult } from '../../api/chartQuery'
 import type { ChartSpec, ChartType, Dataset } from '../../types/chart'
+import { createBrushOption } from './createBrushOption'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartTheme } from './chartTheme'
 import type { DataSelection } from '../../types/workspace'
@@ -44,6 +45,8 @@ export function createEChartOption(
     animationDuration: interaction.animation.duration,
     animationEasing: interaction.animation.easing,
     backgroundColor: 'transparent',
+    brush: createBrushOption(chartType, theme),
+
     color:
       colorEncodingMode === 'categorical'
         ? appearance.colorScale.categorical.palette

@@ -1,6 +1,16 @@
-import type { ChartQueryRequest } from '../api/chartQuery'
+import type { ChartFilter, ChartQueryRequest } from '../api/chartQuery'
 import type { ChartInstance } from '../types/chart'
-import type { DataSelection } from '../types/workspace'
+import type { DataSelection, SelectionFilter } from '../types/workspace'
+
+function toChartFilter(filter: SelectionFilter): ChartFilter {
+  if (filter.kind === 'range') {
+    return filter
+  }
+  return {
+    ...filter,
+    values: filter.values.map((value) => String(value)),
+  }
+}
 
 export function createChartQuery(
   chart: ChartInstance,
@@ -36,11 +46,6 @@ export function createHighlightQuery(
   }
   return {
     ...query,
-    filters: [
-      {
-        field: selection.field,
-        values: selection.values.map((value) => String(value)),
-      },
-    ],
+    filters: selection.filters.map(toChartFilter),
   }
 }
