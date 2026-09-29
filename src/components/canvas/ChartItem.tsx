@@ -1,17 +1,24 @@
 import { GripHorizontal } from 'lucide-react'
 import { useDraggable, useDroppable } from '@dnd-kit/core'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import type { ChartLayoutMode, DragPayload, DropTarget } from '../../types/ui'
+import type {
+  AxisTitleEdit,
+  ChartLayoutMode,
+  DragPayload,
+  DropTarget,
+} from '../../types/ui'
 
 import EChartCanvas from './EChartCanvas'
 import EditableText from '../ui/EditableText'
+import InlineTextInput from '../ui/InlineTextInput'
 import { getChartDefinition } from '../../chart/chartDefinitions'
 import { getChartTitle, getDefaultChartTitle } from '../../chart/getChartTitle'
 import { moveChartLayout, resizeChartLayout } from '../../workspace/chartLayout'
 
 import type { CSSProperties, KeyboardEvent } from 'react'
 import type {
+  ChartAppearanceSpec,
   ChartEncoding,
   ChartInstance,
   ChartLayout,
@@ -40,6 +47,11 @@ type ChartItemProps = {
   onRemove: (chartId: string) => void
   onSelect: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
+  onUpdateAppearance: <TKey extends keyof ChartAppearanceSpec>(
+    chartId: string,
+    key: TKey,
+    value: ChartAppearanceSpec[TKey],
+  ) => void
   onUpdateLayout: (chartId: string, layout: ChartLayout) => void
   onUpdateTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
@@ -131,6 +143,27 @@ const arrowKeyDeltas: Partial<Record<string, GridDelta>> = {
   ArrowUp: { x: 0, y: -1 },
 }
 
+function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
+  return {
+    left: axis === 'x' ? rect.x + rect.width / 2 : rect.x,
+    top: rect.y + rect.height / 2,
+  }
+}
+
+function getAxisTitleHoverStyle({
+  height,
+  width,
+  x,
+  y,
+}: AxisTitleEdit['rect']): CSSProperties {
+  return {
+    height,
+    left: x,
+    top: y,
+    width,
+  }
+}
+
 function ChartItem({
   chart,
   dataset,
@@ -144,10 +177,14 @@ function ChartItem({
   onRemove,
   onSelect,
   onSelectData,
+  onUpdateAppearance,
   onUpdateLayout,
   onUpdateTitle,
 }: ChartItemProps) {
   const itemRef = useRef<HTMLDivElement | null>(null)
+  const [axisTitleEdit, setAxisTitleEdit] = useState<AxisTitleEdit | null>(null)
+  const [hoveredAxisTitle, setHoveredAxisTitle] =
+    useState<AxisTitleEdit | null>(null)
   const definition = getChartDefinition(chart.type)
   const xLabel =
     definition.encodings.find((encoding) => encoding.key === 'x')?.label ?? 'X'
@@ -219,6 +256,19 @@ function ChartItem({
     }
   }
 
+  function handleEditAxisTitle(edit: AxisTitleEdit): void {
+    setHoveredAxisTitle(null)
+    setAxisTitleEdit(edit)
+  }
+
+  function commitAxisTitle(axis: AxisTitleEdit['axis'], text: string): void {
+    const axisKey = `${axis}Axis` as const
+    onUpdateAppearance(chart.id, axisKey, {
+      ...chart.spec.appearance[axisKey],
+      title: text,
+    })
+  }
+
   return (
     <div
       aria-label={getChartTitle(chart)}
@@ -249,11 +299,21 @@ function ChartItem({
           label={yLabel}
         />
       </div>
+      {hoveredAxisTitle && !axisTitleEdit ? (
+        <span
+          className={`editable-text-highlight chart-axis-title-hover is-${hoveredAxisTitle.axis}-axis`}
+          style={getAxisTitleHoverStyle(hoveredAxisTitle.rect)}
+        />
+      ) : null}
+
       <EChartCanvas
         chart={chart}
         dataset={dataset}
         datasetId={datasetId}
+        editingAxisTitle={axisTitleEdit?.axis ?? null}
         onClearSelection={onClearSelection}
+        onEditAxisTitle={handleEditAxisTitle}
+        onHoverAxisTitle={setHoveredAxisTitle}
         onSelectData={onSelectData}
         selection={selection}
       />
@@ -270,6 +330,20 @@ function ChartItem({
             onCommit={(text) => onUpdateTitle(chart.id, { ...title, text })}
           />
         </div>
+      ) : null}
+      {axisTitleEdit ? (
+        <InlineTextInput
+          className={`chart-axis-title-input is-${axisTitleEdit.axis}-axis`}
+          initialValue={
+            chart.spec.appearance[`${axisTitleEdit.axis}Axis`].title
+          }
+          key={axisTitleEdit.axis}
+          label={`${axisTitleEdit.axis.toUpperCase()} axis title`}
+          placeholder={chart.spec.data.encoding[axisTitleEdit.axis]?.name ?? ''}
+          style={getAxisTitleInputStyle(axisTitleEdit)}
+          onClose={() => setAxisTitleEdit(null)}
+          onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
+        />
       ) : null}
       {layoutHandleModes.map((mode) => (
         <ChartLayoutHandle chartId={chart.id} key={mode} mode={mode} />

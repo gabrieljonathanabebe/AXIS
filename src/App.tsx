@@ -38,6 +38,7 @@ function App() {
     setSelection,
     setSelectedField,
     updateAppearance,
+    updateChartAppearance,
     updateChartLayout,
     updateChartTitle,
     updateContainer,
@@ -75,6 +76,8 @@ function App() {
           onRemoveChart={removeChart}
           onSelectChart={selectChart}
           onSelectData={setSelection}
+          onUpdateChartAppearance={updateChartAppearance}
+
           onUpdateChartLayout={updateChartLayout}
           onUpdateChartTitle={updateChartTitle}
         />

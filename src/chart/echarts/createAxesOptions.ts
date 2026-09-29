@@ -94,6 +94,7 @@ export function createAxesOptions({
       splitNumber: isCategoryXAxis
         ? undefined
         : (appearance.xAxis.labels.tickCount ?? undefined),
+      triggerEvent: true,
       type: isCategoryXAxis ? 'category' : 'value',
     },
     yAxis: {
@@ -126,6 +127,7 @@ export function createAxesOptions({
         show: appearance.yAxis.enabled && appearance.grid.enabled,
       },
       splitNumber: appearance.yAxis.labels.tickCount ?? undefined,
+      triggerEvent: true,
       type: 'value',
     },
   }

@@ -114,6 +114,18 @@ export function useChartWorkspace({
     }))
   }
 
+  function updateChartAppearance<TKey extends keyof ChartAppearanceSpec>(
+    chartId: string,
+    key: TKey,
+    value: ChartAppearanceSpec[TKey],
+  ): void {
+    dispatch({
+      type: 'chart/updateAppearance',
+      chartId,
+      patch: { [key]: value },
+    })
+  }
+
   function updateChartLayout(chartId: string, layout: ChartLayout): void {
     dispatch({ type: 'chart/updateLayout', chartId, patch: layout })
   }
@@ -262,6 +274,8 @@ export function useChartWorkspace({
     setSelectedField,
     setSelection,
     updateAppearance,
+    updateChartAppearance,
+
     updateChartLayout,
     updateChartTitle,
     updateContainer,

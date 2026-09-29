@@ -10,6 +10,7 @@ import {
 } from '../../workspace/chartLayout'
 
 import type {
+  ChartAppearanceSpec,
   ChartInstance,
   ChartLayout,
   ChartTitleAppearance,
@@ -33,6 +34,11 @@ type ChartGridProps = {
   onRemoveChart: (chartId: string) => void
   onSelectChart: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
+  onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
+    chartId: string,
+    key: TKey,
+    value: ChartAppearanceSpec[TKey],
+  ) => void
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
   onUpdateChartTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
@@ -115,6 +121,7 @@ function ChartGrid({
   onRemoveChart,
   onSelectChart,
   onSelectData,
+  onUpdateChartAppearance,
   onUpdateChartLayout,
   onUpdateChartTitle,
 }: ChartGridProps) {
@@ -201,6 +208,8 @@ function ChartGrid({
             onRemove={onRemoveChart}
             onSelect={onSelectChart}
             onSelectData={onSelectData}
+            onUpdateAppearance={onUpdateChartAppearance}
+
             onUpdateLayout={onUpdateChartLayout}
             onUpdateTitle={onUpdateChartTitle}
           />

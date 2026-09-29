@@ -142,6 +142,21 @@ Handling bleibt auf Visual Analytics begrenzt.
 - wiederverwendbare Controls `AlignmentControl` und `EditableText`,
   `ColorControl` mit eigenen Presets
 
+### Inline-Editing der Achsentitel
+
+- X- und Y-Achsentitel direkt im Chart bearbeitbar; ECharts rendert die
+  Titel weiter
+- Adapter übersetzt Klick und Hover auf den Titel in ein Domain-Event
+  mit Achse und Bounding Box (`AxisTitleEdit`)
+- Input liegt über dem Titel, der Original-Titel wird währenddessen
+  ausgeblendet; Y-Input wächst nach innen in den Plot
+- Placeholder ist der Feldname; leerer Titel bedeutet automatischer
+  Titel
+- Hover-Fläche und Text-Cursor wie beim Charttitel
+- Edit-Hälfte von `EditableText` als `InlineTextInput` herausgezogen;
+  Pointer-Down außerhalb übernimmt den Wert, auch wenn ECharts (Brush)
+  das Default-Verhalten unterdrückt
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -182,20 +197,19 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des Slices Canvas Container und Direct
-Editing:
+Priorität nach Abschluss des Slices Inline-Editing der Achsentitel:
 
-1. Inline-Editing der Achsentitel: ECharts rendert die Achsentitel
-   weiter, der Adapter übersetzt einen Klick auf den Titel in ein
-   Domain-Event, der Chart legt ein Input darüber;
-2. Canvas-/Objektarchitektur und Workspace UX: kontextsensitiver
+1. Canvas-/Objektarchitektur und Workspace UX: kontextsensitiver
    Inspector (Chart oder Dashboard), Dashboard-/Layout-Einstellungen,
    Grundlage für weitere Objekte wie Text, KPI und Table, unabhängig
    einklappbares Build Panel und Inspector;
-3. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
+   Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
+   `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,
+   dafür Positionierung am Grid und Bild-Export selbst lösen);
+2. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
    Values, Cardinality;
-4. Build Panel mit dem Profiling verbinden;
-5. Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
+3. Build Panel mit dem Profiling verbinden;
+4. Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
    Tooltips, weitere Encodings.
 
 Danach folgen Project Persistence und Share sowie Ask Cevyn und

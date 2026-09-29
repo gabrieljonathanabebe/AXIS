@@ -1,4 +1,5 @@
 .editable-text,
+.editable-text-highlight,
 .editable-text-input {
   max-width: calc(100% + 2 * var(--space-2));
   margin-inline: calc(-1 * var(--space-2));
@@ -21,7 +22,8 @@
   transition: background var(--transition-fast);
 }
 
-.editable-text:hover {
+.editable-text:hover,
+.editable-text-highlight {
   background: var(--color-surface-hover);
 }
 

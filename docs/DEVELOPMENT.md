@@ -330,6 +330,13 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   einzeilige Änderungen wie Imports oder Props;
 - direkt über jedem Codeblock Datei und genaue Einfügestelle nennen,
   bezogen auf benachbarten bestehenden Code („nach …“, „ersetzen …“);
+- Dateipfade als klickbaren Markdown-Link relativ zum Repo-Root
+  angeben, bei bestehenden Dateien mit Zeilenanker auf die
+  Einfügestelle, z. B.
+  `[createAxesOptions.ts:97](src/chart/echarts/createAxesOptions.ts#L97)`
+  oder für einen Bereich `#L97-L99`; neue Dateien ohne Zeilenanker;
+- Zeilennummern vor jedem Block aus dem aktuell gespeicherten Stand
+  bestimmen, da sie sich durch vorherige Blöcke verschieben;
 - keinen Code in Fließtext oder Aufzählungspunkte packen;
 - bei Ersetzungen den vollständigen neuen Abschnitt zeigen;
 - nach dem Block den gespeicherten Ist-Zustand prüfen;

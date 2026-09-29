@@ -366,7 +366,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips im Build Panel)                       |
 | Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
 | Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`, `AlignmentControl`)          |
-| Inline Text Editing          | Chart-Titel                     | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`)                                   |
+| Inline Text Editing          | Chart-Titel, Achsentitel        | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
 | Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`)                                   |
@@ -480,6 +480,22 @@ Domain Model verwenden immer `start | center | end`, nicht
 
 Inline-Editing und Inspector ändern denselben Wert über dieselbe
 Action.
+
+Die Edit-Hälfte ist als `InlineTextInput` eigenständig nutzbar, z. B.
+als Overlay über Text, den nicht HTML rendert (Achsentitel in
+ECharts). `InlineTextInput` besitzt Draft, Enter/Escape/Blur und die
+Tastatur-Isolation. Ein Pointer-Down außerhalb des Inputs übernimmt den
+Wert, auch wenn eine Bibliothek das Default-Verhalten unterdrückt.
+
+Gemeinsames Styling liegt in `EditableText.css`:
+
+- `.editable-text-input` für jedes Inline-Input;
+- `.editable-text-highlight` für die Hover-Fläche, wenn der Text nicht
+  als `EditableText`-Button gerendert wird.
+
+Komponentenspezifische Klassen wie `.chart-axis-title-input` und
+`.chart-axis-title-hover` enthalten nur Position und Größe, keine
+eigene Optik.
 
 ## 10. Legend
 

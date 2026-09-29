@@ -226,6 +226,21 @@ ECharts-`title`. Er bleibt Teil der `ChartSpec`
 Titel („Y by X“) wird in `src/chart/getChartTitle.ts` abgeleitet und
 von Header, Inline-Editing und `aria-label` gemeinsam genutzt.
 
+Die Achsentitel rendert weiterhin ECharts. Für das Inline-Editing
+übersetzt der Adapter (`createAxisTitleEditFromEvent.ts`) Klick und
+Hover auf `axisName` in ein Domain-Event `AxisTitleEdit` mit Achse und
+Bounding Box. `ChartItem` legt darüber ein `InlineTextInput` bzw. eine
+Hover-Fläche. Während der Bearbeitung blendet `syncAxisTitleEdit` den
+Original-Titel aus; ECharts-spezifische Aufrufe bleiben im Adapter.
+
+```text
+ECharts click/mouseover (axisName)
+→ createAxisTitleEditFromEvent
+→ AxisTitleEdit
+→ ChartItem Overlay
+→ chart/updateAppearance
+```
+
 Chart-Content wird über eine typsichere Registry erzeugt:
 
 ```text
@@ -442,8 +457,8 @@ nächsten Chart in Lesereihenfolge (nach `y`, dann `x`) bzw. den
 vorherigen aus (`findNeighborChartId`).
 
 Inspector und Inline-Editing auf der Canvas verwenden dieselben
-Actions. Der Titel wird z. B. im Inspector und direkt im Chart-Header
-über `chart/updateAppearance` geändert.
+Actions. Charttitel und Achsentitel werden z. B. im Inspector und direkt
+im Chart über `chart/updateAppearance` geändert.
 
 Regeln:
 

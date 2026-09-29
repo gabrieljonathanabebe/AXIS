@@ -235,6 +235,39 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.chart-axis-title-input {
+  position: absolute;
+  z-index: 3;
+  width: auto;
+  font-size: var(--font-size-sm);
+  max-width: calc(100% - 2 * var(--chart-canvas-inset));
+  height: auto;
+  padding-block: var(--space-1);
+}
+
+.chart-axis-title-input.is-x-axis {
+  margin-inline: 0;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.chart-axis-title-input.is-y-axis {
+  transform: translateY(-50%);
+}
+
+.chart-axis-title-hover {
+  position: absolute;
+  box-sizing: content-box;
+  margin-block: calc(-1 * var(--space-1));
+  padding-block: var(--space-1);
+  pointer-events: none;
+}
+
+.chart-axis-title-hover.is-y-axis {
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-1));
+  padding: var(--space-2) var(--space-1);
+}
+
 .chart-item:hover .chart-move-handle svg,
 .chart-item.is-selected .chart-move-handle svg {
   opacity: 1;

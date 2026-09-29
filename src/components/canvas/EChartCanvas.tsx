@@ -9,6 +9,12 @@ import {
 import { createEChartOption } from '../../chart/echarts/createEChartOption'
 import { syncBrush } from '../../chart/echarts/createBrushOption'
 import {
+  createAxisTitleEditFromEvent,
+  isAxisTitleEvent,
+  syncAxisTitleEdit,
+} from '../../chart/echarts/createAxisTitleEditFromEvent'
+
+import {
   createSelectionFromBrush,
   createSelectionFromEvent,
 } from '../../chart/echarts/createSelectionFromEvent'
@@ -16,6 +22,7 @@ import {
 import { isSameSelection } from '../../workspace/dataSelection'
 import { useChartQuery } from '../../hooks/useChartQuery'
 
+import type { AxisTitleEdit } from '../../types/ui'
 import type { ChartInstance, Dataset } from '../../types/chart'
 import type { ChartTheme } from '../../chart/echarts/chartTheme'
 import type { DataSelection } from '../../types/workspace'
@@ -24,7 +31,10 @@ type EChartCanvasProps = {
   chart: ChartInstance
   dataset: Dataset
   datasetId: string | null
+  editingAxisTitle: AxisTitleEdit['axis'] | null
   onClearSelection: () => void
+  onEditAxisTitle: (edit: AxisTitleEdit) => void
+  onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
   onSelectData: (selection: DataSelection) => void
   selection: DataSelection | null
 }
@@ -65,11 +75,28 @@ function readChartTheme(): ChartTheme {
   }
 }
 
+function offsetAxisTitleEdit(
+  edit: AxisTitleEdit,
+  container: HTMLElement,
+): AxisTitleEdit {
+  return {
+    ...edit,
+    rect: {
+      ...edit.rect,
+      x: edit.rect.x + container.offsetLeft,
+      y: edit.rect.y + container.offsetTop,
+    },
+  }
+}
+
 function EChartCanvas({
   chart,
   dataset,
   datasetId,
+  editingAxisTitle,
   onClearSelection,
+  onEditAxisTitle,
+  onHoverAxisTitle,
   onSelectData,
   selection,
 }: EChartCanvasProps) {
@@ -115,16 +142,23 @@ function EChartCanvas({
       true,
     )
     syncBrush(instance, chart, selection)
-  }, [chart, dataset, highlightResult, result, selection])
+    syncAxisTitleEdit(instance, editingAxisTitle)
+  }, [chart, dataset, editingAxisTitle, highlightResult, result, selection])
 
   useEffect(() => {
     const instance = chartRef.current
-    if (!instance) {
+    const container = containerRef.current
+    if (!instance || !container) {
       return
     }
     const zr = instance.getZr()
 
     function handleClick(event: ECElementEvent): void {
+      const axisTitleEdit = createAxisTitleEditFromEvent(event)
+      if (axisTitleEdit && container) {
+        onEditAxisTitle(offsetAxisTitleEdit(axisTitleEdit, container))
+        return
+      }
       const nextSelection = createSelectionFromEvent(chart, event)
       if (!nextSelection) {
         return
@@ -151,15 +185,47 @@ function EChartCanvas({
       onClearSelection()
     }
 
+    function handleMouseMove(event: ECElementEvent): void {
+      if (isAxisTitleEvent(event)) {
+        zr.setCursorStyle('text')
+      }
+    }
+
+    function handleMouseOver(event: ECElementEvent): void {
+      const axisTitleEdit = createAxisTitleEditFromEvent(event)
+      if (axisTitleEdit && container) {
+        onHoverAxisTitle(offsetAxisTitleEdit(axisTitleEdit, container))
+      }
+    }
+
+    function handleMouseOut(event: ECElementEvent): void {
+      if (isAxisTitleEvent(event)) {
+        onHoverAxisTitle(null)
+      }
+    }
+
     instance.on('click', handleClick)
     instance.on('brushEnd', handleBrushEnd)
+    instance.on('mousemove', handleMouseMove)
+    instance.on('mouseout', handleMouseOut)
+    instance.on('mouseover', handleMouseOver)
     zr.on('click', handleBackgroundClick)
     return () => {
       instance.off('click', handleClick)
       instance.off('brushEnd', handleBrushEnd)
+      instance.off('mousemove', handleMouseMove)
+      instance.off('mouseout', handleMouseOut)
+      instance.off('mouseover', handleMouseOver)
       zr.off('click', handleBackgroundClick)
     }
-  }, [chart, onClearSelection, onSelectData, selection])
+  }, [
+    chart,
+    onClearSelection,
+    onEditAxisTitle,
+    onHoverAxisTitle,
+    onSelectData,
+    selection,
+  ])
 
   useEffect(() => {
     if (isLoading) {

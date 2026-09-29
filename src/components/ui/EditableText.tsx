@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { KeyboardEvent } from 'react'
+import InlineTextInput from './InlineTextInput'
 
 type EditableTextProps = {
   label: string
@@ -17,39 +17,17 @@ function EditableText({
   className = '',
   onCommit,
 }: EditableTextProps) {
-  const [draft, setDraft] = useState<string | null>(null)
-  const isEditing = draft !== null
-
-  function commit(): void {
-    if (draft !== null && draft.trim() !== value.trim()) {
-      onCommit(draft.trim())
-    }
-    setDraft(null)
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
-    event.stopPropagation()
-    if (event.key === 'Enter') {
-      commit()
-    }
-    if (event.key === 'Escape') {
-      setDraft(null)
-    }
-  }
+  const [isEditing, setIsEditing] = useState(false)
 
   if (isEditing) {
     return (
-      <input
-        autoFocus
-        className={`editable-text-input ${className}`}
-        type="text"
-        aria-label={label}
+      <InlineTextInput
+        className={className}
+        initialValue={value}
+        label={label}
         placeholder={placeholder}
-        value={draft}
-        onBlur={commit}
-        onChange={(event) => setDraft(event.target.value)}
-        onFocus={(event) => event.currentTarget.select()}
-        onKeyDown={handleKeyDown}
+        onClose={() => setIsEditing(false)}
+        onCommit={onCommit}
       />
     )
   }
@@ -60,7 +38,7 @@ function EditableText({
       type="button"
       aria-label={`Edit ${label.toLowerCase()}`}
       title={value.trim() || placeholder}
-      onClick={() => setDraft(value)}
+      onClick={() => setIsEditing(true)}
     >
       {value.trim() || placeholder}
     </button>

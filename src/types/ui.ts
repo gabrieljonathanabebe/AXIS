@@ -2,6 +2,16 @@ import type { ChartEncoding, ChartType, DataField } from './chart'
 
 export type ActiveSidePanel = 'fields' | 'charts' | 'settings'
 
+export type AxisTitleEdit = {
+  axis: 'x' | 'y'
+  rect: {
+    height: number
+    width: number
+    x: number
+    y: number
+  }
+}
+
 export type ChartLayoutMode = 'move' | ChartResizeDirection
 
 export type ChartResizeDirection =

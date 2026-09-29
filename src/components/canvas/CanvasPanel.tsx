@@ -6,6 +6,7 @@ import IconButton from '../ui/IconButton'
 import Panel from '../ui/Panel'
 
 import type {
+  ChartAppearanceSpec,
   ChartInstance,
   ChartLayout,
   ChartTitleAppearance,
@@ -26,6 +27,12 @@ type CanvasPanelProps = {
   onRemoveChart: (chartId: string) => void
   onSelectChart: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
+  onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
+    chartId: string,
+    key: TKey,
+    value: ChartAppearanceSpec[TKey],
+  ) => void
+
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
   onUpdateChartTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
@@ -44,6 +51,7 @@ function CanvasPanel({
   onSelectData,
   onUpdateChartLayout,
   onUpdateChartTitle,
+  onUpdateChartAppearance,
 }: CanvasPanelProps) {
   return (
     <Panel
@@ -82,6 +90,7 @@ function CanvasPanel({
           onRemoveChart={onRemoveChart}
           onSelectChart={onSelectChart}
           onSelectData={onSelectData}
+          onUpdateChartAppearance={onUpdateChartAppearance}
           onUpdateChartLayout={onUpdateChartLayout}
           onUpdateChartTitle={onUpdateChartTitle}
         />
