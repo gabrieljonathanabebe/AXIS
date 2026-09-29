@@ -235,6 +235,15 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.chart-item-actions {
+  position: absolute;
+  top: var(--chart-header-top);
+  right: var(--chart-header-inline);
+  z-index: 5;
+  display: flex;
+  gap: var(--space-1);
+}
+
 .chart-axis-title-input {
   position: absolute;
   z-index: 3;

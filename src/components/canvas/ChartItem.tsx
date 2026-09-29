@@ -7,8 +7,10 @@ import type {
   ChartLayoutMode,
   DragPayload,
   DropTarget,
+  WorkspaceCommands,
 } from '../../types/ui'
 
+import CommandButton from '../ui/CommandButton'
 import EChartCanvas from './EChartCanvas'
 import EditableText from '../ui/EditableText'
 import InlineTextInput from '../ui/InlineTextInput'
@@ -36,6 +38,7 @@ type ChartItemStyle = CSSProperties & {
 
 type ChartItemProps = {
   chart: ChartInstance
+  commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
   isDraggingField: boolean
@@ -43,8 +46,6 @@ type ChartItemProps = {
   selection: DataSelection | null
   style: CSSProperties
   onClearSelection: () => void
-  onDuplicate: (chartId: string) => void
-  onRemove: (chartId: string) => void
   onSelect: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
   onUpdateAppearance: <TKey extends keyof ChartAppearanceSpec>(
@@ -166,6 +167,7 @@ function getAxisTitleHoverStyle({
 
 function ChartItem({
   chart,
+  commands,
   dataset,
   datasetId,
   isDraggingField,
@@ -173,8 +175,6 @@ function ChartItem({
   selection,
   style,
   onClearSelection,
-  onDuplicate,
-  onRemove,
   onSelect,
   onSelectData,
   onUpdateAppearance,
@@ -236,16 +236,7 @@ function ChartItem({
       onUpdateLayout(chart.id, layout)
       return
     }
-    if (event.key === 'Delete' || event.key === 'Backspace') {
-      event.preventDefault()
-      onRemove(chart.id)
-      return
-    }
-    if (event.key === 'd' && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault()
-      onDuplicate(chart.id)
-      return
-    }
+
     if (event.key === 'Escape') {
       if (selection) {
         onClearSelection()
@@ -344,6 +335,12 @@ function ChartItem({
           onClose={() => setAxisTitleEdit(null)}
           onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
         />
+      ) : null}
+      {isSelected ? (
+        <div className="chart-item-actions">
+          <CommandButton command={commands['chart.duplicate']} size="sm" />
+          <CommandButton command={commands['chart.delete']} size="sm" />
+        </div>
       ) : null}
       {layoutHandleModes.map((mode) => (
         <ChartLayoutHandle chartId={chart.id} key={mode} mode={mode} />

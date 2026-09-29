@@ -89,6 +89,33 @@ export type WorkspaceAction =
       selection: DataSelection
     }
 
+// ===== HISTORY ===============================================================
+export type WorkspaceSnapshot = Pick<
+  WorkspaceState,
+  'charts' | 'selectedChartId'
+>
+
+export type WorkspaceHistoryState = {
+  future: WorkspaceSnapshot[]
+  lastCoalesceKey: string | null
+  lastTimestamp: number
+  past: WorkspaceSnapshot[]
+  present: WorkspaceState
+}
+
+export type WorkspaceHistoryAction =
+  | {
+      type: 'history/apply'
+      action: WorkspaceAction
+      timestamp: number
+    }
+  | {
+      type: 'history/redo'
+    }
+  | {
+      type: 'history/undo'
+    }
+
 // ===== SELECTION =============================================================
 export type SelectionFilter =
   | {

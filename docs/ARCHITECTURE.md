@@ -476,6 +476,59 @@ später für Ask Cevyn und Explore (siehe Abschnitt 16). Eine
 Validierungsschicht für AI-generierte Actions ist noch nicht
 implementiert.
 
+### Undo/Redo
+
+Die History liegt als eigener Reducer um den `workspaceReducer`
+(`src/workspace/workspaceHistory.ts`):
+
+```text
+WorkspaceHistoryState
+├── past: WorkspaceSnapshot[]
+├── present: WorkspaceState
+└── future: WorkspaceSnapshot[]
+```
+
+`useChartWorkspace` dispatcht jede `WorkspaceAction` verpackt als
+`history/apply` mit Timestamp; dazu kommen `history/undo` und
+`history/redo`. Der `workspaceReducer` selbst kennt keine History.
+
+Regeln:
+
+- Undo-fähig sind alle `chart/*`-Actions außer `chart/select`.
+  `chart/select` und `selection/*` ändern nur `present`.
+- Eine Action, die den State nicht verändert, erzeugt keinen Schritt.
+- Ein Snapshot enthält `charts` und `selectedChartId`. Undo stellt
+  damit auch die Chart-Auswahl wieder her, z. B. nach einem Delete.
+  Die Datenauswahl bleibt erhalten, solange ihr Quell-Chart existiert.
+- `update*`-Actions mit gleichem Coalesce-Key (Action-Typ, `chartId`,
+  Mark, Patch-Keys) innerhalb von 500 ms werden zu einem Schritt
+  zusammengefasst. Dadurch ergeben Scrubbing, Slider, Farbpicker und
+  Pfeil-Nudges einen Schritt, ohne dass die Controls Gesten melden.
+- Die History ist auf 100 Schritte begrenzt und wird nicht persistiert.
+
+### Commands
+
+Workspace-Befehle sind als `WorkspaceCommand` beschrieben (Label, Icon,
+Shortcuts, `isEnabled`, `run`, Scope) und werden in
+`useWorkspaceCommands` zentral erzeugt. Dieselbe Registry speist
+Shortcuts und Buttons:
+
+```text
+useWorkspaceCommands
+├── useCommandShortcuts → globaler Keydown-Listener
+└── CommandButton       → Canvas-Toolbar, Chart-Aktionsleiste
+```
+
+- Aktuelle Commands: Undo, Redo, Duplicate, Delete, Build Panel und
+  Inspector umschalten.
+- Scope `global` greift überall, Scope `chart` nur, wenn der Chart
+  selbst fokussiert ist.
+- In Textfeldern und `contenteditable` greift kein Shortcut; dort bleibt
+  z. B. das native Text-Undo erhalten.
+- Control-lokale Tastaturbedienung (Slider, `ScrubbableNumber`,
+  `RotationDial`, `InlineTextInput`, `InspectorTabs`) sowie Pfeiltasten
+  und Escape auf dem fokussierten Chart bleiben in den Komponenten.
+
 ### Canvas Layout
 
 `ChartLayout` wird in Grid-Zellen angegeben, nicht in Pixeln. Die Canvas

@@ -129,7 +129,9 @@ Alle drei Bereiche nutzen `Panel`.
 - Header als eine Zeile: `IconBadge` mit Icon und kurzem Label, rechts
   `actions`. Keine Eyebrow-Überschrift über dem Titel.
 - `icon` und `title` sind optional. Die Canvas hat keinen Titel; ihr
-  Header ist die Toolbar. Dort ist später der Dashboard-Name geplant.
+  Header ist die Toolbar mit Undo und Redo. Dort ist später der
+  Dashboard-Name geplant. Objektbezogene Aktionen gehören nicht in die
+  Toolbar, sondern an das Objekt (siehe Chart-Aktionsleiste).
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
 
@@ -142,7 +144,8 @@ Build Panel und Inspector sind unabhängig einklappbar:
   zum Aufklappen.
 - Der Inhalt wird nur ausgeblendet, nicht entfernt; Zustand wie
   Inspector-Tab und geöffnete Widgets bleibt erhalten.
-- Cmd/Ctrl + B schaltet das Build Panel um, Cmd/Ctrl + I den Inspector.
+- Cmd/Ctrl + B schaltet das Build Panel um, Cmd/Ctrl + I den Inspector
+  (über die Command-Registry).
 - Der Layout-Zustand ist UI-State (`useWorkspaceLayout`), nicht Teil
   des Workspace-Reducers.
 
@@ -518,6 +521,20 @@ Komponentenspezifische Klassen wie `.chart-axis-title-input` und
 `.chart-axis-title-hover` enthalten nur Position und Größe, keine
 eigene Optik.
 
+## 9c. CommandButton
+
+`CommandButton` rendert einen `WorkspaceCommand` als `IconButton`:
+Label, Icon und Aktion kommen aus dem Command, `disabled` aus
+`isEnabled`. `size` (`sm | md`) wird an `IconButton` durchgereicht;
+das Icon ist 16 bzw. 18 px groß.
+
+Buttons für Workspace-Befehle werden immer über `CommandButton` aus der
+Registry gebaut, nicht als eigener `IconButton` mit eigenem Handler.
+So bleiben Button und Shortcut derselbe Befehl.
+
+`IconButton` zeigt `disabled` mit reduzierter Opacity, Cursor
+`not-allowed` und ohne Hover-Effekt.
+
 ## 10. Legend
 
 Legend erklärt diskrete Series oder Kategorien.
@@ -727,6 +744,13 @@ Neu hinzugefügte Charts werden ins Bild gescrollt, fokussiert und
 einmalig kurz über den Ring hervorgehoben. Bei `prefers-reduced-motion`
 entfällt die Animation.
 
+### Chart-Aktionsleiste
+
+Der ausgewählte Chart zeigt oben rechts auf Höhe des Titels eine
+Aktionsleiste mit Duplicate und Delete (`CommandButton`, Größe `sm`).
+Sie liegt über Auswahlring und Layout-Handles und erscheint nur am
+ausgewählten Chart.
+
 ### Tastaturbedienung
 
 Auf dem fokussierten Chart:
@@ -740,8 +764,18 @@ Auf dem fokussierten Chart:
 | Escape              | Datenauswahl aufheben, danach Chart-Auswahl |
 
 Shortcuts greifen nur, wenn der Chart selbst fokussiert ist, nicht ein
-Element darin. Nach dem Löschen erhält der nächste Chart in
+Element darin. Delete und Duplicate kommen aus der Command-Registry,
+Pfeiltasten und Escape aus `ChartItem`. Nach dem Löschen erhält der nächste Chart in
 Lesereihenfolge den Fokus; gibt es keinen Chart mehr, die leere Canvas.
+
+Global, außer in Textfeldern:
+
+| Taste                                  | Aktion                 |
+| -------------------------------------- | ---------------------- |
+| Cmd/Ctrl + Z                           | Rückgängig             |
+| Cmd/Ctrl + Shift + Z oder Cmd/Ctrl + Y | Wiederholen            |
+| Cmd/Ctrl + B                           | Build Panel umschalten |
+| Cmd/Ctrl + I                           | Inspector umschalten   |
 
 Escape darf nie der einzige Weg für eine Aktion sein. Im Vollbildmodus
 behält sich der Browser Escape vor.

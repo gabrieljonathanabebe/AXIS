@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react'
+
 import type { ChartEncoding, ChartType, DataField } from './chart'
 
 export type ActiveSidePanel = 'fields' | 'charts' | 'settings'
@@ -45,3 +47,31 @@ export type DropTarget =
       chartId: string
       encodingKey: keyof ChartEncoding
     }
+
+export type CommandScope = 'chart' | 'global'
+
+export type CommandShortcut = {
+  key: string
+  mod?: boolean
+  shift?: boolean
+}
+
+export type WorkspaceCommandId =
+  | 'chart.delete'
+  | 'chart.duplicate'
+  | 'history.redo'
+  | 'history.undo'
+  | 'layout.toggleBuildPanel'
+  | 'layout.toggleInspector'
+
+export type WorkspaceCommand = {
+  icon: LucideIcon
+  id: WorkspaceCommandId
+  isEnabled: boolean
+  label: string
+  run: () => void
+  scope: CommandScope
+  shortcuts: CommandShortcut[]
+}
+
+export type WorkspaceCommands = Record<WorkspaceCommandId, WorkspaceCommand>

@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-type IconButtonSize = 'sm' | 'md'
+export type IconButtonSize = 'sm' | 'md'
 
 type IconButtonProps = {
   children: ReactNode

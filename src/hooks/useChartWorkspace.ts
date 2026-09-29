@@ -7,9 +7,10 @@ import {
 } from '../chart/createChartInstance'
 import { createDemoDataset } from '../data/createDemoDataset'
 import {
-  initialWorkspaceState,
-  workspaceReducer,
-} from '../workspace/workspaceReducer'
+  initialWorkspaceHistory,
+  workspaceHistoryReducer,
+} from '../workspace/workspaceHistory'
+
 import {
   DEFAULT_CHART_SIZE,
   findFreeChartLayout,
@@ -47,11 +48,14 @@ export function useChartWorkspace({
   const [demoDataset] = useState<Dataset>(() => createDemoDataset())
   const dataset = externalDataset ?? demoDataset
 
-  const [workspace, dispatch] = useReducer(
-    workspaceReducer,
-    initialWorkspaceState,
+  const [history, dispatchHistory] = useReducer(
+    workspaceHistoryReducer,
+    initialWorkspaceHistory,
   )
-  const { charts, selectedChartId, selection } = workspace
+  const { charts, selectedChartId, selection } = history.present
+  const canRedo = history.future.length > 0
+  const canUndo = history.past.length > 0
+
   const selectedChart =
     charts.find((chart) => chart.id === selectedChartId) ?? null
   const [selectedField, setSelectedField] = useState<DataField | null>(null)
@@ -63,6 +67,18 @@ export function useChartWorkspace({
       },
     }),
   )
+
+  function dispatch(action: WorkspaceAction): void {
+    dispatchHistory({ type: 'history/apply', action, timestamp: Date.now() })
+  }
+
+  function undo(): void {
+    dispatchHistory({ type: 'history/undo' })
+  }
+
+  function redo(): void {
+    dispatchHistory({ type: 'history/redo' })
+  }
 
   function dispatchForSelectedChart(createAction: CreateChartAction): void {
     if (selectedChartId) {
@@ -254,12 +270,15 @@ export function useChartWorkspace({
   return {
     activeDrag,
     addChart,
+    canRedo,
+    canUndo,
     charts,
     clearSelection,
     dataset,
     duplicateChart,
     handleDragEnd,
     handleDragStart,
+    redo,
     removeChart,
     selectedChart,
     selectedChartId,
@@ -273,6 +292,7 @@ export function useChartWorkspace({
     setEncodingField,
     setSelectedField,
     setSelection,
+    undo,
     updateAppearance,
     updateChartAppearance,
     updateChartLayout,

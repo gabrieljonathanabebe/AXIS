@@ -165,6 +165,22 @@ Handling bleibt auf Visual Analytics begrenzt.
   schmale Icon-Leiste, Breite animiert
 - Shortcuts Cmd/Ctrl + B und Cmd/Ctrl + I
 
+### Undo/Redo und Command-Registry
+
+- History um den `workspaceReducer` mit `past`, `present` und `future`,
+  begrenzt auf 100 Schritte
+- nur Dokument-Änderungen sind undo-fähig; Chart-Auswahl und
+  Datenauswahl nicht
+- kontinuierliche Änderungen (Scrubbing, Slider, Farbpicker,
+  Pfeil-Nudges) werden per Coalesce-Key und Zeitfenster zu einem
+  Schritt zusammengefasst
+- zentrale Command-Registry speist Shortcuts und Buttons aus derselben
+  Befehlsliste; ein globaler Listener, keine Shortcuts in Textfeldern
+- Undo/Redo im Canvas-Header, Cmd/Ctrl + Z, Cmd/Ctrl + Shift + Z und
+  Cmd/Ctrl + Y
+- Duplicate und Delete als Aktionsleiste am ausgewählten Chart statt im
+  Canvas-Header
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -205,14 +221,11 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des Slices Workspace Panels:
+Priorität nach Abschluss des Slices Undo/Redo und Command-Registry:
 
 1. Canvas-/Objektarchitektur und Workspace UX:
-   - als Nächstes: Undo/Redo mit zentraler Command-Registry,
-     Dashboard-Toolbar im Canvas-Header, Duplicate und Delete als
-     Aktionsleiste am Chart statt im Canvas-Header;
-   - danach: `DashboardSpec` mit Dashboard-Name im Canvas-Header und
-     kontextsensitivem Inspector (Chart oder Dashboard),
+   - als Nächstes: `DashboardSpec` mit Dashboard-Name im Canvas-Header
+     und kontextsensitivem Inspector (Chart oder Dashboard),
      Dashboard-/Layout-Einstellungen;
    - Grundlage für weitere Objekte wie Text, KPI und Table;
    - Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 type useWorkspaceLayoutResults = {
   isBuildPanelCollapsed: boolean
@@ -18,29 +18,6 @@ export function useWorkspaceLayout(): useWorkspaceLayoutResults {
   function toggleInspector(): void {
     setIsInspectorCollapsed((currentValue) => !currentValue)
   }
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent): void {
-      const isShortcut =
-        (event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey
-      if (!isShortcut) {
-        return
-      }
-
-      const key = event.key.toLowerCase()
-      if (key === 'b') {
-        event.preventDefault()
-        setIsBuildPanelCollapsed((currentValue) => !currentValue)
-      }
-      if (key === 'i') {
-        event.preventDefault()
-        setIsInspectorCollapsed((currentValue) => !currentValue)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
 
   return {
     isBuildPanelCollapsed,

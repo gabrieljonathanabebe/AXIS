@@ -16,7 +16,12 @@ import type {
   ChartTitleAppearance,
   Dataset,
 } from '../../types/chart'
-import type { ChartLayoutMode, DragPayload, DropTarget } from '../../types/ui'
+import type {
+  ChartLayoutMode,
+  DragPayload,
+  DropTarget,
+  WorkspaceCommands,
+} from '../../types/ui'
 import type { GridDelta } from '../../workspace/chartLayout'
 import type { DataSelection } from '../../types/workspace'
 import ChartItem from './ChartItem'
@@ -24,14 +29,13 @@ import ChartItem from './ChartItem'
 // ===== TYPES =================================================================
 type ChartGridProps = {
   charts: ChartInstance[]
+  commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
   isDraggingField: boolean
   selectedChartId: string | null
   selection: DataSelection | null
   onClearSelection: () => void
-  onDuplicateChart: (chartId: string) => void
-  onRemoveChart: (chartId: string) => void
   onSelectChart: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
   onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
@@ -111,14 +115,13 @@ function getDraggedLayout(
 // ===== COMPONENT =============================================================
 function ChartGrid({
   charts,
+  commands,
   dataset,
   datasetId,
   isDraggingField,
   selectedChartId,
   selection,
   onClearSelection,
-  onDuplicateChart,
-  onRemoveChart,
   onSelectChart,
   onSelectData,
   onUpdateChartAppearance,
@@ -196,6 +199,7 @@ function ChartGrid({
         return (
           <ChartItem
             chart={chart}
+            commands={commands}
             dataset={dataset}
             datasetId={datasetId}
             isDraggingField={isDraggingField}
@@ -204,8 +208,6 @@ function ChartGrid({
             selection={selection}
             style={getGridArea(layout)}
             onClearSelection={onClearSelection}
-            onDuplicate={onDuplicateChart}
-            onRemove={onRemoveChart}
             onSelect={onSelectChart}
             onSelectData={onSelectData}
             onUpdateAppearance={onUpdateChartAppearance}

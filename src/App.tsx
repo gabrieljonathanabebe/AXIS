@@ -6,6 +6,7 @@ import DragPreviewOverlay from './components/dnd/DragPreviewOverlay'
 import InspectorPanel from './components/inspector/InspectorPanel'
 import { useChartWorkspace } from './hooks/useChartWorkspace'
 import { useDatasets } from './hooks/useDatasets'
+import { useWorkspaceCommands } from './hooks/useWorkspaceCommands'
 import { useWorkspaceLayout } from './hooks/useWorkspaceLayout'
 
 function App() {
@@ -19,12 +20,15 @@ function App() {
   const {
     activeDrag,
     addChart,
+    canRedo,
+    canUndo,
     charts,
     clearSelection,
     dataset,
     duplicateChart,
     handleDragEnd,
     handleDragStart,
+    redo,
     removeChart,
     selectedChart,
     selectedChartId,
@@ -38,6 +42,7 @@ function App() {
     setEncodingField,
     setSelection,
     setSelectedField,
+    undo,
     updateAppearance,
     updateChartAppearance,
     updateChartLayout,
@@ -45,12 +50,25 @@ function App() {
     updateContainer,
     updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
+
   const {
     isBuildPanelCollapsed,
     isInspectorCollapsed,
     toggleBuildPanel,
     toggleInspector,
   } = useWorkspaceLayout()
+
+  const commands = useWorkspaceCommands({
+    canRedo,
+    canUndo,
+    selectedChartId,
+    onDuplicateChart: duplicateChart,
+    onRedo: redo,
+    onRemoveChart: removeChart,
+    onToggleBuildPanel: toggleBuildPanel,
+    onToggleInspector: toggleInspector,
+    onUndo: undo,
+  })
 
   return (
     <DndContext
@@ -77,14 +95,13 @@ function App() {
         />
         <CanvasPanel
           charts={charts}
+          commands={commands}
           dataset={dataset}
           datasetId={activeDatasetSummary?.id ?? null}
           isDraggingField={activeDrag?.kind === 'field'}
           selectedChartId={selectedChartId}
           selection={selection}
           onClearSelection={clearSelection}
-          onDuplicateChart={duplicateChart}
-          onRemoveChart={removeChart}
           onSelectChart={selectChart}
           onSelectData={setSelection}
           onUpdateChartAppearance={updateChartAppearance}

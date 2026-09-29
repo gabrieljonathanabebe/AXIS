@@ -14,7 +14,7 @@
     transform var(--transition-fast);
 }
 
-.control:hover {
+.control:hover:not(:disabled) {
   color: var(--color-accent-hover);
   background: var(--color-surface-hover);
   border-color: var(--color-border-accent);
@@ -26,6 +26,11 @@
   background: var(--color-surface-active);
   border-color: var(--color-border-accent);
   box-shadow: var(--shadow-accent);
+}
+
+.control:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .control-sm {

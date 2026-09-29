@@ -1,8 +1,6 @@
-import { Copy, Trash2 } from 'lucide-react'
-
 import ChartGrid from './ChartGrid'
+import CommandButton from '../ui/CommandButton'
 import EmptyState from '../ui/EmptyState'
-import IconButton from '../ui/IconButton'
 import Panel from '../ui/Panel'
 
 import type {
@@ -14,8 +12,11 @@ import type {
 } from '../../types/chart'
 import type { DataSelection } from '../../types/workspace'
 
+import type { WorkspaceCommands } from '../../types/ui'
+
 type CanvasPanelProps = {
   charts: ChartInstance[]
+  commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
   isDraggingField: boolean
@@ -23,8 +24,6 @@ type CanvasPanelProps = {
   selectedChartId: string | null
   selection: DataSelection | null
   onClearSelection: () => void
-  onDuplicateChart: (chartId: string) => void
-  onRemoveChart: (chartId: string) => void
   onSelectChart: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
   onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
@@ -39,14 +38,13 @@ type CanvasPanelProps = {
 
 function CanvasPanel({
   charts,
+  commands,
   dataset,
   datasetId,
   isDraggingField,
   selectedChartId,
   selection,
   onClearSelection,
-  onDuplicateChart,
-  onRemoveChart,
   onSelectChart,
   onSelectData,
   onUpdateChartLayout,
@@ -57,35 +55,22 @@ function CanvasPanel({
     <Panel
       className="canvas-panel"
       actions={
-        selectedChartId ? (
-          <>
-            <IconButton
-              label="Duplicate chart"
-              onClick={() => onDuplicateChart(selectedChartId)}
-            >
-              <Copy size={18} />
-            </IconButton>
-            <IconButton
-              label="Delete chart"
-              onClick={() => onRemoveChart(selectedChartId)}
-            >
-              <Trash2 size={18} />
-            </IconButton>
-          </>
-        ) : null
+        <>
+          <CommandButton command={commands['history.undo']} />
+          <CommandButton command={commands['history.redo']} />
+        </>
       }
     >
       {charts.length > 0 ? (
         <ChartGrid
           charts={charts}
+          commands={commands}
           dataset={dataset}
           datasetId={datasetId}
           isDraggingField={isDraggingField}
           selectedChartId={selectedChartId}
           selection={selection}
           onClearSelection={onClearSelection}
-          onDuplicateChart={onDuplicateChart}
-          onRemoveChart={onRemoveChart}
           onSelectChart={onSelectChart}
           onSelectData={onSelectData}
           onUpdateChartAppearance={onUpdateChartAppearance}
