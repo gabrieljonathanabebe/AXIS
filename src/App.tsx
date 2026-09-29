@@ -21,10 +21,10 @@ function App() {
     charts,
     clearSelection,
     dataset,
-    duplicateSelectedChart,
+    duplicateChart,
     handleDragEnd,
     handleDragStart,
-    removeSelectedChart,
+    removeChart,
     selectedChart,
     selectedChartId,
     selectedField,
@@ -39,6 +39,8 @@ function App() {
     setSelectedField,
     updateAppearance,
     updateChartLayout,
+    updateChartTitle,
+    updateContainer,
     updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
 
@@ -69,11 +71,12 @@ function App() {
           selectedChartId={selectedChartId}
           selection={selection}
           onClearSelection={clearSelection}
-          onDuplicateChart={duplicateSelectedChart}
-          onRemoveChart={removeSelectedChart}
+          onDuplicateChart={duplicateChart}
+          onRemoveChart={removeChart}
           onSelectChart={selectChart}
           onSelectData={setSelection}
           onUpdateChartLayout={updateChartLayout}
+          onUpdateChartTitle={updateChartTitle}
         />
         <InspectorPanel
           chart={selectedChart}
@@ -83,6 +86,7 @@ function App() {
           onSetInteraction={updateInteraction}
           onSetChartAppearance={setChartAppearance}
           onSetChartType={setChartType}
+          onSetContainer={updateContainer}
           onSetEncodingField={setEncodingField}
         />
       </main>

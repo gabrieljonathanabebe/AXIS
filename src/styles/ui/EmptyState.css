@@ -27,3 +27,8 @@
   background: var(--color-surface-active);
   border-color: var(--color-border-accent);
 }
+
+.empty-state:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-border-accent);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}

@@ -1,6 +1,7 @@
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
+  ChartContainerAppearance,
   ChartDataSpec,
   ChartEncoding,
   ChartInstance,
@@ -36,6 +37,11 @@ export type SetChartAppearance = <
 
 export type SetChartType = (type: ChartType) => void
 
+export type SetContainer = <TKey extends keyof ChartContainerAppearance>(
+  key: TKey,
+  value: ChartContainerAppearance[TKey],
+) => void
+
 export type SetEncodingField = (
   axis: keyof ChartEncoding,
   fieldName: string,
@@ -47,6 +53,7 @@ export type ChartInspectorProps = {
   onSetAggregation: SetAggregation
   onSetAppearance: SetAppearance
   onSetChartType: SetChartType
+  onSetContainer: SetContainer
   onSetInteraction: SetInteraction
   onSetChartAppearance: SetChartAppearance
   onSetEncodingField: SetEncodingField

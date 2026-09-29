@@ -2,6 +2,7 @@ import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
 import { getChartDefinition } from './chartDefinitions'
 import { getDefaultEncoding } from './getDefaultEncoding'
 import type {
+  ChartContainerAppearance,
   ChartInstance,
   ChartLayout,
   ChartSpec,
@@ -15,6 +16,14 @@ type CreateChartInstanceParams = {
   dataset: Dataset
   layout: ChartLayout
   id?: string
+}
+
+export function createDefaultChartContainer(): ChartContainerAppearance {
+  return {
+    background: { kind: 'glass' },
+    padding: 24,
+    borderRadius: 24,
+  }
 }
 
 export function createDefaultChartSpec(
@@ -55,7 +64,7 @@ export function createDefaultChartSpec(
       title: {
         enabled: false,
         text: '',
-        alignment: 'left',
+        alignment: 'start',
       },
       xAxis: {
         enabled: true,
@@ -172,5 +181,6 @@ export function createChartInstance({
     type,
     spec: createDefaultChartSpec(type, dataset),
     layout,
+    container: createDefaultChartContainer(),
   }
 }

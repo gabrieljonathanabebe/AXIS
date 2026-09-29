@@ -9,6 +9,7 @@
 @import './styles/ui/ColorControl.css';
 @import './styles/ui/ControlRow.css';
 @import './styles/ui/DropdownField.css';
+@import './styles/ui/EditableText.css';
 @import './styles/ui/EmptyState.css';
 @import './styles/ui/GradientControl.css';
 @import './styles/ui/IconBadge.css';
@@ -34,7 +35,7 @@
 @import './styles/build/FieldList.css';
 
 @import './styles/canvas/CanvasPanel.css';
-@import './styles/canvas/ChartStage.css';
+@import './styles/canvas/ChartItem.css';
 @import './styles/canvas/EChartCanvas.css';
 
 @import './styles/data/DataTable.css';

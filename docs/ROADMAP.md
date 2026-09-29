@@ -125,6 +125,23 @@ Handling bleibt auf Visual Analytics begrenzt.
 - Rechteck in Akzentfarbe, ohne zusätzliches Abblenden durch ECharts
 - Backend-Bereichsfilter für numerische Felder
 
+### Canvas Container und Direct Editing
+
+- Chart-Container im Domain Model (`ChartInstance.container`), getrennt
+  von der `ChartSpec`
+- Container-Widget im Inspector: Background (Glass, Surface, None,
+  eigene Farbe), Padding, Radius
+- Glass als Default-Container; Hover- und Auswahl-Ring innen, auch bei
+  dicht platzierten Charts sichtbar
+- Charttitel als HTML-Header statt ECharts-Titel, mit Ausrichtung
+  Start/Mitte/Ende
+- Inline-Editing des Titels direkt im Chart
+- Tastaturbedienung: Move, Resize, Delete, Duplicate, Escape
+- nach dem Löschen wird der nächste Chart ausgewählt und fokussiert,
+  sonst die leere Canvas
+- wiederverwendbare Controls `AlignmentControl` und `EditableText`,
+  `ColorControl` mit eigenen Presets
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -165,13 +182,16 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss von Cross-Highlighting und Brush Selection:
+Priorität nach Abschluss des Slices Canvas Container und Direct
+Editing:
 
-1. Canvas festigen: Selection, Drag, Resize, Duplicate/Delete sowie
-   ChartInstance und Layout aufräumen; das Chart-Layout soll im
-   Inspector formatierbar werden;
-2. Workspace UX: kompakteres und einklappbares Build Panel,
-   einklappbarer Inspector, Focus Mode;
+1. Inline-Editing der Achsentitel: ECharts rendert die Achsentitel
+   weiter, der Adapter übersetzt einen Klick auf den Titel in ein
+   Domain-Event, der Chart legt ein Input darüber;
+2. Canvas-/Objektarchitektur und Workspace UX: kontextsensitiver
+   Inspector (Chart oder Dashboard), Dashboard-/Layout-Einstellungen,
+   Grundlage für weitere Objekte wie Text, KPI und Table, unabhängig
+   einklappbares Build Panel und Inspector;
 3. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
    Values, Cardinality;
 4. Build Panel mit dem Profiling verbinden;
@@ -210,7 +230,7 @@ Mögliche Erweiterungen:
 - Groups
 - Multi Select
 - Layers Panel
-- Tastaturbedienung für Move und Resize
+- weitere Container-Overrides: Rahmenfarbe, Shadow, Z-Order
 
 ## 7. Next – Dashboard Objects und Interaktion
 
@@ -496,3 +516,11 @@ waren:
   Mehrfachauswahl.
 - `createEChartOption` hat acht positionale Parameter und sollte auf ein
   Params-Objekt umgestellt werden.
+- Die Grid-Abstände des Plots stehen doppelt in `createEChartOption`
+  und als `--chart-grid-*` in `ChartItem.css` (für die Achsen-Drop-Zones).
+- Ein späterer PNG-/SVG-Export über ECharts enthält den HTML-Titel und
+  den Container nicht und muss beides selbst zusammensetzen.
+- Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
+  eines Projekts darf das nicht ungewollt den Fokus verschieben.
+- Die doppelten Panel-Überschriften (Eyebrow und Titel, z. B. „BUILD /
+  Build“) sind noch nicht bereinigt.

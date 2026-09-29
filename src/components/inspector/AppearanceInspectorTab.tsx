@@ -1,6 +1,7 @@
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
 import ColorScaleWidget from './appearance/ColorScaleWidget'
+import ContainerWidget from './appearance/ContainerWidget'
 import GridWidget from './appearance/GridWidget'
 import { isLegendRelevant } from '../../chart/isLegendRelevant'
 import { isRadialChartType } from '../../chart/isRadialChartType'
@@ -12,13 +13,14 @@ import type { ChartInspectorProps } from './types'
 
 type AppearanceInspectorTabProps = Pick<
   ChartInspectorProps,
-  'chart' | 'onSetAppearance' | 'onSetChartAppearance'
+  'chart' | 'onSetAppearance' | 'onSetChartAppearance' | 'onSetContainer'
 >
 
 function AppearanceInspectorTab({
   chart,
   onSetAppearance,
   onSetChartAppearance,
+  onSetContainer,
 }: AppearanceInspectorTabProps) {
   // ===== CONSTANTS ===========================================================
   const { appearance } = chart.spec
@@ -30,6 +32,7 @@ function AppearanceInspectorTab({
   // ===== RETURN ==============================================================
   return (
     <div className="stack inspector-tab-content">
+      <ContainerWidget value={chart.container} onChange={onSetContainer} />
       <ChartTitleWidget
         value={appearance.title}
         onChange={(title) => {

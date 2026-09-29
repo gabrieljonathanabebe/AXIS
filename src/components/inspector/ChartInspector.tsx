@@ -16,6 +16,7 @@ function ChartInspector({
   onSetInteraction,
   onSetChartAppearance,
   onSetChartType,
+  onSetContainer,
   onSetEncodingField,
 }: ChartInspectorProps) {
   const [activeTab, setActiveTab] = useState<InspectorTab>('data')
@@ -38,6 +39,7 @@ function ChartInspector({
             chart={chart}
             onSetAppearance={onSetAppearance}
             onSetChartAppearance={onSetChartAppearance}
+            onSetContainer={onSetContainer}
           />
         ),
         interaction: (

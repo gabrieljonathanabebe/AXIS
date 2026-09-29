@@ -1,5 +1,6 @@
 import { Type } from 'lucide-react'
 
+import AlignmentControl from '../../ui/AlignmentControl'
 import ControlRow from '../../ui/ControlRow'
 import TextInput from '../../ui/TextInput'
 import InspectorWidget from '../InspectorWidget'
@@ -33,6 +34,15 @@ function ChartTitleWidget({ value, onChange }: ChartTitleWidgetProps) {
               ...value,
               text,
             })
+          }}
+        />
+      </ControlRow>
+      <ControlRow label="Alignment">
+        <AlignmentControl
+          label="Title alignment"
+          value={value.alignment}
+          onValueChange={(alignment) => {
+            onChange({ ...value, alignment })
           }}
         />
       </ControlRow>

@@ -1,5 +1,5 @@
 import type { ChartInstance, ChartSpec, ChartType } from '../types/chart'
-import { findFreeChartLayout } from './chartLayout'
+import { findFreeChartLayout, findNeighborChartId } from './chartLayout'
 import type { WorkspaceAction, WorkspaceState } from '../types/workspace'
 
 // ===== TYPES =================================================================
@@ -96,7 +96,7 @@ export function workspaceReducer(
         charts: state.charts.filter((chart) => chart.id !== action.chartId),
         selectedChartId:
           state.selectedChartId === action.chartId
-            ? null
+            ? findNeighborChartId(state.charts, action.chartId)
             : state.selectedChartId,
         selection:
           state.selection?.sourceChartId === action.chartId
@@ -128,6 +128,11 @@ export function workspaceReducer(
           ...chart.spec,
           appearance: { ...chart.spec.appearance, ...action.patch },
         },
+      }))
+    case 'chart/updateContainer':
+      return updateChart(state, action.chartId, (chart) => ({
+        ...chart,
+        container: { ...chart.container, ...action.patch },
       }))
     case 'chart/updateEncoding':
       return updateChart(state, action.chartId, (chart) => ({

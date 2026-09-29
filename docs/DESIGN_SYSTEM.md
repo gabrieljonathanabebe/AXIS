@@ -34,11 +34,11 @@ Glasflächen werden zentral über die Klasse `.glass`
 (`src/styles/glass.css`) und die `--glass-*`-Tokens umgesetzt, nicht
 pro Komponente.
 
-| Stufe   | Klassen             | Verwendung                              | Blur        |
-| ------- | ------------------- | --------------------------------------- | ----------- |
-| thin    | `glass glass-thin`  | Panels                                  | `--blur-md` |
-| regular | `glass`             | Inspector Widgets, Collapsible Sections | keiner      |
-| thick   | `glass glass-thick` | Dropdowns, Popover                      | `--blur-lg` |
+| Stufe   | Klassen             | Verwendung                                                                          | Blur        |
+| ------- | ------------------- | ----------------------------------------------------------------------------------- | ----------- |
+| thin    | `glass glass-thin`  | Panels                                                                              | `--blur-md` |
+| regular | `glass`             | Inspector Widgets, Collapsible Sections, Charts auf der Canvas (Default-Background) | keiner      |
+| thick   | `glass glass-thick` | Dropdowns, Popover                                                                  | `--blur-lg` |
 
 Bestandteile:
 
@@ -365,7 +365,8 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | teilweise (X/Y-Achsen im Chart)                              |
 | Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips im Build Panel)                       |
 | Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
-| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`)                              |
+| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`, `AlignmentControl`)          |
+| Inline Text Editing          | Chart-Titel                     | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`)                                   |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
 | Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`)                                   |
@@ -446,6 +447,39 @@ Custom Picker kann über `react-colorful` umgesetzt werden.
 Die Cevyn-Oberfläche um den Picker bleibt eigenes UI.
 
 Opacity wird zunächst getrennt von Color behandelt.
+
+Eigene Presets:
+
+`ColorControl` akzeptiert optional `presets`. Ohne die Prop gelten die
+Standardfarben. Ein Preset kann statt einer Hex-Farbe einen
+Token-Wert tragen und über `fill` eine eigene Vorschau-Fläche zeigen,
+z. B. Glass, Surface oder transparent beim Chart-Background. Solche
+Presets verwenden im Active State den Electric-Blue-Ring und eine feine
+Kante, damit dunkle oder transparente Flächen sichtbar bleiben.
+
+## 9a. AlignmentControl
+
+`AlignmentControl` ist ein `SegmentedControl` für
+`HorizontalAlignment` (`start | center | end`) mit Ausrichtungs-Icons.
+Es wird für Titel- und Legend-Ausrichtung verwendet. Ausrichtungen im
+Domain Model verwenden immer `start | center | end`, nicht
+`left | right`.
+
+## 9b. EditableText
+
+`EditableText` bearbeitet Text direkt am Objekt:
+
+- Anzeige als Text mit Text-Cursor und dezenter Hover-Fläche; die
+  Textkante springt dabei nicht;
+- Klick öffnet ein Input mit markiertem Text;
+- Enter oder Blur übernimmt, Escape verwirft;
+- leerer Text bedeutet automatischer Wert, der als Placeholder
+  erscheint;
+- Tastaturereignisse im Input werden nicht an Canvas-Shortcuts
+  weitergegeben.
+
+Inline-Editing und Inspector ändern denselben Wert über dieselbe
+Action.
 
 ## 10. Legend
 
@@ -619,20 +653,61 @@ Zoom, Tooltip und Selection im Chart nicht gestört werden.
 
 Charts auf der Canvas verwenden Layout-Zonen im freien Rand um den Plot:
 
-- Move: obere Leiste, Cursor `grab`, Grip-Icon bei Hover oder Auswahl;
+- Move: obere Leiste, Cursor `grab`, Grip-Icon mittig bei Hover oder
+  Auswahl;
 - Resize: schmale Zonen an allen vier Kanten und größere Zonen an den
   vier Ecken mit passendem Resize-Cursor und dezentem Hover-Highlight.
 
+Die Größe der Handles (`--chart-handle-size`) ist unabhängig vom
+Container-Padding. Der Titel-Header ist kein Move-Handle, damit er
+editierbar bleibt.
+
 Move und Resize rasten während des Drags live im Canvas-Grid ein.
+
+### Chart Container
+
+Der Container eines Charts wird im Inspector unter „Container“
+formatiert:
+
+- Background über `ColorControl` mit den Presets Glass (Default),
+  Surface und None sowie eigener Farbe;
+- Padding über `ScrubbableNumber`;
+- Radius über `Slider`.
+
+Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand
+ist mindestens halb so groß wie der Radius, damit Start- und
+End-Ausrichtung nicht in die Rundung laufen.
 
 ### Selection
 
-Ein selektierter Chart erhält einen durchgezogenen statt gestrichelten
-Rahmen in Akzentfarbe. Ein Klick auf freie Canvas-Fläche hebt die
-Auswahl auf.
+Hover und Auswahl werden als innerer Ring über `::after` gezeigt
+(Hover: `--color-border-default`, Auswahl: `--color-border-accent`).
+Der Ring liegt innerhalb des Charts, wird daher weder vom Canvas-Rand
+abgeschnitten noch von Nachbarn überdeckt und folgt dem Radius. Ein
+Klick auf freie Canvas-Fläche hebt die Auswahl auf.
 
-Neu hinzugefügte Charts werden ins Bild gescrollt und einmalig kurz
-hervorgehoben. Bei `prefers-reduced-motion` entfällt die Animation.
+Neu hinzugefügte Charts werden ins Bild gescrollt, fokussiert und
+einmalig kurz über den Ring hervorgehoben. Bei `prefers-reduced-motion`
+entfällt die Animation.
+
+### Tastaturbedienung
+
+Auf dem fokussierten Chart:
+
+| Taste               | Aktion                                      |
+| ------------------- | ------------------------------------------- |
+| Pfeiltasten         | um eine Grid-Zelle verschieben              |
+| Shift + Pfeiltasten | Größe über rechte bzw. untere Kante ändern  |
+| Delete / Backspace  | Chart löschen                               |
+| Cmd/Ctrl + D        | Chart duplizieren                           |
+| Escape              | Datenauswahl aufheben, danach Chart-Auswahl |
+
+Shortcuts greifen nur, wenn der Chart selbst fokussiert ist, nicht ein
+Element darin. Nach dem Löschen erhält der nächste Chart in
+Lesereihenfolge den Fokus; gibt es keinen Chart mehr, die leere Canvas.
+
+Escape darf nie der einzige Weg für eine Aktion sein. Im Vollbildmodus
+behält sich der Browser Escape vor.
 
 ### Data Selection Highlight
 

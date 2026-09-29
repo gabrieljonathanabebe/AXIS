@@ -8,11 +8,17 @@ import {
   moveChartLayout,
   resizeChartLayout,
 } from '../../workspace/chartLayout'
-import ChartStage from './ChartStage'
 
-import type { ChartInstance, ChartLayout, Dataset } from '../../types/chart'
+import type {
+  ChartInstance,
+  ChartLayout,
+  ChartTitleAppearance,
+  Dataset,
+} from '../../types/chart'
 import type { ChartLayoutMode, DragPayload, DropTarget } from '../../types/ui'
+import type { GridDelta } from '../../workspace/chartLayout'
 import type { DataSelection } from '../../types/workspace'
+import ChartItem from './ChartItem'
 
 // ===== TYPES =================================================================
 type ChartGridProps = {
@@ -23,12 +29,13 @@ type ChartGridProps = {
   selectedChartId: string | null
   selection: DataSelection | null
   onClearSelection: () => void
+  onDuplicateChart: (chartId: string) => void
+  onRemoveChart: (chartId: string) => void
   onSelectChart: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
+  onUpdateChartTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
-
-type GridDelta = Pick<ChartLayout, 'x' | 'y'>
 
 type LayoutPreview = {
   chartId: string
@@ -104,9 +111,12 @@ function ChartGrid({
   selectedChartId,
   selection,
   onClearSelection,
+  onDuplicateChart,
+  onRemoveChart,
   onSelectChart,
   onSelectData,
   onUpdateChartLayout,
+  onUpdateChartTitle,
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
   const { active } = useDndContext()
@@ -177,7 +187,7 @@ function ChartGrid({
             ? layoutPreview.layout
             : chart.layout
         return (
-          <ChartStage
+          <ChartItem
             chart={chart}
             dataset={dataset}
             datasetId={datasetId}
@@ -186,9 +196,13 @@ function ChartGrid({
             key={chart.id}
             selection={selection}
             style={getGridArea(layout)}
-            onSelect={onSelectChart}
             onClearSelection={onClearSelection}
+            onDuplicate={onDuplicateChart}
+            onRemove={onRemoveChart}
+            onSelect={onSelectChart}
             onSelectData={onSelectData}
+            onUpdateLayout={onUpdateChartLayout}
+            onUpdateTitle={onUpdateChartTitle}
           />
         )
       })}

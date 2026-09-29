@@ -3,7 +3,7 @@ import type { ChartInstance, ChartLayout } from '../types/chart'
 // ===== TYPES =================================================================
 type ChartSize = Pick<ChartLayout, 'height' | 'width'>
 
-type GridDelta = Pick<ChartLayout, 'x' | 'y'>
+export type GridDelta = Pick<ChartLayout, 'x' | 'y'>
 
 export type ResizeEdges = {
   bottom: boolean
@@ -42,6 +42,13 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
 
+function compareReadingOrder(
+  first: ChartInstance,
+  second: ChartInstance,
+): number {
+  return first.layout.y - second.layout.y || first.layout.x - second.layout.x
+}
+
 // ===== FUNCTIONS =============================================================
 export function findFreeChartLayout(
   charts: ChartInstance[],
@@ -59,6 +66,18 @@ export function findFreeChartLayout(
       }
     }
   }
+}
+
+export function findNeighborChartId(
+  charts: ChartInstance[],
+  chartId: string,
+): string | null {
+  const orderedCharts = [...charts].sort(compareReadingOrder)
+  const index = orderedCharts.findIndex((chart) => chart.id === chartId)
+  if (index === -1) {
+    return null
+  }
+  return orderedCharts[index + 1]?.id ?? orderedCharts[index - 1]?.id ?? null
 }
 
 export function moveChartLayout(

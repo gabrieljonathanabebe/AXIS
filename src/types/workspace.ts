@@ -1,6 +1,7 @@
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
+  ChartContainerAppearance,
   ChartDataSpec,
   ChartEncoding,
   ChartInstance,
@@ -53,6 +54,11 @@ export type WorkspaceAction =
       type: 'chart/updateAppearance'
       chartId: string
       patch: Partial<ChartAppearanceSpec>
+    }
+  | {
+      type: 'chart/updateContainer'
+      chartId: string
+      patch: Partial<ChartContainerAppearance>
     }
   | {
       type: 'chart/updateEncoding'

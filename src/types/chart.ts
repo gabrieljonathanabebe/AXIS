@@ -4,6 +4,9 @@ export type Aggregation =
 
 export type GroupAggregation = Exclude<Aggregation, 'none'>
 
+// ===== ALIGNMENT =============================================================
+export type HorizontalAlignment = 'start' | 'center' | 'end'
+
 // ===== AXIS ==================================================================
 export type AxisAppearance = {
   enabled: boolean
@@ -55,6 +58,17 @@ export type ChartAppearanceSpec = {
   bar: BarAppearance
 }
 
+export type ChartContainerAppearance = {
+  background: ChartContainerBackground
+  padding: number
+  borderRadius: number
+}
+
+export type ChartContainerBackground =
+  { kind: ChartContainerBackgroundPreset } | { kind: 'color'; color: string }
+
+export type ChartContainerBackgroundPreset = 'glass' | 'surface' | 'none'
+
 export type ChartDataSpec = {
   encoding: ChartEncoding
   aggregation: Aggregation
@@ -74,6 +88,7 @@ export type ChartInstance = {
   type: ChartType
   spec: ChartSpec
   layout: ChartLayout
+  container: ChartContainerAppearance
 }
 
 export type ChartInteractionSpec = {
@@ -119,9 +134,9 @@ export type ChartSpec = {
 }
 
 export type ChartTitleAppearance = {
+  alignment: HorizontalAlignment
   enabled: boolean
   text: string
-  alignment: 'left' | 'center' | 'right'
 }
 
 export type ChartType = 'scatter' | 'line' | 'bar' | 'pie' | 'donut'
@@ -192,9 +207,9 @@ export type LabelsAppearance = {
 
 // ===== LEGEND ================================================================
 export type LegendAppearance = {
+  alignment: HorizontalAlignment
   visible: boolean
   position: 'top' | 'bottom' | 'left' | 'right'
-  alignment: 'start' | 'center' | 'end'
   symbol: 'auto' | 'circle' | 'rect' | 'line'
   textColor: string
   fontSize: number

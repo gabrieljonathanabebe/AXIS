@@ -203,8 +203,28 @@ verteilt werden.
 Renderer-spezifischer Code liegt unter `src/chart/echarts`.
 
 `createEChartOption` ist ein kleiner Orchestrator. Er kombiniert allgemeine
-Optionen wie Titel, Tooltip, Legend und Interaktion mit dem
+Optionen wie Tooltip, Legend und Interaktion mit dem
 charttypspezifischen Content.
+
+### Container vs. Content
+
+Ein Chart auf der Canvas besteht aus zwei Verantwortungsbereichen:
+
+- `ChartItem` (React/CSS) besitzt den Container: Background, Rahmen,
+  Radius, Padding, Position und Größe, Titel-Header, Auswahl- und
+  Hover-Ring sowie die Layout-Handles.
+- ECharts besitzt nur den Inhalt: Grid, Achsen, Series, Labels, Legend,
+  Tooltip, Visual Map, Zoom und Brush.
+
+Container-Eigenschaften erreichen ECharts nicht. Die Option setzt
+`backgroundColor: 'transparent'`, damit die Container-Fläche
+durchscheint.
+
+Der Charttitel wird als HTML-Header im `ChartItem` gerendert, nicht als
+ECharts-`title`. Er bleibt Teil der `ChartSpec`
+(`appearance.title`), weil er den Inhalt beschreibt. Der automatische
+Titel („Y by X“) wird in `src/chart/getChartTitle.ts` abgeleitet und
+von Header, Inline-Editing und `aria-label` gemeinsam genutzt.
 
 Chart-Content wird über eine typsichere Registry erzeugt:
 
@@ -323,7 +343,8 @@ ChartSpec ist die konkrete Konfiguration.
 
 ## 8. Chart Instances und Workspace State
 
-Für Multi-Chart-Dashboards bleiben Visualisierung und Layout getrennt:
+Für Multi-Chart-Dashboards bleiben Visualisierung, Layout und Container
+getrennt:
 
 ```ts
 type ChartLayout = {
@@ -333,13 +354,30 @@ type ChartLayout = {
   height: number
 }
 
+type ChartContainerAppearance = {
+  background: ChartContainerBackground
+  padding: number
+  borderRadius: number
+}
+
+type ChartContainerBackground =
+  { kind: 'glass' | 'surface' | 'none' } | { kind: 'color'; color: string }
+
 type ChartInstance = {
   id: string
   type: ChartType
   spec: ChartSpec
   layout: ChartLayout
+  container: ChartContainerAppearance
 }
 ```
+
+`container` beschreibt die Formatierung des Chart-Containers und ist
+bewusst nicht Teil der `ChartSpec` (siehe Abschnitt 6, Container vs.
+Content). Die Background-Presets verweisen auf Design-Tokens; nur
+`color` trägt einen freien Farbwert. Weitere Overrides wie Rahmenfarbe
+oder Shadow sollen später als zusätzliche optionale Felder ergänzt
+werden, ohne die Presets zu ersetzen.
 
 Der Workspace hält alle Chart-Instanzen, die Editor-Auswahl und die
 Datenauswahl:
@@ -392,13 +430,20 @@ Aktuelle Actions:
 - `chart/setType`;
 - `chart/updateAggregation`, `chart/updateEncoding`;
 - `chart/updateAppearance`, `chart/updateMarkAppearance`;
+- `chart/updateContainer`;
 - `chart/updateInteraction`;
 - `chart/updateLayout`;
 - `selection/set`, `selection/clear`.
 
 `selection/set` wird ignoriert, wenn das Quell-Chart nicht existiert.
 `chart/remove` verwirft die Selection, wenn ihr Quell-Chart entfernt
-wird.
+wird. War der entfernte Chart selektiert, wählt `chart/remove` den
+nächsten Chart in Lesereihenfolge (nach `y`, dann `x`) bzw. den
+vorherigen aus (`findNeighborChartId`).
+
+Inspector und Inline-Editing auf der Canvas verwenden dieselben
+Actions. Der Titel wird z. B. im Inspector und direkt im Chart-Header
+über `chart/updateAppearance` geändert.
 
 Regeln:
 
@@ -425,7 +470,8 @@ verwendet ein 24-spaltiges Grid mit fester Zeilenhöhe
 - Neue und duplizierte Charts werden auf der ersten freien Fläche
   platziert.
 - Move und Resize sind reine Layout-Funktionen mit Grenzen für
-  Grid-Rand und Mindestgröße.
+  Grid-Rand und Mindestgröße. Maus-Drag und Tastaturbedienung verwenden
+  dieselben Funktionen.
 - Während eines Drags wird nur eine lokale Vorschau gerendert. Beim
   Loslassen entsteht genau eine `chart/updateLayout`-Action.
 - Überlappende Charts werden aktuell nicht automatisch aufgelöst.

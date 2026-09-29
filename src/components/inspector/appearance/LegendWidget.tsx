@@ -1,13 +1,5 @@
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  List,
-} from 'lucide-react'
+import AlignmentControl from '../../ui/AlignmentControl'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, List } from 'lucide-react'
 
 import ColorControl from '../../ui/ColorControl'
 import ControlRow from '../../ui/ControlRow'
@@ -21,21 +13,6 @@ import type { LegendAppearance } from '../../../types/chart'
 type LegendWidgetProps = {
   value: LegendAppearance
   onChange: (value: LegendAppearance) => void
-}
-
-const alignmentOptions = [
-  { label: 'Start', value: 'start' },
-  { label: 'Center', value: 'center' },
-  { label: 'End', value: 'end' },
-] satisfies {
-  label: string
-  value: LegendAppearance['alignment']
-}[]
-
-const alignmentIcons = {
-  start: AlignLeft,
-  center: AlignCenter,
-  end: AlignRight,
 }
 
 const positionOptions = [
@@ -83,14 +60,9 @@ function LegendWidget({ value, onChange }: LegendWidgetProps) {
         />
       </ControlRow>
       <ControlRow label="Alignment">
-        <SegmentedControl
+        <AlignmentControl
           label="Legend alignment"
-          options={alignmentOptions}
           value={value.alignment}
-          renderOption={(option) => {
-            const Icon = alignmentIcons[option.value]
-            return <Icon aria-hidden="true" size={16} />
-          }}
           onValueChange={(alignment) => {
             onChange({ ...value, alignment })
           }}

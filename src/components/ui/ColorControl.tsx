@@ -6,16 +6,23 @@ import type { CSSProperties, ReactNode } from 'react'
 import Button from './Button'
 import Popover from './Popover'
 
+export type ColorPreset = {
+  label: string
+  value: string
+  fill?: string
+}
+
 type ColorControlProps = {
   label: string
   value: string
+  presets?: ColorPreset[]
   variant?: 'inline' | 'compact'
   onChange: (value: string) => void
 }
 
 const DEFAULT_CUSTOM_COLOR = '#8B5CF6'
 
-const colorPresets = [
+const DEFAULT_COLOR_PRESETS: ColorPreset[] = [
   { label: 'Electric Blue', value: '#1E90FF' },
   { label: 'Violet', value: '#8B5CF6' },
   { label: 'Mint', value: '#34D399' },
@@ -31,23 +38,26 @@ function normalizeHex(value: string): string {
   return prefixedValue.toUpperCase()
 }
 
-function isPresetColor(value: string): boolean {
-  const normalizedValue = normalizeHex(value)
+function normalizeValue(value: string, presets: ColorPreset[]): string {
+  const isRawPreset = presets.some((preset) => preset.value === value)
+  return isRawPreset ? value : normalizeHex(value)
+}
 
-  return colorPresets.some((preset) => {
-    return preset.value === normalizedValue
-  })
+function isPresetColor(value: string, presets: ColorPreset[]): boolean {
+  return presets.some((preset) => preset.value === value)
 }
 
 function ColorControl({
   label,
+  presets = DEFAULT_COLOR_PRESETS,
   value,
   variant = 'inline',
   onChange,
 }: ColorControlProps) {
   // ===== CONSTANTS ===========================================================
-  const normalizedValue = normalizeHex(value)
-  const presetSelected = isPresetColor(normalizedValue)
+  const normalizedValue = normalizeValue(value, presets)
+  const presetSelected = isPresetColor(normalizedValue, presets)
+
   const [isOpen, setIsOpen] = useState(false)
   const [customColor, setCustomColor] = useState<string | null>(
     presetSelected ? null : normalizedValue,
@@ -80,11 +90,11 @@ function ColorControl({
   }
   // RENDER PRESET SWATCHES
   function renderPresetSwatches(): ReactNode {
-    return colorPresets.map((preset) => {
+    return presets.map((preset) => {
       const isActive = normalizedValue === preset.value
       return (
         <Button
-          className="color-control-swatch"
+          className={`color-control-swatch ${preset.fill ? 'has-fill' : ''}`}
           type="button"
           role="radio"
           aria-label={preset.label}
@@ -92,7 +102,10 @@ function ColorControl({
           title={preset.label}
           style={
             {
-              '--swatch-color': preset.value,
+              '--swatch-color': preset.fill
+                ? 'var(--color-accent)'
+                : preset.value,
+              '--swatch-fill': preset.fill,
             } as CSSProperties
           }
           onClick={() => {

@@ -1,7 +1,15 @@
-.chart-stage {
+.chart-item {
   position: relative;
   flex: 1;
   --chart-canvas-inset: var(--space-6);
+  --chart-handle-size: var(--space-6);
+  --chart-header-height: 32px;
+  --chart-header-top: max(var(--chart-canvas-inset), var(--chart-handle-size));
+  --chart-header-inline: max(
+    var(--chart-canvas-inset),
+    calc(var(--chart-radius, 0px) / 2)
+  );
+  --chart-content-top: var(--chart-canvas-inset);
   --chart-grid-top: 56px;
   --chart-grid-right: 56px;
   --chart-grid-bottom: 72px;
@@ -9,15 +17,36 @@
   --axis-hit-size: 92px;
   --axis-line-offset: calc(var(--axis-hit-size) / 2);
   color: var(--color-text-secondary);
-  border: var(--border-width-thin) dashed var(--color-border-default);
-  border-radius: var(--radius-lg);
+  border-radius: var(--chart-radius, var(--radius-lg));
   overflow: hidden;
-  transition: border-color var(--transition-fast);
 }
 
-.chart-stage.is-selected {
-  border-style: solid;
-  border-color: var(--color-border-accent);
+.chart-item.is-surface-plain {
+  background: var(--color-background-subtle);
+  border: var(--border-width-thin) solid var(--color-border-default);
+}
+
+.chart-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 var(--border-width-thick) transparent;
+  pointer-events: none;
+  transition: box-shadow var(--transition-fast);
+}
+
+.chart-item:hover::after {
+  box-shadow: inset 0 0 0 var(--border-width-thick) var(--color-border-default);
+}
+
+.chart-item.is-selected::after {
+  box-shadow: inset 0 0 0 var(--border-width-thick) var(--color-border-accent);
+}
+
+.chart-item:focus-visible {
+  outline: none;
 }
 
 .chart-encoding-overlay {
@@ -34,20 +63,20 @@
 }
 
 .x-axis-drop-zone {
-  right: calc(var(--chart-canvas-inset) + var(--chart-grid-right));
+  right: calc(var(--chart-handle-size) + var(--chart-grid-right));
   bottom: calc(
-    var(--chart-canvas-inset) + var(--chart-grid-bottom) -
+    var(--chart-handle-size) + var(--chart-grid-bottom) -
       var(--axis-line-offset)
   );
-  left: calc(var(--chart-canvas-inset) + var(--chart-grid-left));
+  left: calc(var(--chart-handle-size) + var(--chart-grid-left));
   height: var(--axis-hit-size);
 }
 
 .y-axis-drop-zone {
-  top: calc(var(--chart-canvas-inset) + var(--chart-grid-top));
-  bottom: calc(var(--chart-canvas-inset) + var(--chart-grid-bottom));
+  top: calc(var(--chart-content-top) + var(--chart-grid-top));
+  bottom: calc(var(--chart-handle-size) + var(--chart-grid-bottom));
   left: calc(
-    var(--chart-canvas-inset) + var(--chart-grid-left) - var(--axis-line-offset)
+    var(--chart-handle-size) + var(--chart-grid-left) - var(--axis-line-offset)
   );
   width: var(--axis-hit-size);
 }
@@ -75,7 +104,10 @@
 }
 
 .y-axis-drop-zone .axis-highlight-line {
-  top: 0;
+  top: calc(
+    var(--chart-canvas-inset) + var(--chart-header-height) +
+      var(--chart-grid-top)
+  );
   bottom: 0;
   left: var(--axis-line-offset);
   width: 2px;
@@ -150,11 +182,11 @@
   transform: rotate(-90deg) translateX(-50%);
 }
 
-.chart-stage.is-dragging-field .axis-drop-zone {
+.chart-item.is-dragging-field .axis-drop-zone {
   pointer-events: auto;
 }
 
-.chart-stage.is-dragging-field .chart-encoding-overlay {
+.chart-item.is-dragging-field .chart-encoding-overlay {
   pointer-events: auto;
 }
 
@@ -167,11 +199,11 @@
 
 .chart-move-handle {
   top: var(--space-2);
-  right: var(--chart-canvas-inset);
-  left: var(--chart-canvas-inset);
+  right: var(--chart-handle-size);
+  left: var(--chart-handle-size);
   display: grid;
   place-items: center;
-  height: calc(var(--chart-canvas-inset) - var(--space-2));
+  height: calc(var(--chart-handle-size) - var(--space-2));
   color: var(--color-text-secondary);
   cursor: grab;
 }
@@ -181,15 +213,37 @@
   transition: opacity var(--transition-fast);
 }
 
-.chart-stage:hover .chart-move-handle svg,
-.chart-stage.is-selected .chart-move-handle svg {
+.chart-item.has-header {
+  --chart-content-top: calc(
+    var(--chart-header-top) + var(--chart-header-height)
+  );
+}
+
+.chart-item-header {
+  position: absolute;
+  top: var(--chart-header-top);
+  right: var(--chart-header-inline);
+  left: var(--chart-header-inline);
+  z-index: 2;
+  height: var(--chart-header-height);
+  line-height: var(--chart-header-height);
+}
+
+.chart-item-title {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.chart-item:hover .chart-move-handle svg,
+.chart-item.is-selected .chart-move-handle svg {
   opacity: 1;
 }
 
 .chart-n-handle,
 .chart-s-handle {
-  right: var(--chart-canvas-inset);
-  left: var(--chart-canvas-inset);
+  right: var(--chart-handle-size);
+  left: var(--chart-handle-size);
   height: var(--space-2);
   cursor: ns-resize;
 }
@@ -204,8 +258,8 @@
 
 .chart-e-handle,
 .chart-w-handle {
-  top: var(--chart-canvas-inset);
-  bottom: var(--chart-canvas-inset);
+  top: var(--chart-handle-size);
+  bottom: var(--chart-handle-size);
   width: var(--space-2);
   cursor: ew-resize;
 }
@@ -222,8 +276,8 @@
 .chart-nw-handle,
 .chart-se-handle,
 .chart-sw-handle {
-  width: var(--chart-canvas-inset);
-  height: var(--chart-canvas-inset);
+  width: var(--chart-handle-size);
+  height: var(--chart-handle-size);
 }
 
 .chart-ne-handle {
@@ -255,14 +309,13 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .chart-stage {
-    animation: chart-stage-enter 900ms ease-out;
+  .chart-item::after {
+    animation: chart-item-enter 900ms ease-out;
   }
 }
 
-@keyframes chart-stage-enter {
+@keyframes chart-item-enter {
   from {
-    background: var(--color-accent-soft);
-    box-shadow: var(--shadow-accent);
+    box-shadow: inset 0 0 0 var(--border-width-thick) var(--color-accent);
   }
 }

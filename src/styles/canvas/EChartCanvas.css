@@ -1,11 +1,14 @@
 .echart-canvas {
   position: absolute;
   inset: var(--chart-canvas-inset);
+  top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
 }
 
 .chart-query-error {
   position: absolute;
   inset: var(--chart-canvas-inset);
+  top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
+
   display: grid;
   place-items: center;
   color: var(--color-text-secondary);

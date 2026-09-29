@@ -9,7 +9,6 @@ import type { DataSelection } from '../../types/workspace'
 import { createChartContent } from './content/createChartContent'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createLegendOption } from './createLegendOption'
-import { createTitleOption } from './createTitleOption'
 import { createTooltipOption } from './createTooltipOption'
 import { isRadialChartType } from '../isRadialChartType'
 
@@ -61,7 +60,7 @@ export function createEChartOption(
           containLabel: false,
           left: 72,
           right: 56,
-          top: 56,
+          top: 40,
         },
     legend: createLegendOption({
       appearance: appearance.legend,
@@ -69,12 +68,6 @@ export function createEChartOption(
       interaction: interaction.legend,
     }),
     series: content.series,
-    title: createTitleOption({
-      appearance: appearance.title,
-      chartType,
-      encoding: spec.data.encoding,
-      theme,
-    }),
     tooltip: createTooltipOption({
       chartType,
       isSelectionSource,

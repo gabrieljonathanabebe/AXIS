@@ -326,6 +326,12 @@ nicht den gesamten Slice in einem einzigen großen Schritt umsetzen.
 Wenn der Nutzer den Anwendungscode selbst eingibt:
 
 - pro Block konkrete Dateipfade und zusammenhängenden Code angeben;
+- jede einzelne Codeergänzung als eigenen Codeblock formulieren, auch
+  einzeilige Änderungen wie Imports oder Props;
+- direkt über jedem Codeblock Datei und genaue Einfügestelle nennen,
+  bezogen auf benachbarten bestehenden Code („nach …“, „ersetzen …“);
+- keinen Code in Fließtext oder Aufzählungspunkte packen;
+- bei Ersetzungen den vollständigen neuen Abschnitt zeigen;
 - nach dem Block den gespeicherten Ist-Zustand prüfen;
 - erst dann mit dem nächsten Block fortfahren.
 

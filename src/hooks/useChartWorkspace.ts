@@ -20,11 +20,13 @@ import type { ActiveDrag, DragPayload, DropTarget } from '../types/ui'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
+  ChartContainerAppearance,
   ChartDataSpec,
   ChartEncoding,
   ChartInteractionSpec,
   ChartMarkKey,
   ChartLayout,
+  ChartTitleAppearance,
   ChartType,
   DataField,
   Dataset,
@@ -79,16 +81,16 @@ export function useChartWorkspace({
     })
   }
 
-  function duplicateSelectedChart(): void {
-    dispatchForSelectedChart((chartId) => ({
+  function duplicateChart(chartId: string): void {
+    dispatch({
       type: 'chart/duplicate',
       chartId,
       newChartId: crypto.randomUUID(),
-    }))
+    })
   }
 
-  function removeSelectedChart(): void {
-    dispatchForSelectedChart((chartId) => ({ type: 'chart/remove', chartId }))
+  function removeChart(chartId: string): void {
+    dispatch({ type: 'chart/remove', chartId })
   }
 
   function selectChart(chartId: string | null): void {
@@ -116,12 +118,30 @@ export function useChartWorkspace({
     dispatch({ type: 'chart/updateLayout', chartId, patch: layout })
   }
 
+  function updateChartTitle(
+    chartId: string,
+    title: ChartTitleAppearance,
+  ): void {
+    dispatch({ type: 'chart/updateAppearance', chartId, patch: { title } })
+  }
+
   function updateAppearance<TKey extends keyof ChartAppearanceSpec>(
     key: TKey,
     value: ChartAppearanceSpec[TKey],
   ): void {
     dispatchForSelectedChart((chartId) => ({
       type: 'chart/updateAppearance',
+      chartId,
+      patch: { [key]: value },
+    }))
+  }
+
+  function updateContainer<TKey extends keyof ChartContainerAppearance>(
+    key: TKey,
+    value: ChartContainerAppearance[TKey],
+  ): void {
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateContainer',
       chartId,
       patch: { [key]: value },
     }))
@@ -225,10 +245,10 @@ export function useChartWorkspace({
     charts,
     clearSelection,
     dataset,
-    duplicateSelectedChart,
+    duplicateChart,
     handleDragEnd,
     handleDragStart,
-    removeSelectedChart,
+    removeChart,
     selectedChart,
     selectedChartId,
     selectedField,
@@ -243,6 +263,8 @@ export function useChartWorkspace({
     setSelection,
     updateAppearance,
     updateChartLayout,
+    updateChartTitle,
+    updateContainer,
     updateInteraction,
   }
 }
