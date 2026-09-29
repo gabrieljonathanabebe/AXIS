@@ -209,7 +209,6 @@ function ChartGrid({
             onSelect={onSelectChart}
             onSelectData={onSelectData}
             onUpdateAppearance={onUpdateChartAppearance}
-
             onUpdateLayout={onUpdateChartLayout}
             onUpdateTitle={onUpdateChartTitle}
           />

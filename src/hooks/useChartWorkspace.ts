@@ -275,7 +275,6 @@ export function useChartWorkspace({
     setSelection,
     updateAppearance,
     updateChartAppearance,
-
     updateChartLayout,
     updateChartTitle,
     updateContainer,

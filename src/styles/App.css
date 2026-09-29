@@ -1,16 +1,29 @@
 .app-shell {
+  --build-panel-width: clamp(220px, 20vw, 240px);
+  --inspector-width: clamp(220px, 20vw, 240px);
+  --panel-collapsed-width: calc(36px + var(--space-3) * 2);
+
   min-height: 100vh;
   height: 100dvh;
   display: grid;
   overflow: hidden;
   grid-template-columns:
-    minmax(220px, 240px)
+    var(--build-panel-width)
     minmax(0, 1fr)
-    clamp(220px, 20vw, 240px);
+    var(--inspector-width);
   gap: var(--space-2);
   align-items: stretch;
   padding: var(--space-2);
   background: var(--background-ambient), var(--color-background);
+  transition: grid-template-columns var(--transition-fast);
+}
+
+.app-shell.is-build-panel-collapsed {
+  --build-panel-width: var(--panel-collapsed-width);
+}
+
+.app-shell.is-inspector-collapsed {
+  --inspector-width: var(--panel-collapsed-width);
 }
 
 @media (max-width: 960px) {

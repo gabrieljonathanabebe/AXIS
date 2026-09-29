@@ -1,4 +1,4 @@
-import { ChartColumn, Database } from 'lucide-react'
+import { Blocks, ChartColumn, Database } from 'lucide-react'
 import ChartPicker from './ChartPicker'
 import CollapsibleSection from '../ui/CollapsibleSection'
 import DatasetUpload from './DatasetUpload'
@@ -10,31 +10,37 @@ import type { DatasetSummary } from '../../api/datasets'
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
   fields: DataField[]
+  isCollapsed: boolean
   isUploading: boolean
   selectedField: DataField | null
   uploadError: string | null
   onSelectChartType: (type: ChartType) => void
   onSelectField: (field: DataField) => void
+  onToggleCollapse: () => void
   onUploadFile: (file: File) => Promise<void>
 }
 
 function BuildPanel({
   activeDatasetSummary,
   fields,
+  isCollapsed,
   isUploading,
   selectedField,
   uploadError,
   onSelectChartType,
   onSelectField,
+  onToggleCollapse,
   onUploadFile,
 }: BuildPanelProps) {
   return (
     <Panel
       as="aside"
-      eyebrow="Build"
+      icon={<Blocks size={18} />}
       title="Build"
       className="build-panel"
+      isCollapsed={isCollapsed}
       isScrollable
+      onToggleCollapse={onToggleCollapse}
     >
       <div className="build-panel-content">
         <DatasetUpload isUploading={isUploading} onUploadFile={onUploadFile} />

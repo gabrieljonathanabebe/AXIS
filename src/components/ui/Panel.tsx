@@ -1,38 +1,81 @@
+import { PanelLeftClose, PanelRightClose } from 'lucide-react'
 import type { ReactNode } from 'react'
+
+import IconBadge from './IconBadge'
+import IconButton from './IconButton'
+
+type PanelSide = 'start' | 'end'
 
 type PanelProps = {
   as?: 'aside' | 'section'
-  eyebrow: string
+  icon?: ReactNode
   title?: string
   className?: string
   actions?: ReactNode
   children?: ReactNode
+  isCollapsed?: boolean
   isScrollable?: boolean
+  side?: PanelSide
+  onToggleCollapse?: () => void
 }
 
 function Panel({
   as: Element = 'section',
-  eyebrow,
+  icon,
   title,
   className = '',
   actions,
   children,
+  isCollapsed = false,
   isScrollable = false,
+  side = 'start',
+  onToggleCollapse,
 }: PanelProps) {
+  const CollapseIcon = side === 'start' ? PanelLeftClose : PanelRightClose
+
+  const collapseButton = onToggleCollapse ? (
+    <IconButton
+      label={`Hide ${title}`}
+      size="sm"
+      aria-expanded
+      onClick={onToggleCollapse}
+    >
+      <CollapseIcon size={16} />
+    </IconButton>
+  ) : null
+
   return (
     <Element
-      className={`panel glass glass-thin ${isScrollable ? 'is-scrollable' : ''} ${className}`}
+      className={`panel glass glass-thin ${isScrollable ? 'is-scrollable' : ''} ${isCollapsed ? 'is-collapsed' : ''} ${className}`}
     >
-      <header className="panel-header">
-        <div>
-          <p className="eyebrow">{eyebrow}</p>
-          {title ? <h2>{title}</h2> : null}
+      {isCollapsed ? (
+        <IconButton
+          label={`Show ${title}`}
+          aria-expanded={false}
+          onClick={onToggleCollapse}
+        >
+          {icon}
+        </IconButton>
+      ) : (
+        <header className="panel-header">
+          {title ? (
+            <h2 className="panel-title">
+              <IconBadge label={title}>{icon}</IconBadge>
+            </h2>
+          ) : null}
+          {actions || collapseButton ? (
+            <div className="panel-actions">
+              {actions}
+              {collapseButton}
+            </div>
+          ) : null}
+        </header>
+      )}
+      {children ? (
+        <div className="panel-content" hidden={isCollapsed}>
+          {children}
         </div>
-
-        {actions ? <div className="panel-actions">{actions}</div> : null}
-      </header>
-
-      {children ? <div className="panel-content">{children}</div> : null}
+      ) : null}
     </Element>
   )
 }

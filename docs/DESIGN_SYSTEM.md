@@ -120,10 +120,31 @@ Geplante Workspaces:
 Build Panel | Canvas | Inspector
 ```
 
-Build Panel und Inspector sollen langfristig unabhängig collapsible
-sein.
-
 Die Canvas erhält den verbleibenden Raum.
+
+### Panel
+
+Alle drei Bereiche nutzen `Panel`.
+
+- Header als eine Zeile: `IconBadge` mit Icon und kurzem Label, rechts
+  `actions`. Keine Eyebrow-Überschrift über dem Titel.
+- `icon` und `title` sind optional. Die Canvas hat keinen Titel; ihr
+  Header ist die Toolbar. Dort ist später der Dashboard-Name geplant.
+- Der Header hat eine feste Mindesthöhe, damit alle Panels auf
+  derselben Höhe beginnen, auch ohne Actions.
+
+Build Panel und Inspector sind unabhängig einklappbar:
+
+- `isCollapsed` und `onToggleCollapse` aktivieren das Verhalten; ohne
+  `onToggleCollapse` gibt es keinen Toggle.
+- `side` (`start | end`) bestimmt die Richtung des Toggle-Icons.
+- Eingeklappt bleibt eine schmale Leiste mit dem Panel-Icon als Button
+  zum Aufklappen.
+- Der Inhalt wird nur ausgeblendet, nicht entfernt; Zustand wie
+  Inspector-Tab und geöffnete Widgets bleibt erhalten.
+- Cmd/Ctrl + B schaltet das Build Panel um, Cmd/Ctrl + I den Inspector.
+- Der Layout-Zustand ist UI-State (`useWorkspaceLayout`), nicht Teil
+  des Workspace-Reducers.
 
 Auf schmaleren Viewports können Panels zu Overlays oder Drawern
 werden.

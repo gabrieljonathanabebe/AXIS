@@ -42,6 +42,8 @@ Folgende Dateien sind die Source of Truth:
   `docs/DEVELOPMENT.md`
 - Aktueller Entwicklungsstand und Prioritäten:
   `docs/ROADMAP.md`
+- Gesammelte Punkte außerhalb des aktuellen Slices:
+  `docs/TODO.md`
 
 Bei einer Aufgabe nur die dafür relevanten Dokumente zusätzlich lesen.
 
@@ -123,6 +125,18 @@ Aktualisieren, wenn:
 - ein Milestone abgeschlossen wurde;
 - sich Prioritäten wesentlich ändern;
 - ein geplanter Scope hinzugefügt oder entfernt wird.
+
+### `docs/TODO.md`
+
+Eintragen, wenn der Nutzer einen Punkt ausdrücklich für die To-do
+nennt. Jeder Punkt erhält eine `##`-Überschrift, konkrete Details
+stehen als Stichpunkte darunter.
+
+Einen Punkt entfernen, wenn er erledigt ist oder als geplanter Scope
+in `docs/ROADMAP.md` übernommen wird.
+
+Punkte aus der To-do nicht eigenständig in den aktuellen Slice
+ziehen.
 
 ### `docs/ARCHITECTURE.md`
 

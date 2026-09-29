@@ -55,8 +55,6 @@ function CanvasPanel({
 }: CanvasPanelProps) {
   return (
     <Panel
-      eyebrow="Canvas"
-      title="Canvas"
       className="canvas-panel"
       actions={
         selectedChartId ? (

@@ -6,6 +6,7 @@ import DragPreviewOverlay from './components/dnd/DragPreviewOverlay'
 import InspectorPanel from './components/inspector/InspectorPanel'
 import { useChartWorkspace } from './hooks/useChartWorkspace'
 import { useDatasets } from './hooks/useDatasets'
+import { useWorkspaceLayout } from './hooks/useWorkspaceLayout'
 
 function App() {
   const {
@@ -44,6 +45,12 @@ function App() {
     updateContainer,
     updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
+  const {
+    isBuildPanelCollapsed,
+    isInspectorCollapsed,
+    toggleBuildPanel,
+    toggleInspector,
+  } = useWorkspaceLayout()
 
   return (
     <DndContext
@@ -51,15 +58,19 @@ function App() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <main className="app-shell">
+      <main
+        className={`app-shell ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''} ${isInspectorCollapsed ? 'is-inspector-collapsed' : ''}`}
+      >
         <BuildPanel
           activeDatasetSummary={activeDatasetSummary}
           fields={dataset.fields}
+          isCollapsed={isBuildPanelCollapsed}
           isUploading={isUploading}
           selectedField={selectedField}
           uploadError={uploadError}
           onSelectChartType={addChart}
           onSelectField={setSelectedField}
+          onToggleCollapse={toggleBuildPanel}
           onUploadFile={async (file) => {
             await uploadFile(file)
           }}
@@ -77,13 +88,13 @@ function App() {
           onSelectChart={selectChart}
           onSelectData={setSelection}
           onUpdateChartAppearance={updateChartAppearance}
-
           onUpdateChartLayout={updateChartLayout}
           onUpdateChartTitle={updateChartTitle}
         />
         <InspectorPanel
           chart={selectedChart}
           fields={dataset.fields}
+          isCollapsed={isInspectorCollapsed}
           onSetAggregation={setAggregation}
           onSetAppearance={updateAppearance}
           onSetInteraction={updateInteraction}
@@ -91,6 +102,7 @@ function App() {
           onSetChartType={setChartType}
           onSetContainer={updateContainer}
           onSetEncodingField={setEncodingField}
+          onToggleCollapse={toggleInspector}
         />
       </main>
       <DragPreviewOverlay activeDrag={activeDrag} />

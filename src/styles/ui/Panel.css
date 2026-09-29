@@ -4,31 +4,34 @@
   border-radius: var(--radius-lg);
 }
 
+.panel.is-collapsed {
+  align-items: center;
+}
+
 .panel-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  min-height: 36px;
+  margin-bottom: var(--space-3);
+  padding-inline: var(--space-1);
+}
+
+.panel-title {
+  min-width: 0;
+  font-size: var(--font-size-md);
 }
 
 .panel-actions {
   display: flex;
   flex-shrink: 0;
   gap: var(--space-2);
+  margin-left: auto;
 }
 
 .panel-content {
   color: var(--color-text-secondary);
-}
-
-.eyebrow {
-  margin: 0 0 var(--space-3);
-  color: var(--color-accent);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.14rem;
-  text-transform: uppercase;
 }
 
 .panel.is-scrollable {

@@ -157,6 +157,14 @@ Handling bleibt auf Visual Analytics begrenzt.
   Pointer-Down außerhalb übernimmt den Wert, auch wenn ECharts (Brush)
   das Default-Verhalten unterdrückt
 
+### Workspace Panels
+
+- Panel-Header als einzeilige Icon-Label-Zeile statt Eyebrow und Titel
+- Canvas ohne Titel; Header dient als Toolbar
+- Build Panel und Inspector unabhängig einklappbar, eingeklappt als
+  schmale Icon-Leiste, Breite animiert
+- Shortcuts Cmd/Ctrl + B und Cmd/Ctrl + I
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -197,15 +205,19 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des Slices Inline-Editing der Achsentitel:
+Priorität nach Abschluss des Slices Workspace Panels:
 
-1. Canvas-/Objektarchitektur und Workspace UX: kontextsensitiver
-   Inspector (Chart oder Dashboard), Dashboard-/Layout-Einstellungen,
-   Grundlage für weitere Objekte wie Text, KPI und Table, unabhängig
-   einklappbares Build Panel und Inspector;
-   Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
-   `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,
-   dafür Positionierung am Grid und Bild-Export selbst lösen);
+1. Canvas-/Objektarchitektur und Workspace UX:
+   - als Nächstes: Undo/Redo mit zentraler Command-Registry,
+     Dashboard-Toolbar im Canvas-Header, Duplicate und Delete als
+     Aktionsleiste am Chart statt im Canvas-Header;
+   - danach: `DashboardSpec` mit Dashboard-Name im Canvas-Header und
+     kontextsensitivem Inspector (Chart oder Dashboard),
+     Dashboard-/Layout-Einstellungen;
+   - Grundlage für weitere Objekte wie Text, KPI und Table;
+   - Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
+     `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,
+     dafür Positionierung am Grid und Bild-Export selbst lösen);
 2. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
    Values, Cardinality;
 3. Build Panel mit dem Profiling verbinden;
@@ -536,5 +548,3 @@ waren:
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
-- Die doppelten Panel-Überschriften (Eyebrow und Titel, z. B. „BUILD /
-  Build“) sind noch nicht bereinigt.
