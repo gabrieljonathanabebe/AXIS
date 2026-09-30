@@ -128,10 +128,13 @@ Alle drei Bereiche nutzen `Panel`.
 
 - Header als eine Zeile: `IconBadge` mit Icon und kurzem Label, rechts
   `actions`. Keine Eyebrow-Überschrift über dem Titel.
-- `icon` und `title` sind optional. Die Canvas hat keinen Titel; ihr
-  Header ist die Toolbar mit Undo und Redo. Dort ist später der
-  Dashboard-Name geplant. Objektbezogene Aktionen gehören nicht in die
-  Toolbar, sondern an das Objekt (siehe Chart-Aktionsleiste).
+- `icon` und `title` sind optional. `heading` ersetzt das Icon-Label
+  durch eigenen Inhalt im selben `h2`; `title` bleibt ein String für
+  die Labels „Hide …“ und „Show …“.
+- Die Canvas zeigt über `heading` den Dashboard-Namen als
+  `EditableText`, rechts Undo und Redo. Objektbezogene Aktionen gehören
+  nicht in die Toolbar, sondern an das Objekt (siehe
+  Chart-Aktionsleiste).
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
 
@@ -216,6 +219,10 @@ Data
 Appearance
 Interaction
 ```
+
+Der Inspector ist kontextsensitiv: Mit ausgewähltem Chart zeigt er die
+Chart-Tabs, ohne Auswahl die Dashboard-Einstellungen
+(`DashboardInspector`, Widgets „Dashboard“ und „Layout“, ohne Tabs).
 
 Ein Widget repräsentiert ein Feature oder eine logisch
 zusammengehörige Property-Gruppe.
@@ -390,7 +397,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips im Build Panel)                       |
 | Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
 | Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`, `AlignmentControl`)          |
-| Inline Text Editing          | Chart-Titel, Achsentitel        | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
+| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
 | Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`)                                   |

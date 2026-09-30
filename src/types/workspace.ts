@@ -13,9 +13,12 @@ import type {
   DataValue,
 } from './chart'
 
+import type { DashboardSpec } from './dashboard'
+
 // ===== STATE =================================================================
 export type WorkspaceState = {
   charts: ChartInstance[]
+  dashboard: DashboardSpec
   selectedChartId: string | null
   selection: DataSelection | null
 }
@@ -82,6 +85,14 @@ export type WorkspaceAction =
       patch: Partial<ChartAppearanceSpec[ChartMarkKey]>
     }
   | {
+      type: 'dashboard/update'
+      patch: Partial<Pick<DashboardSpec, 'name'>>
+    }
+  | {
+      type: 'dashboard/updateLayout'
+      patch: Partial<DashboardSpec['layout']>
+    }
+  | {
       type: 'selection/clear'
     }
   | {
@@ -92,7 +103,7 @@ export type WorkspaceAction =
 // ===== HISTORY ===============================================================
 export type WorkspaceSnapshot = Pick<
   WorkspaceState,
-  'charts' | 'selectedChartId'
+  'charts' | 'dashboard' | 'selectedChartId'
 >
 
 export type WorkspaceHistoryState = {

@@ -1,5 +1,6 @@
 import ChartGrid from './ChartGrid'
 import CommandButton from '../ui/CommandButton'
+import EditableText from '../ui/EditableText'
 import EmptyState from '../ui/EmptyState'
 import Panel from '../ui/Panel'
 
@@ -10,6 +11,7 @@ import type {
   ChartTitleAppearance,
   Dataset,
 } from '../../types/chart'
+import type { DashboardSpec } from '../../types/dashboard'
 import type { DataSelection } from '../../types/workspace'
 
 import type { WorkspaceCommands } from '../../types/ui'
@@ -17,6 +19,7 @@ import type { WorkspaceCommands } from '../../types/ui'
 type CanvasPanelProps = {
   charts: ChartInstance[]
   commands: WorkspaceCommands
+  dashboard: DashboardSpec
   dataset: Dataset
   datasetId: string | null
   isDraggingField: boolean
@@ -24,6 +27,7 @@ type CanvasPanelProps = {
   selectedChartId: string | null
   selection: DataSelection | null
   onClearSelection: () => void
+  onRenameDashboard: (name: string) => void
   onSelectChart: (chartId: string | null) => void
   onSelectData: (selection: DataSelection) => void
   onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
@@ -39,12 +43,14 @@ type CanvasPanelProps = {
 function CanvasPanel({
   charts,
   commands,
+  dashboard,
   dataset,
   datasetId,
   isDraggingField,
   selectedChartId,
   selection,
   onClearSelection,
+  onRenameDashboard,
   onSelectChart,
   onSelectData,
   onUpdateChartLayout,
@@ -54,6 +60,15 @@ function CanvasPanel({
   return (
     <Panel
       className="canvas-panel"
+      heading={
+        <EditableText
+          className="canvas-panel-title"
+          label="Dashboard name"
+          placeholder="Untitled dashboard"
+          value={dashboard.name}
+          onCommit={onRenameDashboard}
+        />
+      }
       actions={
         <>
           <CommandButton command={commands['history.undo']} />
@@ -67,6 +82,7 @@ function CanvasPanel({
           commands={commands}
           dataset={dataset}
           datasetId={datasetId}
+          gap={dashboard.layout.gap}
           isDraggingField={isDraggingField}
           selectedChartId={selectedChartId}
           selection={selection}

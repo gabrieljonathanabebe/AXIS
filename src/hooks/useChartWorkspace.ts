@@ -32,6 +32,7 @@ import type {
   DataField,
   Dataset,
 } from '../types/chart'
+import type { DashboardLayout } from '../types/dashboard'
 import type { DataSelection, WorkspaceAction } from '../types/workspace'
 
 // ===== TYPES =================================================================
@@ -52,7 +53,7 @@ export function useChartWorkspace({
     workspaceHistoryReducer,
     initialWorkspaceHistory,
   )
-  const { charts, selectedChartId, selection } = history.present
+  const { charts, dashboard, selectedChartId, selection } = history.present
   const canRedo = history.future.length > 0
   const canUndo = history.past.length > 0
 
@@ -186,6 +187,17 @@ export function useChartWorkspace({
     }))
   }
 
+  function renameDashboard(name: string): void {
+    dispatch({ type: 'dashboard/update', patch: { name } })
+  }
+
+  function updateDashboardLayout<TKey extends keyof DashboardLayout>(
+    key: TKey,
+    value: DashboardLayout[TKey],
+  ): void {
+    dispatch({ type: 'dashboard/updateLayout', patch: { [key]: value } })
+  }
+
   function assignFieldToEncoding(
     key: keyof ChartEncoding,
     field: DataField | undefined,
@@ -274,12 +286,14 @@ export function useChartWorkspace({
     canUndo,
     charts,
     clearSelection,
+    dashboard,
     dataset,
     duplicateChart,
     handleDragEnd,
     handleDragStart,
     redo,
     removeChart,
+    renameDashboard,
     selectedChart,
     selectedChartId,
     selectedField,
@@ -298,6 +312,7 @@ export function useChartWorkspace({
     updateChartLayout,
     updateChartTitle,
     updateContainer,
+    updateDashboardLayout,
     updateInteraction,
   }
 }

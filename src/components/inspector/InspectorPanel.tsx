@@ -1,26 +1,31 @@
 import { SlidersHorizontal } from 'lucide-react'
 
 import ChartInspector from './ChartInspector'
+import DashboardInspector from './DashboardInspector'
 import Panel from '../ui/Panel'
 import type { ChartInstance } from '../../types/chart'
-import type { ChartInspectorProps } from './types'
+import type { ChartInspectorProps, DashboardInspectorProps } from './types'
 
-type InspectorPanelProps = Omit<ChartInspectorProps, 'chart'> & {
-  chart: ChartInstance | null
-  isCollapsed: boolean
-  onToggleCollapse: () => void
-}
+type InspectorPanelProps = Omit<ChartInspectorProps, 'chart'> &
+  DashboardInspectorProps & {
+    chart: ChartInstance | null
+    isCollapsed: boolean
+    onToggleCollapse: () => void
+  }
 
 function InspectorPanel({
   chart,
+  dashboard,
   fields,
   isCollapsed,
+  onRenameDashboard,
   onSetAggregation,
   onSetAppearance,
   onSetInteraction,
   onSetChartAppearance,
   onSetChartType,
   onSetContainer,
+  onSetDashboardLayout,
   onSetEncodingField,
   onToggleCollapse,
 }: InspectorPanelProps) {
@@ -48,7 +53,11 @@ function InspectorPanel({
           onSetEncodingField={onSetEncodingField}
         />
       ) : (
-        <span className="inspector-empty">Select a chart to inspect it.</span>
+        <DashboardInspector
+          dashboard={dashboard}
+          onRenameDashboard={onRenameDashboard}
+          onSetDashboardLayout={onSetDashboardLayout}
+        />
       )}
     </Panel>
   )

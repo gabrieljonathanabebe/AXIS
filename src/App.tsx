@@ -24,12 +24,14 @@ function App() {
     canUndo,
     charts,
     clearSelection,
+    dashboard,
     dataset,
     duplicateChart,
     handleDragEnd,
     handleDragStart,
     redo,
     removeChart,
+    renameDashboard,
     selectedChart,
     selectedChartId,
     selectedField,
@@ -48,6 +50,7 @@ function App() {
     updateChartLayout,
     updateChartTitle,
     updateContainer,
+    updateDashboardLayout,
     updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
 
@@ -96,12 +99,14 @@ function App() {
         <CanvasPanel
           charts={charts}
           commands={commands}
+          dashboard={dashboard}
           dataset={dataset}
           datasetId={activeDatasetSummary?.id ?? null}
           isDraggingField={activeDrag?.kind === 'field'}
           selectedChartId={selectedChartId}
           selection={selection}
           onClearSelection={clearSelection}
+          onRenameDashboard={renameDashboard}
           onSelectChart={selectChart}
           onSelectData={setSelection}
           onUpdateChartAppearance={updateChartAppearance}
@@ -110,14 +115,17 @@ function App() {
         />
         <InspectorPanel
           chart={selectedChart}
+          dashboard={dashboard}
           fields={dataset.fields}
           isCollapsed={isInspectorCollapsed}
+          onRenameDashboard={renameDashboard}
           onSetAggregation={setAggregation}
           onSetAppearance={updateAppearance}
           onSetInteraction={updateInteraction}
           onSetChartAppearance={setChartAppearance}
           onSetChartType={setChartType}
           onSetContainer={updateContainer}
+          onSetDashboardLayout={updateDashboardLayout}
           onSetEncodingField={setEncodingField}
           onToggleCollapse={toggleInspector}
         />

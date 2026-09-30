@@ -32,6 +32,7 @@ type ChartGridProps = {
   commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
+  gap: number
   isDraggingField: boolean
   selectedChartId: string | null
   selection: DataSelection | null
@@ -118,6 +119,7 @@ function ChartGrid({
   commands,
   dataset,
   datasetId,
+  gap,
   isDraggingField,
   selectedChartId,
   selection,
@@ -188,7 +190,7 @@ function ChartGrid({
     <div
       className={`chart-grid ${isOver ? 'is-over' : ''}`}
       ref={setNodeRef}
-      style={gridStyle}
+      style={{ ...gridStyle, gap }}
       onPointerDown={handlePointerDown}
     >
       {charts.map((chart) => {

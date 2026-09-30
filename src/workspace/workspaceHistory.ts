@@ -21,7 +21,10 @@ export const initialWorkspaceHistory: WorkspaceHistoryState = {
 
 // ===== HELPERS ===============================================================
 function isUndoableAction(action: WorkspaceAction): boolean {
-  return action.type.startsWith('chart/') && action.type !== 'chart/select'
+  return (
+    action.type !== 'chart/select' &&
+    (action.type.startsWith('chart/') || action.type.startsWith('dashboard/'))
+  )
 }
 
 function getCoalesceKey(action: WorkspaceAction): string | null {
@@ -44,6 +47,9 @@ function getCoalesceKey(action: WorkspaceAction): string | null {
         action.mark,
         ...Object.keys(action.patch).sort(),
       ].join(':')
+    case 'dashboard/update':
+    case 'dashboard/updateLayout':
+      return [action.type, ...Object.keys(action.patch).sort()].join(':')
     default:
       return null
   }
@@ -52,6 +58,7 @@ function getCoalesceKey(action: WorkspaceAction): string | null {
 function createSnapshot(state: WorkspaceState): WorkspaceSnapshot {
   return {
     charts: state.charts,
+    dashboard: state.dashboard,
     selectedChartId: state.selectedChartId,
   }
 }
@@ -66,6 +73,7 @@ function restoreSnapshot(
   return {
     ...state,
     charts: snapshot.charts,
+    dashboard: snapshot.dashboard,
     selectedChartId: snapshot.selectedChartId,
     selection: selectionSourceExists ? state.selection : null,
   }

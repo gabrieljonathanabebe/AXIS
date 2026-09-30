@@ -394,15 +394,34 @@ Content). Die Background-Presets verweisen auf Design-Tokens; nur
 oder Shadow sollen später als zusätzliche optionale Felder ergänzt
 werden, ohne die Presets zu ersetzen.
 
-Der Workspace hält alle Chart-Instanzen, die Editor-Auswahl und die
-Datenauswahl:
+Der Workspace hält alle Chart-Instanzen, das Dashboard, die
+Editor-Auswahl und die Datenauswahl:
 
 ```text
 WorkspaceState
 ├── charts: ChartInstance[]
+├── dashboard: DashboardSpec
 ├── selectedChartId: string | null
 └── selection: DataSelection | null
 ```
+
+```ts
+type DashboardLayout = {
+  gap: number
+}
+
+type DashboardSpec = {
+  layout: DashboardLayout
+  name: string
+}
+```
+
+`DashboardSpec` beschreibt Einstellungen, die für das ganze Dashboard
+gelten (`src/types/dashboard.ts`). `layout.gap` ist der Abstand in Pixeln
+zwischen den Grid-Zellen. Spaltenzahl und Zeilenhöhe bleiben Konstanten
+(siehe Canvas Layout), damit bestehende `ChartLayout`s ihre Bedeutung
+behalten. Aktuell gibt es genau ein Dashboard, daher tragen
+Dashboard-Actions keine ID.
 
 ```ts
 type SelectionFilter =
@@ -415,7 +434,10 @@ type DataSelection = {
 }
 ```
 
-Der Inspector arbeitet auf dem selektierten Objekt.
+Der Inspector arbeitet auf dem selektierten Objekt: Ist ein Chart
+ausgewählt, bearbeitet er den Chart, sonst das Dashboard. Dafür gibt es
+keinen eigenen Auswahl-State; `selectedChartId === null` bedeutet
+Dashboard-Kontext.
 
 `selectedChartId` und `selection` sind getrennte Konzepte:
 
@@ -448,6 +470,7 @@ Aktuelle Actions:
 - `chart/updateContainer`;
 - `chart/updateInteraction`;
 - `chart/updateLayout`;
+- `dashboard/update` (Name), `dashboard/updateLayout`;
 - `selection/set`, `selection/clear`.
 
 `selection/set` wird ignoriert, wenn das Quell-Chart nicht existiert.
@@ -458,7 +481,8 @@ vorherigen aus (`findNeighborChartId`).
 
 Inspector und Inline-Editing auf der Canvas verwenden dieselben
 Actions. Charttitel und Achsentitel werden z. B. im Inspector und direkt
-im Chart über `chart/updateAppearance` geändert.
+im Chart über `chart/updateAppearance` geändert, der Dashboard-Name im
+Inspector und im Canvas-Header über `dashboard/update`.
 
 Regeln:
 
@@ -494,16 +518,19 @@ WorkspaceHistoryState
 
 Regeln:
 
-- Undo-fähig sind alle `chart/*`-Actions außer `chart/select`.
-  `chart/select` und `selection/*` ändern nur `present`.
+- Undo-fähig sind alle `chart/*`- und `dashboard/*`-Actions außer
+  `chart/select`. `chart/select` und `selection/*` ändern nur
+  `present`.
 - Eine Action, die den State nicht verändert, erzeugt keinen Schritt.
-- Ein Snapshot enthält `charts` und `selectedChartId`. Undo stellt
-  damit auch die Chart-Auswahl wieder her, z. B. nach einem Delete.
+- Ein Snapshot enthält `charts`, `dashboard` und `selectedChartId`.
+  Undo stellt damit auch die Chart-Auswahl wieder her, z. B. nach einem
+  Delete.
   Die Datenauswahl bleibt erhalten, solange ihr Quell-Chart existiert.
-- `update*`-Actions mit gleichem Coalesce-Key (Action-Typ, `chartId`,
-  Mark, Patch-Keys) innerhalb von 500 ms werden zu einem Schritt
-  zusammengefasst. Dadurch ergeben Scrubbing, Slider, Farbpicker und
-  Pfeil-Nudges einen Schritt, ohne dass die Controls Gesten melden.
+- `update*`-Actions mit gleichem Coalesce-Key (Action-Typ, ggf.
+  `chartId` und Mark, Patch-Keys) innerhalb von 500 ms werden zu einem
+  Schritt zusammengefasst. Dadurch ergeben Scrubbing, Slider,
+  Farbpicker, Pfeil-Nudges und Tippen in Textfeldern einen Schritt, ohne
+  dass die Controls Gesten melden.
 - Die History ist auf 100 Schritte begrenzt und wird nicht persistiert.
 
 ### Commands
@@ -923,7 +950,10 @@ Project
 ```
 
 Vom `SelectionState` existiert aktuell eine erste Form als `selection`
-im `WorkspaceState` (Abschnitt 8).
+im `WorkspaceState` (Abschnitt 8). Von `Dashboard` existiert eine erste
+Form als einzelne `DashboardSpec` im `WorkspaceState`; mehrere
+Dashboards und die Zuordnung von Charts zu Dashboards sind noch nicht
+umgesetzt.
 
 Ein Wert soll möglichst einmal definiert und anschließend
 wiederverwendet werden.

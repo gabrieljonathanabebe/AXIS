@@ -8,6 +8,12 @@ type ChartUpdater = (chart: ChartInstance) => ChartInstance
 // ===== CONSTANTS =============================================================
 export const initialWorkspaceState: WorkspaceState = {
   charts: [],
+  dashboard: {
+    layout: {
+      gap: 8,
+    },
+    name: 'Untitled dashboard',
+  },
   selectedChartId: null,
   selection: null,
 }
@@ -172,6 +178,19 @@ export function workspaceReducer(
           },
         },
       }))
+    case 'dashboard/update':
+      return {
+        ...state,
+        dashboard: { ...state.dashboard, ...action.patch },
+      }
+    case 'dashboard/updateLayout':
+      return {
+        ...state,
+        dashboard: {
+          ...state.dashboard,
+          layout: { ...state.dashboard.layout, ...action.patch },
+        },
+      }
     case 'selection/clear':
       return { ...state, selection: null }
     case 'selection/set': {

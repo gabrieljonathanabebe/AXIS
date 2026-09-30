@@ -16,7 +16,6 @@
   flex: 1;
   display: grid;
   align-content: start;
-  gap: var(--space-2);
   min-height: 0;
   overflow-y: auto;
   border-radius: var(--radius-lg);
@@ -25,4 +24,10 @@
 
 .chart-grid.is-over {
   background: var(--color-surface-active);
+}
+
+.canvas-panel-title {
+  height: var(--control-height-sm);
+  color: var(--color-text-primary);
+  line-height: var(--control-height-sm);
 }

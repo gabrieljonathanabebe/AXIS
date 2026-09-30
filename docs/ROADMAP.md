@@ -181,6 +181,17 @@ Handling bleibt auf Visual Analytics begrenzt.
 - Duplicate und Delete als Aktionsleiste am ausgewählten Chart statt im
   Canvas-Header
 
+### DashboardSpec und kontextsensitiver Inspector
+
+- `DashboardSpec` mit Name und Layout (`gap`) im Workspace State
+- Actions `dashboard/update` und `dashboard/updateLayout`, undo-fähig
+  und Teil des History-Snapshots
+- Dashboard-Name im Canvas-Header, inline editierbar über dieselbe
+  Action wie im Inspector
+- Inspector zeigt ohne Chart-Auswahl die Dashboard-Einstellungen: Name
+  und Abstand zwischen den Charts
+- `Panel` mit `heading`-Slot für eigenen Header-Inhalt
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -221,12 +232,10 @@ Ziele:
 - Semantic Type Icons
 - Calculated Field Entry Point
 
-Priorität nach Abschluss des Slices Undo/Redo und Command-Registry:
+Priorität nach Abschluss des Slices DashboardSpec und
+kontextsensitiver Inspector:
 
 1. Canvas-/Objektarchitektur und Workspace UX:
-   - als Nächstes: `DashboardSpec` mit Dashboard-Name im Canvas-Header
-     und kontextsensitivem Inspector (Chart oder Dashboard),
-     Dashboard-/Layout-Einstellungen;
    - Grundlage für weitere Objekte wie Text, KPI und Table;
    - Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
      `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,

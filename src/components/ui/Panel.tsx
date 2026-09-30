@@ -8,6 +8,7 @@ type PanelSide = 'start' | 'end'
 
 type PanelProps = {
   as?: 'aside' | 'section'
+  heading?: ReactNode
   icon?: ReactNode
   title?: string
   className?: string
@@ -21,6 +22,7 @@ type PanelProps = {
 
 function Panel({
   as: Element = 'section',
+  heading,
   icon,
   title,
   className = '',
@@ -43,7 +45,8 @@ function Panel({
       <CollapseIcon size={16} />
     </IconButton>
   ) : null
-
+  const titleContent =
+    heading ?? (title ? <IconBadge label={title}>{icon}</IconBadge> : null)
   return (
     <Element
       className={`panel glass glass-thin ${isScrollable ? 'is-scrollable' : ''} ${isCollapsed ? 'is-collapsed' : ''} ${className}`}
@@ -58,10 +61,8 @@ function Panel({
         </IconButton>
       ) : (
         <header className="panel-header">
-          {title ? (
-            <h2 className="panel-title">
-              <IconBadge label={title}>{icon}</IconBadge>
-            </h2>
+          {titleContent ? (
+            <h2 className="panel-title">{titleContent}</h2>
           ) : null}
           {actions || collapseButton ? (
             <div className="panel-actions">

@@ -11,6 +11,8 @@ import type {
   DataField,
 } from '../../types/chart'
 
+import type { DashboardLayout, DashboardSpec } from '../../types/dashboard'
+
 export type SetAggregation = <TKey extends ChartAggregationKey>(
   key: TKey,
   aggregation: ChartDataSpec[TKey],
@@ -47,6 +49,11 @@ export type SetEncodingField = (
   fieldName: string,
 ) => void
 
+export type SetDashboardLayout = <TKey extends keyof DashboardLayout>(
+  key: TKey,
+  value: DashboardLayout[TKey],
+) => void
+
 export type ChartInspectorProps = {
   chart: ChartInstance
   fields: DataField[]
@@ -57,4 +64,10 @@ export type ChartInspectorProps = {
   onSetInteraction: SetInteraction
   onSetChartAppearance: SetChartAppearance
   onSetEncodingField: SetEncodingField
+}
+
+export type DashboardInspectorProps = {
+  dashboard: DashboardSpec
+  onRenameDashboard: (name: string) => void
+  onSetDashboardLayout: SetDashboardLayout
 }
