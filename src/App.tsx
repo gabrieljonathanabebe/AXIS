@@ -34,7 +34,6 @@ function App() {
     renameDashboard,
     selectedChart,
     selectedChartId,
-    selectedField,
     selectChart,
     selection,
     sensors,
@@ -43,7 +42,6 @@ function App() {
     setChartType,
     setEncodingField,
     setSelection,
-    setSelectedField,
     undo,
     updateAppearance,
     updateChartAppearance,
@@ -84,13 +82,11 @@ function App() {
       >
         <BuildPanel
           activeDatasetSummary={activeDatasetSummary}
-          fields={dataset.fields}
+          dataset={dataset}
           isCollapsed={isBuildPanelCollapsed}
           isUploading={isUploading}
-          selectedField={selectedField}
           uploadError={uploadError}
           onSelectChartType={addChart}
-          onSelectField={setSelectedField}
           onToggleCollapse={toggleBuildPanel}
           onUploadFile={async (file) => {
             await uploadFile(file)

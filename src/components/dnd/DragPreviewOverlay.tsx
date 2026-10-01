@@ -1,6 +1,6 @@
 import { DragOverlay } from '@dnd-kit/core'
 
-import { getChartDefinition } from '../../chart/chartDefinitions'
+import { ChartTypeOptionContent } from '../build/ChartPicker'
 import DataTypeIcon from '../data/DataTypeIcon'
 import IconBadge from '../ui/IconBadge'
 
@@ -21,17 +21,7 @@ function DragPreviewOverlay({ activeDrag }: DragPreviewOverlayProps) {
         </div>
       ) : activeDrag?.kind === 'chart-type' ? (
         <div className="widget chart-type-option stack center chart-type-drag-overlay">
-          {(() => {
-            const { label, icon: Icon } = getChartDefinition(
-              activeDrag.chartType,
-            )
-            return (
-              <>
-                <Icon size={22} />
-                <span>{label}</span>
-              </>
-            )
-          })()}
+          <ChartTypeOptionContent type={activeDrag.chartType} />
         </div>
       ) : null}
     </DragOverlay>

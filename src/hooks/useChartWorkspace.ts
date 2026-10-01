@@ -59,7 +59,7 @@ export function useChartWorkspace({
 
   const selectedChart =
     charts.find((chart) => chart.id === selectedChartId) ?? null
-  const [selectedField, setSelectedField] = useState<DataField | null>(null)
+
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -296,7 +296,6 @@ export function useChartWorkspace({
     renameDashboard,
     selectedChart,
     selectedChartId,
-    selectedField,
     selectChart,
     selection,
     sensors,
@@ -304,7 +303,6 @@ export function useChartWorkspace({
     setChartAppearance,
     setChartType,
     setEncodingField,
-    setSelectedField,
     setSelection,
     undo,
     updateAppearance,

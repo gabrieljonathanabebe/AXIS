@@ -7,6 +7,21 @@ bleibt.
 Ein Punkt verlässt diese Liste, wenn er erledigt ist oder als geplanter
 Scope in `docs/ROADMAP.md` übernommen wird.
 
+## Inspector auf plain Sections umstellen
+
+- Ziel: dieselbe ruhige Optik wie im Build Panel, also Sections ohne
+  eigene Widget-Fläche, Trennung per Haarlinie, keine Widgets in
+  Widgets
+- Vorbild: `CollapsibleSection` mit `variant="plain"` inkl. Header-Stil
+  (Versalien, sekundär, Hover primär, Icon in Akzentfarbe) in
+  `CollapsibleSection.css`
+- Achtung: Der Inspector nutzt `InspectorWidget`, nicht
+  `CollapsibleSection` (eigener Header, Chevron, Subproperties);
+  zuerst klären, ob `InspectorWidget` eine plain-Variante bekommt oder
+  beide Komponenten zusammengeführt werden
+- Einrückung einheitlich über `--indent-nested`;
+  `.inspector-widget-subproperties` noch auf das Token umstellen
+
 ## Weitere Dashboard-Einstellungen
 
 - Canvas-Hintergrund als Dashboard-Einstellung, analog zu den

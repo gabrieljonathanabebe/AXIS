@@ -1,4 +1,5 @@
-import { Calendar, Hash, IdCard, Tags } from 'lucide-react'
+import { Calendar, CaseUpper, Hash, IdCard } from 'lucide-react'
+
 import type { SemanticType } from '../../types/chart'
 
 type DataTypeIconProps = {
@@ -19,7 +20,7 @@ function DataTypeIcon({ type, size = 15 }: DataTypeIconProps) {
     return <IdCard size={size} />
   }
 
-  return <Tags size={size} />
+  return <CaseUpper size={size} />
 }
 
 export default DataTypeIcon

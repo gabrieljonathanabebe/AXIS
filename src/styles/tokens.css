@@ -25,6 +25,7 @@
   --space-4: 16px;
   --space-6: 24px;
   --space-8: 32px;
+  --indent-nested: var(--space-4);
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;

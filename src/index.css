@@ -31,7 +31,7 @@
 
 @import './styles/build/BuildPanel.css';
 @import './styles/build/ChartPicker.css';
-@import './styles/build/DatasetUpload.css';
+@import './styles/build/DatasetCard.css';
 @import './styles/build/FieldList.css';
 
 @import './styles/canvas/CanvasPanel.css';

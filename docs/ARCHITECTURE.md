@@ -888,6 +888,12 @@ Später möglich:
 
 Chart-Kompatibilität soll primär auf Semantic Types basieren.
 
+Das Build Panel gruppiert Fields über `groupFields`
+(`src/data/fieldGroups.ts`). Die Zuordnung Field → Gruppe liegt allein
+in `getFieldGroupKey` und leitet sich aktuell aus `semantic_type` ab.
+Wenn das Profiling Semantic Roles liefert, wird nur diese Zuordnung
+umgestellt; das Build Panel bleibt strukturell unverändert.
+
 ## 15. Compatibility
 
 Fields können für einen Slot unterschiedliche Kompatibilität besitzen:

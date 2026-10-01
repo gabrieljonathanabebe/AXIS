@@ -161,52 +161,90 @@ Das Build Panel beantwortet:
 
 > Was möchte ich bauen oder verwenden?
 
-Aktuelles Ziel:
-
 ```text
 BUILD
 
-VISUALIZATIONS
-[ Scatter ] [ Line ]
-[ Bar     ] [...]
-
+VISUALS
+[ Scatter ] [ Line ] [ Bar  ]
+[ Pie     ] [ Donut] [ More ]
+─────────────────────────────
 DATASET
-sales.csv
-184k rows · 6 fields
-
+[▦ sales.csv            ⤒ ]
+   184K rows · 6 fields
+─────────────────────────────
 FIELDS
-# revenue
-# profit
-ABC country
-◷ date
-
-+ Calculated field
+[ ⌕ Search fields          ]
+   # Measures 2
+   [ revenue ]
+   [ profit  ]
+   ABC Dimensions 1
+   [ country ]
+   📅 Time 1
+   [ date    ]
+[ + Calculated field       ]
 ```
+
+### Sections
+
+- Die Bereiche sind `CollapsibleSection` mit `variant="plain"`: keine
+  eigene Fläche, kleiner Header in Versalien, Trennung durch eine
+  Haarlinie statt durch eine Box.
+- Flächen haben nur die Objekte selbst (Kacheln, Dataset-Karte,
+  Chips). Keine Widgets in Widgets.
+- Eine plain Section innerhalb einer plain Section ist eine
+  Untergruppe: eingerückt um `--indent-nested`, normaler Titel ohne
+  Versalien, keine Trennlinie.
+- Header-Text ist sekundär und wird beim Hover primär; das Icon bleibt
+  in Akzentfarbe.
+- `CollapsibleSection` bietet dafür `variant` (`widget | plain`,
+  Standard `widget`), `meta` für einen kleinen Zusatz neben dem Titel
+  und `forceOpen`, das die Section anzeigt, ohne ihren eigenen Zustand
+  zu verändern.
+- `--indent-nested` ist die gemeinsame Einrückung für verschachtelte
+  Inhalte.
+- `TextInput` nimmt ein optionales dekoratives `icon` links im Feld an
+  (z. B. Suche); ohne `icon` bleibt das Markup unverändert.
+
+### Visuals
+
+- Icon-Raster aus `chartDefinitionList`; Icon in Akzentfarbe, kleines
+  Label.
+- Kachel und Drag-Overlay rendern denselben Inhalt
+  (`ChartTypeOptionContent`).
+- „More“ ist ein deaktivierter Platzhalter für weitere Charttypen und
+  kein Eintrag der Chart Registry.
 
 ### Dataset
 
-Ohne Dataset:
-
-```text
-Upload CSV
-```
-
-Nach erfolgreichem Upload soll der große Upload-Bereich durch eine
-kompakte Dataset-Darstellung ersetzt werden.
+- `DatasetCard`: Name, Zeilenzahl (kompakt formatiert) und
+  Field-Anzahl, rechts Upload/Replace als Icon-Button.
+- Die ganze Karte nimmt Dateien per Drop an.
+- Ohne Upload zeigt sie das Demo-Dataset als „Demo data“; eine große
+  Upload-Fläche gibt es nicht.
 
 ### Fields
 
-Fields sollen kompakt und skalierbar dargestellt werden.
-
-Semantic Icons:
+- Gruppen über `groupFields` aus `src/data/fieldGroups.ts`:
 
 ```text
-#    numeric
-ABC  categorical
-◷    temporal
-ID   identifier
-ƒx   calculated
+#    Measures      numeric
+ABC  Dimensions    categorical
+📅   Time          temporal
+ID   Identifiers   identifier (standardmäßig eingeklappt)
 ```
+
+- Die Zuordnung Field → Gruppe liegt nur in `getFieldGroupKey`; heute
+  aus `semantic_type`, später aus den Semantic Roles des Profilings.
+- Leere Gruppen werden ausgeblendet; die Anzahl steht als `meta` im
+  Gruppen-Header.
+- Field Chips zeigen nur den Namen; das Typ-Icon trägt der
+  Gruppen-Header. Das Drag-Overlay zeigt das Icon, weil der Chip dort
+  seine Gruppe verlässt.
+- Field Search filtert nach Namen vor dem Gruppieren; während der Suche
+  sind alle Gruppen über `forceOpen` geöffnet.
+- „+ Calculated field“ ist ein deaktivierter Einstieg. Calculated
+  Fields erscheinen später als normale Fields in ihrer Gruppe, mit ƒx
+  am Chip als Herkunftsmarker.
 
 Nicht jedes Field als große Card darstellen.
 

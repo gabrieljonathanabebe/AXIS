@@ -192,6 +192,24 @@ Handling bleibt auf Visual Analytics begrenzt.
   und Abstand zwischen den Charts
 - `Panel` mit `heading`-Slot für eigenen Header-Inhalt
 
+### Build Panel Cleanup
+
+- Reihenfolge Visuals → Dataset → Fields als plain Sections ohne
+  eigene Widget-Fläche, getrennt durch Haarlinien
+- Visuals als kompaktes Icon-Raster aus der Chart Registry, Kachel und
+  Drag-Overlay mit gemeinsamem Inhalt; deaktivierte „More“-Kachel als
+  Platzhalter für weitere Charttypen
+- `DatasetCard` statt großer Upload-Fläche: Name, Zeilen- und
+  Field-Anzahl, Upload/Replace über Icon-Button und Datei-Drop; ohne
+  Upload als „Demo data“
+- Fields gruppiert nach Measures, Dimensions, Time und Identifiers über
+  `groupFields`; Zuordnung vorerst aus `semantic_type`
+- Gruppen-Header mit Icon und Anzahl, Field Chips nur mit Namen;
+  Drag-Overlay zeigt weiterhin das Typ-Icon
+- Field Search; Gruppen sind während der Suche geöffnet
+- deaktivierter Einstieg „+ Calculated field“ ohne Calculation Engine
+- ungenutzter `selectedField`-State entfernt
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -209,28 +227,6 @@ Aktueller Fokus:
 ### Visualization Completion
 
 - Inspector-Polish für Scatter, Line, Bar, Pie und Donut
-
-### Build Panel Cleanup
-
-Zielstruktur:
-
-```text
-Visualizations
-
-Dataset
-
-Fields
-
-+ Calculated Field
-```
-
-Ziele:
-
-- Visualizations prominent und direkt erreichbar
-- kompakte Dataset-Darstellung nach Upload
-- skalierbare Field List
-- Semantic Type Icons
-- Calculated Field Entry Point
 
 Priorität nach Abschluss des Slices DashboardSpec und
 kontextsensitiver Inspector:

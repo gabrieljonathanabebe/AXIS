@@ -1,7 +1,10 @@
+import { Ellipsis } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
-import type { LucideIcon } from 'lucide-react'
 
-import { chartDefinitionList } from '../../chart/chartDefinitions'
+import {
+  chartDefinitionList,
+  getChartDefinition,
+} from '../../chart/chartDefinitions'
 import WidgetButton from '../ui/WidgetButton'
 
 import type { ChartType } from '../../types/chart'
@@ -10,17 +13,30 @@ type ChartPickerProps = {
   onSelectChartType: (type: ChartType) => void
 }
 
+type ChartTypeOptionContentProps = {
+  type: ChartType
+}
+
 type DraggableChartTypeProps = {
   type: ChartType
   label: string
-  icon: LucideIcon
   onSelectChartType: (type: ChartType) => void
+}
+
+export function ChartTypeOptionContent({ type }: ChartTypeOptionContentProps) {
+  const { label, icon: Icon } = getChartDefinition(type)
+
+  return (
+    <>
+      <Icon size={20} />
+      <span className="chart-type-option-label">{label}</span>
+    </>
+  )
 }
 
 function DraggableChartType({
   type,
   label,
-  icon: Icon,
   onSelectChartType,
 }: DraggableChartTypeProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -43,8 +59,7 @@ function DraggableChartType({
       {...listeners}
       {...attributes}
     >
-      <Icon size={22} />
-      <span>{label}</span>
+      <ChartTypeOptionContent type={type} />
     </WidgetButton>
   )
 }
@@ -52,15 +67,23 @@ function DraggableChartType({
 function ChartPicker({ onSelectChartType }: ChartPickerProps) {
   return (
     <div className="chart-type-picker auto-grid">
-      {chartDefinitionList.map(({ type, label, icon }) => (
+      {chartDefinitionList.map(({ type, label }) => (
         <DraggableChartType
           type={type}
           label={label}
-          icon={icon}
           onSelectChartType={onSelectChartType}
           key={type}
         />
       ))}
+      <WidgetButton
+        aria-label="More visuals"
+        title="More visuals coming soon"
+        className="chart-type-option chart-type-more stack center"
+        disabled
+      >
+        <Ellipsis size={20} />
+        <span className="chart-type-option-label">More</span>
+      </WidgetButton>
     </div>
   )
 }

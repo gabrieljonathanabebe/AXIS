@@ -1,34 +1,31 @@
-import { Blocks, ChartColumn, Database } from 'lucide-react'
+import { Blocks, ChartColumn, Columns3, Database, Plus } from 'lucide-react'
+import Button from '../ui/Button'
 import ChartPicker from './ChartPicker'
 import CollapsibleSection from '../ui/CollapsibleSection'
-import DatasetUpload from './DatasetUpload'
+import DatasetCard from './DatasetCard'
 import FieldList from './FieldList'
 import Panel from '../ui/Panel'
-import type { ChartType, DataField } from '../../types/chart'
+import type { ChartType, Dataset } from '../../types/chart'
 import type { DatasetSummary } from '../../api/datasets'
 
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
-  fields: DataField[]
+  dataset: Dataset
   isCollapsed: boolean
   isUploading: boolean
-  selectedField: DataField | null
   uploadError: string | null
   onSelectChartType: (type: ChartType) => void
-  onSelectField: (field: DataField) => void
   onToggleCollapse: () => void
   onUploadFile: (file: File) => Promise<void>
 }
 
 function BuildPanel({
   activeDatasetSummary,
-  fields,
+  dataset,
   isCollapsed,
   isUploading,
-  selectedField,
   uploadError,
   onSelectChartType,
-  onSelectField,
   onToggleCollapse,
   onUploadFile,
 }: BuildPanelProps) {
@@ -43,25 +40,50 @@ function BuildPanel({
       onToggleCollapse={onToggleCollapse}
     >
       <div className="build-panel-content">
-        <DatasetUpload isUploading={isUploading} onUploadFile={onUploadFile} />
-        {uploadError ? (
-          <span className="panel-error">{uploadError}</span>
-        ) : null}
-
-        {activeDatasetSummary ? (
-          <span className="dataset-summary">
-            {activeDatasetSummary.name} · {activeDatasetSummary.row_count} rows
-          </span>
-        ) : null}
-        <CollapsibleSection title="Fields" icon={<Database size={18} />}>
-          <FieldList
-            fields={fields}
-            selectedField={selectedField}
-            onSelectField={onSelectField}
-          />
-        </CollapsibleSection>
-        <CollapsibleSection title="Visuals" icon={<ChartColumn size={18} />}>
+        <CollapsibleSection
+          title="Visuals"
+          icon={<ChartColumn size={14} />}
+          variant="plain"
+        >
           <ChartPicker onSelectChartType={onSelectChartType} />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title="Dataset"
+          icon={<Database size={14} />}
+          variant="plain"
+        >
+          <div className="stack">
+            <DatasetCard
+              fieldCount={dataset.fields.length}
+              isDemo={!activeDatasetSummary}
+              isUploading={isUploading}
+              name={activeDatasetSummary?.name ?? 'Demo data'}
+              rowCount={activeDatasetSummary?.row_count ?? dataset.rows.length}
+              onUploadFile={onUploadFile}
+            />
+            {uploadError ? (
+              <span className="panel-error">{uploadError}</span>
+            ) : null}
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title="Fields"
+          icon={<Columns3 size={14} />}
+          variant="plain"
+        >
+          <div className="stack">
+            <FieldList fields={dataset.fields} />
+            <Button
+              className="calculated-field-button full-width"
+              title="Calculated fields coming soon"
+              disabled
+            >
+              <Plus size={14} />
+              Calculated field
+            </Button>
+          </div>
         </CollapsibleSection>
       </div>
     </Panel>
