@@ -1,0 +1,14 @@
+.top-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 36px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.top-bar-brand {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}

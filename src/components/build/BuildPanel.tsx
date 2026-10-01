@@ -1,4 +1,4 @@
-import { Blocks, ChartColumn, Columns3, Database, Plus } from 'lucide-react'
+import { Blocks, ChartColumn, Columns3, FolderOpen, Plus } from 'lucide-react'
 import Button from '../ui/Button'
 import ChartPicker from './ChartPicker'
 import CollapsibleSection from '../ui/CollapsibleSection'
@@ -50,7 +50,7 @@ function BuildPanel({
 
         <CollapsibleSection
           title="Dataset"
-          icon={<Database size={14} />}
+          icon={<FolderOpen size={14} />}
           variant="plain"
         >
           <div className="stack">

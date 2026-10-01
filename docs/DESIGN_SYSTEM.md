@@ -91,28 +91,58 @@ Nicht jedes blaue Element benötigt einen Glow.
 
 ## 3. Layout Architecture
 
-Die langfristige App Shell:
-
 ```text
-Top Bar
-────────────────────────────────────────
-
-Navigation Rail | Active Workspace
+┌ Cevyn                                                  ┐  TopBar
+└────────────────────────────────────────────────────────┘
+┌──┐
+│◫ │  Active View
+│▦ │
+│  │
+└──┘
+Rail
 ```
 
-Navigation Rail:
+TopBar:
 
-- schmal;
-- icon-basiert;
-- Tooltips;
-- aktiver Workspace klar hervorgehoben.
+- globale App-Ebene: Branding, später Workspace/Team, Account und
+  Settings; keine View-Navigation;
+- schlanke Leiste mit `glass glass-thin` und demselben Radius und
+  Abstand wie die Panels;
+- drei Spalten `1fr auto 1fr`, Wortmarke links auf einer Linie mit den
+  Header-Icons der Panels, rechte Spalte für spätere Header Actions.
 
-Geplante Workspaces:
+Navigation Rail (`NavigationRail`):
 
-- Visualize
-- Data
-- AI
-- Share
+- Teil der AppShell, nicht des Visualize Workspace; immer sichtbar,
+  unabhängig vom Collapse-State der Panels;
+- schmale Glass-Fläche (`glass glass-thin`, 52 px) über die volle Höhe
+  des Workspace;
+- enthält ausschließlich Top-Level-Views, keine Settings;
+- nur Icons als `IconButton` mit `variant="ghost"`, Tooltip über das
+  Label; keine Cards um die Icons;
+- Hover in Akzentfarbe, aktiver View zusätzlich mit `surface-active`
+  und `aria-current="page"`.
+
+Implementierte Views: Visualize, Data. Geplant: Share; AI eher als Panel
+oder Overlay als als eigener View.
+
+### Icons
+
+Ein Icon steht für genau eine Bedeutung:
+
+| Bedeutung               | Icon                  |
+| ----------------------- | --------------------- |
+| View Data               | `Database`            |
+| View Visualize          | `ChartNoAxesCombined` |
+| konkreter Datensatz     | `FileSpreadsheet`     |
+| Dataset-Section (Build) | `FolderOpen`          |
+| Fields                  | `Columns3`            |
+| Inspector-Tab Data      | `Table2`              |
+| Encodings               | `Waypoints`           |
+| Build                   | `Blocks`              |
+| Dashboard               | `LayoutDashboard`     |
+
+Die View-Icons der Rail werden an keiner anderen Stelle verwendet.
 
 ## 4. Visualize Workspace
 
@@ -137,6 +167,10 @@ Alle drei Bereiche nutzen `Panel`.
   Chart-Aktionsleiste).
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
+- Inhaltshöhe: `isScrollable` lässt das Panel seinen Inhalt selbst
+  scrollen (Build Panel, Inspector). `isFilled` lässt den Inhalt die
+  Höhe füllen, das Kind scrollt selbst (Canvas mit `ChartGrid`, Data mit
+  `DataTable`).
 
 Build Panel und Inspector sind unabhängig einklappbar:
 
@@ -154,6 +188,21 @@ Build Panel und Inspector sind unabhängig einklappbar:
 
 Auf schmaleren Viewports können Panels zu Overlays oder Drawern
 werden.
+
+## 4a. Data Workspace
+
+```text
+[▦ sales.csv]              [ Overview | Fields | Table ]
+──────────────────────────────────────────────────────
+Ansicht
+```
+
+- ein einzelnes `Panel` (`DataPanel`) mit `isFilled`, Datensatzname
+  als Titel, rechts der Ansichts-Umschalter als `SegmentedControl`;
+- Table ist die Rohdatenansicht über `DataTable`;
+- Overview und Fields sind bis zur Profiling-UI Platzhalter über
+  `EmptyState`;
+- kompakte, gut scanbare Darstellung statt Verwaltungs-UI.
 
 ## 5. Build Panel
 

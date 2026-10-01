@@ -21,12 +21,13 @@ unter `Completed` stehen.
 
 ## 2. Current Product Stage
 
-Cevyn befindet sich aktuell im Aufbau des Visualization Core.
+Visualization Core, Multi-Chart Canvas, Build Panel und Inspector sind
+in einem ersten vollständigen Stand. Der nächste größere Meilenstein
+ist der Data-Bereich: Cevyn soll einen geladenen Datensatz nicht nur
+darstellen, sondern deterministisch verstehen.
 
-Die Canvas unterstützt bereits mehrere Charts mit Layout und eine erste
-Dashboard-Interaktion über globales Cross-Highlighting. Als Nächstes
-wird sie zu einem interaktiven Multi-Chart-Dashboard ausgebaut. Data
-Handling bleibt auf Visual Analytics begrenzt.
+Data Handling bleibt dabei auf Visual Analytics begrenzt und wird kein
+ETL- oder Data-Engineering-Workspace.
 
 ## 3. Completed
 
@@ -36,7 +37,7 @@ Handling bleibt auf Visual Analytics begrenzt.
 - Dataset State
 - Field / Schema Grundlage
 - grundlegende Type Detection
-- Rows-Preview-API und DataTable-Komponente ohne App-Anbindung
+- Rows-Preview-API und DataTable-Komponente
 
 ### Visualization Core
 
@@ -221,6 +222,31 @@ Handling bleibt auf Visual Analytics begrenzt.
 - einheitliche Abstände zwischen Sections und 14-px-Header-Icons in
   Build Panel und Inspector; Subproperties über `--indent-nested`
 
+### Data Workspace Shell
+
+- TopBar als schlanke Glass-Leiste mit Wortmarke; rechte Spalte frei
+  für spätere Header Actions (Workspace/Team, Account, Settings)
+- `NavigationRail` als schmale Glass-Fläche (52 px) links unter der
+  TopBar, Teil der AppShell und unabhängig vom Collapse-State der
+  Panels; nur Icons (Ghost-`IconButton`) mit Tooltip, aktiver View mit
+  Akzentfarbe und `surface-active`
+- eindeutige Icons pro Bedeutung: `Database` und `ChartNoAxesCombined`
+  nur in der Rail, `FileSpreadsheet` für den konkreten Datensatz
+- Build Panel und Inspector schmaler (max. 224 px) zugunsten der Rail
+- aktiver Workspace als UI-State in `useWorkspaceLayout`
+  (`WorkspaceView`), nicht im Workspace-Reducer
+- beide Workspaces bleiben gemountet und werden über `hidden`
+  umgeschaltet; Charts, Inspector-Zustand und Data-Ansicht bleiben beim
+  Wechsel erhalten
+- Visualize unverändert als Build | Canvas | Inspector
+- Data als `DataPanel` mit Datensatzname und Umschalter
+  Overview | Fields | Table; Table nutzt die bestehende `DataTable`,
+  Overview und Fields sind Platzhalter über `EmptyState`
+- Data nutzt dasselbe Dataset wie Visualize (Demo oder Upload), ohne
+  eigene Dataset- oder Upload-Logik
+- `Panel` mit `isFilled` für Inhalte, die die Höhe füllen und selbst
+  scrollen; Canvas nutzt dasselbe statt eigener Regeln
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration
@@ -231,49 +257,154 @@ Handling bleibt auf Visual Analytics begrenzt.
 - typisierte Drag Payloads und Drop Targets
 - modularer ECharts-Adapter mit Registry für charttypspezifischen Content
 
-## 4. Current
+## 4. Current – Data-Meilenstein
 
-Aktueller Fokus:
-
-### Visualization Completion
-
-- Inspector-Polish für Scatter, Line, Bar, Pie und Donut
-
-Priorität nach Abschluss des Slices DashboardSpec und
-kontextsensitiver Inspector:
-
-1. Canvas-/Objektarchitektur und Workspace UX:
-   - Grundlage für weitere Objekte wie Text, KPI und Table;
-   - Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
-     `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,
-     dafür Positionierung am Grid und Bild-Export selbst lösen);
-2. Data Profiling: Schema, Semantic Roles, Summary Statistics, Missing
-   Values, Cardinality;
-3. Build Panel mit dem Profiling verbinden;
-4. Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
-   Tooltips, weitere Encodings.
-
-Danach folgen Project Persistence und Share sowie Ask Cevyn und
-Explore.
-
-## 5. Next – Visual Analytics Workspace Shell
-
-Nach Abschluss des aktuellen Visualization Core:
+Ziel: Ein deterministisch berechnetes `DatasetProfile` wird die
+gemeinsame Source of Truth für Data View, Build Panel, Chart Defaults,
+Field Compatibility, später AI Commands und Explore.
 
 ```text
-AppShell
-├── TopBar
-└── VisualAnalyticsWorkspace
-    ├── Build Panel
-    ├── Canvas
-    └── Inspector
+                 DatasetProfile
+                       │
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+        Data          Build         AI
+                                   später
 ```
 
-Manual Build bleibt der erste vollständig nutzbare Modus. Understand,
-Ask Cevyn und Explore werden später als integrierte Modi oder
-fokussierte Ansichten angebunden, nicht als separate Produktsuite.
+Der Data-Bereich bleibt leichtgewichtig und visualisierungsorientiert.
 
-## 6. Later – Multi-Chart Canvas Ausbau
+### Slice 1 – Data Workspace Shell (implementiert)
+
+- TopBar als globale App-Ebene für Branding, später Workspace/Team,
+  Account und Settings
+- permanente Navigation Rail links unter der TopBar für die
+  Top-Level-Views Visualize und Data
+- Visualize bleibt der bestehende Workspace: Build | Canvas | Inspector
+- Data als eigene, einfachere Ansicht mit Overview | Fields | Table
+- bestehende `DataTable` als Table View wiederverwenden
+- Overview und Fields zunächst als strukturelle Platzhalter
+- keine duplizierte Dataset- oder Upload-Logik
+
+### Slice 2 – Backend DatasetProfile (geplant)
+
+Deterministisches Profiling im Python-/FastAPI-Backend mit der
+bestehenden Polars-Infrastruktur.
+
+```text
+DatasetProfile
+├── rowCount
+├── columnCount
+├── missingCount
+├── duplicateRows
+└── fields[]
+    ├── name
+    ├── physicalType
+    ├── semanticRole
+    ├── missingCount
+    ├── uniqueCount
+    └── statistics
+```
+
+- Physical Types: Integer, Float, String, Boolean, Date, Datetime
+- Semantic Roles: Measure, Dimension, Temporal, Identifier
+- Physical Type und Semantic Role getrennt; eine numerische Spalte ist
+  nicht automatisch ein Measure (z. B. IDs)
+- Statistiken abhängig vom Field:
+  - Numeric: min, max, mean, median
+  - Categorical: Cardinality, Missing, häufige Werte
+  - Temporal: min/max bzw. Zeitraum
+  - Identifier: Cardinality und Missing, keine Aggregationen
+
+### Slice 3 – Profiling UI (geplant)
+
+- Overview mit kompaktem Dataset Summary
+- Fields mit detaillierten Field Profiles
+- kompakte, gut scanbare Darstellung statt Verwaltungs-UI
+- Table bleibt die Rohdatenansicht
+
+### Slice 4 – Semantic Role Correction (geplant)
+
+- erkannte Semantic Role sichtbar machen
+- Nutzer kann eine falsche Erkennung überschreiben
+- Overrides im Daten-/Projektmodell, getrennt vom Profiling-Ergebnis
+
+### Slice 5 – Build Panel Integration (geplant)
+
+Das Build Panel gruppiert Fields aus dem `DatasetProfile` statt über
+eine eigene Typ-Logik:
+
+```text
+DatasetProfile
+→ semanticRole
+→ Build Panel: Measures, Dimensions, Time, Identifiers
+```
+
+Die Zuordnung liegt bereits zentral in `getFieldGroupKey`; nur diese
+Stelle wird umgestellt.
+
+### Nicht Teil des Data-Meilensteins
+
+- AI Profiling
+- Explore und automatische Insights
+- Anomaly Detection
+- Regression
+- komplexe Transformationen
+- Multi-Dataset-Joins
+- ETL Pipelines
+- DuckDB-Migration
+- Calculated-Field-Engine
+- umfangreiche Data-Cleaning-Funktionen
+
+### Reihenfolge nach dem Data-Meilenstein
+
+```text
+Data
+→ Action Layer (Action Schema, Validator, Executor)
+→ AI Commands V1
+→ erster End-to-End-AI-Flow
+```
+
+Die übrigen Bereiche unter `Later` folgen danach; ihre Reihenfolge ist
+noch offen.
+
+## 5. Next – Action Layer und AI Commands V1
+
+### Action Layer
+
+- Action Schema: zentrale Registry für validierbare Cevyn Actions
+- Validator gegen Workspace State, Fields und Chart Registry
+- Executor über die bestehenden `WorkspaceAction`s und den
+  `workspaceReducer`
+- Actions für ChartSpecs, Dashboard State und später gemeinsame Filter
+- deterministische Ausführung und nachvollziehbare, undo-fähige
+  Änderungen
+
+### AI Commands V1
+
+```text
+Natural Language
+→ validated Cevyn Actions
+→ ChartSpec / Dashboard State
+```
+
+AI erzeugt keinen direkten ECharts-Code. Das `DatasetProfile` dient als
+Kontext für Fields und Semantic Roles.
+
+Ziel ist ein erster End-to-End-AI-Flow.
+
+## 6. Later – Visualization Completion
+
+- Inspector-Polish für Scatter, Line, Bar, Pie und Donut
+- Canvas-/Objektarchitektur als Grundlage für weitere Objekte wie Text,
+  KPI und Table
+- Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
+  `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,
+  dafür Positionierung am Grid und Bild-Export selbst lösen)
+- Visualization Depth: Drill-down, Reference Lines, Zoom/Pan, Advanced
+  Tooltips, weitere Encodings
+
+## 7. Later – Multi-Chart Canvas Ausbau
 
 Das Multi-Chart Canvas MVP ist abgeschlossen (siehe Completed).
 
@@ -287,9 +418,7 @@ Mögliche Erweiterungen:
 - Layers Panel
 - weitere Container-Overrides: Rahmenfarbe, Shadow, Z-Order
 
-## 7. Next – Dashboard Objects und Interaktion
-
-Nach bzw. gemeinsam mit Multi-Chart:
+## 8. Later – Dashboard Objects und Interaktion
 
 - KPI Card
 - Text
@@ -317,23 +446,10 @@ Später innerhalb dieses Bereichs:
 - Progress
 - Status
 
-## 8. Next – Understand / Data Handling MVP
+## 9. Later – Light Data Operations und Calculated Fields
 
-### Deterministic Profiling
-
-Zunächst im Python-Backend:
-
-- Summary Statistics
-- Missing Values
-- Duplicates
-- Category Frequency
-- Distribution
-
-### Type Handling
-
-- bessere Semantic Type Detection
-- Type Override
-- semantische Rollen für Visualisierungen
+Profiling, Semantic Roles und Type Override sind Teil des
+Data-Meilensteins (siehe Current). Danach:
 
 ### Light Data Operations
 
@@ -364,7 +480,7 @@ Calculated Fields erscheinen anschließend als normale Fields:
 ƒx Result
 ```
 
-## 9. Next – Project Persistence
+## 10. Later – Project Persistence
 
 Sobald der zentrale Project State ausreichend stabil ist:
 
@@ -409,7 +525,7 @@ Save Project
 Open Project
 ```
 
-## 10. Later – Data Scale and Visual Query Engine
+## 11. Later – Data Scale and Visual Query Engine
 
 Wenn aktuelle Datenhaltung zum Bottleneck wird:
 
@@ -423,7 +539,7 @@ Wenn aktuelle Datenhaltung zum Bottleneck wird:
 
 Keine vorschnelle Migration nur aus Architekturgründen.
 
-## 11. Later – Advanced Visualizations
+## 12. Later – Advanced Visualizations
 
 Nach einem vollständigen End-to-End-Workflow:
 
@@ -444,23 +560,9 @@ Danach bei Bedarf:
 Neue Charttypen haben geringere Priorität als ein vollständiger
 Data-to-Dashboard-Workflow.
 
-## 12. Later – Ask Cevyn und Explore
+## 13. Later – Explore und Machine Learning
 
-### Action Foundation
-
-- zentrale Registry für validierbare Cevyn Actions
-- Actions für ChartSpecs, Dashboard State und gemeinsame Filter
-- deterministische Ausführung und nachvollziehbare Änderungen
-
-### Ask Cevyn
-
-```text
-Natural Language
-→ validated Cevyn Actions
-→ ChartSpec / Dashboard State
-```
-
-AI erzeugt keinen direkten ECharts-Code.
+Baut auf dem Action Layer und AI Commands V1 auf (siehe Next).
 
 ### Explore
 
@@ -477,7 +579,7 @@ Python Candidate Generation
 Forecasts, Cluster oder Anomalien bleiben spätere Erweiterungen von
 Visual Analytics und werden kein eigenständiges ML-Studio.
 
-## 13. Later – Share
+## 14. Later – Share
 
 ### Export
 
@@ -502,7 +604,7 @@ Später:
 - Comments
 - Version History
 
-## 14. Long-Term Flow
+## 15. Long-Term Flow
 
 Der langfristige vollständige Workflow:
 
@@ -522,7 +624,7 @@ flowchart LR
     Dashboard --> Share
 ```
 
-## 15. MVP Definition
+## 16. MVP Definition
 
 Der erste echte Cevyn-MVP soll mindestens folgenden Workflow
 ermöglichen:
@@ -545,7 +647,7 @@ Das Ziel ist nicht maximale Feature-Anzahl.
 Das Ziel ist ein vollständiger, verständlicher und wiederholbarer
 Visual-Analytics-Workflow.
 
-## 16. Known Technical Debt
+## 17. Known Technical Debt
 
 Bekannte offene Punkte, die nicht Teil eines abgeschlossenen Slices
 waren:
@@ -555,7 +657,10 @@ waren:
 - `npm run lint` meldet bestehende Fehler in `Popover`,
   `ScrubbableNumber`, `Slider` und `useChartQuery`.
 - Scatter rendert nur die ersten 100 Zeilen, die das Frontend über die
-  Rows-API lädt.
+  Rows-API lädt. Dasselbe gilt für die Table im Data-Workspace.
+- Cmd/Ctrl + B und Cmd/Ctrl + I schalten auch im Data-Workspace die
+  ausgeblendeten Panels von Visualize um.
+- Der Fallback-Name `'Demo data'` steht in `BuildPanel` und `App`.
 - Encodings speichern Kopien von `DataField` statt Referenzen auf Fields.
 - `DataTable` nutzt noch den alten Surface-Stil statt `.glass`.
 - In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte

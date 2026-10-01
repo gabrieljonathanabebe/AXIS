@@ -34,9 +34,17 @@
   color: var(--color-text-secondary);
 }
 
+.panel.is-filled,
 .panel.is-scrollable {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel.is-filled .panel-content {
+  flex: 1;
+  display: flex;
   min-height: 0;
   overflow: hidden;
 }

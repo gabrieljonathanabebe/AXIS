@@ -1,4 +1,4 @@
-import { Database } from 'lucide-react'
+import { Waypoints } from 'lucide-react'
 
 import {
   chartDefinitionList,
@@ -29,7 +29,7 @@ function EncodingsWidget({
     value: type,
   }))
   return (
-    <InspectorWidget title="Encodings" icon={<Database size={16} />}>
+    <InspectorWidget title="Encodings" icon={<Waypoints size={16} />}>
       <ControlRow label="Chart">
         <SelectControl
           label="Chart type"

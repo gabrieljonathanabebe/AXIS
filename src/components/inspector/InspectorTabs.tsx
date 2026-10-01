@@ -1,4 +1,4 @@
-import { Database, MousePointerClick, Paintbrush } from 'lucide-react'
+import { MousePointerClick, Paintbrush, Table2 } from 'lucide-react'
 import type { KeyboardEvent, ReactNode } from 'react'
 
 import Button from '../ui/Button'
@@ -15,7 +15,7 @@ const inspectorTabs = [
   {
     value: 'data',
     label: 'Data',
-    icon: Database,
+    icon: Table2,
   },
   {
     value: 'appearance',
@@ -30,7 +30,7 @@ const inspectorTabs = [
 ] satisfies {
   value: InspectorTab
   label: string
-  icon: typeof Database
+  icon: typeof Table2
 }[]
 
 function InspectorTabs({ value, panels, onValueChange }: InspectorTabsProps) {

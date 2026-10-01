@@ -60,6 +60,7 @@ function CanvasPanel({
   return (
     <Panel
       className="canvas-panel"
+      isFilled
       heading={
         <EditableText
           className="canvas-panel-title"

@@ -19,7 +19,9 @@ export type ChartLayoutMode = 'move' | ChartResizeDirection
 export type ChartResizeDirection =
   'e' | 'n' | 'ne' | 'nw' | 's' | 'se' | 'sw' | 'w'
 
-export type WorkspaceView = 'chart' | 'data'
+export type DataView = 'fields' | 'overview' | 'table'
+
+export type WorkspaceView = 'data' | 'visualize'
 
 export type DragPayload =
   | {

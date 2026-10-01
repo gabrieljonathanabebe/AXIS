@@ -14,3 +14,33 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Innen-Padding der Canvas als Teil von `DashboardLayout`
 - beides im Layout-Widget des `DashboardInspector`, undo-fähig über
   `dashboard/updateLayout` bzw. eine passende Dashboard-Action
+
+## Abstand zwischen Panel-Header und Inhalt
+
+- im Build Panel und im Inspector etwas mehr Luft zwischen Header und
+  erstem Inhalt
+- passende Stelle prüfen (`margin-bottom` von `.panel-header` oder
+  Abstand im Panel-Inhalt), ohne die Canvas ungewollt mitzuändern
+
+## Chart-Zusammenfassung über den Inspector-Tabs
+
+- im Inspector über dem Segmented Control Data | Appearance |
+  Interaction eine kompakte Karte zum ausgewählten Chart
+- Darstellung als Glass-Widget oder plain Section, noch zu entscheiden
+- Icon des Charttyps (z. B. Line) und darunter ein Satz, der den
+  Charttyp beschreibt
+- Icon und Beschreibung möglichst aus der Chart Registry
+  (`chartDefinitions`) statt pro Komponente
+
+## Weitere Actions im Canvas-Header
+
+- Canvas-Header zeigt aktuell nur Undo und Redo
+- weitere canvasbezogene Actions ergänzen, z. B. Zoom, Save, Export
+- als Commands über die Command-Registry und `CommandButton`
+
+## Sortierung numerischer X-Kategorien im Line-Chart
+
+- Line-Chart mit numerischem X-Field (z. B. `home_goals`) zeigt die
+  Kategorien in Datenreihenfolge (2, 1, 0, 4, 3 …) statt sortiert
+- prüfen, ob die Sortierung in die Backend-Chart-Query oder in den
+  ECharts-Adapter gehört

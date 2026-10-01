@@ -28,6 +28,8 @@
 @import './styles/glass.css';
 @import './styles/utilities.css';
 @import './styles/App.css';
+@import './styles/shell/TopBar.css';
+@import './styles/shell/NavigationRail.css';
 
 @import './styles/build/BuildPanel.css';
 @import './styles/build/ChartPicker.css';
@@ -39,6 +41,8 @@
 @import './styles/canvas/EChartCanvas.css';
 
 @import './styles/data/DataTable.css';
+@import './styles/data/DataPanel.css';
+
 @import './styles/dnd/DragPreviewOverlay.css';
 @import './styles/inspector/InspectorTabs.css';
 @import './styles/inspector/InspectorWidget.css';

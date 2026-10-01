@@ -1,0 +1,18 @@
+.navigation-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+}
+
+.navigation-rail .control.is-active {
+  background: var(--color-surface-active);
+}
+
+@media (max-width: 960px) {
+  .navigation-rail {
+    flex-direction: row;
+    justify-self: start;
+  }
+}

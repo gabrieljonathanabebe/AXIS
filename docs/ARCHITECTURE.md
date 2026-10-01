@@ -44,21 +44,38 @@ Sie verwenden keine voneinander isolierten Datenmodelle.
 
 ## 3. App Shell
 
-Die langfristige App Shell rahmt einen gemeinsamen
-Visual-Analytics-Workspace:
+Die App Shell rahmt die Workspaces über eine globale TopBar und eine
+Navigation Rail:
 
 ```text
 AppShell
-├── TopBar
-└── VisualAnalyticsWorkspace
-    ├── Build Panel
-    ├── Canvas
-    └── Inspector
+├── TopBar (Branding, später Workspace/Team, Account, Settings)
+└── AppBody
+    ├── NavigationRail (Top-Level-Views)
+    └── Active View
+        ├── Visualize Workspace
+        │   ├── Build Panel
+        │   ├── Canvas
+        │   └── Inspector
+        └── Data Workspace
+            └── Data Panel (Overview | Fields | Table)
 ```
 
-Data Understanding, Ask Cevyn und Explore werden als integrierte Modi
-oder fokussierte Ansichten angebunden. Sie bilden keine unabhängige
-Suite neben dem Visual-Analytics-Workspace.
+Der aktive Workspace (`WorkspaceView`) ist UI-State in
+`useWorkspaceLayout`, nicht Teil des Workspace-Reducers und nicht
+undo-fähig. Beide Workspaces bleiben gemountet und werden über `hidden`
+umgeschaltet, damit Chart-Instanzen und lokaler UI-Zustand erhalten
+bleiben.
+
+Data und Visualize arbeiten auf demselben Dataset aus
+`useChartWorkspace`. Der Data Workspace hat keine eigene Dataset- oder
+Upload-Logik. Geplant ist, dass ein `DatasetProfile` aus dem Backend die
+gemeinsame Grundlage für Data, Build Panel und später AI wird (siehe
+`ROADMAP.md`).
+
+Ask Cevyn und Explore werden als integrierte Modi oder fokussierte
+Ansichten angebunden. Sie bilden keine unabhängige Suite neben dem
+Visual-Analytics-Workspace.
 
 ### Manual Build
 
