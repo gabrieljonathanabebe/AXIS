@@ -37,3 +37,16 @@
   width: var(--control-height-sm);
   height: var(--control-height-sm);
 }
+
+.control-xs {
+  width: var(--control-height-xs);
+  height: var(--control-height-xs);
+}
+
+.control-ghost,
+.control-ghost:hover:not(:disabled),
+.control-ghost.is-active {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}

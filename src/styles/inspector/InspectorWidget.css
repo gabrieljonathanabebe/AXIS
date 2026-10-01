@@ -1,54 +1,3 @@
-.inspector-widget {
-  display: grid;
-  gap: var(--space-2);
-  min-width: 0;
-  padding: var(--space-2);
-}
-
-.inspector-widget-header {
-  display: flex;
-  align-items: center;
-  min-height: var(--control-height-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-}
-
-.inspector-widget-trigger {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-  min-height: var(--control-height-sm);
-  padding: 0;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
-.inspector-widget-chevron {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: var(--control-height-sm);
-  height: var(--control-height-sm);
-  padding: 0;
-  color: inherit;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
-.inspector-widget-chevron svg {
-  transition: transform var(--transition-fast);
-}
-
-.inspector-widget-chevron svg.is-closed {
-  transform: rotate(-90deg);
-}
-
 .inspector-widget-content {
   gap: var(--space-1);
 }
@@ -57,7 +6,7 @@
   display: grid;
   gap: var(--space-1);
   min-width: 0;
-  padding-left: var(--space-4);
+  padding-left: var(--indent-nested);
 }
 
 .inspector-widget-subproperties .control-row {

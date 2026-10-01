@@ -49,5 +49,5 @@
 }
 
 .inspector-tab-content {
-  gap: var(--space-2);
+  gap: var(--space-4);
 }

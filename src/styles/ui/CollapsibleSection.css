@@ -8,20 +8,33 @@
   align-content: start;
 }
 
-.collapsible-section-trigger {
-  width: 100%;
+.collapsible-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.collapsible-section-trigger,
+.collapsible-section-chevron {
   min-height: 32px;
   padding: 0;
-  justify-content: space-between;
   color: var(--color-text-primary);
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
 
-.collapsible-section-trigger:hover {
+.collapsible-section-trigger:hover,
+.collapsible-section-chevron:hover {
   background: transparent;
   border-color: transparent;
+}
+
+.collapsible-section-trigger {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
 }
 
 .collapsible-section.is-plain .collapsible-section-trigger .icon-badge {
@@ -32,11 +45,25 @@
   color: var(--color-accent);
 }
 
-.collapsible-section-trigger svg {
+.collapsible-section.is-plain
+  .collapsible-section-trigger
+  .icon-badge-icon
+  svg {
+  width: 14px;
+  height: 14px;
+}
+
+.collapsible-section-chevron {
+  flex: none;
+  min-width: var(--control-height-xs);
+  justify-content: flex-end;
+}
+
+.collapsible-section-chevron svg {
   transition: transform var(--transition-fast);
 }
 
-.collapsible-section-trigger svg.is-open {
+.collapsible-section-chevron svg.is-open {
   transform: rotate(180deg);
 }
 
@@ -55,18 +82,24 @@
   border-top: var(--border-width-thin) solid var(--color-border-subtle);
 }
 
-.collapsible-section.is-plain .collapsible-section-trigger {
+.collapsible-section.is-plain .collapsible-section-trigger,
+.collapsible-section.is-plain .collapsible-section-chevron {
   min-height: 24px;
   color: var(--color-text-secondary);
 }
 
-.collapsible-section.is-plain .collapsible-section-trigger:hover {
+.collapsible-section.is-plain
+  .collapsible-section-header:hover
+  .collapsible-section-trigger,
+.collapsible-section.is-plain
+  .collapsible-section-header:hover
+  .collapsible-section-chevron {
   color: var(--color-text-primary);
 }
 
-.collapsible-section.is-plain > .collapsible-section-trigger .icon-badge-label,
+.collapsible-section.is-plain > .collapsible-section-header .icon-badge-label,
 .collapsible-section.is-plain
-  > .collapsible-section-trigger
+  > .collapsible-section-header
   .collapsible-section-title {
   color: inherit;
   font-size: var(--font-size-2xs);
@@ -95,11 +128,11 @@
 
 .collapsible-section.is-plain
   .collapsible-section.is-plain
-  > .collapsible-section-trigger
+  > .collapsible-section-header
   .icon-badge-label,
 .collapsible-section.is-plain
   .collapsible-section.is-plain
-  > .collapsible-section-trigger
+  > .collapsible-section-header
   .collapsible-section-title {
   font-size: var(--font-size-xs);
   font-weight: 500;

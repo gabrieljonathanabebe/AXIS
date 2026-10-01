@@ -210,6 +210,17 @@ Handling bleibt auf Visual Analytics begrenzt.
 - deaktivierter Einstieg „+ Calculated field“ ohne Calculation Engine
 - ungenutzter `selectedField`-State entfernt
 
+### Inspector als plain Sections
+
+- Inspector-Widgets ohne eigene Glass-Fläche, als plain Sections wie
+  im Build Panel; `InspectorWidget` ist ein Wrapper um
+  `CollapsibleSection`
+- `CollapsibleSection` mit `actions`-Slot und eigenem Chevron-Button
+- Eye-Aktion als ruhiger Ghost-Button (`IconButton` mit `variant` und
+  `size="xs"`)
+- einheitliche Abstände zwischen Sections und 14-px-Header-Icons in
+  Build Panel und Inspector; Subproperties über `--indent-nested`
+
 ### Architecture Foundation
 
 - ChartSpec-orientierte Chart-Konfiguration

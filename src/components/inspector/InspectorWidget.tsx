@@ -1,10 +1,8 @@
-import { ChevronDown, Eye, EyeOff } from 'lucide-react'
-import { useId, useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import IconBadge from '../ui/IconBadge'
+import CollapsibleSection from '../ui/CollapsibleSection'
 import IconButton from '../ui/IconButton'
-import Widget from '../ui/Widget'
 
 type InspectorWidgetProps = {
   title: string
@@ -24,54 +22,30 @@ function InspectorWidget({
   defaultOpen = true,
   visibility,
 }: InspectorWidgetProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen)
-  const contentId = useId()
-
   return (
-    <Widget className="inspector-widget glass">
-      <div className="inspector-widget-header">
-        <button
-          className="inspector-widget-trigger"
-          type="button"
-          aria-expanded={isOpen}
-          aria-controls={contentId}
-          onClick={() => setIsOpen((current) => !current)}
-        >
-          {icon ? (
-            <IconBadge label={title}>{icon}</IconBadge>
-          ) : (
-            <span>{title}</span>
-          )}
-        </button>
-        {visibility ? (
+    <CollapsibleSection
+      title={title}
+      icon={icon}
+      defaultOpen={defaultOpen}
+      variant="plain"
+      actions={
+        visibility ? (
           <IconButton
-            size="sm"
+            size="xs"
+            variant="ghost"
             label={`${visibility.visible ? 'Hide' : 'Show'} ${title}`}
             isActive={visibility.visible}
             onClick={() => {
               visibility.onChange(!visibility.visible)
             }}
           >
-            {visibility.visible ? <Eye size={15} /> : <EyeOff size={15} />}
+            {visibility.visible ? <Eye size={14} /> : <EyeOff size={14} />}
           </IconButton>
-        ) : null}
-        <button
-          className="inspector-widget-chevron"
-          type="button"
-          aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${title}`}
-          aria-expanded={isOpen}
-          aria-controls={contentId}
-          onClick={() => setIsOpen((current) => !current)}
-        >
-          <ChevronDown className={isOpen ? '' : 'is-closed'} size={16} />
-        </button>
-      </div>
-      {isOpen ? (
-        <div className="stack inspector-widget-content" id={contentId}>
-          {children}
-        </div>
-      ) : null}
-    </Widget>
+        ) : undefined
+      }
+    >
+      <div className="stack inspector-widget-content">{children}</div>
+    </CollapsibleSection>
   )
 }
 

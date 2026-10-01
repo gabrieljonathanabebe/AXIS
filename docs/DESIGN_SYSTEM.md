@@ -34,11 +34,11 @@ Glasflächen werden zentral über die Klasse `.glass`
 (`src/styles/glass.css`) und die `--glass-*`-Tokens umgesetzt, nicht
 pro Komponente.
 
-| Stufe   | Klassen             | Verwendung                                                                          | Blur        |
-| ------- | ------------------- | ----------------------------------------------------------------------------------- | ----------- |
-| thin    | `glass glass-thin`  | Panels                                                                              | `--blur-md` |
-| regular | `glass`             | Inspector Widgets, Collapsible Sections, Charts auf der Canvas (Default-Background) | keiner      |
-| thick   | `glass glass-thick` | Dropdowns, Popover                                                                  | `--blur-lg` |
+| Stufe   | Klassen             | Verwendung                                                                           | Blur        |
+| ------- | ------------------- | ------------------------------------------------------------------------------------ | ----------- |
+| thin    | `glass glass-thin`  | Panels                                                                               | `--blur-md` |
+| regular | `glass`             | Collapsible Sections (Variante `widget`), Charts auf der Canvas (Default-Background) | keiner      |
+| thick   | `glass glass-thick` | Dropdowns, Popover                                                                   | `--blur-lg` |
 
 Bestandteile:
 
@@ -200,6 +200,12 @@ FIELDS
   Standard `widget`), `meta` für einen kleinen Zusatz neben dem Titel
   und `forceOpen`, das die Section anzeigt, ohne ihren eigenen Zustand
   zu verändern.
+- Der Header besteht aus Trigger (Icon, Titel, `meta`), optionalen
+  `actions` und einem eigenen Chevron-Button; Trigger und Chevron
+  klappen beide. `actions` nimmt z. B. ein `IconButton` auf, ohne dass
+  ein Button in einem Button liegt.
+- Header-Icons in plain Sections sind einheitlich 14 px (zentral in
+  `CollapsibleSection.css`).
 - `--indent-nested` ist die gemeinsame Einrückung für verschachtelte
   Inhalte.
 - `TextInput` nimmt ein optionales dekoratives `icon` links im Feld an
@@ -265,8 +271,15 @@ Chart-Tabs, ohne Auswahl die Dashboard-Einstellungen
 Ein Widget repräsentiert ein Feature oder eine logisch
 zusammengehörige Property-Gruppe.
 
+Inspector-Widgets sind plain Sections wie im Build Panel:
+`InspectorWidget` ist ein dünner Wrapper um `CollapsibleSection` mit
+`variant="plain"`, ohne eigene Fläche, getrennt durch Haarlinien.
+Abhängige Unteroptionen (`.inspector-widget-subproperties`) sind um
+`--indent-nested` eingerückt.
+
 Inspector-Widgets sind unabhängig vom Chart-Zustand auf- und
-zuklappbar. Eine optionale Eye-Aktion im Header steuert die
+zuklappbar. Eine optionale Eye-Aktion im Header (`IconButton` mit
+`variant="ghost"` und `size="xs"` im `actions`-Slot) steuert die
 Sichtbarkeit des Features im Chart. Zugeklappt und ausgeblendet sind
 verschiedene Zustände. Die Eigenschaften bleiben auch bei
 ausgeblendetem Feature editierbar.
@@ -579,6 +592,12 @@ So bleiben Button und Shortcut derselbe Befehl.
 
 `IconButton` zeigt `disabled` mit reduzierter Opacity, Cursor
 `not-allowed` und ohne Hover-Effekt.
+
+`IconButton` bietet `size` (`xs | sm | md`, Standard `md`) und
+`variant` (`default | ghost`, Standard `default`). `ghost` hat keine
+Fläche, keinen Rahmen und keinen Schatten; die Farben für Hover und
+`is-active` kommen weiter aus `.control`. Für ruhige Aktionen in
+Section-Headern.
 
 ## 10. Legend
 
