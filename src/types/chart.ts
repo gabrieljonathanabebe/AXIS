@@ -174,6 +174,51 @@ export type Dataset = {
 
 export type DataValue = string | number | null
 
+export type DatasetProfile = {
+  dataset_id: string
+  row_count: number
+  column_count: number
+  missing_count: number
+  duplicate_rows: number
+  fields: FieldProfile[]
+}
+
+export type FieldProfile = {
+  name: string
+  physical_type: PhysicalType
+  semantic_role: SemanticRole
+  missing_count: number
+  unique_count: number
+  statistics: FieldStatistics | null
+}
+
+export type FieldStatistics =
+  MeasureStatistics | DimensionStatistics | TemporalStatistics
+
+export type MeasureStatistics = {
+  kind: 'measure'
+  min: number | null
+  max: number | null
+  mean: number | null
+  median: number | null
+}
+
+export type DimensionStatistics = {
+  kind: 'dimension'
+  value_counts: ValueCount[]
+}
+
+export type TemporalStatistics = {
+  kind: 'temporal'
+  min: string | null
+  max: string | null
+}
+
+export type ValueCount = {
+  value: string
+  count: number
+}
+
 // ===== FORMAT ================================================================
 export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'JPY'
 
@@ -256,3 +301,5 @@ export type PhysicalType =
   'integer' | 'float' | 'string' | 'boolean' | 'date' | 'datetime'
 
 export type SemanticType = 'numeric' | 'categorical' | 'temporal' | 'identifier'
+
+export type SemanticRole = 'measure' | 'dimension' | 'temporal' | 'identifier'

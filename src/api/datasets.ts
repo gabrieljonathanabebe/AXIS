@@ -1,4 +1,4 @@
-import type { DataField, DataRow } from '../types/chart'
+import type { DataField, DataRow, DatasetProfile } from '../types/chart'
 import { get, post } from './client'
 
 export type DatasetSummary = {
@@ -29,4 +29,10 @@ export function fetchDatasetRows(
     offset: 0,
     limit,
   })
+}
+
+export function fetchDatasetProfile(
+  datasetId: string,
+): Promise<DatasetProfile> {
+  return get<DatasetProfile>(`/datasets/${datasetId}/profile`)
 }

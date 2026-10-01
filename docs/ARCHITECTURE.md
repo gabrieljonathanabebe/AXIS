@@ -69,9 +69,9 @@ bleiben.
 
 Data und Visualize arbeiten auf demselben Dataset aus
 `useChartWorkspace`. Der Data Workspace hat keine eigene Dataset- oder
-Upload-Logik. Geplant ist, dass ein `DatasetProfile` aus dem Backend die
-gemeinsame Grundlage für Data, Build Panel und später AI wird (siehe
-`ROADMAP.md`).
+Upload-Logik. Das Backend liefert ein `DatasetProfile` (siehe
+Abschnitt 11). Geplant ist, dass es die gemeinsame Grundlage für Data,
+Build Panel und später AI wird (siehe `ROADMAP.md`).
 
 Ask Cevyn und Explore werden als integrierte Modi oder fokussierte
 Ansichten angebunden. Sie bilden keine unabhängige Suite neben dem
@@ -739,6 +739,25 @@ Dataset
 Profile Results sind deterministische Datenprodukte. AI kann sie
 priorisieren und erklären, berechnet sie aber nicht selbst.
 
+Implementiert in `backend/app/profiling.py`:
+
+- Das `DatasetProfile` wird beim Upload einmal berechnet, im
+  `StoredDataset` gehalten und über `GET /datasets/{id}/profile`
+  ausgeliefert. Die Upload-Response (`DatasetSummary`) bleibt schlank.
+- Dataset-Ebene: `row_count`, `column_count`, `missing_count` (Summe
+  der Null-Zellen), `duplicate_rows` (überzählige identische Zeilen).
+- Field-Ebene: `name`, `physical_type`, `semantic_role`,
+  `missing_count`, `unique_count` (ohne Nulls) und `statistics`.
+- `statistics` ist eine über `kind` unterschiedene Union und hängt von
+  der Semantic Role ab: Measure (min, max, mean, median), Dimension
+  (häufigste Werte, bei Gleichstand nach Wert sortiert), Temporal
+  (min/max als ISO-String). Identifier haben keine Statistiken.
+- Die Semantic Role wird nur an einer Stelle erkannt
+  (`infer_semantic_role` in `schema_detection.py`). `semantic_type` der
+  `DatasetSummary` wird daraus abgeleitet.
+- Im Frontend liegen die Types im DATA-Abschnitt von
+  `src/types/chart.ts`, der Abruf in `fetchDatasetProfile`.
+
 ### Aggregated Chart Query
 
 Line-, Bar-, Pie- und Donut-Charts verwenden ein gruppiertes
@@ -905,11 +924,26 @@ Später möglich:
 
 Chart-Kompatibilität soll primär auf Semantic Types basieren.
 
+Das Profiling liefert Semantic Roles (`measure`, `dimension`,
+`temporal`, `identifier`). Sie sind das Zielkonzept und ersetzen
+`semantic_type` schrittweise. Übergangsweise wird `semantic_type` im
+Backend 1:1 aus der Role abgeleitet:
+
+```text
+measure    → numeric
+dimension  → categorical
+temporal   → temporal
+identifier → identifier
+```
+
+Es gibt dadurch nur eine Erkennungslogik. Bestehende Frontend-Logik
+liest bis zur Umstellung weiter `semantic_type`.
+
 Das Build Panel gruppiert Fields über `groupFields`
 (`src/data/fieldGroups.ts`). Die Zuordnung Field → Gruppe liegt allein
 in `getFieldGroupKey` und leitet sich aktuell aus `semantic_type` ab.
-Wenn das Profiling Semantic Roles liefert, wird nur diese Zuordnung
-umgestellt; das Build Panel bleibt strukturell unverändert.
+Mit Slice 5 wird nur diese Zuordnung auf die Semantic Role umgestellt;
+das Build Panel bleibt strukturell unverändert.
 
 ## 15. Compatibility
 

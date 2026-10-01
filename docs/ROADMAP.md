@@ -286,7 +286,7 @@ Der Data-Bereich bleibt leichtgewichtig und visualisierungsorientiert.
 - Overview und Fields zunächst als strukturelle Platzhalter
 - keine duplizierte Dataset- oder Upload-Logik
 
-### Slice 2 – Backend DatasetProfile (geplant)
+### Slice 2 – Backend DatasetProfile (implementiert)
 
 Deterministisches Profiling im Python-/FastAPI-Backend mit der
 bestehenden Polars-Infrastruktur.
@@ -310,11 +310,29 @@ DatasetProfile
 - Semantic Roles: Measure, Dimension, Temporal, Identifier
 - Physical Type und Semantic Role getrennt; eine numerische Spalte ist
   nicht automatisch ein Measure (z. B. IDs)
-- Statistiken abhängig vom Field:
-  - Numeric: min, max, mean, median
-  - Categorical: Cardinality, Missing, häufige Werte
-  - Temporal: min/max bzw. Zeitraum
-  - Identifier: Cardinality und Missing, keine Aggregationen
+- Statistiken abhängig von der Semantic Role:
+  - Measure: min, max, mean, median
+  - Dimension: die fünf häufigsten Werte (`value_counts`)
+  - Temporal: min/max als ISO-String
+  - Identifier: keine Statistiken; Cardinality und Missing stehen am
+    Field
+- Role-Erkennung: Name `id`/`*_id` → Identifier, Date/Datetime →
+  Temporal, String mit ausschließlich eindeutigen Werten ab 50 Zeilen →
+  Identifier, Integer/Float → Measure, sonst Dimension
+- Profil wird beim Upload berechnet, im Store gehalten und über
+  `GET /datasets/{id}/profile` ausgeliefert
+- `semantic_type` bleibt übergangsweise erhalten und wird aus der
+  Semantic Role abgeleitet; es gibt nur eine Erkennungslogik
+- Frontend hat `DatasetProfile`-Types und `fetchDatasetProfile`, aber
+  noch keine Anbindung an Hooks oder UI (Slice 3)
+
+### Zwischenschritt – Demo-Dataset im Backend (geplant)
+
+- Demo-Dataset wird ein reguläres Backend-Dataset statt eines
+  reinen Frontend-Datensatzes
+- liefert dadurch ein Profil und Daten für aggregierte Charts
+- Voraussetzung für Slice 3, damit Overview im Startzustand Inhalte
+  zeigt
 
 ### Slice 3 – Profiling UI (geplant)
 
@@ -668,6 +686,12 @@ waren:
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
   eines Projekts muss dieses Verhalten auf neu hinzugefügte Charts
   begrenzt werden.
+- `semantic_type` am `DataField` ist ein Übergangsfeld, das aus der
+  Semantic Role des Profils abgeleitet wird. Die Frontend-Logik
+  (Compatibility, Color Mode, Default Encodings, Field Groups) liest es
+  noch und muss schrittweise auf `semantic_role` umgestellt werden.
+- Das Demo-Dataset existiert nur im Frontend, hat kein Profil und
+  liefert keine Daten für aggregierte Charts.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder
   (`True` in Python gegenüber `true` in Polars), Float-Formatierung und
   leere Kategorien (`''`, `(empty)`, `No category`) treffen daher nicht

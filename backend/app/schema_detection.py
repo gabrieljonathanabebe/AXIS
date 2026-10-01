@@ -1,6 +1,12 @@
 import polars as pl
 
-from app.models import Field, PhysicalType, SemanticType
+from app.models import (
+    DatasetProfile,
+    Field,
+    PhysicalType,
+    SemanticRole,
+    SemanticType,
+)
 
 INTEGER_DTYPES = {
     pl.Int8,
@@ -33,30 +39,45 @@ def infer_physical_type(dtype: pl.DataType) -> PhysicalType:
     return PhysicalType.STRING
 
 
-def infer_semantic_type(name: str, physical_type: PhysicalType) -> SemanticType:
+MIN_IDENTIFIER_ROWS = 50
+
+# Transitional mapping until the frontend reads semantic roles directly.
+SEMANTIC_TYPE_BY_ROLE = {
+    SemanticRole.DIMENSION: SemanticType.CATEGORIAL,
+    SemanticRole.IDENTIFIER: SemanticType.IDENTIFIER,
+    SemanticRole.MEASURE: SemanticType.NUMERICAL,
+    SemanticRole.TEMPORAL: SemanticType.TEMPORAL,
+}
+
+
+def infer_semantic_role(
+    name: str,
+    physical_type: PhysicalType,
+    unique_count: int,
+    value_count: int,
+) -> SemanticRole:
     lowered_name = name.lower()
     if lowered_name.endswith("_id") or lowered_name == "id":
-        return SemanticType.IDENTIFIER
+        return SemanticRole.IDENTIFIER
+    if physical_type in {PhysicalType.DATE, PhysicalType.DATETIME}:
+        return SemanticRole.TEMPORAL
+    if (
+        physical_type == PhysicalType.STRING
+        and value_count >= MIN_IDENTIFIER_ROWS
+        and unique_count == value_count
+    ):
+        return SemanticRole.IDENTIFIER
     if physical_type in {PhysicalType.INTEGER, PhysicalType.FLOAT}:
-        return SemanticType.NUMERICAL
-    if physical_type in {
-        PhysicalType.DATE,
-        PhysicalType.DATETIME,
-    }:
-        return SemanticType.TEMPORAL
-    return SemanticType.CATEGORIAL
+        return SemanticRole.MEASURE
+    return SemanticRole.DIMENSION
 
 
-def infer_fields(frame: pl.DataFrame) -> list[Field]:
-    fields: list[Field] = []
-    for col_name, dtype in frame.schema.items():
-        physical_type = infer_physical_type(dtype)
-        semantic_type = infer_semantic_type(col_name, physical_type)
-        fields.append(
-            Field(
-                name=col_name,
-                physical_type=physical_type,
-                semantic_type=semantic_type,
-            )
+def create_fields(profile: DatasetProfile) -> list[Field]:
+    return [
+        Field(
+            name=field.name,
+            physical_type=field.physical_type,
+            semantic_type=SEMANTIC_TYPE_BY_ROLE[field.semantic_role],
         )
-    return fields
+        for field in profile.fields
+    ]

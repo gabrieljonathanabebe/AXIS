@@ -7,12 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import chart_query as cq
 from app.models import (
+    DatasetProfile,
     DatasetRows,
     DatasetSummary,
     ChartQueryRequest,
     ChartQueryResult,
 )
-from app.schema_detection import infer_fields
+from app.profiling import build_dataset_profile
+from app.schema_detection import create_fields
 from app.store import StoredDataset, datasets
 
 app = FastAPI(title="AXIS API")
@@ -43,15 +45,27 @@ async def create_dataset(file: UploadFile) -> DatasetSummary:
     )
     dataset_id = str(uuid4())
     dataset_name = file.filename or "Untitled dataset"
-    fields = infer_fields(frame)
+    profile = build_dataset_profile(dataset_id, frame)
     summary = DatasetSummary(
         id=dataset_id,
         name=dataset_name,
         row_count=frame.height,
-        fields=fields,
+        fields=create_fields(profile),
     )
-    datasets[dataset_id] = StoredDataset(summary=summary, frame=frame)
+    datasets[dataset_id] = StoredDataset(
+        summary=summary,
+        profile=profile,
+        frame=frame,
+    )
     return summary
+
+
+@app.get("/datasets/{dataset_id}/profile")
+def get_dataset_profile(dataset_id: str) -> DatasetProfile:
+    stored_dataset = datasets.get(dataset_id)
+    if stored_dataset is None:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
+    return stored_dataset.profile
 
 
 @app.get("/datasets/{dataset_id}/rows")
