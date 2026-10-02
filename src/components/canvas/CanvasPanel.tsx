@@ -60,6 +60,7 @@ function CanvasPanel({
   return (
     <Panel
       className="canvas-panel"
+      isEmbedded
       isFilled
       heading={
         <EditableText

@@ -1,45 +1,92 @@
-import { useState } from 'react'
-import { fetchDatasetRows, uploadDataset } from '../api/datasets'
+import { useEffect, useState } from 'react'
+import {
+  DEMO_DATASET_ID,
+  fetchDatasetProfile,
+  fetchDatasetRows,
+  fetchDatasetSummary,
+  uploadDataset,
+} from '../api/datasets'
 import type { DatasetRows, DatasetSummary } from '../api/datasets'
-import type { Dataset } from '../types/chart'
+import type { Dataset, DatasetProfile } from '../types/chart'
 
+// ===== TYPES =================================================================
 type useDatasetsResults = {
   activeDatasetSummary: DatasetSummary | null
   dataset: Dataset | null
-  isUploading: boolean
-  uploadError: string | null
+  datasetError: string | null
+  isLoading: boolean
+  profile: DatasetProfile | null
   uploadFile: (file: File) => Promise<void>
 }
 
+type LoadedDataset = {
+  dataset: Dataset
+  profile: DatasetProfile
+  summary: DatasetSummary
+}
+
+// ===== FUNCTION ==============================================================
 export function useDatasets(): useDatasetsResults {
-  const [activeDatasetSummary, setActiveDatasetSummary] =
-    useState<DatasetSummary | null>(null)
-  const [dataset, setDataset] = useState<Dataset | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [loadedDataset, setLoadedDataset] = useState<LoadedDataset | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [datasetError, setDatasetError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isCancelled = false
+
+    fetchDatasetSummary(DEMO_DATASET_ID)
+      .then(loadDataset)
+      .then((result) => {
+        if (!isCancelled) {
+          setLoadedDataset(result)
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setDatasetError('Failed to load demo dataset.')
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   async function uploadFile(file: File): Promise<void> {
-    setIsUploading(true)
-    setUploadError(null)
+    setIsLoading(true)
+    setDatasetError(null)
     try {
       const summary = await uploadDataset(file)
-      const rowsResponse = await fetchDatasetRows(summary.id)
-      setActiveDatasetSummary(summary)
-      setDataset(toDataset(summary, rowsResponse))
+      setLoadedDataset(await loadDataset(summary))
     } catch {
-      setUploadError('Failed to upload dataset.')
+      setDatasetError('Failed to upload dataset.')
     } finally {
-      setIsUploading(false)
+      setIsLoading(false)
     }
   }
 
   return {
-    activeDatasetSummary,
-    dataset,
-    isUploading,
-    uploadError,
+    activeDatasetSummary: loadedDataset?.summary ?? null,
+    dataset: loadedDataset?.dataset ?? null,
+    datasetError,
+    isLoading,
+    profile: loadedDataset?.profile ?? null,
     uploadFile,
   }
+}
+
+// ===== HELPERS ===============================================================
+async function loadDataset(summary: DatasetSummary): Promise<LoadedDataset> {
+  const [rowsResponse, profile] = await Promise.all([
+    fetchDatasetRows(summary.id),
+    fetchDatasetProfile(summary.id),
+  ])
+  return { dataset: toDataset(summary, rowsResponse), profile, summary }
 }
 
 function toDataset(

@@ -1,8 +1,11 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from io import BytesIO
+from pathlib import Path
 from uuid import uuid4
 
 import polars as pl
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import chart_query as cq
@@ -16,8 +19,54 @@ from app.models import (
 from app.profiling import build_dataset_profile
 from app.schema_detection import create_fields
 from app.store import StoredDataset, datasets
+from app.schema_detection import create_fields
+from app.store import StoredDataset, datasets
 
-app = FastAPI(title="AXIS API")
+# ===== CONSTANTS =============================================================
+DEMO_DATASET_ID = "demo"
+DEMO_DATASET_NAME = "Demo data"
+DEMO_DATASET_PATH = Path(__file__).parent / "data" / "demo.csv"
+
+
+# ===== DATASETS ==============================================================
+def read_csv_frame(source: BytesIO | Path) -> pl.DataFrame:
+    return pl.read_csv(
+        source,
+        try_parse_dates=True,
+        infer_schema_length=1000,
+        null_values=["", "-", "NA", "N/A", "null", "None"],
+    )
+
+
+def register_dataset(
+    dataset_id: str,
+    name: str,
+    frame: pl.DataFrame,
+) -> DatasetSummary:
+    profile = build_dataset_profile(dataset_id, frame)
+    summary = DatasetSummary(
+        id=dataset_id,
+        name=name,
+        row_count=frame.height,
+        fields=create_fields(profile),
+    )
+    datasets[dataset_id] = StoredDataset(
+        summary=summary,
+        profile=profile,
+        frame=frame,
+    )
+    return summary
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    demo_frame = read_csv_frame(DEMO_DATASET_PATH)
+    register_dataset(DEMO_DATASET_ID, DEMO_DATASET_NAME, demo_frame)
+    yield
+
+
+# ===== APP ==================================================================
+app = FastAPI(title="CEVYN API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -37,27 +86,17 @@ def health_check() -> dict[str, str]:
 @app.post("/datasets")
 async def create_dataset(file: UploadFile) -> DatasetSummary:
     content = await file.read()
-    frame = pl.read_csv(
-        BytesIO(content),
-        try_parse_dates=True,
-        infer_schema_length=1000,
-        null_values=["", "-", "NA", "N/A", "null", "None"],
-    )
-    dataset_id = str(uuid4())
+    frame = read_csv_frame(BytesIO(content))
     dataset_name = file.filename or "Untitled dataset"
-    profile = build_dataset_profile(dataset_id, frame)
-    summary = DatasetSummary(
-        id=dataset_id,
-        name=dataset_name,
-        row_count=frame.height,
-        fields=create_fields(profile),
-    )
-    datasets[dataset_id] = StoredDataset(
-        summary=summary,
-        profile=profile,
-        frame=frame,
-    )
-    return summary
+    return register_dataset(str(uuid4()), dataset_name, frame)
+
+
+@app.get("/datasets/{dataset_id}")
+def get_dataset(dataset_id: str) -> DatasetSummary:
+    stored_dataset = datasets.get(dataset_id)
+    if stored_dataset is None:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
+    return stored_dataset.summary
 
 
 @app.get("/datasets/{dataset_id}/profile")

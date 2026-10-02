@@ -44,3 +44,22 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   Kategorien in Datenreihenfolge (2, 1, 0, 4, 3 …) statt sortiert
 - prüfen, ob die Sortierung in die Backend-Chart-Query oder in den
   ECharts-Adapter gehört
+
+## Chart Picker nach Auf- und Zuklappen des Build Panels
+
+- nach Zuklappen und erneutem Aufklappen des Build Panels haben die
+  Kacheln im Chart Picker (Visuals) einen sehr großen vertikalen
+  Abstand zwischen den beiden Reihen
+- vermutlich streckt sich das Grid während oder nach der
+  Breiten-Transition auf die Panel-Höhe; Ursache in `ChartPicker.css`
+  bzw. im Flex-Layout von `.build-panel-content` prüfen
+
+## Zahlenformatierung zentralisieren
+
+- `src/data/formatNumber.ts` wird die Single Source of Truth für das
+  Formatieren von Zahlen in der gesamten App
+- bestehende eigene `Intl.NumberFormat`-Stellen darauf umstellen,
+  z. B. Color-Scale-Labels (zeigen teils sehr viele Nachkommastellen),
+  Tooltips, Achsenlabels, `DataTable`, Selection-Werte
+- fehlende Varianten (z. B. Währung, feste Nachkommastellen) dort
+  ergänzen statt lokal

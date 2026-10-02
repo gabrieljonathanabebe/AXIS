@@ -29,14 +29,14 @@
 .visualize-workspace {
   --build-panel-width: clamp(208px, 18vw, 224px);
   --inspector-width: clamp(220px, 20vw, 224px);
-  --panel-collapsed-width: calc(36px + var(--space-3) * 2);
+  --panel-collapsed-width: calc(var(--control-height-sm) + var(--space-2) * 2);
 
   grid-template-columns:
     var(--build-panel-width)
     minmax(0, 1fr)
     var(--inspector-width);
-  gap: var(--space-2);
   align-items: stretch;
+  border-radius: var(--radius-lg);
   transition: grid-template-columns var(--transition-fast);
 }
 

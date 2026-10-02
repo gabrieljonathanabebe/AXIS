@@ -1,0 +1,49 @@
+.data-profile {
+  --stack-gap: var(--space-4);
+  flex: 1;
+  align-content: start;
+  grid-auto-rows: max-content;
+  min-height: 0;
+  padding-inline: var(--space-1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.data-profile-grid {
+  --grid-gap: var(--space-2);
+  --grid-min: 180px;
+  --grid-repeat: auto-fill;
+
+  padding-block: var(--space-1);
+}
+
+/* ===== FIELD PROFILE ====================================================== */
+/* ===== FIELD PROFILE ====================================================== */
+.field-profile {
+  --mini-histogram-height: auto;
+  --mini-histogram-width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  aspect-ratio: 1;
+}
+
+.field-profile-text {
+  --stack-gap: var(--space-1);
+
+  min-width: 0;
+}
+
+.field-profile .mini-histogram {
+  flex: 1;
+}
+
+.field-profile-name {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

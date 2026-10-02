@@ -141,6 +141,9 @@ Ein Icon steht für genau eine Bedeutung:
 | Encodings               | `Waypoints`           |
 | Build                   | `Blocks`              |
 | Dashboard               | `LayoutDashboard`     |
+| Zeilen (Rows)           | `Rows3`               |
+| fehlende Werte          | `CircleDashed`        |
+| doppelte Zeilen         | `Copy`                |
 
 Die View-Icons der Rail werden an keiner anderen Stelle verwendet.
 
@@ -152,9 +155,22 @@ Build Panel | Canvas | Inspector
 
 Die Canvas erhält den verbleibenden Raum.
 
+Der Visualize Workspace ist **eine** gemeinsame Glass-Fläche
+(`visualize-workspace glass glass-thin` mit `--radius-lg`). Build,
+Canvas und Inspector haben darin keine eigene Fläche, keinen Schatten
+und keinen großen Radius; sie sind nur durch Haarlinien
+(`--color-border-subtle`) getrennt. TopBar und Navigation Rail bleiben
+eigene Glass-Flächen.
+
 ### Panel
 
 Alle drei Bereiche nutzen `Panel`.
+
+- `isEmbedded` macht ein Panel zu einem Bereich innerhalb einer
+  gemeinsamen Fläche: keine Glass-Klassen, kein Radius, Haarlinie zum
+  vorherigen eingebetteten Panel (auf schmalen Viewports oben statt
+  links). Ohne `isEmbedded` ist das Panel eine eigene Glass-Fläche
+  (z. B. `DataPanel`).
 
 - Header als eine Zeile: `IconBadge` mit Icon und kurzem Label, rechts
   `actions`. Keine Eyebrow-Überschrift über dem Titel.
@@ -177,8 +193,10 @@ Build Panel und Inspector sind unabhängig einklappbar:
 - `isCollapsed` und `onToggleCollapse` aktivieren das Verhalten; ohne
   `onToggleCollapse` gibt es keinen Toggle.
 - `side` (`start | end`) bestimmt die Richtung des Toggle-Icons.
-- Eingeklappt bleibt eine schmale Leiste mit dem Panel-Icon als Button
-  zum Aufklappen.
+- Eingeklappt bleibt innerhalb des Workspace ein schmaler Strip (44 px)
+  mit dem Panel-Icon als `IconButton` in Größe `sm` und mit Rahmen.
+  Er wirkt dadurch nicht wie eine zweite Navigation Rail, deren Icons
+  `ghost` sind.
 - Der Inhalt wird nur ausgeblendet, nicht entfernt; Zustand wie
   Inspector-Tab und geöffnete Widgets bleibt erhalten.
 - Cmd/Ctrl + B schaltet das Build Panel um, Cmd/Ctrl + I den Inspector
@@ -192,17 +210,38 @@ werden.
 ## 4a. Data Workspace
 
 ```text
-[▦ sales.csv]              [ Overview | Fields | Table ]
-──────────────────────────────────────────────────────
-Ansicht
+[▦ sales.csv]                              [ Profile | Table ]
+──────────────────────────────────────────────────────────────
+▦ DATASET
+┌ Rows ──┐ ┌ Fields ┐ ┌ Missing cells ┐ ┌ Duplicate rows ┐
+│ 60     │ │ 6      │ │ 0  ▱▱▱▱▱▱▱▱   │ │ 0  ▱▱▱▱▱▱▱▱    │
+──────────────────────────────────────────────────────────────
+⫴ FIELDS 6
+  # Measures 3
+  ┌ revenue ───┐ ┌ profit ────┐ ┌ customers ─┐
+  │ integer ·… │ │ integer ·… │ │ integer ·… │
+  │ ▂▅█▆▃▂▁▃▅▂ │ │ ▃▅▇█▅▃▂▁▂▁ │ │ ▁▂▅▇█▆▄▃▂▁ │
+  └────────────┘ └────────────┘ └────────────┘
 ```
 
-- ein einzelnes `Panel` (`DataPanel`) mit `isFilled`, Datensatzname
-  als Titel, rechts der Ansichts-Umschalter als `SegmentedControl`;
-- Table ist die Rohdatenansicht über `DataTable`;
-- Overview und Fields sind bis zur Profiling-UI Platzhalter über
-  `EmptyState`;
-- kompakte, gut scanbare Darstellung statt Verwaltungs-UI.
+- ein einzelnes `Panel` (`DataPanel`) mit `isFilled` als eigene
+  Glass-Fläche, Datensatzname als Titel, rechts der
+  Ansichts-Umschalter Profile | Table als `SegmentedControl`;
+- Profile ist eine scrollbare Seite (`DatasetProfileView`) aus plain
+  Sections mit Kachel-Raster, orientiert am Data Wrangler von VS Code;
+- oben Kennzahlen des Datensatzes als `StatWidget`, darunter die Fields
+  gruppiert nach Semantic Role als Untergruppen (gleiche Gruppen,
+  Icons und Labels wie im Build Panel, Identifiers eingeklappt);
+- jede Field-Kachel (`FieldProfileWidget`) ist quadratisch: Name,
+  darunter leise Physical Type, Unique und Missing (nur wenn > 0),
+  darunter ein `MiniHistogram`, das die restliche Höhe füllt;
+- Kacheln im `.auto-grid` mit `--grid-repeat: auto-fill` und 180 px
+  Mindestbreite: wenige Kacheln behalten ihre Breite und stehen
+  linksbündig, statt sich über die ganze Zeile zu dehnen;
+- im Data View sind Kacheln pro Field gewollt; die Regel „nicht jedes
+  Field als große Card“ gilt für das Build Panel;
+- Laden und Fehler des Profils zeigt `EmptyState`; Table bleibt die
+  Rohdatenansicht über `DataTable` und funktioniert ohne Profil.
 
 ## 5. Build Panel
 
@@ -274,8 +313,8 @@ FIELDS
 - `DatasetCard`: Name, Zeilenzahl (kompakt formatiert) und
   Field-Anzahl, rechts Upload/Replace als Icon-Button.
 - Die ganze Karte nimmt Dateien per Drop an.
-- Ohne Upload zeigt sie das Demo-Dataset als „Demo data“; eine große
-  Upload-Fläche gibt es nicht.
+- Ohne Upload zeigt sie das Demo-Dataset aus dem Backend („Demo
+  data“); eine große Upload-Fläche gibt es nicht.
 
 ### Fields
 
@@ -648,6 +687,37 @@ Fläche, keinen Rahmen und keinen Schatten; die Farben für Hover und
 `is-active` kommen weiter aus `.control`. Für ruhige Aktionen in
 Section-Headern.
 
+## 9d. StatWidget
+
+`StatWidget` ist eine ruhige Kennzahl-Kachel auf `Widget`-Basis (keine
+Glass-Fläche, nicht interaktiv): Icon und Label als `IconBadge`, große
+Zahl (`--font-size-lg`, tabular nums), optional ein Anteilsbalken
+(`share` von 0 bis 1) und ein leiser Hinweis (`hint`, einzeilig mit
+Ellipsis und Tooltip).
+
+- `value` ist bereits formatiert; formatiert wird über
+  `src/data/formatNumber.ts`.
+- Der Balken zeigt immer den Anteil des Werts am Ganzen.
+- Padding und Radius entsprechen den Chart-Picker-Kacheln. Andere
+  Kacheln (z. B. `FieldProfileWidget`) nutzen die Basisklassen
+  `stat-widget` und `stat-widget-hint` statt eigener Kopien.
+
+## 9e. MiniHistogram
+
+`MiniHistogram` zeichnet eine Liste von `HistogramBar`s (`count`,
+`label`, optional `isMuted`) als kleine Balken in Electric Blue, in
+reinem CSS ohne ECharts.
+
+- Höhe relativ zum größten Balken; leere Bins bleiben als 1-px-Linie
+  sichtbar.
+- Jeder Balken liegt in einer Spalte über die volle Höhe; der Tooltip
+  zeigt Label und Anzahl.
+- `isMuted` dämpft einen Balken, z. B. „Other“ bei Dimensions.
+- Standardgröße 96 × 32 px, anpassbar über `--mini-histogram-width`
+  und `--mini-histogram-height`.
+- Die Komponente kennt keine Fields; die Umrechnung aus dem Profil
+  liegt in `createDistributionBars`.
+
 ## 10. Legend
 
 Legend erklärt diskrete Series oder Kategorien.
@@ -764,6 +834,10 @@ Bevor neue Styles geschrieben werden:
 - bestehende Spacing-/Radius-Patterns prüfen.
 
 Keine nahezu identischen lokalen Styles kopieren.
+
+`.auto-grid` ist über Custom Properties konfigurierbar: `--grid-min`
+(Mindestbreite), `--grid-gap` und `--grid-repeat` (`auto-fit` als
+Standard, `auto-fill`, wenn wenige Kacheln ihre Breite behalten sollen).
 
 ## 15. Interaction States
 

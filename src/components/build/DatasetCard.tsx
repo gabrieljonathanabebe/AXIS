@@ -1,24 +1,24 @@
 import { FileSpreadsheet, UploadCloud } from 'lucide-react'
 import { useRef } from 'react'
 import type { ChangeEvent, DragEvent } from 'react'
+
+import { formatCompactNumber } from '../../data/formatNumber'
 import IconButton from '../ui/IconButton'
 import Widget from '../ui/Widget'
 
 type DatasetCardProps = {
   fieldCount: number
   isDemo: boolean
-  isUploading: boolean
+  isLoading: boolean
   name: string
   rowCount: number
   onUploadFile: (file: File) => Promise<void>
 }
 
-const rowCountFormat = new Intl.NumberFormat('en', { notation: 'compact' })
-
 function DatasetCard({
   fieldCount,
   isDemo,
-  isUploading,
+  isLoading,
   name,
   rowCount,
   onUploadFile,
@@ -65,16 +65,16 @@ function DatasetCard({
           {name}
         </strong>
         <span className="dataset-card-meta">
-          {isUploading
-            ? 'Uploading...'
-            : `${rowCountFormat.format(rowCount)} rows · ${fieldCount} fields`}
+          {isLoading
+            ? 'Loading...'
+            : `${formatCompactNumber(rowCount)} rows · ${fieldCount} fields`}
         </span>
       </span>
 
       <IconButton
         label={uploadLabel}
         size="sm"
-        disabled={isUploading}
+        disabled={isLoading}
         onClick={() => inputRef.current?.click()}
       >
         <UploadCloud size={14} />
@@ -83,7 +83,7 @@ function DatasetCard({
       <input
         ref={inputRef}
         accept=".csv,text/csv"
-        disabled={isUploading}
+        disabled={isLoading}
         hidden
         type="file"
         onChange={handleInputChange}

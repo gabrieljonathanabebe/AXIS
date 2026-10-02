@@ -19,7 +19,13 @@ export type ChartLayoutMode = 'move' | ChartResizeDirection
 export type ChartResizeDirection =
   'e' | 'n' | 'ne' | 'nw' | 's' | 'se' | 'sw' | 'w'
 
-export type DataView = 'fields' | 'overview' | 'table'
+export type DataView = 'profile' | 'table'
+
+export type HistogramBar = {
+  count: number
+  isMuted?: boolean
+  label: string
+}
 
 export type WorkspaceView = 'data' | 'visualize'
 

@@ -201,6 +201,7 @@ export type MeasureStatistics = {
   max: number | null
   mean: number | null
   median: number | null
+  histogram: number[]
 }
 
 export type DimensionStatistics = {
@@ -212,6 +213,7 @@ export type TemporalStatistics = {
   kind: 'temporal'
   min: string | null
   max: string | null
+  histogram: number[]
 }
 
 export type ValueCount = {

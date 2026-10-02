@@ -1,7 +1,12 @@
 import { Calendar, CaseUpper, Hash, IdCard } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-import type { DataField, SemanticType } from '../types/chart'
+import type {
+  DataField,
+  FieldProfile,
+  SemanticRole,
+  SemanticType,
+} from '../types/chart'
 
 // ===== TYPES =================================================================
 export type FieldGroupKey = 'dimensions' | 'identifiers' | 'measures' | 'time'
@@ -13,8 +18,8 @@ export type FieldGroupDefinition = {
   defaultOpen: boolean
 }
 
-export type FieldGroup = FieldGroupDefinition & {
-  fields: DataField[]
+export type FieldGroup<TField = DataField> = FieldGroupDefinition & {
+  fields: TField[]
 }
 
 // ===== CONSTANTS =============================================================
@@ -35,11 +40,18 @@ export const fieldGroupDefinitions: FieldGroupDefinition[] = [
   },
 ]
 
-// Approximation until profiling provides semantic roles.
+// Build Panel grouping until it reads semantic roles (Slice 5).
 const fieldGroupKeyBySemanticType: Record<SemanticType, FieldGroupKey> = {
   categorical: 'dimensions',
   identifier: 'identifiers',
   numeric: 'measures',
+  temporal: 'time',
+}
+
+const fieldGroupKeyBySemanticRole: Record<SemanticRole, FieldGroupKey> = {
+  dimension: 'dimensions',
+  identifier: 'identifiers',
+  measure: 'measures',
   temporal: 'time',
 }
 
@@ -49,12 +61,27 @@ export function getFieldGroupKey(field: DataField): FieldGroupKey {
 }
 
 export function groupFields(fields: DataField[]): FieldGroup[] {
+  return groupByFieldGroup(fields, getFieldGroupKey)
+}
+
+export function groupFieldProfiles(
+  fields: FieldProfile[],
+): FieldGroup<FieldProfile>[] {
+  return groupByFieldGroup(
+    fields,
+    (field) => fieldGroupKeyBySemanticRole[field.semantic_role],
+  )
+}
+
+// ===== HELPERS ===============================================================
+function groupByFieldGroup<TField>(
+  fields: TField[],
+  getKey: (field: TField) => FieldGroupKey,
+): FieldGroup<TField>[] {
   return fieldGroupDefinitions
     .map((definition) => ({
       ...definition,
-      fields: fields.filter(
-        (field) => getFieldGroupKey(field) === definition.key,
-      ),
+      fields: fields.filter((field) => getKey(field) === definition.key),
     }))
     .filter((group) => group.fields.length > 0)
 }

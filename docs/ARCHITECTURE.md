@@ -58,7 +58,7 @@ AppShell
         │   ├── Canvas
         │   └── Inspector
         └── Data Workspace
-            └── Data Panel (Overview | Fields | Table)
+            └── Data Panel (Profile | Table)
 ```
 
 Der aktive Workspace (`WorkspaceView`) ist UI-State in
@@ -67,11 +67,13 @@ undo-fähig. Beide Workspaces bleiben gemountet und werden über `hidden`
 umgeschaltet, damit Chart-Instanzen und lokaler UI-Zustand erhalten
 bleiben.
 
-Data und Visualize arbeiten auf demselben Dataset aus
-`useChartWorkspace`. Der Data Workspace hat keine eigene Dataset- oder
-Upload-Logik. Das Backend liefert ein `DatasetProfile` (siehe
-Abschnitt 11). Geplant ist, dass es die gemeinsame Grundlage für Data,
-Build Panel und später AI wird (siehe `ROADMAP.md`).
+Data und Visualize arbeiten auf demselben Dataset. `useDatasets` lädt
+beim Start das Demo-Dataset aus dem Backend und nach einem Upload das
+neue Dataset; Summary, Rows und `DatasetProfile` werden gemeinsam
+geladen und gemeinsam gesetzt. Der Data Workspace hat keine eigene
+Dataset- oder Upload-Logik. Die Profile-Ansicht liest das
+`DatasetProfile` (siehe Abschnitt 11); Build Panel und später AI sollen
+es ebenfalls als Grundlage nutzen (siehe `ROADMAP.md`).
 
 Ask Cevyn und Explore werden als integrierte Modi oder fokussierte
 Ansichten angebunden. Sie bilden keine unabhängige Suite neben dem
@@ -126,6 +128,9 @@ nicht Teil des Domain Models.
 - Polars für CSV-Daten und gruppierte Chart-Abfragen
 
 Datasets liegen aktuell als Polars-DataFrames im In-Memory-Store.
+Das Demo-Dataset ist ein reguläres Backend-Dataset: `demo.csv` wird beim
+Start über `lifespan` mit der festen ID `demo` registriert, über
+denselben Weg wie ein Upload (`read_csv_frame`, `register_dataset`).
 Line-, Bar-, Pie- und Donut-Charts nutzen serverseitige
 Gruppierungsaggregationen.
 Scatter rendert bisher einen begrenzten Ausschnitt der Rohdaten.
@@ -752,11 +757,21 @@ Implementiert in `backend/app/profiling.py`:
   der Semantic Role ab: Measure (min, max, mean, median), Dimension
   (häufigste Werte, bei Gleichstand nach Wert sortiert), Temporal
   (min/max als ISO-String). Identifier haben keine Statistiken.
+- Measure und Temporal enthalten ein Histogramm (`histogram`): Anzahl
+  der Werte in gleich breiten Bins zwischen min und max, höchstens 20
+  Bins und nicht mehr als eindeutige Werte. Die Bin-Grenzen werden
+  nicht übertragen, sondern aus min, max und Bin-Anzahl abgeleitet.
+  Date/Datetime werden über ihre physische Zahl gebinnt.
 - Die Semantic Role wird nur an einer Stelle erkannt
   (`infer_semantic_role` in `schema_detection.py`). `semantic_type` der
   `DatasetSummary` wird daraus abgeleitet.
 - Im Frontend liegen die Types im DATA-Abschnitt von
   `src/types/chart.ts`, der Abruf in `fetchDatasetProfile`.
+- `groupFieldProfiles` (`src/data/fieldGroups.ts`) gruppiert Field
+  Profiles nach Semantic Role mit denselben Gruppen wie das Build
+  Panel. `createDistributionBars` (`src/data/fieldDistribution.ts`)
+  übersetzt Histogramm bzw. `value_counts` in UI-Balken; Dimensions
+  erhalten zusätzlich „Other“ für die übrigen Werte.
 
 ### Aggregated Chart Query
 

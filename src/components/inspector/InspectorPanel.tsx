@@ -36,6 +36,7 @@ function InspectorPanel({
       title="Inspector"
       className="inspector-panel"
       isCollapsed={isCollapsed}
+      isEmbedded
       isScrollable
       side="end"
       onToggleCollapse={onToggleCollapse}

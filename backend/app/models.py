@@ -46,6 +46,7 @@ class MeasureStatistics(BaseModel):
     max: float | None
     mean: float | None
     median: float | None
+    histogram: list[int]
 
 
 class ValueCount(BaseModel):
@@ -62,6 +63,7 @@ class TemporalStatistics(BaseModel):
     kind: Literal["temporal"] = "temporal"
     min: str | None
     max: str | None
+    histogram: list[int]
 
 
 FieldStatistics = MeasureStatistics | DimensionStatistics | TemporalStatistics

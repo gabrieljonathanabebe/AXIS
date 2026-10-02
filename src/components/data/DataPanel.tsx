@@ -1,12 +1,13 @@
 import { FileSpreadsheet } from 'lucide-react'
 import { useState } from 'react'
 
+import DatasetProfileView from './DatasetProfileView'
 import DataTable from './DataTable'
 import EmptyState from '../ui/EmptyState'
 import Panel from '../ui/Panel'
 import SegmentedControl from '../ui/SegmentedControl'
 
-import type { Dataset } from '../../types/chart'
+import type { Dataset, DatasetProfile } from '../../types/chart'
 import type { DataView } from '../../types/ui'
 import type { OptionItem } from '../ui/OptionsMenu'
 
@@ -14,6 +15,9 @@ import type { OptionItem } from '../ui/OptionsMenu'
 type DataPanelProps = {
   dataset: Dataset
   datasetName: string
+  error: string | null
+  isLoading: boolean
+  profile: DatasetProfile | null
 }
 
 type DataViewPlaceholder = {
@@ -23,28 +27,42 @@ type DataViewPlaceholder = {
 
 // ===== CONSTANTS =============================================================
 const dataViewOptions: OptionItem<DataView>[] = [
-  { label: 'Overview', value: 'overview' },
-  { label: 'Fields', value: 'fields' },
+  { label: 'Profile', value: 'profile' },
   { label: 'Table', value: 'table' },
 ]
 
-const dataViewPlaceholders: Record<
-  Exclude<DataView, 'table'>,
-  DataViewPlaceholder
-> = {
-  fields: {
-    description: 'Detailed profiles for each field will appear here.',
-    title: 'Field profiles',
-  },
-  overview: {
-    description: 'A compact summary of the dataset will appear here.',
-    title: 'Dataset overview',
-  },
+// ===== HELPERS ===============================================================
+function getProfileStatus(
+  isLoading: boolean,
+  error: string | null,
+): DataViewPlaceholder {
+  if (isLoading) {
+    return { description: 'Profiling the dataset…', title: 'Loading profile' }
+  }
+  return {
+    description: error ?? 'No profile is available for this dataset.',
+    title: 'Profile unavailable',
+  }
 }
 
 // ===== COMPONENT =============================================================
-function DataPanel({ dataset, datasetName }: DataPanelProps) {
-  const [dataView, setDataView] = useState<DataView>('table')
+function DataPanel({
+  dataset,
+  datasetName,
+  error,
+  isLoading,
+  profile,
+}: DataPanelProps) {
+  const [dataView, setDataView] = useState<DataView>('profile')
+  function renderDataView() {
+    if (dataView === 'table') {
+      return <DataTable dataset={dataset} />
+    }
+    if (!profile) {
+      return <EmptyState {...getProfileStatus(isLoading, error)} />
+    }
+    return <DatasetProfileView profile={profile} />
+  }
 
   return (
     <Panel
@@ -62,11 +80,7 @@ function DataPanel({ dataset, datasetName }: DataPanelProps) {
         />
       }
     >
-      {dataView === 'table' ? (
-        <DataTable dataset={dataset} />
-      ) : (
-        <EmptyState {...dataViewPlaceholders[dataView]} />
-      )}
+      {renderDataView()}
     </Panel>
   )
 }

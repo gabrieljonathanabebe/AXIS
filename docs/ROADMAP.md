@@ -201,8 +201,7 @@ ETL- oder Data-Engineering-Workspace.
   Drag-Overlay mit gemeinsamem Inhalt; deaktivierte „More“-Kachel als
   Platzhalter für weitere Charttypen
 - `DatasetCard` statt großer Upload-Fläche: Name, Zeilen- und
-  Field-Anzahl, Upload/Replace über Icon-Button und Datei-Drop; ohne
-  Upload als „Demo data“
+  Field-Anzahl, Upload/Replace über Icon-Button und Datei-Drop
 - Fields gruppiert nach Measures, Dimensions, Time und Identifiers über
   `groupFields`; Zuordnung vorerst aus `semantic_type`
 - Gruppen-Header mit Icon und Anzahl, Field Chips nur mit Namen;
@@ -323,23 +322,40 @@ DatasetProfile
   `GET /datasets/{id}/profile` ausgeliefert
 - `semantic_type` bleibt übergangsweise erhalten und wird aus der
   Semantic Role abgeleitet; es gibt nur eine Erkennungslogik
-- Frontend hat `DatasetProfile`-Types und `fetchDatasetProfile`, aber
-  noch keine Anbindung an Hooks oder UI (Slice 3)
+- Measure und Temporal enthalten zusätzlich ein Histogramm
+  (`histogram`): Anzahl der Werte in gleich breiten Bins zwischen min und
+  max, höchstens 20 Bins und nicht mehr als eindeutige Werte
 
-### Zwischenschritt – Demo-Dataset im Backend (geplant)
+### Zwischenschritt – Demo-Dataset im Backend (implementiert)
 
-- Demo-Dataset wird ein reguläres Backend-Dataset statt eines
-  reinen Frontend-Datensatzes
-- liefert dadurch ein Profil und Daten für aggregierte Charts
-- Voraussetzung für Slice 3, damit Overview im Startzustand Inhalte
-  zeigt
+- Demo-Dataset als `backend/app/data/demo.csv`, beim Start des
+  Backends unter der festen ID `demo` registriert
+- Upload und Demo nutzen denselben Weg (`read_csv_frame`,
+  `register_dataset`); keine duplizierte Upload-Logik
+- `GET /datasets/{id}` liefert die `DatasetSummary`
+- Frontend lädt die Demo beim Start über `useDatasets`;
+  `createDemoDataset` und der Frontend-Fallback sind entfernt
+- Demo hat dadurch ein Profil und liefert Daten für aggregierte Charts
 
-### Slice 3 – Profiling UI (geplant)
+### Slice 3 – Profiling UI (implementiert)
 
-- Overview mit kompaktem Dataset Summary
-- Fields mit detaillierten Field Profiles
-- kompakte, gut scanbare Darstellung statt Verwaltungs-UI
+- `useDatasets` lädt Rows und Profil gemeinsam und hält Summary,
+  Dataset und Profil in einem State; `isLoading` und `datasetError`
+  decken Demo-Laden und Upload ab
+- Data View mit Profile | Table; Overview und Fields sind zu einer
+  Profile-Ansicht zusammengelegt
+- oben vier Kennzahl-Kacheln (`StatWidget`): Rows, Fields, Missing
+  cells, Duplicate rows, mit Anteilsbalken
+- darunter Fields gruppiert nach Semantic Role (`groupFieldProfiles`),
+  dieselben Gruppen, Icons und Labels wie im Build Panel
+- pro Field eine quadratische Kachel im Stil des VS-Code-Data-Wranglers:
+  Name, Physical Type, Unique, Missing und ein `MiniHistogram` der
+  Verteilung; Dimensions zeigen die häufigsten Werte plus „Other“
 - Table bleibt die Rohdatenansicht
+- Visualize Workspace als eine gemeinsame Glass-Fläche: Build, Canvas
+  und Inspector als `Panel` mit `isEmbedded`, getrennt durch
+  Haarlinien; eingeklappt bleibt ein schmaler Strip mit dem
+  Expand-Control
 
 ### Slice 4 – Semantic Role Correction (geplant)
 
@@ -678,7 +694,7 @@ waren:
   Rows-API lädt. Dasselbe gilt für die Table im Data-Workspace.
 - Cmd/Ctrl + B und Cmd/Ctrl + I schalten auch im Data-Workspace die
   ausgeblendeten Panels von Visualize um.
-- Der Fallback-Name `'Demo data'` steht in `BuildPanel` und `App`.
+- Der Fallback-Name `'No dataset'` steht in `BuildPanel` und `App`.
 - Encodings speichern Kopien von `DataField` statt Referenzen auf Fields.
 - `DataTable` nutzt noch den alten Surface-Stil statt `.glass`.
 - In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte
@@ -690,8 +706,10 @@ waren:
   Semantic Role des Profils abgeleitet wird. Die Frontend-Logik
   (Compatibility, Color Mode, Default Encodings, Field Groups) liest es
   noch und muss schrittweise auf `semantic_role` umgestellt werden.
-- Das Demo-Dataset existiert nur im Frontend, hat kein Profil und
-  liefert keine Daten für aggregierte Charts.
+- Zahlen werden an mehreren Stellen mit eigenem `Intl.NumberFormat`
+  formatiert statt über `src/data/formatNumber.ts` (siehe `TODO.md`).
+- `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
+  am Tagesrand um einen Tag abweichen.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder
   (`True` in Python gegenüber `true` in Polars), Float-Formatierung und
   leere Kategorien (`''`, `(empty)`, `No category`) treffen daher nicht

@@ -16,6 +16,7 @@ from app.schema_detection import infer_physical_type, infer_semantic_role
 
 # ===== CONSTANTS =============================================================
 VALUE_COUNT_LIMIT = 5
+HISTOGRAM_BIN_LIMIT = 20
 
 
 # ===== PROFILE ===============================================================
@@ -73,6 +74,7 @@ def build_measure_statistics(values: pl.Series) -> MeasureStatistics:
         max=to_float(values.max()),
         mean=to_float(values.mean()),
         median=to_float(values.median()),
+        histogram=build_histogram(values),
     )
 
 
@@ -96,7 +98,29 @@ def build_temporal_statistics(values: pl.Series) -> TemporalStatistics:
     return TemporalStatistics(
         min=format_temporal(values.min()),
         max=format_temporal(values.max()),
+        histogram=build_histogram(values),
     )
+
+
+def build_histogram(values: pl.Series) -> list[int]:
+    numbers = values.to_physical().cast(pl.Float64)
+    if numbers.is_empty():
+        return []
+    low = numbers.min()
+    high = numbers.max()
+    if high == low:
+        return [numbers.len()]
+    bin_count = min(HISTOGRAM_BIN_LIMIT, numbers.n_unique())
+    positions = (
+        ((numbers - low) / (high - low) * bin_count)  # type: ignore
+        .floor()
+        .clip(0, bin_count - 1)
+        .cast(pl.Int64)
+    )
+    histogram = [0] * bin_count
+    for position, count in positions.value_counts().iter_rows():
+        histogram[position] = count
+    return histogram
 
 
 # ===== HELPERS ===============================================================

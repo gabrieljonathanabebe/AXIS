@@ -8,6 +8,18 @@
   align-items: center;
 }
 
+.panel.is-embedded {
+  border-radius: 0;
+}
+
+.panel.is-embedded + .panel.is-embedded {
+  border-left: var(--border-width-thin) solid var(--color-border-subtle);
+}
+
+.panel.is-embedded.is-collapsed {
+  padding-inline: var(--space-2);
+}
+
 .panel-header {
   display: flex;
   align-items: center;
@@ -60,5 +72,10 @@
 @media (max-width: 960px) {
   .panel {
     min-height: auto;
+  }
+
+  .panel.is-embedded + .panel.is-embedded {
+    border-top: var(--border-width-thin) solid var(--color-border-subtle);
+    border-left: none;
   }
 }

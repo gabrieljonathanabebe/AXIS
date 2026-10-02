@@ -5,7 +5,6 @@ import {
   createChartInstance,
   createDefaultChartSpec,
 } from '../chart/createChartInstance'
-import { createDemoDataset } from '../data/createDemoDataset'
 import {
   initialWorkspaceHistory,
   workspaceHistoryReducer,
@@ -42,12 +41,14 @@ type UseChartWorkspaceParams = {
 
 type CreateChartAction = (chartId: string) => WorkspaceAction
 
+// ===== CONSTANTS =============================================================
+const EMPTY_DATASET: Dataset = { fields: [], rows: [] }
+
 // ===== FUNCTION ==============================================================
 export function useChartWorkspace({
   dataset: externalDataset,
 }: UseChartWorkspaceParams = {}) {
-  const [demoDataset] = useState<Dataset>(() => createDemoDataset())
-  const dataset = externalDataset ?? demoDataset
+  const dataset = externalDataset ?? EMPTY_DATASET
 
   const [history, dispatchHistory] = useReducer(
     workspaceHistoryReducer,

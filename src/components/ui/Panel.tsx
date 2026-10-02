@@ -15,6 +15,7 @@ type PanelProps = {
   actions?: ReactNode
   children?: ReactNode
   isCollapsed?: boolean
+  isEmbedded?: boolean
   isFilled?: boolean
   isScrollable?: boolean
   side?: PanelSide
@@ -30,6 +31,7 @@ function Panel({
   actions,
   children,
   isCollapsed = false,
+  isEmbedded = false,
   isFilled = false,
   isScrollable = false,
   side = 'start',
@@ -51,11 +53,12 @@ function Panel({
     heading ?? (title ? <IconBadge label={title}>{icon}</IconBadge> : null)
   return (
     <Element
-      className={`panel glass glass-thin ${isFilled ? 'is-filled' : ''} ${isScrollable ? 'is-scrollable' : ''} ${isCollapsed ? 'is-collapsed' : ''} ${className}`}
+      className={`panel ${isEmbedded ? 'is-embedded' : 'glass glass-thin'} ${isFilled ? 'is-filled' : ''} ${isScrollable ? 'is-scrollable' : ''} ${isCollapsed ? 'is-collapsed' : ''} ${className}`}
     >
       {isCollapsed ? (
         <IconButton
           label={`Show ${title}`}
+          size="sm"
           aria-expanded={false}
           onClick={onToggleCollapse}
         >

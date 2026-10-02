@@ -14,6 +14,7 @@
 @import './styles/ui/GradientControl.css';
 @import './styles/ui/IconBadge.css';
 @import './styles/ui/IconButton.css';
+@import './styles/ui/MiniHistogram.css';
 @import './styles/ui/OptionsMenu.css';
 @import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
@@ -22,6 +23,7 @@
 @import './styles/ui/SelectControl.css';
 @import './styles/ui/SegmentedControl.css';
 @import './styles/ui/Slider.css';
+@import './styles/ui/StatWidget.css';
 @import './styles/ui/TextInput.css';
 @import './styles/ui/Toggle.css';
 
@@ -42,6 +44,7 @@
 
 @import './styles/data/DataTable.css';
 @import './styles/data/DataPanel.css';
+@import './styles/data/DataProfile.css';
 
 @import './styles/dnd/DragPreviewOverlay.css';
 @import './styles/inspector/InspectorTabs.css';

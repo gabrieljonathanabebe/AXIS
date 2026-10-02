@@ -3,6 +3,7 @@ import Button from '../ui/Button'
 import ChartPicker from './ChartPicker'
 import CollapsibleSection from '../ui/CollapsibleSection'
 import DatasetCard from './DatasetCard'
+import { DEMO_DATASET_ID } from '../../api/datasets'
 import FieldList from './FieldList'
 import Panel from '../ui/Panel'
 import type { ChartType, Dataset } from '../../types/chart'
@@ -12,8 +13,8 @@ type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
   dataset: Dataset
   isCollapsed: boolean
-  isUploading: boolean
-  uploadError: string | null
+  datasetError: string | null
+  isLoading: boolean
   onSelectChartType: (type: ChartType) => void
   onToggleCollapse: () => void
   onUploadFile: (file: File) => Promise<void>
@@ -23,8 +24,8 @@ function BuildPanel({
   activeDatasetSummary,
   dataset,
   isCollapsed,
-  isUploading,
-  uploadError,
+  datasetError,
+  isLoading,
   onSelectChartType,
   onToggleCollapse,
   onUploadFile,
@@ -36,6 +37,7 @@ function BuildPanel({
       title="Build"
       className="build-panel"
       isCollapsed={isCollapsed}
+      isEmbedded
       isScrollable
       onToggleCollapse={onToggleCollapse}
     >
@@ -56,14 +58,17 @@ function BuildPanel({
           <div className="stack">
             <DatasetCard
               fieldCount={dataset.fields.length}
-              isDemo={!activeDatasetSummary}
-              isUploading={isUploading}
-              name={activeDatasetSummary?.name ?? 'Demo data'}
+              isDemo={
+                !activeDatasetSummary ||
+                activeDatasetSummary.id === DEMO_DATASET_ID
+              }
+              isLoading={isLoading}
+              name={activeDatasetSummary?.name ?? 'No dataset'}
               rowCount={activeDatasetSummary?.row_count ?? dataset.rows.length}
               onUploadFile={onUploadFile}
             />
-            {uploadError ? (
-              <span className="panel-error">{uploadError}</span>
+            {datasetError ? (
+              <span className="panel-error">{datasetError}</span>
             ) : null}
           </div>
         </CollapsibleSection>

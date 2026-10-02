@@ -16,10 +16,12 @@ function App() {
   const {
     activeDatasetSummary,
     dataset: uploadedDataset,
-    isUploading,
-    uploadError,
+    datasetError,
+    isLoading,
+    profile,
     uploadFile,
   } = useDatasets()
+
   const {
     activeDrag,
     addChart,
@@ -90,15 +92,16 @@ function App() {
             onWorkspaceChange={setActiveWorkspace}
           />
           <main
-            className={`workspace visualize-workspace ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''} ${isInspectorCollapsed ? 'is-inspector-collapsed' : ''}`}
+            className={`workspace visualize-workspace glass glass-thin ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''} ${isInspectorCollapsed ? 'is-inspector-collapsed' : ''}`}
             hidden={activeWorkspace !== 'visualize'}
           >
             <BuildPanel
               activeDatasetSummary={activeDatasetSummary}
               dataset={dataset}
               isCollapsed={isBuildPanelCollapsed}
-              isUploading={isUploading}
-              uploadError={uploadError}
+              datasetError={datasetError}
+              isLoading={isLoading}
+
               onSelectChartType={addChart}
               onToggleCollapse={toggleBuildPanel}
               onUploadFile={async (file) => {
@@ -142,7 +145,10 @@ function App() {
           <main className="workspace" hidden={activeWorkspace !== 'data'}>
             <DataPanel
               dataset={dataset}
-              datasetName={activeDatasetSummary?.name ?? 'Demo data'}
+              datasetName={activeDatasetSummary?.name ?? 'No dataset'}
+              error={datasetError}
+              isLoading={isLoading}
+              profile={profile}
             />
           </main>
         </div>
