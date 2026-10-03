@@ -121,6 +121,11 @@ export type WorkspaceHistoryAction =
       timestamp: number
     }
   | {
+      type: 'history/applyBatch'
+      actions: WorkspaceAction[]
+      timestamp: number
+    }
+  | {
       type: 'history/redo'
     }
   | {

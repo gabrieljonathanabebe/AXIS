@@ -109,6 +109,26 @@ function applyAction(
   }
 }
 
+function applyBatch(
+  history: WorkspaceHistoryState,
+  actions: WorkspaceAction[],
+  timestamp: number,
+): WorkspaceHistoryState {
+  const present = actions.reduce(workspaceReducer, history.present)
+  if (present === history.present) {
+    return history
+  }
+  return {
+    future: [],
+    lastCoalesceKey: null,
+    lastTimestamp: timestamp,
+    past: [...history.past, createSnapshot(history.present)].slice(
+      -HISTORY_LIMIT,
+    ),
+    present,
+  }
+}
+
 function undo(history: WorkspaceHistoryState): WorkspaceHistoryState {
   const previous = history.past.at(-1)
   if (!previous) {
@@ -145,6 +165,8 @@ export function workspaceHistoryReducer(
   switch (action.type) {
     case 'history/apply':
       return applyAction(history, action.action, action.timestamp)
+    case 'history/applyBatch':
+      return applyBatch(history, action.actions, action.timestamp)
     case 'history/redo':
       return redo(history)
     case 'history/undo':

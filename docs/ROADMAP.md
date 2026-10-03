@@ -474,15 +474,28 @@ noch offen.
 
 ## 5. Next – Action Layer und AI Commands V1
 
-### Action Layer
+### Action Layer (in Arbeit)
 
-- Action Schema: zentrale Registry für validierbare Cevyn Actions
-- Validator gegen Workspace State, Fields und Chart Registry
-- Executor über die bestehenden `WorkspaceAction`s und den
-  `workspaceReducer`
-- Actions für ChartSpecs, Dashboard State und später gemeinsame Filter
-- deterministische Ausführung und nachvollziehbare, undo-fähige
-  Änderungen
+Implementiert:
+
+- `CevynAction` als externer, absichtsbasierter Auftrag; Fields per Name
+- `chart/create` mit Charttyp, optional Encoding und Aggregation
+- Validierung gegen Chart Registry und effektive Semantic Roles,
+  gesammelte Fehler mit Index
+- Übersetzung in bestehende `WorkspaceAction`s über einen Draft-State;
+  alles oder nichts
+- `history/applyBatch`: mehrere Actions als ein Undo-Schritt
+- `runActions` in `useChartWorkspace`, im Dev-Build als
+  `window.cevyn.run`
+
+Geplant:
+
+- weitere Actions für bestehende Charts (z. B. Typ, Encoding,
+  Aggregation, Titel, Entfernen); Validierung dann auch gegen den
+  Workspace State (Chart existiert)
+- Actions für Dashboard State und später gemeinsame Filter
+- Action Schema: Strukturprüfung für ungeprüftes JSON, später Grundlage
+  für das AI Tool Calling
 
 ### AI Commands V1
 

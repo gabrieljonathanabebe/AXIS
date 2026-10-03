@@ -1,5 +1,5 @@
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { useReducer, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 
 import {
   createChartInstance,
@@ -14,9 +14,11 @@ import {
   DEFAULT_CHART_SIZE,
   findFreeChartLayout,
 } from '../workspace/chartLayout'
+import { translateCevynActions } from '../actions/translateCevynActions'
 
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import type { ActiveDrag, DragPayload, DropTarget } from '../types/ui'
+import type { CevynAction, CevynActionResult } from '../types/actions'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
@@ -80,6 +82,25 @@ export function useChartWorkspace({
   function redo(): void {
     dispatchHistory({ type: 'history/redo' })
   }
+
+  function runActions(actions: CevynAction[]): CevynActionResult {
+    const result = translateCevynActions(actions, history.present, dataset)
+    if (result.ok) {
+      dispatchHistory({
+        type: 'history/applyBatch',
+        actions: result.workspaceActions,
+        timestamp: Date.now(),
+      })
+    }
+    return result
+  }
+
+  // Dev only: run Cevyn Actions from the console until AI Commands exist.
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      Object.assign(window, { cevyn: { run: runActions } })
+    }
+  })
 
   function dispatchForSelectedChart(createAction: CreateChartAction): void {
     if (selectedChartId) {
@@ -283,6 +304,7 @@ export function useChartWorkspace({
     redo,
     removeChart,
     renameDashboard,
+    runActions,
     selectedChart,
     selectedChartId,
     selectChart,

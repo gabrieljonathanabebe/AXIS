@@ -530,9 +530,41 @@ Regeln:
   in den Workspace State.
 
 Die Actions sind die gemeinsame Grundlage für manuelle Bedienung und
-später für Ask Cevyn und Explore (siehe Abschnitt 16). Eine
-Validierungsschicht für AI-generierte Actions ist noch nicht
-implementiert.
+später für Ask Cevyn und Explore (siehe Abschnitt 16). Externe
+Aufträge laufen nicht direkt als `WorkspaceAction`, sondern über den
+Action Layer.
+
+### Action Layer
+
+`CevynAction`s sind externe, absichtsbasierte Aufträge, z. B. später von
+AI Commands (`src/types/actions.ts`). Sie adressieren Fields per Name
+und enthalten keine IDs, Layouts oder Default Specs. Der Action Layer
+prüft sie und übersetzt sie in bestehende `WorkspaceAction`s
+(`src/actions/`):
+
+```text
+CevynAction[]
+→ validateCevynAction    (Chart Registry, effektive Semantic Roles)
+→ translateCevynActions  (→ WorkspaceAction[], Draft-State)
+→ history/applyBatch     (ein Undo-Schritt)
+```
+
+- `validateCevynAction` prüft gegen dieselben Regeln wie die manuelle
+  Bedienung: Charttyp in `chartDefinitions`, Aggregation in
+  `supportedAggregations`, Field existiert in `dataset.fields` und ist
+  laut `getSemanticCompatibility` nicht `invalid`. Alle Fehler werden
+  gesammelt zurückgegeben.
+- `translateCevynActions` erzeugt IDs, freie Layouts und Defaults über
+  `createChartInstance` und `findFreeChartLayout`. Angegebene Werte
+  überschreiben die Defaults. Jede übersetzte Action wird auf einen
+  Draft-State angewendet, damit Folge-Actions ihren Effekt sehen.
+- Alles oder nichts: Ist eine Action ungültig, wird keine ausgeführt;
+  das Ergebnis (`CevynActionResult`) enthält dann die Fehler mit Index.
+- `useChartWorkspace.runActions` ist der einzige Einstieg. Im Dev-Build
+  ist er zusätzlich als `window.cevyn.run` für die Browser-Konsole
+  verfügbar.
+- Aktuell implementiert ist nur `chart/create` (Charttyp, optional
+  Encoding und Aggregation).
 
 ### Undo/Redo
 
@@ -548,7 +580,10 @@ WorkspaceHistoryState
 
 `useChartWorkspace` dispatcht jede `WorkspaceAction` verpackt als
 `history/apply` mit Timestamp; dazu kommen `history/undo` und
-`history/redo`. Der `workspaceReducer` selbst kennt keine History.
+`history/redo`. `history/applyBatch` wendet mehrere `WorkspaceAction`s
+nacheinander an und speichert davor genau einen Snapshot; ein Batch
+wird nie mit anderen Schritten zusammengefasst. Der `workspaceReducer`
+selbst kennt keine History.
 
 Regeln:
 
