@@ -8,6 +8,7 @@ import Popover from './Popover'
 import type { OptionItem } from './OptionsMenu'
 
 type SelectControlProps<TValue extends string> = {
+  disabled?: boolean
   label: string
   options: OptionItem<TValue>[]
   value: TValue
@@ -16,6 +17,7 @@ type SelectControlProps<TValue extends string> = {
 }
 
 function SelectControl<TValue extends string>({
+  disabled = false,
   label,
   options,
   value,
@@ -47,6 +49,7 @@ function SelectControl<TValue extends string>({
             {...triggerProps}
             className="select-control-button spread"
             aria-label={label}
+            disabled={disabled}
             onClick={() => {
               setIsOpen((currentValue) => !currentValue)
             }}

@@ -9,15 +9,22 @@ import type { ReactNode } from 'react'
 
 import { groupFieldProfiles } from '../../data/fieldGroups'
 import { formatNumber, formatPercent } from '../../data/formatNumber'
+import { getSemanticRole } from '../../data/semanticRoles'
 import CollapsibleSection from '../ui/CollapsibleSection'
 import StatWidget from '../ui/StatWidget'
 import FieldProfileWidget from './FieldProfileWidget'
 
-import type { DatasetProfile } from '../../types/chart'
+import type {
+  DatasetProfile,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from '../../types/chart'
 
 // ===== TYPES =================================================================
 type DatasetProfileViewProps = {
   profile: DatasetProfile
+  semanticRoleOverrides: SemanticRoleOverrides
+  onSemanticRoleChange: (fieldName: string, role: SemanticRole) => void
 }
 
 type DatasetStat = {
@@ -63,9 +70,13 @@ function createDatasetStats(profile: DatasetProfile): DatasetStat[] {
 }
 
 // ===== COMPONENT =============================================================
-function DatasetProfileView({ profile }: DatasetProfileViewProps) {
+function DatasetProfileView({
+  profile,
+  semanticRoleOverrides,
+  onSemanticRoleChange,
+}: DatasetProfileViewProps) {
   const datasetStats = createDatasetStats(profile)
-  const fieldGroups = groupFieldProfiles(profile.fields)
+  const fieldGroups = groupFieldProfiles(profile.fields, semanticRoleOverrides)
 
   return (
     <div className="data-profile stack">
@@ -105,6 +116,8 @@ function DatasetProfileView({ profile }: DatasetProfileViewProps) {
                 <FieldProfileWidget
                   field={field}
                   rowCount={profile.row_count}
+                  semanticRole={getSemanticRole(field, semanticRoleOverrides)}
+                  onSemanticRoleChange={onSemanticRoleChange}
                   key={field.name}
                 />
               ))}

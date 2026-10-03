@@ -7,7 +7,12 @@ import {
   uploadDataset,
 } from '../api/datasets'
 import type { DatasetRows, DatasetSummary } from '../api/datasets'
-import type { Dataset, DatasetProfile } from '../types/chart'
+import type {
+  Dataset,
+  DatasetProfile,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from '../types/chart'
 
 // ===== TYPES =================================================================
 type useDatasetsResults = {
@@ -16,6 +21,8 @@ type useDatasetsResults = {
   datasetError: string | null
   isLoading: boolean
   profile: DatasetProfile | null
+  semanticRoleOverrides: SemanticRoleOverrides
+  setSemanticRole: (fieldName: string, role: SemanticRole) => void
   uploadFile: (file: File) => Promise<void>
 }
 
@@ -30,6 +37,8 @@ export function useDatasets(): useDatasetsResults {
   const [loadedDataset, setLoadedDataset] = useState<LoadedDataset | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [datasetError, setDatasetError] = useState<string | null>(null)
+  const [semanticRoleOverrides, setSemanticRoleOverrides] =
+    useState<SemanticRoleOverrides>({})
 
   useEffect(() => {
     let isCancelled = false
@@ -63,11 +72,30 @@ export function useDatasets(): useDatasetsResults {
     try {
       const summary = await uploadDataset(file)
       setLoadedDataset(await loadDataset(summary))
+      setSemanticRoleOverrides({})
     } catch {
       setDatasetError('Failed to upload dataset.')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  function setSemanticRole(fieldName: string, role: SemanticRole): void {
+    const field = loadedDataset?.profile.fields.find(
+      (profileField) => profileField.name === fieldName,
+    )
+    if (!field) {
+      return
+    }
+    setSemanticRoleOverrides((currentOverrides) => {
+      const nextOverrides = { ...currentOverrides }
+      if (role === field.semantic_role) {
+        delete nextOverrides[fieldName]
+      } else {
+        nextOverrides[fieldName] = role
+      }
+      return nextOverrides
+    })
   }
 
   return {
@@ -76,6 +104,8 @@ export function useDatasets(): useDatasetsResults {
     datasetError,
     isLoading,
     profile: loadedDataset?.profile ?? null,
+    semanticRoleOverrides,
+    setSemanticRole,
     uploadFile,
   }
 }

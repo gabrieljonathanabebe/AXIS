@@ -357,11 +357,23 @@ DatasetProfile
   Haarlinien; eingeklappt bleibt ein schmaler Strip mit dem
   Expand-Control
 
-### Slice 4 – Semantic Role Correction (geplant)
+### Slice 4 – Semantic Role Correction (implementiert)
 
-- erkannte Semantic Role sichtbar machen
-- Nutzer kann eine falsche Erkennung überschreiben
-- Overrides im Daten-/Projektmodell, getrennt vom Profiling-Ergebnis
+- jede Field-Kachel im Profile zeigt die Semantic Role als
+  `SelectControl`; ohne Override ist das die erkannte Role
+- Nutzer kann die Role überschreiben; das Field wandert in die
+  passende Gruppe, ein Reset-Button stellt die erkannte Role wieder her
+- erlaubte Roles hängen vom Physical Type ab (`semanticRoles.ts`), z. B.
+  Integer/Float: Measure, Dimension, Identifier; String: Dimension,
+  Identifier; Boolean nur Dimension (Auswahl deaktiviert)
+- Overrides (`SemanticRoleOverrides`) liegen im Frontend in
+  `useDatasets`, getrennt vom `DatasetProfile`; das Profil bleibt das
+  unveränderte Erkennungsergebnis
+- ein Override auf die erkannte Role wird entfernt; beim Upload eines
+  neuen Datensatzes werden die Overrides zurückgesetzt
+- Statistiken und Histogramm bleiben die der erkannten Role
+- Build Panel, Chart Compatibility und Backend lesen die Overrides noch
+  nicht (Slice 5)
 
 ### Slice 5 – Build Panel Integration (geplant)
 
@@ -369,8 +381,8 @@ Das Build Panel gruppiert Fields aus dem `DatasetProfile` statt über
 eine eigene Typ-Logik:
 
 ```text
-DatasetProfile
-→ semanticRole
+DatasetProfile + SemanticRoleOverrides
+→ effektive Semantic Role (getSemanticRole)
 → Build Panel: Measures, Dimensions, Time, Identifiers
 ```
 
@@ -702,6 +714,8 @@ waren:
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
   eines Projekts muss dieses Verhalten auf neu hinzugefügte Charts
   begrenzt werden.
+- Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
+  verloren; sie gehören später in den serialisierbaren Project State.
 - `semantic_type` am `DataField` ist ein Übergangsfeld, das aus der
   Semantic Role des Profils abgeleitet wird. Die Frontend-Logik
   (Compatibility, Color Mode, Default Encodings, Field Groups) liest es

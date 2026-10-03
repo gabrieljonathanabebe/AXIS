@@ -19,6 +19,8 @@ function App() {
     datasetError,
     isLoading,
     profile,
+    semanticRoleOverrides,
+    setSemanticRole,
     uploadFile,
   } = useDatasets()
 
@@ -149,6 +151,8 @@ function App() {
               error={datasetError}
               isLoading={isLoading}
               profile={profile}
+              semanticRoleOverrides={semanticRoleOverrides}
+              onSemanticRoleChange={setSemanticRole}
             />
           </main>
         </div>

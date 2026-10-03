@@ -234,7 +234,10 @@ werden.
   Icons und Labels wie im Build Panel, Identifiers eingeklappt);
 - jede Field-Kachel (`FieldProfileWidget`) ist quadratisch: Name,
   darunter leise Physical Type, Unique und Missing (nur wenn > 0),
-  darunter ein `MiniHistogram`, das die restliche Höhe füllt;
+  darunter die Semantic Role als `SelectControl` (deaktiviert, wenn nur
+  eine Role erlaubt ist) mit Reset-Button (`IconButton`, ghost, xs) bei
+  einem Override, darunter ein `MiniHistogram`, das die restliche Höhe
+  füllt;
 - Kacheln im `.auto-grid` mit `--grid-repeat: auto-fill` und 180 px
   Mindestbreite: wenige Kacheln behalten ihre Breite und stehen
   linksbündig, statt sich über die ganze Zeile zu dehnen;

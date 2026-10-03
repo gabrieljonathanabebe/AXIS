@@ -7,7 +7,12 @@ import EmptyState from '../ui/EmptyState'
 import Panel from '../ui/Panel'
 import SegmentedControl from '../ui/SegmentedControl'
 
-import type { Dataset, DatasetProfile } from '../../types/chart'
+import type {
+  Dataset,
+  DatasetProfile,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from '../../types/chart'
 import type { DataView } from '../../types/ui'
 import type { OptionItem } from '../ui/OptionsMenu'
 
@@ -18,6 +23,8 @@ type DataPanelProps = {
   error: string | null
   isLoading: boolean
   profile: DatasetProfile | null
+  semanticRoleOverrides: SemanticRoleOverrides
+  onSemanticRoleChange: (fieldName: string, role: SemanticRole) => void
 }
 
 type DataViewPlaceholder = {
@@ -52,6 +59,8 @@ function DataPanel({
   error,
   isLoading,
   profile,
+  semanticRoleOverrides,
+  onSemanticRoleChange,
 }: DataPanelProps) {
   const [dataView, setDataView] = useState<DataView>('profile')
   function renderDataView() {
@@ -61,7 +70,13 @@ function DataPanel({
     if (!profile) {
       return <EmptyState {...getProfileStatus(isLoading, error)} />
     }
-    return <DatasetProfileView profile={profile} />
+    return (
+      <DatasetProfileView
+        profile={profile}
+        semanticRoleOverrides={semanticRoleOverrides}
+        onSemanticRoleChange={onSemanticRoleChange}
+      />
+    )
   }
 
   return (

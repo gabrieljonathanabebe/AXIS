@@ -174,6 +174,9 @@ export type Dataset = {
 
 export type DataValue = string | number | null
 
+// User corrections of the detected semantic role, keyed by field name.
+export type SemanticRoleOverrides = Record<string, SemanticRole>
+
 export type DatasetProfile = {
   dataset_id: string
   row_count: number

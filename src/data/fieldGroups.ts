@@ -1,10 +1,13 @@
 import { Calendar, CaseUpper, Hash, IdCard } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
+import { getSemanticRole } from './semanticRoles'
+
 import type {
   DataField,
   FieldProfile,
   SemanticRole,
+  SemanticRoleOverrides,
   SemanticType,
 } from '../types/chart'
 
@@ -66,10 +69,11 @@ export function groupFields(fields: DataField[]): FieldGroup[] {
 
 export function groupFieldProfiles(
   fields: FieldProfile[],
+  overrides: SemanticRoleOverrides,
 ): FieldGroup<FieldProfile>[] {
   return groupByFieldGroup(
     fields,
-    (field) => fieldGroupKeyBySemanticRole[field.semantic_role],
+    (field) => fieldGroupKeyBySemanticRole[getSemanticRole(field, overrides)],
   )
 }
 

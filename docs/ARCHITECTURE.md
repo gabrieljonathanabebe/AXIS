@@ -773,6 +773,34 @@ Implementiert in `backend/app/profiling.py`:
   übersetzt Histogramm bzw. `value_counts` in UI-Balken; Dimensions
   erhalten zusätzlich „Other“ für die übrigen Werte.
 
+### Semantic Role Overrides
+
+Die erkannte Semantic Role kann vom Nutzer korrigiert werden. Overrides
+sind Nutzerentscheidungen und kein Teil des Profiling-Ergebnisses:
+
+```text
+DatasetProfile.fields[].semantic_role   erkannte Role (unverändert)
+SemanticRoleOverrides                   { fieldName: SemanticRole }
+→ getSemanticRole(field, overrides)     effektive Role
+```
+
+- `SemanticRoleOverrides` liegt im Frontend in `useDatasets` neben dem
+  geladenen Dataset und wird beim Laden eines neuen Datensatzes
+  geleert. Ein Override, der der erkannten Role entspricht, wird
+  entfernt.
+- `src/data/semanticRoles.ts` enthält die effektive Role
+  (`getSemanticRole`), die Labels und die je Physical Type erlaubten
+  Roles (`getAllowedSemanticRoles`); die erkannte Role ist immer
+  erlaubt.
+- `groupFieldProfiles` gruppiert nach der effektiven Role.
+- Das Backend kennt die Overrides nicht. Statistiken bleiben die der
+  erkannten Role; die Chart-Query-Validierung prüft Physical Types und
+  ist davon nicht betroffen.
+- Build Panel und Compatibility lesen noch `semantic_type` und
+  übernehmen die effektive Role mit Slice 5.
+- Geplant: Overrides werden Teil des serialisierbaren Project State
+  (Abschnitt 17) und damit undo-fähig und speicherbar.
+
 ### Aggregated Chart Query
 
 Line-, Bar-, Pie- und Donut-Charts verwenden ein gruppiertes
