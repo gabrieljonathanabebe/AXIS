@@ -21,7 +21,7 @@ type CreateChartInstanceParams = {
 export function createDefaultChartContainer(): ChartContainerAppearance {
   return {
     background: { kind: 'glass' },
-    padding: 24,
+    padding: 8,
     borderRadius: 24,
   }
 }
@@ -107,7 +107,7 @@ export function createDefaultChartSpec(
         symbol: 'auto',
         textColor: '#eef4ff',
         fontSize: 12,
-        gap: 16,
+        gap: 8,
         layout: 'auto',
         itemWidth: 24,
         itemHeight: 14,
