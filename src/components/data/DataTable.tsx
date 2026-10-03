@@ -1,109 +1,145 @@
-import DataTypeIcon from './DataTypeIcon'
-import type { Dataset, DataValue } from '../../types/chart'
-import IconBadge from '../ui/IconBadge'
-import { useMemo } from 'react'
-import type { CSSProperties } from 'react'
+import { useMemo, useState } from 'react'
 
+import DataTableColumnHeader from './DataTableColumnHeader'
+import { formatNumber } from '../../data/formatNumber'
+import { getSemanticRole } from '../../data/semanticRoles'
+import { sortRows } from '../../data/sortRows'
+
+import type {
+  DataField,
+  Dataset,
+  DatasetProfile,
+  FieldProfile,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from '../../types/chart'
+import type { SortDirection, TableSort } from '../../types/ui'
+
+// ===== TYPES =================================================================
 type DataTableProps = {
   dataset: Dataset
+  profile: DatasetProfile | null
+  semanticRoleOverrides: SemanticRoleOverrides
 }
 
-const categoryColors = [
-  '#2f8cff', // blue
-  '#22c55e', // green
-  '#facc15', // yellow
-  '#ef4444', // red
-  '#a855f7', // purple
-  '#14b8a6', // teal
-]
-
-function formatCellValue(value: DataValue) {
-  if (value === null) {
-    return ''
-  }
-  if (typeof value === 'number') {
-    return new Intl.NumberFormat('en-US').format(value)
-  }
-  return value
+type DataTableColumn = {
+  field: DataField
+  profileField: FieldProfile | null
+  semanticRole: SemanticRole | null
 }
 
-function getCategoryStyle(color: string): CSSProperties {
-  return {
-    '--category-color': color,
-  } as CSSProperties
+// ===== CONSTANTS =============================================================
+const ariaSortByDirection = {
+  asc: 'ascending',
+  desc: 'descending',
+} as const satisfies Record<SortDirection, string>
+
+// ===== HELPERS ===============================================================
+function createColumns(
+  dataset: Dataset,
+  profile: DatasetProfile | null,
+  overrides: SemanticRoleOverrides,
+): DataTableColumn[] {
+  const profileFieldsByName = new Map(
+    profile?.fields.map((field) => [field.name, field]),
+  )
+
+  return dataset.fields.map((field) => {
+    const profileField = profileFieldsByName.get(field.name) ?? null
+    return {
+      field,
+      profileField,
+      semanticRole: profileField
+        ? getSemanticRole(profileField, overrides)
+        : null,
+    }
+  })
 }
 
-function DataTable({ dataset }: DataTableProps) {
-  const minColumnWidth = 180
-  const gridTemplateColumns = `repeat(${dataset.fields.length}, minmax(${minColumnWidth}px, 1fr))`
-  const gridStyle: CSSProperties = {
-    gridTemplateColumns,
-    minWidth: `max(100%, ${dataset.fields.length * minColumnWidth}px)`,
-  }
-  const categoryColorMap = useMemo(() => {
-    const colorMap = new Map<string, string>()
-    dataset.fields
-      .filter((field) => field.semantic_type === 'categorical')
-      .forEach((field) => {
-        dataset.rows.forEach((row) => {
-          const key = `${field.name}:${String(row[field.name] ?? '')}`
+function formatCellValue(value: number | string): string {
+  return typeof value === 'number' ? formatNumber(value) : value
+}
 
-          if (!colorMap.has(key)) {
-            colorMap.set(
-              key,
-              categoryColors[colorMap.size % categoryColors.length],
-            )
-          }
-        })
-      })
-    return colorMap
-  }, [dataset])
+// Cycles ascending → descending → unsorted.
+function getNextSort(
+  sort: TableSort | null,
+  fieldName: string,
+): TableSort | null {
+  if (sort?.fieldName !== fieldName) {
+    return { direction: 'asc', fieldName }
+  }
+  return sort.direction === 'asc' ? { direction: 'desc', fieldName } : null
+}
+
+// ===== COMPONENT =============================================================
+function DataTable({
+  dataset,
+  profile,
+  semanticRoleOverrides,
+}: DataTableProps) {
+  const columns = createColumns(dataset, profile, semanticRoleOverrides)
+  const rowCount = profile?.row_count ?? dataset.rows.length
+  const [sort, setSort] = useState<TableSort | null>(null)
+  const rows = useMemo(() => sortRows(dataset.rows, sort), [dataset.rows, sort])
+
   return (
     <div className="data-table">
-      <div className="data-table-scroll">
-        <div className="data-table-header grid" style={gridStyle}>
-          {dataset.fields.map((field) => (
-            <button
-              className="data-column-header spread"
-              type="button"
-              key={field.name}
-              title={`Type: ${field.semantic_type}`}
-            >
-              <IconBadge label={field.name}>
-                <DataTypeIcon type={field.semantic_type} />
-              </IconBadge>
-            </button>
+      <table className="data-table-grid">
+        <thead>
+          <tr>
+            <th className="data-table-index" scope="col">
+              #
+            </th>
+            {columns.map((column) => {
+              const { name } = column.field
+              const sortDirection =
+                sort?.fieldName === name ? sort.direction : null
+              return (
+                <th
+                  aria-sort={
+                    sortDirection
+                      ? ariaSortByDirection[sortDirection]
+                      : undefined
+                  }
+                  scope="col"
+                  key={name}
+                >
+                  <DataTableColumnHeader
+                    {...column}
+                    rowCount={rowCount}
+                    sortDirection={sortDirection}
+                    onSort={() => {
+                      setSort(getNextSort(sort, name))
+                    }}
+                  />
+                </th>
+              )
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              <td className="data-table-index">{rowIndex + 1}</td>
+              {columns.map(({ field, semanticRole }) => {
+                const value = row[field.name]
+                return (
+                  <td
+                    className={semanticRole === 'measure' ? 'is-numeric' : ''}
+                    key={field.name}
+                  >
+                    {value === null ? (
+                      <span className="data-table-missing">—</span>
+                    ) : (
+                      formatCellValue(value)
+                    )}
+                  </td>
+                )
+              })}
+            </tr>
           ))}
-        </div>
-        <div className="data-table-body">
-          {dataset.rows.map((row, rowIndex) => (
-            <div
-              className="data-table-row grid"
-              style={gridStyle}
-              key={rowIndex}
-            >
-              {dataset.fields.map((field) => (
-                <div className="data-table-cell" key={field.name}>
-                  {field.semantic_type === 'categorical' ? (
-                    <span
-                      className="data-category-badge inline-cluster"
-                      style={getCategoryStyle(
-                        categoryColorMap.get(
-                          `${field.name}:${String(row[field.name] ?? '')}`,
-                        ) ?? categoryColors[0],
-                      )}
-                    >
-                      {formatCellValue(row[field.name])}
-                    </span>
-                  ) : (
-                    formatCellValue(row[field.name])
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+        </tbody>
+      </table>
     </div>
   )
 }

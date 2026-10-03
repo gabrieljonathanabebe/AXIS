@@ -65,7 +65,13 @@ function DataPanel({
   const [dataView, setDataView] = useState<DataView>('profile')
   function renderDataView() {
     if (dataView === 'table') {
-      return <DataTable dataset={dataset} />
+      return (
+        <DataTable
+          dataset={dataset}
+          profile={profile}
+          semanticRoleOverrides={semanticRoleOverrides}
+        />
+      )
     }
     if (!profile) {
       return <EmptyState {...getProfileStatus(isLoading, error)} />

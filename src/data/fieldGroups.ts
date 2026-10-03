@@ -50,9 +50,15 @@ const fieldGroupKeyBySemanticRole: Record<SemanticRole, FieldGroupKey> = {
 }
 
 // ===== FUNCTIONS =============================================================
-// ===== FUNCTIONS =============================================================
 export function getFieldGroupKey(role: SemanticRole): FieldGroupKey {
   return fieldGroupKeyBySemanticRole[role]
+}
+
+export function getFieldGroupDefinition(
+  role: SemanticRole,
+): FieldGroupDefinition {
+  const key = getFieldGroupKey(role)
+  return fieldGroupDefinitions.find((definition) => definition.key === key)!
 }
 
 export function groupFields(

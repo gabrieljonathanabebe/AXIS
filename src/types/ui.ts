@@ -27,6 +27,13 @@ export type HistogramBar = {
   label: string
 }
 
+export type SortDirection = 'asc' | 'desc'
+
+export type TableSort = {
+  direction: SortDirection
+  fieldName: string
+}
+
 export type WorkspaceView = 'data' | 'visualize'
 
 export type DragPayload =

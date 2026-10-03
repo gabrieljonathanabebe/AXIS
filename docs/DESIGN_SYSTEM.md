@@ -246,6 +246,38 @@ werden.
 - Laden und Fehler des Profils zeigt `EmptyState`; Table bleibt die
   Rohdatenansicht über `DataTable` und funktioniert ohne Profil.
 
+### Table View
+
+```text
+ #  │ # revenue      ↓ │ ABC region       │ 📅 date
+    │   integer        │   string         │   date
+    │   ▂▅█▆▃▂▁▃▅▂     │   █▆▄▂▁▁         │   ▃▅▇█▅▃
+────┼──────────────────┼──────────────────┼──────────────
+ 1  │          12 400  │ EU               │ 2024-01-03
+ 2  │           9 870  │ US               │ —
+```
+
+- echtes `<table>` in einer ruhigen Fläche wie die Profile-Kacheln
+  (`--color-surface-subtle`, dünne Linie, `--radius-md`), keine
+  zusätzliche Glass Card; die Fläche scrollt horizontal und vertikal;
+- Spaltenkopf (`DataTableColumnHeader`): Role-Icon und Name, darunter
+  leise der Physical Type, darunter ein `MiniHistogram` mit 20 px Höhe
+  über die Spaltenbreite; der Slot bleibt leer, wenn keine passende
+  Verteilung vorliegt, damit alle Köpfe gleich hoch sind;
+- Icon über `getFieldGroupDefinition` aus der effektiven Role, also
+  dieselben Icons wie Build Panel und Profile View;
+- Header sticky mit `--color-surface-overlay` und Blur, kräftigere
+  Unterkante als die Zeilen; Zeilennummer sticky links mit derselben
+  Fläche, die Ecke liegt über beiden;
+- nur horizontale Haarlinien, kompakte Zellen, Ellipsis ab 280 px,
+  Measures rechtsbündig in tabellarischen Ziffern, fehlende Werte als
+  leiser Strich;
+- Hover zweistufig: Zeile leicht, Zelle etwas stärker; Electric Blue
+  nur für die Zeilennummer bei Hover und den aktiven Sort-Pfeil;
+- Sortieren über die Titelzeile im Spaltenkopf: aufsteigend →
+  absteigend → unsortiert; aktiver Pfeil dauerhaft sichtbar, inaktiver
+  nur bei Hover über dem Kopf (ohne Hover-Gerät immer leise sichtbar).
+
 ## 5. Build Panel
 
 Das Build Panel beantwortet:
@@ -717,7 +749,8 @@ reinem CSS ohne ECharts.
   zeigt Label und Anzahl.
 - `isMuted` dämpft einen Balken, z. B. „Other“ bei Dimensions.
 - Standardgröße 96 × 32 px, anpassbar über `--mini-histogram-width`
-  und `--mini-histogram-height`.
+  und `--mini-histogram-height` (Field-Kachel: füllt die Resthöhe,
+  Spaltenkopf der Table: 20 px).
 - Die Komponente kennt keine Fields; die Umrechnung aus dem Profil
   liegt in `createDistributionBars`.
 

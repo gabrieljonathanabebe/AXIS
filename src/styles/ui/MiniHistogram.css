@@ -4,7 +4,6 @@
   gap: 1px;
   width: var(--mini-histogram-width, 96px);
   height: var(--mini-histogram-height, 32px);
-  height: 32px;
 }
 
 .mini-histogram-column {

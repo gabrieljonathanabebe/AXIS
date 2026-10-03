@@ -397,6 +397,28 @@ DatasetProfile + SemanticRoleOverrides
 - Chip-Tooltip und Drag-Overlay lesen kein `semantic_type` mehr; das
   Overlay zeigt den Chip ohne Typ-Icon
 
+### Slice 6 – Table View Polish (implementiert)
+
+Die Table View liest Field-Metadaten aus dem `DatasetProfile` und ist
+an das aktuelle Design angeglichen:
+
+- Spaltenkopf (`DataTableColumnHeader`) mit Role-Icon, Name, Physical
+  Type und kompaktem `MiniHistogram`; Icon über
+  `getFieldGroupDefinition` aus der effektiven Role, Overrides wirken
+  sofort
+- Verteilung nur, wenn die Statistik zur effektiven Role passt:
+  Histogramm für Measure und Temporal, häufigste Werte für Dimensions,
+  nichts für Identifier; keine neue Profiling-Berechnung
+- `DataTypeIcon` und die Kategorie-Farben nach `semantic_type` sind
+  entfernt; die Table liest kein `semantic_type` mehr
+- echtes `<table>` mit sticky Header und sticky Zeilennummer, ruhige
+  Fläche statt eigener Card, Haarlinien, Hover für Zeile und Zelle,
+  Measures rechtsbündig, fehlende Werte als Strich
+- Sortieren per Klick auf den Spaltenkopf (`sortRows`): auf- und
+  absteigend, `null` immer am Ende; betrifft nur die geladenen
+  Preview-Rows
+- Table funktioniert weiterhin ohne Profil (Name und Physical Type)
+
 ### Nicht Teil des Data-Meilensteins
 
 - AI Profiling

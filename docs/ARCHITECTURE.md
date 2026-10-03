@@ -73,8 +73,13 @@ neue Dataset; Summary, Rows und `DatasetProfile` werden gemeinsam
 geladen und gemeinsam gesetzt. Der Data Workspace hat keine eigene
 Dataset- oder Upload-Logik. Profile-Ansicht und Build Panel gruppieren
 Fields über das `DatasetProfile` und dieselben Semantic Role Overrides
-(siehe Abschnitt 11); später soll auch AI es als Grundlage nutzen
-(siehe `ROADMAP.md`).
+(siehe Abschnitt 11); die Table View liest daraus Role, Physical Type
+und Verteilung. Später soll auch AI es als Grundlage nutzen (siehe
+`ROADMAP.md`).
+
+Die Table zeigt eine Preview: `fetchDatasetRows` lädt die ersten 100
+Rows; Sortierung (`sortRows`) ist lokaler UI-State und betrifft nur
+diese Rows.
 
 Ask Cevyn und Explore werden als integrierte Modi oder fokussierte
 Ansichten angebunden. Sie bilden keine unabhängige Suite neben dem
@@ -794,12 +799,17 @@ SemanticRoleOverrides                   { fieldName: SemanticRole }
   Roles (`getAllowedSemanticRoles`); die erkannte Role ist immer
   erlaubt.
 - `groupFieldProfiles` (Profile View) und `groupFields` (Build Panel)
-  gruppieren nach der effektiven Role über `getFieldGroupKey`.
+  gruppieren nach der effektiven Role über `getFieldGroupKey`;
+  `getFieldGroupDefinition` liefert daraus Icon und Label, z. B. für
+  die Spaltenköpfe der Table View.
 - Das Backend kennt die Overrides nicht. Statistiken bleiben die der
   erkannten Role; die Chart-Query-Validierung prüft Physical Types und
   ist davon nicht betroffen.
-- Compatibility, Color Mode, Default Encodings und Table View lesen
-  noch `semantic_type` und sehen die Overrides nicht.
+- Die Table View zeigt eine Verteilung nur, wenn `statistics.kind` zur
+  effektiven Role passt; nach einem Override auf eine andere Role
+  bleibt der Platz leer.
+- Compatibility, Color Mode und Default Encodings lesen noch
+  `semantic_type` und sehen die Overrides nicht.
 - Geplant: Overrides werden Teil des serialisierbaren Project State
   (Abschnitt 17) und damit undo-fähig und speicherbar.
 
