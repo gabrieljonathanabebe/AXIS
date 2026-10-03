@@ -419,6 +419,24 @@ an das aktuelle Design angeglichen:
   Preview-Rows
 - Table funktioniert weiterhin ohne Profil (Name und Physical Type)
 
+### Slice 7 – Chart Defaults und Compatibility über Semantic Roles (geplant)
+
+Letzter Slice des Data-Meilensteins: Charts nutzen dieselbe effektive
+Semantic Role wie Data View und Build Panel.
+
+```text
+DatasetProfile + SemanticRoleOverrides
+→ getSemanticRole
+→ Compatibility, Default Encodings, Color Mode
+```
+
+- `getCompatibleFields`, `getDefaultEncoding` und
+  `getColorEncodingMode` lesen die effektive Role statt `semantic_type`
+- ein Override (z. B. Measure → Dimension) wirkt sofort auch beim
+  Chart-Bauen
+- übrige `semantic_type`-Stellen im ECharts-Adapter prüfen
+  (Scatter-Farben, Visual Maps, Selection)
+
 ### Nicht Teil des Data-Meilensteins
 
 - AI Profiling

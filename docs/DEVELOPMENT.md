@@ -339,6 +339,11 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   bestimmen, da sie sich durch vorherige Blöcke verschieben;
 - keinen Code in Fließtext oder Aufzählungspunkte packen;
 - bei Ersetzungen den vollständigen neuen Abschnitt zeigen;
+- nach jedem Codeblock in wenigen kurzen Stichpunkten erklären, was
+  passiert: aus Review- und Architektursicht (Verantwortung,
+  Datenfluss, Entscheidung, Auswirkung), nicht Zeile für Zeile und
+  ohne Syntax-Erklärungen; Ziel ist Überblick ohne langes Lesen;
+- Antworten insgesamt knapp halten;
 - nach dem Block den gespeicherten Ist-Zustand prüfen;
 - erst dann mit dem nächsten Block fortfahren.
 
