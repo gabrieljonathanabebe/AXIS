@@ -1,4 +1,5 @@
 import { Blocks, ChartColumn, Columns3, FolderOpen, Plus } from 'lucide-react'
+
 import Button from '../ui/Button'
 import ChartPicker from './ChartPicker'
 import CollapsibleSection from '../ui/CollapsibleSection'
@@ -6,7 +7,13 @@ import DatasetCard from './DatasetCard'
 import { DEMO_DATASET_ID } from '../../api/datasets'
 import FieldList from './FieldList'
 import Panel from '../ui/Panel'
-import type { ChartType, Dataset } from '../../types/chart'
+import type {
+  ChartType,
+  Dataset,
+  DatasetProfile,
+  SemanticRoleOverrides,
+} from '../../types/chart'
+
 import type { DatasetSummary } from '../../api/datasets'
 
 type BuildPanelProps = {
@@ -18,6 +25,8 @@ type BuildPanelProps = {
   onSelectChartType: (type: ChartType) => void
   onToggleCollapse: () => void
   onUploadFile: (file: File) => Promise<void>
+  profile: DatasetProfile | null
+  semanticRoleOverrides: SemanticRoleOverrides
 }
 
 function BuildPanel({
@@ -29,6 +38,8 @@ function BuildPanel({
   onSelectChartType,
   onToggleCollapse,
   onUploadFile,
+  profile,
+  semanticRoleOverrides,
 }: BuildPanelProps) {
   return (
     <Panel
@@ -79,7 +90,11 @@ function BuildPanel({
           variant="plain"
         >
           <div className="stack">
-            <FieldList fields={dataset.fields} />
+            <FieldList
+              fields={dataset.fields}
+              profileFields={profile?.fields ?? []}
+              semanticRoleOverrides={semanticRoleOverrides}
+            />
             <Button
               className="calculated-field-button full-width"
               title="Calculated fields coming soon"

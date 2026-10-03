@@ -8,7 +8,6 @@ import type {
   FieldProfile,
   SemanticRole,
   SemanticRoleOverrides,
-  SemanticType,
 } from '../types/chart'
 
 // ===== TYPES =================================================================
@@ -43,14 +42,6 @@ export const fieldGroupDefinitions: FieldGroupDefinition[] = [
   },
 ]
 
-// Build Panel grouping until it reads semantic roles (Slice 5).
-const fieldGroupKeyBySemanticType: Record<SemanticType, FieldGroupKey> = {
-  categorical: 'dimensions',
-  identifier: 'identifiers',
-  numeric: 'measures',
-  temporal: 'time',
-}
-
 const fieldGroupKeyBySemanticRole: Record<SemanticRole, FieldGroupKey> = {
   dimension: 'dimensions',
   identifier: 'identifiers',
@@ -59,28 +50,40 @@ const fieldGroupKeyBySemanticRole: Record<SemanticRole, FieldGroupKey> = {
 }
 
 // ===== FUNCTIONS =============================================================
-export function getFieldGroupKey(field: DataField): FieldGroupKey {
-  return fieldGroupKeyBySemanticType[field.semantic_type]
+// ===== FUNCTIONS =============================================================
+export function getFieldGroupKey(role: SemanticRole): FieldGroupKey {
+  return fieldGroupKeyBySemanticRole[role]
 }
 
-export function groupFields(fields: DataField[]): FieldGroup[] {
-  return groupByFieldGroup(fields, getFieldGroupKey)
+export function groupFields(
+  fields: DataField[],
+  profileFields: FieldProfile[],
+  overrides: SemanticRoleOverrides,
+): FieldGroup[] {
+  const profileFieldsByName = new Map(
+    profileFields.map((field) => [field.name, field]),
+  )
+  return groupByFieldGroup(fields, (field) => {
+    const profileField = profileFieldsByName.get(field.name)
+    return profileField
+      ? getFieldGroupKey(getSemanticRole(profileField, overrides))
+      : null
+  })
 }
 
 export function groupFieldProfiles(
   fields: FieldProfile[],
   overrides: SemanticRoleOverrides,
 ): FieldGroup<FieldProfile>[] {
-  return groupByFieldGroup(
-    fields,
-    (field) => fieldGroupKeyBySemanticRole[getSemanticRole(field, overrides)],
+  return groupByFieldGroup(fields, (field) =>
+    getFieldGroupKey(getSemanticRole(field, overrides)),
   )
 }
 
 // ===== HELPERS ===============================================================
 function groupByFieldGroup<TField>(
   fields: TField[],
-  getKey: (field: TField) => FieldGroupKey,
+  getKey: (field: TField) => FieldGroupKey | null,
 ): FieldGroup<TField>[] {
   return fieldGroupDefinitions
     .map((definition) => ({

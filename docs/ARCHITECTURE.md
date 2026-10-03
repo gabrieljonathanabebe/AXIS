@@ -71,9 +71,10 @@ Data und Visualize arbeiten auf demselben Dataset. `useDatasets` lädt
 beim Start das Demo-Dataset aus dem Backend und nach einem Upload das
 neue Dataset; Summary, Rows und `DatasetProfile` werden gemeinsam
 geladen und gemeinsam gesetzt. Der Data Workspace hat keine eigene
-Dataset- oder Upload-Logik. Die Profile-Ansicht liest das
-`DatasetProfile` (siehe Abschnitt 11); Build Panel und später AI sollen
-es ebenfalls als Grundlage nutzen (siehe `ROADMAP.md`).
+Dataset- oder Upload-Logik. Profile-Ansicht und Build Panel gruppieren
+Fields über das `DatasetProfile` und dieselben Semantic Role Overrides
+(siehe Abschnitt 11); später soll auch AI es als Grundlage nutzen
+(siehe `ROADMAP.md`).
 
 Ask Cevyn und Explore werden als integrierte Modi oder fokussierte
 Ansichten angebunden. Sie bilden keine unabhängige Suite neben dem
@@ -792,12 +793,13 @@ SemanticRoleOverrides                   { fieldName: SemanticRole }
   (`getSemanticRole`), die Labels und die je Physical Type erlaubten
   Roles (`getAllowedSemanticRoles`); die erkannte Role ist immer
   erlaubt.
-- `groupFieldProfiles` gruppiert nach der effektiven Role.
+- `groupFieldProfiles` (Profile View) und `groupFields` (Build Panel)
+  gruppieren nach der effektiven Role über `getFieldGroupKey`.
 - Das Backend kennt die Overrides nicht. Statistiken bleiben die der
   erkannten Role; die Chart-Query-Validierung prüft Physical Types und
   ist davon nicht betroffen.
-- Build Panel und Compatibility lesen noch `semantic_type` und
-  übernehmen die effektive Role mit Slice 5.
+- Compatibility, Color Mode, Default Encodings und Table View lesen
+  noch `semantic_type` und sehen die Overrides nicht.
 - Geplant: Overrides werden Teil des serialisierbaren Project State
   (Abschnitt 17) und damit undo-fähig und speicherbar.
 

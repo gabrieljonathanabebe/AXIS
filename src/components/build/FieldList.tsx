@@ -6,10 +6,16 @@ import { groupFields } from '../../data/fieldGroups'
 import Chip from '../ui/Chip'
 import CollapsibleSection from '../ui/CollapsibleSection'
 import TextInput from '../ui/TextInput'
-import type { DataField } from '../../types/chart'
+import type {
+  DataField,
+  FieldProfile,
+  SemanticRoleOverrides,
+} from '../../types/chart'
 
 type FieldListProps = {
   fields: DataField[]
+  profileFields: FieldProfile[]
+  semanticRoleOverrides: SemanticRoleOverrides
 }
 
 type DraggableFieldChipProps = {
@@ -30,7 +36,7 @@ function DraggableFieldChip({ field }: DraggableFieldChipProps) {
     <Chip
       ref={setNodeRef}
       className={`field-chip cluster full-width ${isDragging ? 'is-dragging' : ''}`}
-      title={`${field.name} · ${field.semantic_type}`}
+      title={field.name}
       {...listeners}
       {...attributes}
     >
@@ -39,7 +45,11 @@ function DraggableFieldChip({ field }: DraggableFieldChipProps) {
   )
 }
 
-function FieldList({ fields }: FieldListProps) {
+function FieldList({
+  fields,
+  profileFields,
+  semanticRoleOverrides,
+}: FieldListProps) {
   const [query, setQuery] = useState('')
   const normalizedQuery = query.trim().toLowerCase()
   const isSearching = normalizedQuery !== ''
@@ -48,7 +58,11 @@ function FieldList({ fields }: FieldListProps) {
         field.name.toLowerCase().includes(normalizedQuery),
       )
     : fields
-  const fieldGroups = groupFields(visibleFields)
+  const fieldGroups = groupFields(
+    visibleFields,
+    profileFields,
+    semanticRoleOverrides,
+  )
 
   return (
     <div className="stack">

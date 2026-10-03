@@ -324,19 +324,19 @@ FIELDS
 - Gruppen über `groupFields` aus `src/data/fieldGroups.ts`:
 
 ```text
-#    Measures      numeric
-ABC  Dimensions    categorical
+#    Measures      measure
+ABC  Dimensions    dimension
 📅   Time          temporal
 ID   Identifiers   identifier (standardmäßig eingeklappt)
 ```
 
-- Die Zuordnung Field → Gruppe liegt nur in `getFieldGroupKey`; heute
-  aus `semantic_type`, später aus den Semantic Roles des Profilings.
+- Die Zuordnung Semantic Role → Gruppe liegt nur in `getFieldGroupKey`
+  und gilt für Build Panel und Profile View. Maßgeblich ist die
+  effektive Role inklusive Nutzer-Override.
 - Leere Gruppen werden ausgeblendet; die Anzahl steht als `meta` im
   Gruppen-Header.
 - Field Chips zeigen nur den Namen; das Typ-Icon trägt der
-  Gruppen-Header. Das Drag-Overlay zeigt das Icon, weil der Chip dort
-  seine Gruppe verlässt.
+  Gruppen-Header. Das Drag-Overlay rendert denselben Chip ohne Icon.
 - Field Search filtert nach Namen vor dem Gruppieren; während der Suche
   sind alle Gruppen über `forceOpen` geöffnet.
 - „+ Calculated field“ ist ein deaktivierter Einstieg. Calculated

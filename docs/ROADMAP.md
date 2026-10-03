@@ -203,9 +203,9 @@ ETL- oder Data-Engineering-Workspace.
 - `DatasetCard` statt großer Upload-Fläche: Name, Zeilen- und
   Field-Anzahl, Upload/Replace über Icon-Button und Datei-Drop
 - Fields gruppiert nach Measures, Dimensions, Time und Identifiers über
-  `groupFields`; Zuordnung vorerst aus `semantic_type`
-- Gruppen-Header mit Icon und Anzahl, Field Chips nur mit Namen;
-  Drag-Overlay zeigt weiterhin das Typ-Icon
+  `groupFields`; Zuordnung seit Slice 5 über die effektive Semantic Role
+- Gruppen-Header mit Icon und Anzahl, Field Chips und Drag-Overlay nur
+  mit Namen
 - Field Search; Gruppen sind während der Suche geöffnet
 - deaktivierter Einstieg „+ Calculated field“ ohne Calculation Engine
 - ungenutzter `selectedField`-State entfernt
@@ -372,10 +372,10 @@ DatasetProfile
 - ein Override auf die erkannte Role wird entfernt; beim Upload eines
   neuen Datensatzes werden die Overrides zurückgesetzt
 - Statistiken und Histogramm bleiben die der erkannten Role
-- Build Panel, Chart Compatibility und Backend lesen die Overrides noch
-  nicht (Slice 5)
+- das Build Panel liest die Overrides seit Slice 5; Chart Compatibility
+  und Backend lesen sie noch nicht
 
-### Slice 5 – Build Panel Integration (geplant)
+### Slice 5 – Build Panel Integration (implementiert)
 
 Das Build Panel gruppiert Fields aus dem `DatasetProfile` statt über
 eine eigene Typ-Logik:
@@ -386,8 +386,16 @@ DatasetProfile + SemanticRoleOverrides
 → Build Panel: Measures, Dimensions, Time, Identifiers
 ```
 
-Die Zuordnung liegt bereits zentral in `getFieldGroupKey`; nur diese
-Stelle wird umgestellt.
+- `getFieldGroupKey` übersetzt eine Semantic Role in eine Gruppe und
+  ist die einzige Zuordnung für Build Panel und Profile View; die
+  Zuordnung über `semantic_type` ist entfernt
+- `groupFields` gruppiert `DataField`s nach der effektiven Role des
+  passenden `FieldProfile`; der Drag Payload bleibt ein `DataField`
+- `useDatasets` liefert Profil und Overrides an `DataPanel` und
+  `BuildPanel`; ein Override in der Profile View verschiebt das Field
+  sofort auch im Build Panel
+- Chip-Tooltip und Drag-Overlay lesen kein `semantic_type` mehr; das
+  Overlay zeigt den Chip ohne Typ-Icon
 
 ### Nicht Teil des Data-Meilensteins
 
@@ -718,8 +726,9 @@ waren:
   verloren; sie gehören später in den serialisierbaren Project State.
 - `semantic_type` am `DataField` ist ein Übergangsfeld, das aus der
   Semantic Role des Profils abgeleitet wird. Die Frontend-Logik
-  (Compatibility, Color Mode, Default Encodings, Field Groups) liest es
-  noch und muss schrittweise auf `semantic_role` umgestellt werden.
+  (Compatibility, Color Mode, Default Encodings, Table View) liest es
+  noch und muss schrittweise auf die effektive Semantic Role umgestellt
+  werden; Overrides wirken dort bisher nicht.
 - Zahlen werden an mehreren Stellen mit eigenem `Intl.NumberFormat`
   formatiert statt über `src/data/formatNumber.ts` (siehe `TODO.md`).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können

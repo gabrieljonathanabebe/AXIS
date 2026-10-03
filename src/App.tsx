@@ -103,12 +103,13 @@ function App() {
               isCollapsed={isBuildPanelCollapsed}
               datasetError={datasetError}
               isLoading={isLoading}
-
               onSelectChartType={addChart}
               onToggleCollapse={toggleBuildPanel}
               onUploadFile={async (file) => {
                 await uploadFile(file)
               }}
+              profile={profile}
+              semanticRoleOverrides={semanticRoleOverrides}
             />
             <CanvasPanel
               charts={charts}
