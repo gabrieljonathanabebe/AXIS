@@ -24,16 +24,15 @@ export function createChartQuery(
   ) {
     return null
   }
-  const colorField =
-    chart.type === 'bar' ? (encoding.color?.name ?? null) : null
+  const colorField = chart.type === 'bar' ? (encoding.color ?? null) : null
   return {
     aggregation,
     color: colorField,
     color_aggregation: colorField ? colorAggregation : null,
     filters: [],
-    series: encoding.series?.name ?? null,
-    x: encoding.x.name,
-    y: encoding.y.name,
+    series: encoding.series ?? null,
+    x: encoding.x,
+    y: encoding.y,
   }
 }
 

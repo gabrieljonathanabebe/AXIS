@@ -22,8 +22,8 @@ function getBrushCoordRange(
     return null
   }
   const { x, y } = chart.spec.data.encoding
-  const xRange = findRange(selection, x?.name)
-  const yRange = findRange(selection, y?.name)
+  const xRange = findRange(selection, x)
+  const yRange = findRange(selection, y)
   return xRange && yRange ? [xRange, yRange] : null
 }
 

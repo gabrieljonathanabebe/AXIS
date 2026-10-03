@@ -9,16 +9,17 @@ import type { ChartInspectorProps } from './types'
 
 type InteractionInspectorTabProps = Pick<
   ChartInspectorProps,
-  'chart' | 'onSetInteraction'
+  'chart' | 'fields' | 'onSetInteraction'
 >
 
 function InteractionInspectorTab({
   chart,
+  fields,
   onSetInteraction,
 }: InteractionInspectorTabProps) {
   const { interaction } = chart.spec
   const isRadialChart = isRadialChartType(chart.type)
-  const showLegendInteraction = isLegendRelevant(chart)
+  const showLegendInteraction = isLegendRelevant(chart, fields)
   return (
     <div className="stack inspector-tab-content">
       {showLegendInteraction ? (

@@ -28,7 +28,6 @@ import type {
   ChartLayout,
   ChartTitleAppearance,
   ChartType,
-  DataField,
   Dataset,
 } from '../types/chart'
 import type { DashboardLayout } from '../types/dashboard'
@@ -199,26 +198,15 @@ export function useChartWorkspace({
     dispatch({ type: 'dashboard/updateLayout', patch: { [key]: value } })
   }
 
-  function assignFieldToEncoding(
-    key: keyof ChartEncoding,
-    field: DataField | undefined,
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateEncoding',
-      chartId,
-      patch: { [key]: field },
-    }))
-  }
-
   function setEncodingField(
     encodingKey: keyof ChartEncoding,
     fieldName: string,
   ): void {
-    const field = dataset.fields.find((field) => {
-      return field.name === fieldName
-    })
-
-    assignFieldToEncoding(encodingKey, field)
+    dispatchForSelectedChart((chartId) => ({
+      type: 'chart/updateEncoding',
+      chartId,
+      patch: { [encodingKey]: fieldName || undefined },
+    }))
   }
 
   function setAggregation<TKey extends ChartAggregationKey>(
@@ -275,7 +263,7 @@ export function useChartWorkspace({
       dispatch({
         type: 'chart/updateEncoding',
         chartId: target.chartId,
-        patch: { [target.encodingKey]: payload.field },
+        patch: { [target.encodingKey]: payload.field.name },
       })
     }
   }

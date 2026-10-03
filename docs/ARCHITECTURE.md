@@ -360,7 +360,7 @@ Beschreibt Regeln eines Charttyps.
 Beispiele:
 
 - verfügbare Encodings;
-- kompatible Semantic Types;
+- kompatible Semantic Roles;
 - verfügbare Inspector Properties;
 - Defaults;
 - Aggregation Rules.
@@ -383,6 +383,12 @@ Aggregation = Sum
 ChartDefinition ist die Regel.
 
 ChartSpec ist die konkrete Konfiguration.
+
+Encodings referenzieren Fields nur über den Namen
+(`ChartEncoding = { x?: string, … }`). Semantic Role und Physical Type
+werden beim Lesen aus `dataset.fields` nachgeschlagen. Der Spec kopiert
+keine Field-Metadaten, bleibt serialisierbar und kann nach einem Role
+Override nicht veralten.
 
 ## 8. Chart Instances und Workspace State
 
@@ -701,13 +707,17 @@ bestimmen.
 
 Ein explizites Color-Encoding besitzt Vorrang vor Series:
 
-- numerisches Color verwendet eine kontinuierliche Color Scale;
-- diskretes Color verwendet eine kategorische Palette und Legend;
+- Color mit Role Measure verwendet eine kontinuierliche Color Scale;
+- Color mit anderer Role verwendet eine kategorische Palette und Legend;
 - ohne Color kann Series den kategorischen Farbkanal übernehmen.
 
 Series bleibt bei gleichzeitigem numerischem Color als Gruppierung erhalten,
 besitzt aber nicht mehr den Farbkanal. Deshalb wird in diesem Fall keine
 farbige Series-Legend angezeigt.
+
+Die Entscheidung trifft allein `getColorEncodingMode` über die
+effektive Semantic Role des Color-Fields. Adapter (Serien, Visual Map,
+Selection), Legend und Inspector folgen diesem Modus.
 
 ## 11. Data Architecture
 
@@ -741,7 +751,7 @@ Profiling wird zunächst im Python-Backend ausgeführt:
 
 ```text
 Dataset
-→ Physical und Semantic Types
+→ Physical Types und Semantic Roles
 → Summary Statistics
 → Missing Values und Duplicates
 → Profile Result
@@ -769,8 +779,8 @@ Implementiert in `backend/app/profiling.py`:
   nicht übertragen, sondern aus min, max und Bin-Anzahl abgeleitet.
   Date/Datetime werden über ihre physische Zahl gebinnt.
 - Die Semantic Role wird nur an einer Stelle erkannt
-  (`infer_semantic_role` in `schema_detection.py`). `semantic_type` der
-  `DatasetSummary` wird daraus abgeleitet.
+  (`infer_semantic_role` in `schema_detection.py`). Die Fields der
+  `DatasetSummary` tragen dieselbe erkannte `semantic_role`.
 - Im Frontend liegen die Types im DATA-Abschnitt von
   `src/types/chart.ts`, der Abruf in `fetchDatasetProfile`.
 - `groupFieldProfiles` (`src/data/fieldGroups.ts`) gruppiert Field
@@ -808,8 +818,11 @@ SemanticRoleOverrides                   { fieldName: SemanticRole }
 - Die Table View zeigt eine Verteilung nur, wenn `statistics.kind` zur
   effektiven Role passt; nach einem Override auf eine andere Role
   bleibt der Platz leer.
-- Compatibility, Color Mode und Default Encodings lesen noch
-  `semantic_type` und sehen die Overrides nicht.
+- `useDatasets` wendet die Overrides über `applySemanticRoleOverrides`
+  auf die `DataField`s an und gibt ein Dataset mit effektiven Roles
+  aus. Compatibility, Default Encodings, Color Mode und der
+  ECharts-Adapter lesen nur `field.semantic_role` und kennen weder
+  Profil noch Overrides.
 - Geplant: Overrides werden Teil des serialisierbaren Project State
   (Abschnitt 17) und damit undo-fähig und speicherbar.
 

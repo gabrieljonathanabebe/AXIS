@@ -75,10 +75,10 @@ export function createTooltipFormatter({
       const values = Array.isArray(first.value) ? first.value : []
 
       const fields = [
-        [encoding.x?.name, values[0]],
-        [encoding.y?.name, values[1]],
-        [encoding.size?.name, values[2]],
-        [encoding.color?.name, values[3]],
+        [encoding.x, values[0]],
+        [encoding.y, values[1]],
+        [encoding.size, values[2]],
+        [encoding.color, values[3]],
       ] as const
 
       return fields
@@ -95,8 +95,8 @@ export function createTooltipFormatter({
       const values = Array.isArray(rawValue) ? rawValue : null
       const value = Array.isArray(rawValue) ? rawValue[1] : rawValue
       const baseLabel = encoding.series
-        ? entry.seriesName || encoding.y?.name || 'Value'
-        : encoding.y?.name || 'Value'
+        ? entry.seriesName || encoding.y || 'Value'
+        : encoding.y || 'Value'
       const selectionLabel = selection ? formatSelectionLabel(selection) : ''
       const isHighlight = Boolean(
         selection && entry.seriesId?.startsWith(HIGHLIGHT_SERIES_PREFIX),
@@ -115,7 +115,7 @@ export function createTooltipFormatter({
         return [valueRow]
       }
 
-      return [valueRow, createRow(encoding.color.name, values[2])]
+      return [valueRow, createRow(encoding.color, values[2])]
     })
 
     return [

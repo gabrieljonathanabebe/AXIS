@@ -98,3 +98,16 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   Hinweis
 - Scatter wie die übrigen Charts über die Backend-Chart-Query laden,
   mit Punktlimit (`MAX_CHART_POINTS` in `chart_query.py`)
+
+## Temporal als Unterart von Dimension
+
+- in gängigen Semantic Layern (Tableau, Looker, dbt) ist Zeit eine Art
+  von Dimension; Cevyn führt `temporal` aktuell flach neben
+  `dimension`
+- prüfen, ob Semantic Roles hierarchisch modelliert werden sollen:
+  `measure`, `dimension` (`categorical` | `temporal`, später evtl.
+  `geographic`), `identifier`
+- relevant, sobald Code „irgendeine Dimension“ prüft (z. B. Filter,
+  Kategorie-Encodings), statt `dimension` und `temporal` an mehreren
+  Stellen aufzuzählen
+- Build-Panel-Gruppen und Icons können flach bleiben

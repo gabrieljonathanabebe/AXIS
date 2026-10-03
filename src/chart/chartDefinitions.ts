@@ -10,7 +10,7 @@ import type {
   Aggregation,
   ChartEncoding,
   ChartType,
-  SemanticType,
+  SemanticRole,
 } from '../types/chart'
 
 // ===== TYPES =================================================================
@@ -24,8 +24,8 @@ export type EncodingDefinition = {
   key: EncodingKey
   label: string
   required: boolean
-  recommendedTypes: SemanticType[]
-  supportedTypes: SemanticType[]
+  recommendedRoles: SemanticRole[]
+  supportedRoles: SemanticRole[]
 }
 
 export type ChartDefinition = {
@@ -43,16 +43,16 @@ const radialEncodings = [
   {
     key: 'x',
     label: 'Category',
-    recommendedTypes: ['categorical'],
+    recommendedRoles: ['dimension'],
     required: true,
-    supportedTypes: ['temporal'],
+    supportedRoles: ['temporal'],
   },
   {
     key: 'y',
     label: 'Value',
-    recommendedTypes: ['numeric'],
+    recommendedRoles: ['measure'],
     required: true,
-    supportedTypes: [],
+    supportedRoles: [],
   },
 ] satisfies EncodingDefinition[]
 
@@ -69,29 +69,29 @@ export const chartDefinitions = {
         key: 'x',
         label: 'X Axis',
         required: true,
-        recommendedTypes: ['numeric'],
-        supportedTypes: ['temporal'],
+        recommendedRoles: ['measure'],
+        supportedRoles: ['temporal'],
       },
       {
         key: 'y',
         label: 'Y Axis',
         required: true,
-        recommendedTypes: ['numeric'],
-        supportedTypes: [],
+        recommendedRoles: ['measure'],
+        supportedRoles: [],
       },
       {
         key: 'color',
         label: 'Color',
         required: false,
-        recommendedTypes: ['categorical'],
-        supportedTypes: ['numeric'],
+        recommendedRoles: ['dimension'],
+        supportedRoles: ['measure'],
       },
       {
         key: 'size',
         label: 'Size',
         required: false,
-        recommendedTypes: ['numeric'],
-        supportedTypes: [],
+        recommendedRoles: ['measure'],
+        supportedRoles: [],
       },
     ],
   },
@@ -107,22 +107,22 @@ export const chartDefinitions = {
         key: 'x',
         label: 'X Axis',
         required: true,
-        recommendedTypes: ['temporal'],
-        supportedTypes: ['categorical', 'numeric'],
+        recommendedRoles: ['temporal'],
+        supportedRoles: ['dimension', 'measure'],
       },
       {
         key: 'y',
         label: 'Y Axis',
         required: true,
-        recommendedTypes: ['numeric'],
-        supportedTypes: [],
+        recommendedRoles: ['measure'],
+        supportedRoles: [],
       },
       {
         key: 'series',
         label: 'Series',
         required: false,
-        recommendedTypes: ['categorical'],
-        supportedTypes: [],
+        recommendedRoles: ['dimension'],
+        supportedRoles: [],
       },
     ],
   },
@@ -138,29 +138,29 @@ export const chartDefinitions = {
         key: 'x',
         label: 'Category',
         required: true,
-        recommendedTypes: ['categorical'],
-        supportedTypes: ['temporal'],
+        recommendedRoles: ['dimension'],
+        supportedRoles: ['temporal'],
       },
       {
         key: 'y',
         label: 'Value',
         required: true,
-        recommendedTypes: ['numeric'],
-        supportedTypes: [],
+        recommendedRoles: ['measure'],
+        supportedRoles: [],
       },
       {
         key: 'series',
         label: 'Series',
         required: false,
-        recommendedTypes: ['categorical'],
-        supportedTypes: [],
+        recommendedRoles: ['dimension'],
+        supportedRoles: [],
       },
       {
         key: 'color',
         label: 'Color',
         required: false,
-        recommendedTypes: ['numeric'],
-        supportedTypes: [],
+        recommendedRoles: ['measure'],
+        supportedRoles: [],
       },
     ],
   },
@@ -194,7 +194,7 @@ export function getChartDefinition(type: ChartType): ChartDefinition {
 export function getSemanticCompatibility(
   definition: ChartDefinition,
   encodingKey: EncodingKey,
-  semanticType: SemanticType,
+  semanticRole: SemanticRole,
 ): CompatibilityLevel {
   const encoding = definition.encodings.find(({ key }) => {
     return key === encodingKey
@@ -204,11 +204,11 @@ export function getSemanticCompatibility(
     return 'invalid'
   }
 
-  if (encoding.recommendedTypes.includes(semanticType)) {
+  if (encoding.recommendedRoles.includes(semanticRole)) {
     return 'recommended'
   }
 
-  if (encoding.supportedTypes.includes(semanticType)) {
+  if (encoding.supportedRoles.includes(semanticRole)) {
     return 'supported'
   }
 

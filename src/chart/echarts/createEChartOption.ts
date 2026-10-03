@@ -25,7 +25,11 @@ export function createEChartOption(
 ): EChartsOption {
   // ===== CONSTANTS ===========================================================
   const { appearance, interaction } = spec
-  const colorEncodingMode = getColorEncodingMode(chartType, spec.data.encoding)
+  const colorEncodingMode = getColorEncodingMode(
+    chartType,
+    spec.data.encoding,
+    dataset.fields,
+  )
   const isRadialChart = isRadialChartType(chartType)
   const isSelectionSource = selection?.sourceChartId === chartId
   const content = createChartContent({

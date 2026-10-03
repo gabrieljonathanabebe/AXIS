@@ -320,8 +320,8 @@ DatasetProfile
   Identifier, Integer/Float → Measure, sonst Dimension
 - Profil wird beim Upload berechnet, im Store gehalten und über
   `GET /datasets/{id}/profile` ausgeliefert
-- `semantic_type` bleibt übergangsweise erhalten und wird aus der
-  Semantic Role abgeleitet; es gibt nur eine Erkennungslogik
+- `semantic_type` blieb übergangsweise erhalten und wurde aus der
+  Semantic Role abgeleitet; seit Slice 7 entfernt
 - Measure und Temporal enthalten zusätzlich ein Histogramm
   (`histogram`): Anzahl der Werte in gleich breiten Bins zwischen min und
   max, höchstens 20 Bins und nicht mehr als eindeutige Werte
@@ -419,23 +419,33 @@ an das aktuelle Design angeglichen:
   Preview-Rows
 - Table funktioniert weiterhin ohne Profil (Name und Physical Type)
 
-### Slice 7 – Chart Defaults und Compatibility über Semantic Roles (geplant)
+### Slice 7 – Chart Defaults und Compatibility über Semantic Roles (implementiert)
 
 Letzter Slice des Data-Meilensteins: Charts nutzen dieselbe effektive
 Semantic Role wie Data View und Build Panel.
 
 ```text
-DatasetProfile + SemanticRoleOverrides
-→ getSemanticRole
-→ Compatibility, Default Encodings, Color Mode
+DataField.semantic_role (erkannt) + SemanticRoleOverrides
+→ applySemanticRoleOverrides (useDatasets)
+→ dataset.fields mit effektiver Role
+→ Compatibility, Default Encodings, Color Mode, ECharts-Adapter
 ```
 
-- `getCompatibleFields`, `getDefaultEncoding` und
-  `getColorEncodingMode` lesen die effektive Role statt `semantic_type`
-- ein Override (z. B. Measure → Dimension) wirkt sofort auch beim
-  Chart-Bauen
-- übrige `semantic_type`-Stellen im ECharts-Adapter prüfen
-  (Scatter-Farben, Visual Maps, Selection)
+- Backend-`Field` liefert `semantic_role` statt `semantic_type`;
+  `SemanticType` ist in Backend und Frontend entfernt
+- `useDatasets` gibt ein Dataset mit effektiven Roles aus; Workspace,
+  Inspector und Canvas kennen Profil und Overrides nicht
+- `ChartEncoding` speichert Feldnamen statt `DataField`-Kopien; Roles
+  werden beim Lesen aus `dataset.fields` nachgeschlagen, ein Override
+  wirkt sofort auch auf bestehende Charts
+- `chartDefinitions` beschreiben Encodings über `recommendedRoles` und
+  `supportedRoles`; `getCompatibleFields` und `getDefaultEncoding`
+  lesen die effektive Role
+- `getColorEncodingMode` ist die einzige Entscheidung über die
+  Farb-Role; Scatter-Kategorien, Color Visual Map, Scatter-Selection,
+  Legend und Inspector folgen dem Modus
+- macht ein Override ein zugewiesenes Field inkompatibel, bleibt es im
+  Encoding; Compatibility filtert nur die Auswahl
 
 ### Nicht Teil des Data-Meilensteins
 
@@ -764,11 +774,6 @@ waren:
   begrenzt werden.
 - Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
   verloren; sie gehören später in den serialisierbaren Project State.
-- `semantic_type` am `DataField` ist ein Übergangsfeld, das aus der
-  Semantic Role des Profils abgeleitet wird. Die Frontend-Logik
-  (Compatibility, Color Mode, Default Encodings, Table View) liest es
-  noch und muss schrittweise auf die effektive Semantic Role umgestellt
-  werden; Overrides wirken dort bisher nicht.
 - Zahlen werden an mehreren Stellen mit eigenem `Intl.NumberFormat`
   formatiert statt über `src/data/formatNumber.ts` (siehe `TODO.md`).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können

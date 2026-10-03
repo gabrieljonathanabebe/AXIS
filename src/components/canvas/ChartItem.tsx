@@ -330,7 +330,7 @@ function ChartItem({
           }
           key={axisTitleEdit.axis}
           label={`${axisTitleEdit.axis.toUpperCase()} axis title`}
-          placeholder={chart.spec.data.encoding[axisTitleEdit.axis]?.name ?? ''}
+          placeholder={chart.spec.data.encoding[axisTitleEdit.axis] ?? ''}
           style={getAxisTitleInputStyle(axisTitleEdit)}
           onClose={() => setAxisTitleEdit(null)}
           onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}

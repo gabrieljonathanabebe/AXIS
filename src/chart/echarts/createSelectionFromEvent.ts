@@ -1,6 +1,8 @@
 import type { ECElementEvent } from 'echarts'
 
-import type { ChartInstance } from '../../types/chart'
+import type { ChartInstance, DataField } from '../../types/chart'
+import { getColorEncodingMode } from '../getColorEncodingMode'
+
 import type { DataSelection, SelectionFilter } from '../../types/workspace'
 
 // ===== TYPES =================================================================
@@ -32,30 +34,37 @@ function createValueSelection(
 function createScatterSelection(
   chart: ChartInstance,
   event: ECElementEvent,
+  fields: DataField[],
 ): DataSelection | null {
-  const colorField = chart.spec.data.encoding.color
-  if (colorField?.semantic_type !== 'categorical' || !event.seriesName) {
+  const { encoding } = chart.spec.data
+  const colorEncodingMode = getColorEncodingMode(chart.type, encoding, fields)
+  if (
+    colorEncodingMode !== 'categorical' ||
+    !encoding.color ||
+    !event.seriesName
+  ) {
     return null
   }
-  return createValueSelection(chart.id, colorField.name, event.seriesName)
+  return createValueSelection(chart.id, encoding.color, event.seriesName)
 }
 
 // ===== FUNCTION ==============================================================
 export function createSelectionFromEvent(
   chart: ChartInstance,
   event: ECElementEvent,
+  fields: DataField[],
 ): DataSelection | null {
   if (event.componentType !== 'series') {
     return null
   }
   if (chart.type === 'scatter') {
-    return createScatterSelection(chart, event)
+    return createScatterSelection(chart, event, fields)
   }
-  const field = chart.spec.data.encoding.x
-  if (!field) {
+  const fieldName = chart.spec.data.encoding.x
+  if (!fieldName) {
     return null
   }
-  return createValueSelection(chart.id, field.name, event.name)
+  return createValueSelection(chart.id, fieldName, event.name)
 }
 
 export function createSelectionFromBrush(
@@ -70,9 +79,6 @@ export function createSelectionFromBrush(
   }
   return {
     sourceChartId: chart.id,
-    filters: [
-      createRangeFilter(x.name, xRange),
-      createRangeFilter(y.name, yRange),
-    ],
+    filters: [createRangeFilter(x, xRange), createRangeFilter(y, yRange)],
   }
 }

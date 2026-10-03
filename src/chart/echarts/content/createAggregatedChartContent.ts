@@ -37,8 +37,15 @@ function createSeriesData(
 export function createAggregatedChartContent(
   context: ChartContentContext,
 ): ChartContent {
-  const { chartType, highlightResult, queryResult, selection, spec, theme } =
-    context
+  const {
+    chartType,
+    dataset,
+    highlightResult,
+    queryResult,
+    selection,
+    spec,
+    theme,
+  } = context
 
   if (chartType !== 'bar' && chartType !== 'line') {
     throw new Error(`Unsupported aggregated chart type: ${chartType}`)
@@ -49,7 +56,11 @@ export function createAggregatedChartContent(
   const points = queryResult?.points ?? []
   const highlightPoints = selection ? (highlightResult?.points ?? []) : null
   const categories = Array.from(new Set(points.map((point) => point.x ?? '')))
-  const colorEncodingMode = getColorEncodingMode(chartType, encoding)
+  const colorEncodingMode = getColorEncodingMode(
+    chartType,
+    encoding,
+    dataset.fields,
+  )
   const hasBarColor = chartType === 'bar' && colorEncodingMode === 'continuous'
   const palette = appearance.colorScale.categorical.palette
   const seriesNames = encoding.series

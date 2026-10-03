@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { applySemanticRoleOverrides } from '../data/semanticRoles'
 import {
   DEMO_DATASET_ID,
   fetchDatasetProfile,
@@ -98,9 +100,22 @@ export function useDatasets(): useDatasetsResults {
     })
   }
 
+  const dataset = useMemo(() => {
+    if (!loadedDataset) {
+      return null
+    }
+    return {
+      ...loadedDataset.dataset,
+      fields: applySemanticRoleOverrides(
+        loadedDataset.dataset.fields,
+        semanticRoleOverrides,
+      ),
+    }
+  }, [loadedDataset, semanticRoleOverrides])
+
   return {
     activeDatasetSummary: loadedDataset?.summary ?? null,
-    dataset: loadedDataset?.dataset ?? null,
+    dataset,
     datasetError,
     isLoading,
     profile: loadedDataset?.profile ?? null,

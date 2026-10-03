@@ -5,7 +5,6 @@ from app.models import (
     Field,
     PhysicalType,
     SemanticRole,
-    SemanticType,
 )
 
 INTEGER_DTYPES = {
@@ -41,14 +40,6 @@ def infer_physical_type(dtype: pl.DataType) -> PhysicalType:
 
 MIN_IDENTIFIER_ROWS = 50
 
-# Transitional mapping until the frontend reads semantic roles directly.
-SEMANTIC_TYPE_BY_ROLE = {
-    SemanticRole.DIMENSION: SemanticType.CATEGORIAL,
-    SemanticRole.IDENTIFIER: SemanticType.IDENTIFIER,
-    SemanticRole.MEASURE: SemanticType.NUMERICAL,
-    SemanticRole.TEMPORAL: SemanticType.TEMPORAL,
-}
-
 
 def infer_semantic_role(
     name: str,
@@ -77,7 +68,7 @@ def create_fields(profile: DatasetProfile) -> list[Field]:
         Field(
             name=field.name,
             physical_type=field.physical_type,
-            semantic_type=SEMANTIC_TYPE_BY_ROLE[field.semantic_role],
+            semantic_role=field.semantic_role,
         )
         for field in profile.fields
     ]

@@ -9,6 +9,8 @@ import { createAxesOptions } from '../createAxesOptions'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { DIMMED_OPACITY } from './selectionStyle'
+import { getColorEncodingMode } from '../../getColorEncodingMode'
+
 import { isRowInSelection } from '../../../workspace/dataSelection'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
@@ -68,9 +70,13 @@ export function createScatterChartContent(
   const { chartType, dataset, selection, spec, theme } = context
   const { appearance } = spec
   const { encoding } = spec.data
-  const colorField = encoding.color
-  const colorFieldName = colorField?.name
-  const sizeFieldName = encoding.size?.name
+  const colorFieldName = encoding.color
+  const sizeFieldName = encoding.size
+  const colorEncodingMode = getColorEncodingMode(
+    chartType,
+    encoding,
+    dataset.fields,
+  )
   const rows = dataset.rows
 
   const data = rows.map((row) => ({
@@ -78,15 +84,16 @@ export function createScatterChartContent(
       ? undefined
       : { opacity: DIMMED_OPACITY },
     value: [
-      getValue(row, encoding.x?.name),
-      getValue(row, encoding.y?.name),
+      getValue(row, encoding.x),
+      getValue(row, encoding.y),
       getValue(row, sizeFieldName),
       getValue(row, colorFieldName),
     ],
   }))
 
   const categoryFieldName =
-    colorField?.semantic_type === 'categorical' ? colorField.name : null
+    colorEncodingMode === 'categorical' ? (colorFieldName ?? null) : null
+
   const categoryNames = categoryFieldName
     ? Array.from(
         new Set(
@@ -135,7 +142,12 @@ export function createScatterChartContent(
 
   return {
     series,
-    visualMap: createScatterVisualMaps({ appearance, encoding, rows }),
+    visualMap: createScatterVisualMaps({
+      appearance,
+      colorEncodingMode,
+      encoding,
+      rows,
+    }),
     xAxis,
     yAxis,
   }

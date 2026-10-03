@@ -6,6 +6,8 @@ import type {
 import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
 import { getNumericDomain } from './getNumericDomain'
 
+import type { ColorEncodingMode } from '../getColorEncodingMode'
+
 import type {
   ChartAppearanceSpec,
   ChartEncoding,
@@ -16,6 +18,7 @@ type CreateScatterVisualMapsParams = {
   rows: Dataset['rows']
   encoding: ChartEncoding
   appearance: ChartAppearanceSpec
+  colorEncodingMode: ColorEncodingMode
 }
 
 function createSizeVisualMap(
@@ -23,7 +26,7 @@ function createSizeVisualMap(
   encoding: ChartEncoding,
   appearance: ChartAppearanceSpec,
 ): ContinuousVisualMapComponentOption | null {
-  const fieldName = encoding.size?.name
+  const fieldName = encoding.size
 
   if (!fieldName) {
     return null
@@ -54,13 +57,14 @@ function createColorVisualMap(
   rows: Dataset['rows'],
   encoding: ChartEncoding,
   appearance: ChartAppearanceSpec,
+  colorEncodingMode: ColorEncodingMode,
 ): VisualMapComponentOption | null {
-  const colorField = encoding.color
-  if (colorField?.semantic_type !== 'numeric') {
+  const colorFieldName = encoding.color
+  if (colorEncodingMode !== 'continuous' || !colorFieldName) {
     return null
   }
   const values = rows.map((row) => {
-    const value = row[colorField.name]
+    const value = row[colorFieldName]
     return typeof value === 'number' ? value : null
   })
   return createContinuousColorVisualMap({
@@ -74,10 +78,11 @@ export function createScatterVisualMaps({
   rows,
   encoding,
   appearance,
+  colorEncodingMode,
 }: CreateScatterVisualMapsParams): VisualMapComponentOption[] {
   const visualMaps = [
     createSizeVisualMap(rows, encoding, appearance),
-    createColorVisualMap(rows, encoding, appearance),
+    createColorVisualMap(rows, encoding, appearance, colorEncodingMode),
   ]
 
   return visualMaps.filter(

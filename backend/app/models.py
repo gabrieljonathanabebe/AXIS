@@ -13,13 +13,6 @@ class PhysicalType(StrEnum):
     DATETIME = "datetime"
 
 
-class SemanticType(StrEnum):
-    NUMERICAL = "numeric"
-    CATEGORIAL = "categorical"
-    TEMPORAL = "temporal"
-    IDENTIFIER = "identifier"
-
-
 class SemanticRole(StrEnum):
     MEASURE = "measure"
     DIMENSION = "dimension"
@@ -30,7 +23,7 @@ class SemanticRole(StrEnum):
 class Field(BaseModel):
     name: str
     physical_type: PhysicalType
-    semantic_type: SemanticType
+    semantic_role: SemanticRole
 
 
 class DatasetSummary(BaseModel):

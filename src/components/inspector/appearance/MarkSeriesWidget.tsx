@@ -15,7 +15,7 @@ import type { LineStyle, ScatterSymbol } from '../../../types/chart'
 
 type MarkSeriesWidgetProps = Pick<
   ChartInspectorProps,
-  'chart' | 'onSetAppearance' | 'onSetChartAppearance'
+  'chart' | 'fields' | 'onSetAppearance' | 'onSetChartAppearance'
 >
 
 const scatterSymbolOptions = [
@@ -40,6 +40,7 @@ const scatterSymbolIcons = {
 
 function MarkSeriesWidget({
   chart,
+  fields,
   onSetAppearance,
   onSetChartAppearance,
 }: MarkSeriesWidgetProps) {
@@ -49,7 +50,9 @@ function MarkSeriesWidget({
   const colorEncodingMode = getColorEncodingMode(
     chart.type,
     chart.spec.data.encoding,
+    fields,
   )
+
   // RETURN
   return (
     <InspectorWidget title="Mark / Series" icon={<Paintbrush size={16} />}>

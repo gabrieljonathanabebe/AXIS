@@ -16,7 +16,7 @@ export function getCompatibleFields(
     const compatibility = getSemanticCompatibility(
       definition,
       encodingKey,
-      field.semantic_type,
+      field.semantic_role,
     )
     return compatibility !== 'invalid'
   })

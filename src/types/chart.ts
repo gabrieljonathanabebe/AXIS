@@ -75,12 +75,13 @@ export type ChartDataSpec = {
   colorAggregation: GroupAggregation
 }
 
+// Field names; roles and types are resolved from the dataset when read.
 export type ChartEncoding = {
-  x?: DataField
-  y?: DataField
-  color?: DataField
-  size?: DataField
-  series?: DataField
+  x?: string
+  y?: string
+  color?: string
+  size?: string
+  series?: string
 }
 
 export type ChartInstance = {
@@ -162,7 +163,7 @@ export type ColorScaleAppearance = {
 export type DataField = {
   name: string
   physical_type: PhysicalType
-  semantic_type: SemanticType
+  semantic_role: SemanticRole
 }
 
 export type DataRow = Record<string, DataValue>
@@ -304,7 +305,5 @@ export type ScatterSymbol = 'circle' | 'rect' | 'triangle' | 'diamond'
 // ===== TYPES =================================================================
 export type PhysicalType =
   'integer' | 'float' | 'string' | 'boolean' | 'date' | 'datetime'
-
-export type SemanticType = 'numeric' | 'categorical' | 'temporal' | 'identifier'
 
 export type SemanticRole = 'measure' | 'dimension' | 'temporal' | 'identifier'

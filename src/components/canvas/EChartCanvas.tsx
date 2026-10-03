@@ -159,7 +159,12 @@ function EChartCanvas({
         onEditAxisTitle(offsetAxisTitleEdit(axisTitleEdit, container))
         return
       }
-      const nextSelection = createSelectionFromEvent(chart, event)
+      const nextSelection = createSelectionFromEvent(
+        chart,
+        event,
+        dataset.fields,
+      )
+
       if (!nextSelection) {
         return
       }
@@ -220,6 +225,7 @@ function EChartCanvas({
     }
   }, [
     chart,
+    dataset,
     onClearSelection,
     onEditAxisTitle,
     onHoverAxisTitle,

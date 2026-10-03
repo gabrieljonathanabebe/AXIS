@@ -37,6 +37,7 @@ function ChartInspector({
         appearance: (
           <AppearanceInspectorTab
             chart={chart}
+            fields={fields}
             onSetAppearance={onSetAppearance}
             onSetChartAppearance={onSetChartAppearance}
             onSetContainer={onSetContainer}
@@ -45,6 +46,7 @@ function ChartInspector({
         interaction: (
           <InteractionInspectorTab
             chart={chart}
+            fields={fields}
             onSetInteraction={onSetInteraction}
           />
         ),

@@ -1,4 +1,5 @@
 import type {
+  DataField,
   FieldProfile,
   PhysicalType,
   SemanticRole,
@@ -24,6 +25,16 @@ const semanticRolesByPhysicalType: Record<PhysicalType, SemanticRole[]> = {
 }
 
 // ===== FUNCTIONS =============================================================
+export function applySemanticRoleOverrides(
+  fields: DataField[],
+  overrides: SemanticRoleOverrides,
+): DataField[] {
+  return fields.map((field) => ({
+    ...field,
+    semantic_role: overrides[field.name] ?? field.semantic_role,
+  }))
+}
+
 export function getAllowedSemanticRoles(field: FieldProfile): SemanticRole[] {
   const roles = semanticRolesByPhysicalType[field.physical_type]
   return roles.includes(field.semantic_role)

@@ -63,7 +63,7 @@ function EncodingsWidget({
             <SelectControl
               label={`${encoding.label} field`}
               options={options}
-              value={activeEncoding[encoding.key]?.name ?? ''}
+              value={activeEncoding[encoding.key] ?? ''}
               placeholder="Select field"
               onChange={(fieldName) => {
                 onSetEncodingField(encoding.key, fieldName)

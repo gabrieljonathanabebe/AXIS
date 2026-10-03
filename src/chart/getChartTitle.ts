@@ -5,8 +5,8 @@ export function getDefaultChartTitle(chart: ChartInstance): string {
   if (!x && !y) {
     return 'Untitled Chart'
   }
-  const xLabel = x?.name ?? 'Category'
-  const yLabel = y?.name ?? 'Value'
+  const xLabel = x ?? 'Category'
+  const yLabel = y ?? 'Value'
   return chart.type === 'scatter'
     ? `${yLabel} vs. ${xLabel}`
     : `${yLabel} by ${xLabel}`
