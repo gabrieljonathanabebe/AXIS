@@ -311,6 +311,11 @@ Keine unnötigen langen Erklärungen während Routineänderungen.
 Bei neuen oder architekturrelevanten Konzepten nachvollziehbar
 erklären, warum eine Lösung gewählt wurde.
 
+Technische Schritte mit anwendungsnahen Beispielen erklären: was der
+Nutzer tut oder was ankommt (z. B. konkretes JSON, eine Eingabe in der
+Console oder im UI) und was mit bzw. ohne die Änderung passiert. Kurze
+Tabellen der Form „Eingabe → Effekt“ sind dafür gut geeignet.
+
 ## 18. Vertical Slices und Chat-Übergaben
 
 Ein Vertical Slice wird innerhalb eines einzelnen Chats bearbeitet.
@@ -352,16 +357,22 @@ nicht routinemäßig vor Codebase-Fragen ausgeführt.
 
 Nach Abschluss eines Vertical Slices:
 
-1. Verification und Dokumentationspflege abschließen;
+1. Verification und Dokumentationspflege abschließen (u. a.
+   `ROADMAP.md`, bei Bedarf `ARCHITECTURE.md`);
 2. einen Git-Checkpoint vorschlagen;
-3. eine kurze Übergabe für den nächsten Chat formulieren.
+3. unaufgefordert eine kurze Übergabe für den nächsten Chat als
+   kopierbaren Prompt mitliefern.
 
-Die Übergabe besteht aus höchstens wenigen Stichpunkten und enthält:
+Die Übergabe ist ein kompakter Prompt in einem Codeblock, mit dem der
+Nutzer direkt einen neuen Chat beginnt. Sie besteht aus höchstens
+wenigen Stichpunkten und enthält:
 
+- den nächsten geplanten Vertical Slice mit Verweis auf `ROADMAP.md`;
 - den abgeschlossenen Stand;
 - wichtige dauerhafte Entscheidungen;
-- den nächsten geplanten Vertical Slice;
-- nur die dafür unmittelbar relevanten Dateien oder offenen Punkte.
+- das Ziel des nächsten Slices;
+- offene Entscheidungen, falls vorhanden;
+- nur die dafür unmittelbar relevanten Dateien.
 
 Der nächste Vertical Slice beginnt in einem neuen Chat. Sein Kontext
 kommt aus der aktuellen Projektdokumentation und der kurzen Übergabe aus

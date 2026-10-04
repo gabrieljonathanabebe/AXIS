@@ -544,12 +544,20 @@ prüft sie und übersetzt sie in bestehende `WorkspaceAction`s
 (`src/actions/`):
 
 ```text
-CevynAction[]
+unknown (JSON)
+→ parseCevynActions      (Struktur → CevynAction[])
 → validateCevynAction    (Chart Registry, Semantic Roles, Draft-State)
 → translateCevynActions  (→ WorkspaceAction[], Draft-State)
 → history/applyBatch     (ein Undo-Schritt)
 ```
 
+- `parseCevynActions` prüft ungeprüften Input nur auf seine Form:
+  Array, bekannter Action-Typ, Pflichtfelder, Property-Typen, bekannte
+  Encoding-Keys; unbekannte Properties sind Fehler. Werte wie Charttyp,
+  Aggregation oder Field-Namen prüft erst `validateCevynAction`. Die
+  Regeln stehen deklarativ in `actionShapes`; TypeScript erzwingt, dass
+  sie zu `CevynAction` passen. Strukturfehler werden gesammelt; vor
+  Validierung und Übersetzung wird abgebrochen.
 - `validateCevynAction` prüft gegen dieselben Regeln wie die manuelle
   Bedienung: Charttyp in `chartDefinitions`, Aggregation in
   `supportedAggregations`, Field existiert in `dataset.fields` und ist
@@ -569,7 +577,9 @@ CevynAction[]
   Action wird auf den Draft-State angewendet.
 - Alles oder nichts: Ist eine Action ungültig, wird keine ausgeführt;
   das Ergebnis (`CevynActionResult`) enthält dann die Fehler mit Index.
-- `useChartWorkspace.runActions` ist der einzige Einstieg. Im Dev-Build
+  Fehler ohne Index betreffen den ganzen Batch (z. B. kein Array).
+- `useChartWorkspace.runActions` ist der einzige Einstieg und nimmt
+  `unknown` entgegen. Im Dev-Build
   ist er zusätzlich als `window.cevyn.run` für die Browser-Konsole
   verfügbar.
 - Aktuelle Actions:
@@ -585,6 +595,10 @@ CevynAction[]
   - `chart/remove` → `chart/remove`.
 - Charts, die im selben Batch erst erstellt werden, können noch nicht
   adressiert werden, da ihre ID erst bei der Übersetzung entsteht.
+- Die Strukturprüfung bleibt im Frontend, weil dort ausgeführt wird und
+  Actions aus mehreren Quellen kommen können. Das JSON Schema für das
+  AI Tool Calling ist geplant für das Backend (Pydantic), wo der
+  LLM-Call laufen soll; es wird dann mit `actionShapes` abgeglichen.
 
 ### Undo/Redo
 

@@ -474,7 +474,7 @@ noch offen.
 
 ## 5. Next – Action Layer und AI Commands V1
 
-### Action Layer (in Arbeit)
+### Action Layer (Kern implementiert)
 
 Implementiert:
 
@@ -491,12 +491,14 @@ Implementiert:
 - `history/applyBatch`: mehrere Actions als ein Undo-Schritt
 - `runActions` in `useChartWorkspace`, im Dev-Build als
   `window.cevyn.run`
+- Action Schema: Strukturprüfung für ungeprüftes JSON
+  (`parseCevynActions`) vor der Validierung, Fehler im selben Format
 
 Geplant:
 
 - Actions für Dashboard State und später gemeinsame Filter
-- Action Schema: Strukturprüfung für ungeprüftes JSON, später Grundlage
-  für das AI Tool Calling
+- JSON Schema für das AI Tool Calling im Backend, abgeglichen mit der
+  Strukturprüfung im Frontend (mit AI Commands V1)
 
 ### AI Commands V1
 

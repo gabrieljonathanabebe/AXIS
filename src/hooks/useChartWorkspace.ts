@@ -14,11 +14,12 @@ import {
   DEFAULT_CHART_SIZE,
   findFreeChartLayout,
 } from '../workspace/chartLayout'
+import { parseCevynActions } from '../actions/parseCevynActions'
 import { translateCevynActions } from '../actions/translateCevynActions'
 
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import type { ActiveDrag, DragPayload, DropTarget } from '../types/ui'
-import type { CevynAction, CevynActionResult } from '../types/actions'
+import type { CevynActionResult } from '../types/actions'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
@@ -83,8 +84,16 @@ export function useChartWorkspace({
     dispatchHistory({ type: 'history/redo' })
   }
 
-  function runActions(actions: CevynAction[]): CevynActionResult {
-    const result = translateCevynActions(actions, history.present, dataset)
+  function runActions(input: unknown): CevynActionResult {
+    const parsed = parseCevynActions(input)
+    if (!parsed.ok) {
+      return parsed
+    }
+    const result = translateCevynActions(
+      parsed.actions,
+      history.present,
+      dataset,
+    )
     if (result.ok) {
       dispatchHistory({
         type: 'history/applyBatch',

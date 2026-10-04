@@ -39,10 +39,21 @@ export type CevynAction =
     }
 
 // ===== VALIDATION ============================================================
+// index is omitted for errors that concern the whole batch.
 export type CevynActionError = {
-  index: number
+  index?: number
   message: string
 }
+
+export type CevynActionParseResult =
+  | {
+      ok: false
+      errors: CevynActionError[]
+    }
+  | {
+      ok: true
+      actions: CevynAction[]
+    }
 
 export type CevynActionResult =
   | {
