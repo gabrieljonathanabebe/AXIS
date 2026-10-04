@@ -480,7 +480,11 @@ Implementiert:
 
 - `CevynAction` als externer, absichtsbasierter Auftrag; Fields per Name
 - `chart/create` mit Charttyp, optional Encoding und Aggregation
-- Validierung gegen Chart Registry und effektive Semantic Roles,
+- Actions für bestehende Charts per `chartId`: `chart/setType`,
+  `chart/updateEncoding`, `chart/updateAggregation`, `chart/setTitle`,
+  `chart/remove`
+- Validierung gegen Chart Registry, effektive Semantic Roles und den
+  Draft-State (Chart existiert, Charttyp nach vorherigen Actions),
   gesammelte Fehler mit Index
 - Übersetzung in bestehende `WorkspaceAction`s über einen Draft-State;
   alles oder nichts
@@ -490,9 +494,6 @@ Implementiert:
 
 Geplant:
 
-- weitere Actions für bestehende Charts (z. B. Typ, Encoding,
-  Aggregation, Titel, Entfernen); Validierung dann auch gegen den
-  Workspace State (Chart existiert)
 - Actions für Dashboard State und später gemeinsame Filter
 - Action Schema: Strukturprüfung für ungeprüftes JSON, später Grundlage
   für das AI Tool Calling

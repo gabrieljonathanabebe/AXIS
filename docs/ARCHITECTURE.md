@@ -538,13 +538,14 @@ Action Layer.
 
 `CevynAction`s sind externe, absichtsbasierte Aufträge, z. B. später von
 AI Commands (`src/types/actions.ts`). Sie adressieren Fields per Name
-und enthalten keine IDs, Layouts oder Default Specs. Der Action Layer
+und bestehende Charts per `chartId`; neue IDs, Layouts oder Default
+Specs enthalten sie nicht. Der Action Layer
 prüft sie und übersetzt sie in bestehende `WorkspaceAction`s
 (`src/actions/`):
 
 ```text
 CevynAction[]
-→ validateCevynAction    (Chart Registry, effektive Semantic Roles)
+→ validateCevynAction    (Chart Registry, Semantic Roles, Draft-State)
 → translateCevynActions  (→ WorkspaceAction[], Draft-State)
 → history/applyBatch     (ein Undo-Schritt)
 ```
@@ -554,17 +555,36 @@ CevynAction[]
   `supportedAggregations`, Field existiert in `dataset.fields` und ist
   laut `getSemanticCompatibility` nicht `invalid`. Alle Fehler werden
   gesammelt zurückgegeben.
-- `translateCevynActions` erzeugt IDs, freie Layouts und Defaults über
-  `createChartInstance` und `findFreeChartLayout`. Angegebene Werte
-  überschreiben die Defaults. Jede übersetzte Action wird auf einen
-  Draft-State angewendet, damit Folge-Actions ihren Effekt sehen.
+- Geprüft wird gegen den Draft-State, nicht gegen den gespeicherten
+  State: Eine Action sieht den Effekt aller vorherigen Actions im
+  Batch. Chart-Actions schlagen fehl, wenn der Chart dort nicht
+  existiert; Encoding und Aggregation werden gegen den Charttyp des
+  Draft-Charts geprüft (z. B. nach `chart/setType` im selben Batch).
+- `translateCevynActions` übersetzt jede `CevynAction` in genau eine
+  bestehende `WorkspaceAction` und ergänzt dabei, was der Reducer
+  braucht: IDs, freie Layouts und Defaults über `createChartInstance`
+  und `findFreeChartLayout`, Default Specs über
+  `createDefaultChartSpec`, bestehende Titel-Einstellungen aus dem
+  Draft. Angegebene Werte überschreiben die Defaults. Jede übersetzte
+  Action wird auf den Draft-State angewendet.
 - Alles oder nichts: Ist eine Action ungültig, wird keine ausgeführt;
   das Ergebnis (`CevynActionResult`) enthält dann die Fehler mit Index.
 - `useChartWorkspace.runActions` ist der einzige Einstieg. Im Dev-Build
   ist er zusätzlich als `window.cevyn.run` für die Browser-Konsole
   verfügbar.
-- Aktuell implementiert ist nur `chart/create` (Charttyp, optional
-  Encoding und Aggregation).
+- Aktuelle Actions:
+  - `chart/create` (Charttyp, optional Encoding und Aggregation)
+    → `chart/add`;
+  - `chart/setType` → `chart/setType`; Encoding und Aggregation werden
+    wie im Inspector auf die Defaults des neuen Typs zurückgesetzt;
+  - `chart/updateEncoding` → `chart/updateEncoding`;
+  - `chart/updateAggregation` (nur `aggregation`)
+    → `chart/updateAggregation`;
+  - `chart/setTitle` (Text) → `chart/updateAppearance`; schaltet den
+    Titel ein;
+  - `chart/remove` → `chart/remove`.
+- Charts, die im selben Batch erst erstellt werden, können noch nicht
+  adressiert werden, da ihre ID erst bei der Übersetzung entsteht.
 
 ### Undo/Redo
 

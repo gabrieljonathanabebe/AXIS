@@ -3,13 +3,40 @@ import type { WorkspaceAction } from './workspace'
 
 // ===== ACTIONS ===============================================================
 // External, intent-level actions (e.g. from AI). Fields are addressed by
-// name; ids, layouts and default specs are added when executed.
-export type CevynAction = {
-  type: 'chart/create'
-  aggregation?: Aggregation
-  chartType: ChartType
-  encoding?: ChartEncoding
-}
+// name, existing charts by id; ids, layouts and default specs are added when
+// executed.
+
+export type CevynAction =
+  | {
+      type: 'chart/create'
+      aggregation?: Aggregation
+      chartType: ChartType
+      encoding?: ChartEncoding
+    }
+  | {
+      type: 'chart/remove'
+      chartId: string
+    }
+  | {
+      type: 'chart/setTitle'
+      chartId: string
+      title: string
+    }
+  | {
+      type: 'chart/setType'
+      chartId: string
+      chartType: ChartType
+    }
+  | {
+      type: 'chart/updateAggregation'
+      aggregation: Aggregation
+      chartId: string
+    }
+  | {
+      type: 'chart/updateEncoding'
+      chartId: string
+      encoding: ChartEncoding
+    }
 
 // ===== VALIDATION ============================================================
 export type CevynActionError = {

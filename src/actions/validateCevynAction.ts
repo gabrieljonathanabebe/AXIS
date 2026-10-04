@@ -5,13 +5,28 @@ import {
   type EncodingKey,
 } from '../chart/chartDefinitions'
 import type { CevynAction } from '../types/actions'
-import type { Dataset } from '../types/chart'
+import type {
+  Aggregation,
+  ChartEncoding,
+  ChartType,
+  Dataset,
+} from '../types/chart'
+import type { WorkspaceState } from '../types/workspace'
 
 // ===== HELPERS ===============================================================
-function validateEncoding(action: CevynAction, dataset: Dataset): string[] {
-  const definition = getChartDefinition(action.chartType)
-  const entries = Object.entries(action.encoding ?? {})
-  return entries.flatMap(([encodingKey, fieldName]) => {
+function validateChartType(chartType: ChartType): string[] {
+  return Object.hasOwn(chartDefinitions, chartType)
+    ? []
+    : [`Unknown chart type "${chartType}".`]
+}
+
+function validateEncoding(
+  chartType: ChartType,
+  encoding: ChartEncoding,
+  dataset: Dataset,
+): string[] {
+  const definition = getChartDefinition(chartType)
+  return Object.entries(encoding).flatMap(([encodingKey, fieldName]) => {
     if (fieldName === undefined) {
       return []
     }
@@ -33,24 +48,51 @@ function validateEncoding(action: CevynAction, dataset: Dataset): string[] {
   })
 }
 
+function validateAggregation(
+  chartType: ChartType,
+  aggregation: Aggregation,
+): string[] {
+  const definition = getChartDefinition(chartType)
+  return definition.supportedAggregations.includes(aggregation)
+    ? []
+    : [
+        `Aggregation "${aggregation}" is not supported ` +
+          `by a ${definition.label} chart.`,
+      ]
+}
+
 // ===== FUNCTION ==============================================================
 export function validateCevynAction(
   action: CevynAction,
+  state: WorkspaceState,
   dataset: Dataset,
 ): string[] {
-  if (!Object.hasOwn(chartDefinitions, action.chartType)) {
-    return [`Unknown chart type "${action.chartType}".`]
+  if (action.type === 'chart/create') {
+    const typeErrors = validateChartType(action.chartType)
+    if (typeErrors.length > 0) {
+      return typeErrors
+    }
+    return [
+      ...validateEncoding(action.chartType, action.encoding ?? {}, dataset),
+      ...(action.aggregation
+        ? validateAggregation(action.chartType, action.aggregation)
+        : []),
+    ]
   }
-  const definition = getChartDefinition(action.chartType)
-  const errors = validateEncoding(action, dataset)
-  if (
-    action.aggregation &&
-    !definition.supportedAggregations.includes(action.aggregation)
-  ) {
-    errors.push(
-      `Aggregation "${action.aggregation}" is not supported ` +
-        `by a ${definition.label} chart.`,
-    )
+
+  const chart = state.charts.find(({ id }) => id === action.chartId)
+  if (!chart) {
+    return [`Unknown chart "${action.chartId}".`]
   }
-  return errors
+  switch (action.type) {
+    case 'chart/remove':
+    case 'chart/setTitle':
+      return []
+    case 'chart/setType':
+      return validateChartType(action.chartType)
+    case 'chart/updateAggregation':
+      return validateAggregation(chart.type, action.aggregation)
+    case 'chart/updateEncoding':
+      return validateEncoding(chart.type, action.encoding, dataset)
+  }
 }

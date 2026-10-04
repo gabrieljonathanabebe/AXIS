@@ -1,4 +1,7 @@
-import { createChartInstance } from '../chart/createChartInstance'
+import {
+  createChartInstance,
+  createDefaultChartSpec,
+} from '../chart/createChartInstance'
 import {
   DEFAULT_CHART_SIZE,
   findFreeChartLayout,
@@ -14,8 +17,8 @@ import type { Dataset } from '../types/chart'
 import type { WorkspaceAction, WorkspaceState } from '../types/workspace'
 
 // ===== HELPERS ===============================================================
-function translateCevynAction(
-  action: CevynAction,
+function createChart(
+  action: Extract<CevynAction, { type: 'chart/create' }>,
   state: WorkspaceState,
   dataset: Dataset,
 ): WorkspaceAction {
@@ -41,6 +44,48 @@ function translateCevynAction(
   }
 }
 
+function translateCevynAction(
+  action: CevynAction,
+  state: WorkspaceState,
+  dataset: Dataset,
+): WorkspaceAction {
+  switch (action.type) {
+    case 'chart/create':
+      return createChart(action, state, dataset)
+    case 'chart/remove':
+      return { type: 'chart/remove', chartId: action.chartId }
+    case 'chart/setTitle': {
+      // Existence is checked by validateCevynAction before translation.
+      const chart = state.charts.find(({ id }) => id === action.chartId)!
+      const { title } = chart.spec.appearance
+      return {
+        type: 'chart/updateAppearance',
+        chartId: action.chartId,
+        patch: { title: { ...title, enabled: true, text: action.title } },
+      }
+    }
+    case 'chart/setType':
+      return {
+        type: 'chart/setType',
+        chartId: action.chartId,
+        chartType: action.chartType,
+        defaultSpec: createDefaultChartSpec(action.chartType, dataset),
+      }
+    case 'chart/updateAggregation':
+      return {
+        type: 'chart/updateAggregation',
+        chartId: action.chartId,
+        patch: { aggregation: action.aggregation },
+      }
+    case 'chart/updateEncoding':
+      return {
+        type: 'chart/updateEncoding',
+        chartId: action.chartId,
+        patch: action.encoding,
+      }
+  }
+}
+
 // ===== FUNCTION ==============================================================
 export function translateCevynActions(
   actions: CevynAction[],
@@ -52,7 +97,7 @@ export function translateCevynActions(
   let draft = state
 
   actions.forEach((action, index) => {
-    const messages = validateCevynAction(action, dataset)
+    const messages = validateCevynAction(action, draft, dataset)
     if (messages.length > 0) {
       errors.push(...messages.map((message) => ({ index, message })))
       return
