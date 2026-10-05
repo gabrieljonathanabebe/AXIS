@@ -155,6 +155,14 @@ Execution Engine modelliert werden.
 Datasets liegen aktuell als Polars-DataFrames im In-Memory-Store.
 DuckDB kann später bei konkretem Bedarf eingeführt werden.
 
+Lokale Konfiguration steht in `backend/.env` (nicht im Repo) und wird
+beim Start geladen; Änderungen erfordern einen Neustart des Backends:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+CEVYN_AI_STUB=1   # 1: AI Commands ohne Claude (Stub), 0: echter Aufruf
+```
+
 Keine Architekturkomplexität nur für hypothetische Skalierung
 einführen.
 

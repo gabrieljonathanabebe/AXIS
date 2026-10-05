@@ -1,0 +1,53 @@
+.ask-cevyn-bar {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(560px, calc(100% - var(--space-8)));
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transform: translateX(-50%);
+}
+
+.ask-cevyn-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ask-cevyn-input .text-input-field {
+  flex: 1;
+}
+
+.ask-cevyn-messages {
+  margin: 0;
+  padding: 0 var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  list-style: none;
+}
+
+.ask-cevyn-messages.is-error {
+  color: var(--color-accent);
+}
+
+.ask-cevyn-spinner {
+  animation: ask-cevyn-spin 1s linear infinite;
+}
+
+@keyframes ask-cevyn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.canvas-panel .panel-content {
+  position: relative;
+}
+
+.canvas-panel .chart-grid {
+  padding-bottom: calc(var(--control-height-sm) + var(--space-8) * 2);
+}

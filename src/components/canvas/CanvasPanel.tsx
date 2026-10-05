@@ -1,9 +1,11 @@
+import AskCevynBar from './AskCevynBar'
 import ChartGrid from './ChartGrid'
 import CommandButton from '../ui/CommandButton'
 import EditableText from '../ui/EditableText'
 import EmptyState from '../ui/EmptyState'
 import Panel from '../ui/Panel'
 
+import type { AskCevynState } from '../../hooks/useAskCevyn'
 import type {
   ChartAppearanceSpec,
   ChartInstance,
@@ -17,6 +19,7 @@ import type { DataSelection } from '../../types/workspace'
 import type { WorkspaceCommands } from '../../types/ui'
 
 type CanvasPanelProps = {
+  askCevynState: AskCevynState
   charts: ChartInstance[]
   commands: WorkspaceCommands
   dashboard: DashboardSpec
@@ -26,6 +29,7 @@ type CanvasPanelProps = {
   recoverFocus?: boolean
   selectedChartId: string | null
   selection: DataSelection | null
+  onAskCevyn: (prompt: string) => void
   onClearSelection: () => void
   onRenameDashboard: (name: string) => void
   onSelectChart: (chartId: string | null) => void
@@ -41,6 +45,7 @@ type CanvasPanelProps = {
 }
 
 function CanvasPanel({
+  askCevynState,
   charts,
   commands,
   dashboard,
@@ -49,6 +54,7 @@ function CanvasPanel({
   isDraggingField,
   selectedChartId,
   selection,
+  onAskCevyn,
   onClearSelection,
   onRenameDashboard,
   onSelectChart,
@@ -104,6 +110,7 @@ function CanvasPanel({
           recoverFocus
         />
       )}
+      <AskCevynBar state={askCevynState} onAsk={onAskCevyn} />
     </Panel>
   )
 }

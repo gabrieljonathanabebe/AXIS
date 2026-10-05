@@ -22,6 +22,21 @@ function buildUrl(
   return url.toString()
 }
 
+async function readErrorMessage(response: Response): Promise<string> {
+  const fallback = `Request failed with status ${response.status}`
+  try {
+    const body: unknown = await response.json()
+    return typeof body === 'object' &&
+      body !== null &&
+      'detail' in body &&
+      typeof body.detail === 'string'
+      ? body.detail
+      : fallback
+  } catch {
+    return fallback
+  }
+}
+
 async function request<TResponse>(
   path: string,
   options: RequestOptions = {},
@@ -35,7 +50,7 @@ async function request<TResponse>(
   })
 
   if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`)
+    throw new Error(await readErrorMessage(response))
   }
 
   return response.json() as Promise<TResponse>

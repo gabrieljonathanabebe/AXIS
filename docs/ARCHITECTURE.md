@@ -132,6 +132,7 @@ nicht Teil des Domain Models.
 - FastAPI
 - Python
 - Polars für CSV-Daten und gruppierte Chart-Abfragen
+- Anthropic Python SDK für AI Commands (Claude Sonnet 5.5)
 
 Datasets liegen aktuell als Polars-DataFrames im In-Memory-Store.
 Das Demo-Dataset ist ein reguläres Backend-Dataset: `demo.csv` wird beim
@@ -597,8 +598,47 @@ unknown (JSON)
   adressiert werden, da ihre ID erst bei der Übersetzung entsteht.
 - Die Strukturprüfung bleibt im Frontend, weil dort ausgeführt wird und
   Actions aus mehreren Quellen kommen können. Das JSON Schema für das
-  AI Tool Calling ist geplant für das Backend (Pydantic), wo der
-  LLM-Call laufen soll; es wird dann mit `actionShapes` abgeglichen.
+  AI Tool Calling liegt im Backend (siehe Ask Cevyn) und beschreibt
+  dieselbe Form wie `actionShapes`; der Abgleich ist manuell.
+
+### Ask Cevyn
+
+AI Commands laufen über den Action Layer, nicht über eigene
+Workspace-Logik:
+
+```text
+AskCevynBar (Canvas)
+→ useAskCevyn          (Kontext: dataset.fields, Charts)
+→ POST /ai/commands    (backend/app/ai_commands.py)
+→ Claude, Tool run_cevyn_actions
+→ AiCommandResult      ({ actions: unknown[] | null, message })
+→ runActions
+```
+
+- Das Backend beschreibt die Actions als Pydantic-Modelle
+  (`CevynActionBatch` in `models.py`): camelCase-Aliase, `extra="forbid"`
+  (`additionalProperties: false`), optionale Felder ohne `null` im Schema
+  (`SkipJsonSchema[None]`), Charttyp und Aggregation als Enum. Daraus
+  entsteht das `input_schema` des einzigen Tools.
+- Das Tool ist `strict`; `tool_choice` ist `auto` ohne parallele
+  Aufrufe. Claude liefert also höchstens einen Aufruf mit allen Actions
+  oder nur Text, wenn keine Action passt.
+- Das Backend reicht `actions` ungeprüft weiter. `strict` garantiert die
+  Form, nicht die Werte (z. B. Field-Namen); geprüft wird ausschließlich
+  in `runActions`.
+- Der Kontext kommt vom Frontend, weil Semantic-Role-Overrides nur dort
+  existieren. `useAskCevyn` schickt `dataset.fields` mit effektiven Roles
+  und pro Chart ID, Typ, Encoding, Aggregation und den sichtbaren Titel.
+- Der Endpoint ist zustandslos: jeder Prompt ist unabhängig, es gibt
+  keinen Gesprächsverlauf. Der aktuelle Workspace ist der Kontext.
+- `useAskCevyn` hält nur UI-State (Status, Meldungen), nicht den
+  Workspace State. Die Antwort wird über einen Ref mit dem aktuellen
+  `runActions` ausgeführt, damit Änderungen während der Wartezeit nicht
+  überschrieben werden.
+- Fehler von Claude werden als `502` mit `detail` gemeldet; der
+  API-Client übernimmt `detail` als Fehlermeldung.
+- Konfiguration über `backend/.env`: `ANTHROPIC_API_KEY`; mit
+  `CEVYN_AI_STUB=1` antwortet ein Stub ohne Claude.
 
 ### Undo/Redo
 
@@ -1124,7 +1164,8 @@ erzeugen dieselben Actions und ChartSpecs. Dadurch bleiben Ergebnisse
 editierbar und zwischen den Modi konsistent.
 
 Implementiert ist aktuell die Action-Grundlage für Charts im Workspace
-(siehe Abschnitt 8). Ask Cevyn und Explore nutzen sie noch nicht.
+(siehe Abschnitt 8). Ask Cevyn nutzt sie über den Action Layer, Explore
+noch nicht.
 
 ## 17. Project State
 

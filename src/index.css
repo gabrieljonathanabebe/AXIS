@@ -38,6 +38,7 @@
 @import './styles/build/DatasetCard.css';
 @import './styles/build/FieldList.css';
 
+@import './styles/canvas/AskCevynBar.css';
 @import './styles/canvas/CanvasPanel.css';
 @import './styles/canvas/ChartItem.css';
 @import './styles/canvas/EChartCanvas.css';

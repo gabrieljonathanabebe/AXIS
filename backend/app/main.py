@@ -4,12 +4,17 @@ from io import BytesIO
 from pathlib import Path
 from uuid import uuid4
 
+from anthropic import AnthropicError
+from dotenv import load_dotenv
 import polars as pl
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import chart_query as cq
+from app.ai_commands import run_ai_command
 from app.models import (
+    AiCommandRequest,
+    AiCommandResult,
     DatasetProfile,
     DatasetRows,
     DatasetSummary,
@@ -19,8 +24,10 @@ from app.models import (
 from app.profiling import build_dataset_profile
 from app.schema_detection import create_fields
 from app.store import StoredDataset, datasets
-from app.schema_detection import create_fields
-from app.store import StoredDataset, datasets
+
+# ===== ENV ===================================================================
+load_dotenv()
+
 
 # ===== CONSTANTS =============================================================
 DEMO_DATASET_ID = "demo"
@@ -141,4 +148,16 @@ def query_chart(
         raise HTTPException(
             status_code=422,
             detail=str(error),
+        ) from error
+
+
+# ===== AI COMMANDS ===========================================================
+@app.post("/ai/commands")
+def create_ai_command(request: AiCommandRequest) -> AiCommandResult:
+    try:
+        return run_ai_command(request)
+    except AnthropicError as error:
+        raise HTTPException(
+            status_code=502,
+            detail=f"AI request failed: {error}",
         ) from error

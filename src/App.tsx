@@ -7,6 +7,7 @@ import DragPreviewOverlay from './components/dnd/DragPreviewOverlay'
 import InspectorPanel from './components/inspector/InspectorPanel'
 import NavigationRail from './components/shell/NavigationRail'
 import TopBar from './components/shell/TopBar'
+import { useAskCevyn } from './hooks/useAskCevyn'
 import { useChartWorkspace } from './hooks/useChartWorkspace'
 import { useDatasets } from './hooks/useDatasets'
 import { useWorkspaceCommands } from './hooks/useWorkspaceCommands'
@@ -39,6 +40,7 @@ function App() {
     redo,
     removeChart,
     renameDashboard,
+    runActions,
     selectedChart,
     selectedChartId,
     selectChart,
@@ -58,6 +60,12 @@ function App() {
     updateDashboardLayout,
     updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
+
+  const { askCevyn, askCevynState } = useAskCevyn({
+    charts,
+    dataset,
+    runActions,
+  })
 
   const {
     activeWorkspace,
@@ -112,6 +120,7 @@ function App() {
               semanticRoleOverrides={semanticRoleOverrides}
             />
             <CanvasPanel
+              askCevynState={askCevynState}
               charts={charts}
               commands={commands}
               dashboard={dashboard}
@@ -120,6 +129,7 @@ function App() {
               isDraggingField={activeDrag?.kind === 'field'}
               selectedChartId={selectedChartId}
               selection={selection}
+              onAskCevyn={askCevyn}
               onClearSelection={clearSelection}
               onRenameDashboard={renameDashboard}
               onSelectChart={selectChart}

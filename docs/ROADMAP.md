@@ -493,14 +493,14 @@ Implementiert:
   `window.cevyn.run`
 - Action Schema: Strukturprüfung für ungeprüftes JSON
   (`parseCevynActions`) vor der Validierung, Fehler im selben Format
+- JSON Schema für das AI Tool Calling im Backend (Pydantic,
+  `CevynActionBatch`), von Hand mit `actionShapes` abgeglichen
 
 Geplant:
 
 - Actions für Dashboard State und später gemeinsame Filter
-- JSON Schema für das AI Tool Calling im Backend, abgeglichen mit der
-  Strukturprüfung im Frontend (mit AI Commands V1)
 
-### AI Commands V1
+### AI Commands V1 (implementiert)
 
 ```text
 Natural Language
@@ -508,10 +508,31 @@ Natural Language
 → ChartSpec / Dashboard State
 ```
 
-AI erzeugt keinen direkten ECharts-Code. Das `DatasetProfile` dient als
-Kontext für Fields und Semantic Roles.
+Erster End-to-End-AI-Flow:
 
-Ziel ist ein erster End-to-End-AI-Flow.
+```text
+Prompt (AskCevynBar im Canvas)
+→ useAskCevyn: Kontext aus Fields (effektive Roles) und Charts
+→ POST /ai/commands
+→ Claude Sonnet 5.5 mit Tool run_cevyn_actions
+→ actions (ungeprüft)
+→ runActions (Struktur, Validierung, ein Undo-Schritt)
+→ Ergebnis oder Fehler in der Leiste
+```
+
+- AI erzeugt keinen direkten ECharts-Code, nur `CevynAction`s
+- Kontext kommt vom Frontend: `dataset.fields` mit effektiven Semantic
+  Roles (inklusive Overrides) und eine kompakte Sicht der Charts (ID,
+  Typ, Encoding, Aggregation, sichtbarer Titel)
+- ein Tool, höchstens ein Aufruf pro Antwort (`strict`, keine parallelen
+  Aufrufe); ohne passende Action antwortet Claude nur mit Text
+- jeder Prompt ist unabhängig; es gibt keinen Gesprächsverlauf
+- Eingabeleiste schwebend unten im Canvas mit Status (lädt, Erfolg,
+  Hinweis, Fehler); Fehler werden nur angezeigt, kein Retry
+- Antworttext als kurzer Klartext ohne Markdown, in der Sprache des
+  Prompts
+- `CEVYN_AI_STUB=1` liefert ohne Claude einen festen Balkenchart aus der
+  ersten Dimension und dem ersten Measure
 
 ## 6. Later – Visualization Completion
 
@@ -808,3 +829,7 @@ waren:
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
+- Ask Cevyn hat im Demo-Dataset zweimal einen Balkenchart doppelt
+  angelegt; nicht reproduziert. Das Backend loggt jeden Prompt mit seinen
+  Actions (uvicorn-Log), um Frontend (zwei Requests) und Claude (zwei
+  Actions in einer Antwort) zu unterscheiden.
