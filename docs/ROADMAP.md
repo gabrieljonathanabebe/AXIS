@@ -524,8 +524,11 @@ Prompt (AskCevynBar im Canvas)
 - Kontext kommt vom Frontend: `dataset.fields` mit effektiven Semantic
   Roles (inklusive Overrides) und eine kompakte Sicht der Charts (ID,
   Typ, Encoding, Aggregation, sichtbarer Titel)
-- ein Tool, höchstens ein Aufruf pro Antwort (`strict`, keine parallelen
+- ein Tool, höchstens ein Aufruf pro Antwort (keine parallelen
   Aufrufe); ohne passende Action antwortet Claude nur mit Text
+- Tool-Schema pro Request mit Field-Namen und Chart-IDs als Enum; nicht
+  `strict`, da Strict Tool Use die Reihenfolge der Encoding-Keys erzwingt
+  und dabei Kanäle verliert
 - jeder Prompt ist unabhängig; es gibt keinen Gesprächsverlauf
 - Eingabeleiste schwebend unten im Canvas mit Status (lädt, Erfolg,
   Hinweis, Fehler); Fehler werden nur angezeigt, kein Retry
@@ -533,6 +536,21 @@ Prompt (AskCevynBar im Canvas)
   Prompts
 - `CEVYN_AI_STUB=1` liefert ohne Claude einen festen Balkenchart aus der
   ersten Dimension und dem ersten Measure
+- Backend loggt Prompt und Actions (uvicorn-Log)
+
+### Ask Cevyn – Profil und Kanal-Regeln als Kontext (geplant)
+
+Claude kennt bisher nur Name, Physical Type und Role der Fields und
+nicht, welche Role ein Kanal erwartet. Beobachtet: eine Dimension mit
+nur einem Wert als Farbe, `color` statt `series` bei Bar.
+
+- `DatasetProfile` als Kontext: Backend holt es per `dataset_id` aus dem
+  Store und ersetzt die Roles durch die effektiven aus `fields`;
+  Statistiken kompakt, ohne Histogramme
+- Kanal-Regeln pro Charttyp (erlaubte Roles je Encoding) aus
+  `chartDefinitions`
+- Fokus auf sparsamen Token-Verbrauch: kompaktes Kontextformat, stabile
+  Teile (System-Prompt, Kanal-Regeln, Profil) für Prompt Caching vorn
 
 ## 6. Later – Visualization Completion
 
@@ -829,7 +847,3 @@ waren:
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
-- Ask Cevyn hat im Demo-Dataset zweimal einen Balkenchart doppelt
-  angelegt; nicht reproduziert. Das Backend loggt jeden Prompt mit seinen
-  Actions (uvicorn-Log), um Frontend (zwei Requests) und Claude (zwei
-  Actions in einer Antwort) zu unterscheiden.

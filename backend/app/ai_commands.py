@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-
+from typing import Any
 
 from anthropic import Anthropic
 from anthropic.types.beta import BetaMessage
@@ -33,13 +33,30 @@ ask follow-up questions; instead, suggest one prompt the user could send.
 """
 
 
-TOOL = {
-    "description": "Run Cevyn actions on the chart workspace. All actions "
-    "are applied together as one undo step.",
-    "input_schema": CevynActionBatch.model_json_schema(),
-    "name": TOOL_NAME,
-    "strict": True,
-}
+def build_input_schema(request: AiCommandRequest) -> dict[str, Any]:
+    schema = CevynActionBatch.model_json_schema()
+    definitions = schema["$defs"]
+    field_names = [field.name for field in request.fields]
+    chart_ids = [chart.id for chart in request.charts]
+    if field_names:
+        for encoding in definitions["ChartEncoding"]["properties"].values():
+            encoding["enum"] = field_names
+    if chart_ids:
+        for definition in definitions.values():
+            chart_id = definition.get("properties", {}).get("chartId")
+            if chart_id is not None:
+                chart_id["enum"] = chart_ids
+    return schema
+
+
+def build_tool(request: AiCommandRequest) -> dict[str, Any]:
+    return {
+        "description": "Run Cevyn actions on the chart workspace. All "
+        "actions are applied together as one undo step.",
+        "input_schema": build_input_schema(request),
+        "name": TOOL_NAME,
+        "strict": False,
+    }
 
 
 # ===== HELPERS ===============================================================
@@ -121,7 +138,7 @@ def run_ai_command(request: AiCommandRequest) -> AiCommandResult:
         output_config={"effort": "medium"},
         system=SYSTEM_PROMPT,
         tool_choice={"type": "auto", "disable_parallel_tool_use": True},  # type: ignore
-        tools=[TOOL],  # type: ignore
+        tools=[build_tool(request)],  # type: ignore
     )
     result = read_result(response)
     logger.info("AI command %r -> %s", request.prompt, result.actions)

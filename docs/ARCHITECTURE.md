@@ -620,12 +620,20 @@ AskCevynBar (Canvas)
   (`additionalProperties: false`), optionale Felder ohne `null` im Schema
   (`SkipJsonSchema[None]`), Charttyp und Aggregation als Enum. Daraus
   entsteht das `input_schema` des einzigen Tools.
-- Das Tool ist `strict`; `tool_choice` ist `auto` ohne parallele
-  Aufrufe. Claude liefert also höchstens einen Aufruf mit allen Actions
-  oder nur Text, wenn keine Action passt.
-- Das Backend reicht `actions` ungeprüft weiter. `strict` garantiert die
-  Form, nicht die Werte (z. B. Field-Namen); geprüft wird ausschließlich
-  in `runActions`.
+- Das Schema wird pro Request gebaut (`build_input_schema`): Encodings
+  erhalten die Field-Namen und `chartId` die IDs der bestehenden Charts
+  als Enum. Leere Listen bleiben freie Strings, da ein leeres Enum
+  ungültig ist.
+- `tool_choice` ist `auto` ohne parallele Aufrufe. Claude liefert also
+  höchstens einen Aufruf mit allen Actions oder nur Text, wenn keine
+  Action passt.
+- Das Tool ist bewusst nicht `strict`. Strict Tool Use erzwingt die
+  Keys von `ChartEncoding` in Schema-Reihenfolge; schreibt Claude
+  `x, y` vor `color`, fällt `color` weg (oder landet im String von `y`)
+  und die Action wird wiederholt. Ohne `strict` sind die Enums Hinweise,
+  keine Garantie.
+- Das Backend reicht `actions` ungeprüft weiter; Form und Werte prüft
+  ausschließlich `runActions`.
 - Der Kontext kommt vom Frontend, weil Semantic-Role-Overrides nur dort
   existieren. `useAskCevyn` schickt `dataset.fields` mit effektiven Roles
   und pro Chart ID, Typ, Encoding, Aggregation und den sichtbaren Titel.
