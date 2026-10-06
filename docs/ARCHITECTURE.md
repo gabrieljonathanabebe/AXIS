@@ -74,8 +74,8 @@ geladen und gemeinsam gesetzt. Der Data Workspace hat keine eigene
 Dataset- oder Upload-Logik. Profile-Ansicht und Build Panel gruppieren
 Fields über das `DatasetProfile` und dieselben Semantic Role Overrides
 (siehe Abschnitt 11); die Table View liest daraus Role, Physical Type
-und Verteilung. Später soll auch AI es als Grundlage nutzen (siehe
-`ROADMAP.md`).
+und Verteilung. Ask Cevyn nutzt es als Kontext für Claude (siehe Ask
+Cevyn).
 
 Die Table zeigt eine Preview: `fetchDatasetRows` lädt die ersten 100
 Rows; Sortierung (`sortRows`) ist lokaler UI-State und betrifft nur
@@ -608,8 +608,9 @@ Workspace-Logik:
 
 ```text
 AskCevynBar (Canvas)
-→ useAskCevyn          (Kontext: dataset.fields, Charts)
-→ POST /ai/commands    (backend/app/ai_commands.py)
+→ useAskCevyn          (dataset.fields, Charts, Chart-Regeln)
+→ POST /datasets/{id}/ai-commands   (backend/app/ai_commands.py)
+→ Kontext aus DatasetProfile + Chart-Regeln   (ai_context.py)
 → Claude, Tool run_cevyn_actions
 → AiCommandResult      ({ actions: unknown[] | null, message })
 → runActions
@@ -621,9 +622,10 @@ AskCevynBar (Canvas)
   (`SkipJsonSchema[None]`), Charttyp und Aggregation als Enum. Daraus
   entsteht das `input_schema` des einzigen Tools.
 - Das Schema wird pro Request gebaut (`build_input_schema`): Encodings
-  erhalten die Field-Namen und `chartId` die IDs der bestehenden Charts
-  als Enum. Leere Listen bleiben freie Strings, da ein leeres Enum
-  ungültig ist.
+  erhalten die Field-Namen als Enum. Eine leere Liste bleibt ein freier
+  String, da ein leeres Enum ungültig ist. `chartId` bleibt bewusst ohne
+  Enum, damit das Schema pro Dataset stabil und cachebar bleibt; falsche
+  IDs lehnt die Validierung ab.
 - `tool_choice` ist `auto` ohne parallele Aufrufe. Claude liefert also
   höchstens einen Aufruf mit allen Actions oder nur Text, wenn keine
   Action passt.
@@ -634,9 +636,22 @@ AskCevynBar (Canvas)
   keine Garantie.
 - Das Backend reicht `actions` ungeprüft weiter; Form und Werte prüft
   ausschließlich `runActions`.
-- Der Kontext kommt vom Frontend, weil Semantic-Role-Overrides nur dort
-  existieren. `useAskCevyn` schickt `dataset.fields` mit effektiven Roles
-  und pro Chart ID, Typ, Encoding, Aggregation und den sichtbaren Titel.
+- Der Kontext entsteht aus zwei Quellen. Das Frontend schickt, was nur
+  dort existiert: `dataset.fields` mit effektiven Roles (Overrides), pro
+  Chart ID, Typ, Encoding, Aggregation und sichtbaren Titel sowie die
+  aus `chartDefinitions` abgeleiteten Chart-Regeln (`AiChartRule`). Das
+  Backend ergänzt das `DatasetProfile` aus dem Store.
+- `ai_context.py` formt daraus kompakten Text: `<chart_rules>` mit
+  Aggregationen und Roles je Encoding, `<dataset>` mit einer Zeile pro
+  Field (Name, Physical Type, effektive Role, Werte). Statistiken gehen
+  nur mit, wenn ihr `kind` zur effektiven Role passt, sonst nur die
+  Anzahl der Werte; Histogramme nie.
+- Prompt Caching: `tools` → `system` → `messages` bilden den Prefix.
+  Tool-Schema, System-Prompt und Kontext hängen nur von Dataset,
+  Overrides und Chart Registry ab; der Cache-Breakpoint liegt am Ende des
+  Kontexts. Charts und Prompt stehen in der User-Message, damit neue
+  Charts den Cache nicht invalidieren. Das Log zeigt gelesene und
+  geschriebene Cache-Tokens.
 - Der Endpoint ist zustandslos: jeder Prompt ist unabhängig, es gibt
   keinen Gesprächsverlauf. Der aktuelle Workspace ist der Kontext.
 - `useAskCevyn` hält nur UI-State (Status, Meldungen), nicht den
@@ -889,7 +904,12 @@ Implementiert in `backend/app/profiling.py`:
 - `statistics` ist eine über `kind` unterschiedene Union und hängt von
   der Semantic Role ab: Measure (min, max, mean, median), Dimension
   (häufigste Werte, bei Gleichstand nach Wert sortiert), Temporal
-  (min/max als ISO-String). Identifier haben keine Statistiken.
+  (min/max als ISO-String und `granularity`). Identifier haben keine
+  Statistiken.
+- `granularity` (`day`, `week`, `month`, `quarter`, `year` oder `null`)
+  ergibt sich aus dem häufigsten Abstand in Tagen zwischen aufeinander
+  folgenden eindeutigen Datumswerten; Monate, Quartale und Jahre über
+  Bereiche (z. B. 28–31 Tage).
 - Measure und Temporal enthalten ein Histogramm (`histogram`): Anzahl
   der Werte in gleich breiten Bins zwischen min und max, höchstens 20
   Bins und nicht mehr als eindeutige Werte. Die Bin-Grenzen werden

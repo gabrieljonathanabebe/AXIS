@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { chartDefinitionList } from '../chart/chartDefinitions'
 import { postAiCommand } from '../api/aiCommands'
 
-import type { AiChartContext } from '../api/aiCommands'
+import type { AiChartContext, AiChartRule } from '../api/aiCommands'
+import type { ChartDefinition } from '../chart/chartDefinitions'
 import type { CevynActionError, CevynActionResult } from '../types/actions'
 import type { ChartInstance, Dataset } from '../types/chart'
 
@@ -10,6 +12,7 @@ import type { ChartInstance, Dataset } from '../types/chart'
 type UseAskCevynParams = {
   charts: ChartInstance[]
   dataset: Dataset
+  datasetId: string | null
   runActions: (input: unknown) => CevynActionResult
 }
 
@@ -33,6 +36,19 @@ function toChartContext(chart: ChartInstance): AiChartContext {
   }
 }
 
+function toChartRule(definition: ChartDefinition): AiChartRule {
+  return {
+    encodings: definition.encodings.map((encoding) => ({
+      key: encoding.key,
+      recommended_roles: encoding.recommendedRoles,
+      required: encoding.required,
+      supported_roles: encoding.supportedRoles,
+    })),
+    supported_aggregations: definition.supportedAggregations,
+    type: definition.type,
+  }
+}
+
 function formatActionError({ index, message }: CevynActionError): string {
   return index === undefined ? message : `Action ${index + 1}: ${message}`
 }
@@ -41,6 +57,7 @@ function formatActionError({ index, message }: CevynActionError): string {
 export function useAskCevyn({
   charts,
   dataset,
+  datasetId,
   runActions,
 }: UseAskCevynParams) {
   const [askCevynState, setAskCevynState] =
@@ -52,9 +69,14 @@ export function useAskCevyn({
     runActionsRef.current = runActions
   })
   async function askCevyn(prompt: string): Promise<void> {
+    if (datasetId === null) {
+      setAskCevynState({ messages: ['Load a dataset first.'], status: 'info' })
+      return
+    }
     setAskCevynState({ messages: [], status: 'loading' })
     try {
-      const result = await postAiCommand({
+      const result = await postAiCommand(datasetId, {
+        chart_rules: chartDefinitionList.map(toChartRule),
         charts: charts.map(toChartContext),
         fields: dataset.fields,
         prompt,

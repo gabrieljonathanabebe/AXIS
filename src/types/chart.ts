@@ -213,10 +213,13 @@ export type DimensionStatistics = {
   value_counts: ValueCount[]
 }
 
+export type TemporalGranularity = 'day' | 'week' | 'month' | 'quarter' | 'year'
+
 export type TemporalStatistics = {
   kind: 'temporal'
   min: string | null
   max: string | null
+  granularity: TemporalGranularity | null
   histogram: number[]
 }
 

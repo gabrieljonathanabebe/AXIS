@@ -64,6 +64,7 @@ function App() {
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
     dataset,
+    datasetId: activeDatasetSummary?.id ?? null,
     runActions,
   })
 

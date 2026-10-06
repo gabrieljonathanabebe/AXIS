@@ -513,7 +513,7 @@ Erster End-to-End-AI-Flow:
 ```text
 Prompt (AskCevynBar im Canvas)
 → useAskCevyn: Kontext aus Fields (effektive Roles) und Charts
-→ POST /ai/commands
+→ POST /datasets/{id}/ai-commands
 → Claude Sonnet 5.5 mit Tool run_cevyn_actions
 → actions (ungeprüft)
 → runActions (Struktur, Validierung, ein Undo-Schritt)
@@ -526,9 +526,9 @@ Prompt (AskCevynBar im Canvas)
   Typ, Encoding, Aggregation, sichtbarer Titel)
 - ein Tool, höchstens ein Aufruf pro Antwort (keine parallelen
   Aufrufe); ohne passende Action antwortet Claude nur mit Text
-- Tool-Schema pro Request mit Field-Namen und Chart-IDs als Enum; nicht
-  `strict`, da Strict Tool Use die Reihenfolge der Encoding-Keys erzwingt
-  und dabei Kanäle verliert
+- Tool-Schema pro Request mit Field-Namen als Enum; nicht `strict`, da
+  Strict Tool Use die Reihenfolge der Encoding-Keys erzwingt und dabei
+  Kanäle verliert
 - jeder Prompt ist unabhängig; es gibt keinen Gesprächsverlauf
 - Eingabeleiste schwebend unten im Canvas mit Status (lädt, Erfolg,
   Hinweis, Fehler); Fehler werden nur angezeigt, kein Retry
@@ -538,19 +538,29 @@ Prompt (AskCevynBar im Canvas)
   ersten Dimension und dem ersten Measure
 - Backend loggt Prompt und Actions (uvicorn-Log)
 
-### Ask Cevyn – Profil und Kanal-Regeln als Kontext (geplant)
+### Ask Cevyn – Profil und Kanal-Regeln als Kontext (implementiert)
 
-Claude kennt bisher nur Name, Physical Type und Role der Fields und
+Vorher kannte Claude nur Name, Physical Type und Role der Fields und
 nicht, welche Role ein Kanal erwartet. Beobachtet: eine Dimension mit
 nur einem Wert als Farbe, `color` statt `series` bei Bar.
 
-- `DatasetProfile` als Kontext: Backend holt es per `dataset_id` aus dem
-  Store und ersetzt die Roles durch die effektiven aus `fields`;
-  Statistiken kompakt, ohne Histogramme
-- Kanal-Regeln pro Charttyp (erlaubte Roles je Encoding) aus
-  `chartDefinitions`
-- Fokus auf sparsamen Token-Verbrauch: kompaktes Kontextformat, stabile
-  Teile (System-Prompt, Kanal-Regeln, Profil) für Prompt Caching vorn
+- Endpoint `POST /datasets/{id}/ai-commands`; das Backend holt das
+  `DatasetProfile` aus dem Store, die effektiven Roles kommen weiter aus
+  `fields`
+- kompakter `<dataset>`-Kontext (`ai_context.py`): eine Zeile pro Field
+  mit Name, Physical Type, effektiver Role und Werten (Measure: min, max,
+  mean, median; Dimension: Anzahl und häufigste Werte; Temporal:
+  Zeitraum und Granularität); passt die Statistik nach einem Override
+  nicht zur Role, nur die Anzahl der Werte; keine Histogramme
+- `<chart_rules>` pro Charttyp: Aggregationen und je Encoding empfohlene
+  und erlaubte Roles; `useAskCevyn` leitet sie aus `chartDefinitions` ab
+- Profiling: `TemporalStatistics.granularity` (`day` bis `year`) aus dem
+  häufigsten Abstand zwischen Datumswerten, sonst `null`
+- Prompt Caching: Tool-Schema ohne Chart-ID-Enum, System-Prompt,
+  Chart-Regeln und Profil als gecachter Prefix; Charts und Prompt in der
+  User-Message; Backend loggt gelesene und geschriebene Cache-Tokens
+- verifiziert: `series` statt `color` bei Bar, Cache-Treffer nach neuem
+  Chart, ein Override auf Dimension verhindert einen Pie mit 55 Werten
 
 ## 6. Later – Visualization Completion
 
@@ -820,8 +830,6 @@ waren:
 - Cmd/Ctrl + B und Cmd/Ctrl + I schalten auch im Data-Workspace die
   ausgeblendeten Panels von Visualize um.
 - Der Fallback-Name `'No dataset'` steht in `BuildPanel` und `App`.
-- Encodings speichern Kopien von `DataField` statt Referenzen auf Fields.
-- `DataTable` nutzt noch den alten Surface-Stil statt `.glass`.
 - In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte
   breiter als das Fenster werden. Die Ursache ist noch nicht geklärt.
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden

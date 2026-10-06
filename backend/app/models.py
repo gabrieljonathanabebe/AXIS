@@ -22,6 +22,14 @@ class SemanticRole(StrEnum):
     IDENTIFIER = "identifier"
 
 
+class TemporalGranularity(StrEnum):
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"
+    QUARTER = "quarter"
+    YEAR = "year"
+
+
 class Field(BaseModel):
     name: str
     physical_type: PhysicalType
@@ -58,6 +66,7 @@ class TemporalStatistics(BaseModel):
     kind: Literal["temporal"] = "temporal"
     min: str | None
     max: str | None
+    granularity: TemporalGranularity | None
     histogram: list[int]
 
 
@@ -234,12 +243,26 @@ class AiChartContext(BaseModel):
     type: ChartType
 
 
-class AiCommandRequest(BaseModel):
-    charts: list[AiChartContext]
-    fields: list[Field]
-    prompt: str
-
-
 class AiCommandResult(BaseModel):
     actions: list[Any] | None
     message: str | None
+
+
+class AiEncodingRule(BaseModel):
+    key: str
+    recommended_roles: list[SemanticRole]
+    required: bool
+    supported_roles: list[SemanticRole]
+
+
+class AiChartRule(BaseModel):
+    encodings: list[AiEncodingRule]
+    supported_aggregations: list[Aggregation]
+    type: ChartType
+
+
+class AiCommandRequest(BaseModel):
+    chart_rules: list[AiChartRule]
+    charts: list[AiChartContext]
+    fields: list[Field]
+    prompt: str

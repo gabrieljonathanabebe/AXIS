@@ -152,10 +152,16 @@ def query_chart(
 
 
 # ===== AI COMMANDS ===========================================================
-@app.post("/ai/commands")
-def create_ai_command(request: AiCommandRequest) -> AiCommandResult:
+@app.post("/datasets/{dataset_id}/ai-commands")
+def create_ai_command(
+    dataset_id: str,
+    request: AiCommandRequest,
+) -> AiCommandResult:
+    stored = datasets.get(dataset_id)
+    if stored is None:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
     try:
-        return run_ai_command(request)
+        return run_ai_command(stored.profile, request)  # type: ignore
     except AnthropicError as error:
         raise HTTPException(
             status_code=502,

@@ -9,6 +9,7 @@ from app.models import (
     FieldStatistics,
     MeasureStatistics,
     SemanticRole,
+    TemporalGranularity,
     TemporalStatistics,
     ValueCount,
 )
@@ -17,6 +18,14 @@ from app.schema_detection import infer_physical_type, infer_semantic_role
 # ===== CONSTANTS =============================================================
 VALUE_COUNT_LIMIT = 5
 HISTOGRAM_BIN_LIMIT = 20
+
+GRANULARITY_DAY_RANGES = [
+    (TemporalGranularity.DAY, 1, 1),
+    (TemporalGranularity.WEEK, 7, 7),
+    (TemporalGranularity.MONTH, 28, 31),
+    (TemporalGranularity.QUARTER, 89, 92),
+    (TemporalGranularity.YEAR, 365, 366),
+]
 
 
 # ===== PROFILE ===============================================================
@@ -98,7 +107,23 @@ def build_temporal_statistics(values: pl.Series) -> TemporalStatistics:
     return TemporalStatistics(
         min=format_temporal(values.min()),
         max=format_temporal(values.max()),
+        granularity=detect_granularity(values),
         histogram=build_histogram(values),
+    )
+
+
+def detect_granularity(values: pl.Series) -> TemporalGranularity | None:
+    gaps = values.cast(pl.Date).unique().sort().diff().drop_nulls()
+    if gaps.is_empty():
+        return None
+    days = gaps.dt.total_days().mode().min()
+    return next(
+        (
+            granularity
+            for granularity, low, high in GRANULARITY_DAY_RANGES
+            if low <= days <= high  # type: ignore
+        ),
+        None,
     )
 
 

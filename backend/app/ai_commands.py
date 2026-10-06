@@ -6,10 +6,12 @@ from typing import Any
 from anthropic import Anthropic
 from anthropic.types.beta import BetaMessage
 
+from app.ai_context import build_chart_rules_context, build_dataset_context
 from app.models import (
     AiCommandRequest,
     AiCommandResult,
     CevynActionBatch,
+    DatasetProfile,
     SemanticRole,
 )
 
@@ -22,8 +24,14 @@ SYSTEM_PROMPT = """\
 You are the chart assistant of Cevyn, a visual analytics app.
 Turn the user's request into Cevyn actions and call the run_cevyn_actions
 tool once with all of them.
-Use only field names from <fields> and chart ids from <charts>. A chart
+Use only field names from <dataset> and chart ids from <charts>. A chart
 created in this call cannot be addressed by later actions in the same call.
+<chart_rules> lists the aggregations of each chart type and, per encoding,
+the recommended roles followed by the roles it also allows. Assign a field
+only to an encoding that allows its role, preferring recommended roles.
+Each <dataset> line reads: name | physical type | semantic role | values.
+Use the values to build readable charts, for example no color or series
+field with a single distinct value.
 If the request cannot be expressed with these actions and fields, do not
 call the tool; explain briefly why instead.
 Any text you write is shown in a small status line: use plain text without
@@ -35,17 +43,10 @@ ask follow-up questions; instead, suggest one prompt the user could send.
 
 def build_input_schema(request: AiCommandRequest) -> dict[str, Any]:
     schema = CevynActionBatch.model_json_schema()
-    definitions = schema["$defs"]
     field_names = [field.name for field in request.fields]
-    chart_ids = [chart.id for chart in request.charts]
     if field_names:
-        for encoding in definitions["ChartEncoding"]["properties"].values():
+        for encoding in schema["$defs"]["ChartEncoding"]["properties"].values():
             encoding["enum"] = field_names
-    if chart_ids:
-        for definition in definitions.values():
-            chart_id = definition.get("properties", {}).get("chartId")
-            if chart_id is not None:
-                chart_id["enum"] = chart_ids
     return schema
 
 
@@ -60,14 +61,31 @@ def build_tool(request: AiCommandRequest) -> dict[str, Any]:
 
 
 # ===== HELPERS ===============================================================
+def build_system(
+    profile: DatasetProfile, request: AiCommandRequest
+) -> list[dict[str, Any]]:
+    chart_rules = build_chart_rules_context(request.chart_rules)
+    dataset = build_dataset_context(profile, request.fields)
+    context = (
+        f"<chart_rules>\n{chart_rules}\n</chart_rules>\n"
+        f"<dataset>\n{dataset}\n</dataset>"
+    )
+    return [
+        {"text": SYSTEM_PROMPT, "type": "text"},
+        {
+            "cache_control": {"type": "ephemeral"},
+            "text": context,
+            "type": "text",
+        },
+    ]
+
+
 def build_user_message(request: AiCommandRequest) -> str:
-    fields = [field.model_dump(mode="json") for field in request.fields]
     charts = [
         chart.model_dump(mode="json", exclude_none=True)
         for chart in request.charts
     ]
     return (
-        f"<fields>\n{json.dumps(fields)}\n</fields>\n"
         f"<charts>\n{json.dumps(charts)}\n</charts>\n"
         f"<request>\n{request.prompt}\n</request>"
     )
@@ -125,7 +143,9 @@ def create_stub_result(request: AiCommandRequest) -> AiCommandResult:
 
 
 # ===== FUNCTION ==============================================================
-def run_ai_command(request: AiCommandRequest) -> AiCommandResult:
+def run_ai_command(
+    profile: DatasetProfile, request: AiCommandRequest
+) -> AiCommandResult:
     if os.getenv("CEVYN_AI_STUB") == "1":
         return create_stub_result(request)
     client = Anthropic()
@@ -136,10 +156,16 @@ def run_ai_command(request: AiCommandRequest) -> AiCommandResult:
         messages=[{"role": "user", "content": build_user_message(request)}],
         model=MODEL,
         output_config={"effort": "medium"},
-        system=SYSTEM_PROMPT,
+        system=build_system(profile, request),  # type: ignore
         tool_choice={"type": "auto", "disable_parallel_tool_use": True},  # type: ignore
         tools=[build_tool(request)],  # type: ignore
     )
     result = read_result(response)
-    logger.info("AI command %r -> %s", request.prompt, result.actions)
+    logger.info(
+        "AI command %r -> %s (cache read %s, write %s)",
+        request.prompt,
+        result.actions,
+        response.usage.cache_read_input_tokens,
+        response.usage.cache_creation_input_tokens,
+    )
     return result
