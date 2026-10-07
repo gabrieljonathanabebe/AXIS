@@ -2,7 +2,7 @@ from datetime import date
 
 import polars as pl
 
-from app.models import (
+from app.datasets.models import (
     DatasetProfile,
     DimensionStatistics,
     FieldProfile,
@@ -13,7 +13,7 @@ from app.models import (
     TemporalStatistics,
     ValueCount,
 )
-from app.schema_detection import infer_physical_type, infer_semantic_role
+from app.datasets import schema_detection
 
 # ===== CONSTANTS =============================================================
 VALUE_COUNT_LIMIT = 5
@@ -44,10 +44,10 @@ def build_dataset_profile(
 
 
 def build_field_profile(column: pl.Series) -> FieldProfile:
-    physical_type = infer_physical_type(column.dtype)
+    physical_type = schema_detection.infer_physical_type(column.dtype)
     values = column.drop_nulls()
     unique_count = values.n_unique()
-    semantic_role = infer_semantic_role(
+    semantic_role = schema_detection.infer_semantic_role(
         column.name,
         physical_type,
         unique_count,

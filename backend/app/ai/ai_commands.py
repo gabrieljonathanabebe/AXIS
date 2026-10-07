@@ -6,14 +6,9 @@ from typing import Any
 from anthropic import Anthropic
 from anthropic.types.beta import BetaMessage
 
-from app.ai_context import build_chart_rules_context, build_dataset_context
-from app.models import (
-    AiCommandRequest,
-    AiCommandResult,
-    CevynActionBatch,
-    DatasetProfile,
-    SemanticRole,
-)
+from app.ai import ai_context
+from app.ai.models import AiCommandRequest, AiCommandResult, CevynActionBatch
+from app.datasets.models import DatasetProfile, SemanticRole
 
 # ===== CONSTANTS =============================================================
 MODEL = "claude-sonnet-5-5"
@@ -64,8 +59,8 @@ def build_tool(request: AiCommandRequest) -> dict[str, Any]:
 def build_system(
     profile: DatasetProfile, request: AiCommandRequest
 ) -> list[dict[str, Any]]:
-    chart_rules = build_chart_rules_context(request.chart_rules)
-    dataset = build_dataset_context(profile, request.fields)
+    chart_rules = ai_context.build_chart_rules_context(request.chart_rules)
+    dataset = ai_context.build_dataset_context(profile, request.fields)
     context = (
         f"<chart_rules>\n{chart_rules}\n</chart_rules>\n"
         f"<dataset>\n{dataset}\n</dataset>"

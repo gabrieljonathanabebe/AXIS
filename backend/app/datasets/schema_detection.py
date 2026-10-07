@@ -1,6 +1,6 @@
 import polars as pl
 
-from app.models import (
+from app.datasets.models import (
     DatasetProfile,
     Field,
     PhysicalType,

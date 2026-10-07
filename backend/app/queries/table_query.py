@@ -1,17 +1,16 @@
 import polars as pl
 
-from app import chart_query as cq
-from app.models import (
-    DatasetSummary,
+from app.queries import chart_query
+from app.datasets import profiling
+from app.datasets.models import DatasetSummary, PhysicalType, ValueCount
+from app.queries import chart_query
+from app.queries.models import (
     DateRangeTableFilter,
     FieldValues,
-    PhysicalType,
     TableFilter,
     TableQueryRequest,
     TableQueryResult,
-    ValueCount,
 )
-from app.profiling import count_values
 
 MAX_TABLE_ROWS = 500
 MAX_FIELD_VALUES = 100
@@ -20,8 +19,8 @@ MAX_FIELD_VALUES = 100
 # Datetimes compare by their date, like the date steps of the slider.
 def build_table_filter_expression(table_filter: TableFilter) -> pl.Expr:
     if not isinstance(table_filter, DateRangeTableFilter):
-        return cq.build_filter_expression(table_filter)
-    return cq.build_bounds_expression(
+        return chart_query.build_filter_expression(table_filter)
+    return chart_query.build_bounds_expression(
         pl.col(table_filter.field).cast(pl.Date),
         table_filter.start,
         table_filter.end,
@@ -55,7 +54,7 @@ def validate_table_query(
     summary: DatasetSummary,
     query: TableQueryRequest,
 ) -> None:
-    cq.validate_filters(summary, query.filters)
+    chart_query.validate_filters(summary, query.filters)
     fields = {field.name: field for field in summary.fields}
     for item in query.filters:
         if not isinstance(item, DateRangeTableFilter):
@@ -87,7 +86,7 @@ def build_field_values(
             literal=True,
         )
         values = values.filter(matches)
-    counts = count_values(values)
+    counts = profiling.count_values(values)
     shown = counts.head(min(limit, MAX_FIELD_VALUES))
     return FieldValues(
         field=field_name,

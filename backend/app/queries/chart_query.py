@@ -2,14 +2,13 @@ from collections.abc import Sequence
 
 import polars as pl
 
-from app.models import (
+from app.datasets.models import DatasetSummary, PhysicalType
+from app.queries.models import (
     ChartFilter,
     ChartQueryPoint,
     ChartQueryRequest,
     ChartQueryResult,
-    DatasetSummary,
     GroupAggregation,
-    PhysicalType,
     PointsQueryRequest,
     PointsQueryResult,
     RangeChartFilter,

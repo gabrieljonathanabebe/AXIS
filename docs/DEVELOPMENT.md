@@ -410,6 +410,46 @@ Die Bezeichnungen sind kurz, englisch und beschreiben die tatsächliche
 Verantwortung des folgenden Abschnitts. Keine Marker einfügen, wenn eine
 Datei oder Funktion bereits ohne sie unmittelbar erfassbar ist.
 
+Ziel der Dokumentation im Code: Mensch und KI erfassen eine Funktion,
+ohne ihren Rumpf lesen zu müssen.
+
+Python: jede Funktion erhält einen Docstring statt loser Kommentare
+darüber. Ein Satz, was die Funktion tut; unter `Args:` eine Zeile
+`name: kurzer Satz` pro Argument; unter `Returns:` (bzw. `Yields:`) ein
+Satz zum Rückgabewert; `Raises:` nur bei bewusst ausgelösten Fehlern.
+Ohne Argumente entfällt `Args:`. Einfache Funktionen (z. B. Routen, die
+nur delegieren, oder kurze Helfer) erhalten nur ein bis zwei Sätze ohne
+`Args:`/`Returns:`. Keine Leerzeilen zwischen den
+Abschnitten und keine Bindestriche vor den Einträgen (Pylance rendert die
+Einträge selbst als Liste; ein `- ` davor zerstört das Parsing).
+
+```python
+def read_csv_frame(source: BytesIO | Path) -> pl.DataFrame:
+    """
+    Read a CSV file into a DataFrame with typed columns.
+    Args:
+        source: Uploaded file content or path to a CSV file.
+    Returns:
+        The rows, with detected dates and common null markers as nulls.
+    """
+```
+
+Imports im Backend: Funktionen eigener Module über das Modul importieren
+und mit Punkt aufrufen (`from app import store` →
+`store.register_dataset(...)`), damit die Zuständigkeit am Aufruf
+sichtbar ist; keine Kurz-Aliase. Models und Types direkt importieren
+(`from app.models import ChartQueryRequest`). Externe Libraries nach
+ihrer üblichen Konvention (`import polars as pl`).
+
+Docstrings an Pydantic-Modellen werden Teil des JSON-Schemas. Bei den
+Action-Modellen sind sie die Beschreibungen, die Claude im Ask-Cevyn-Tool
+liest; dort nur bewusst als Prompt-Änderung anpassen.
+
+TypeScript: exportierte Funktionen, Hooks und Komponenten erhalten einen
+einzeiligen JSDoc-Kommentar (`/** … */`). `@param` und `@returns` nur,
+wenn sie über die Types hinaus etwas aussagen. Kommentare innerhalb von
+Funktionen nur für nicht offensichtliche Entscheidungen.
+
 Properties in Options- und Konfigurationsobjekten alphabetisch sortieren,
 wenn ihre Reihenfolge keine Semantik besitzt. Das gilt auch für neu
 angelegte ECharts-Option-Builder.

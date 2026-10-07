@@ -1,6 +1,5 @@
-from app.models import (
-    AiChartRule,
-    AiEncodingRule,
+from app.ai.models import AiChartRule, AiEncodingRule
+from app.datasets.models import (
     DatasetProfile,
     DimensionStatistics,
     Field,
