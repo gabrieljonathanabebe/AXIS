@@ -159,6 +159,7 @@ function App() {
           <main className="workspace" hidden={activeWorkspace !== 'data'}>
             <DataPanel
               dataset={dataset}
+              datasetId={activeDatasetSummary?.id ?? null}
               datasetName={activeDatasetSummary?.name ?? 'No dataset'}
               error={datasetError}
               isLoading={isLoading}

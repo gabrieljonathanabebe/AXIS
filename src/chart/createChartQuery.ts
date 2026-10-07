@@ -1,4 +1,8 @@
-import type { ChartFilter, ChartQueryRequest } from '../api/chartQuery'
+import type {
+  ChartFilter,
+  ChartQueryRequest,
+  PointsQueryRequest,
+} from '../api/chartQuery'
 import type { ChartInstance } from '../types/chart'
 import type { DataSelection, SelectionFilter } from '../types/workspace'
 
@@ -34,6 +38,20 @@ export function createChartQuery(
     x: encoding.x,
     y: encoding.y,
   }
+}
+
+// Scatter draws single rows; it asks only for its encoded fields.
+export function createPointsQuery(
+  chart: ChartInstance,
+): PointsQueryRequest | null {
+  const { color, size, x, y } = chart.spec.data.encoding
+  if (chart.type !== 'scatter' || !x || !y) {
+    return null
+  }
+  const fields = [x, y, size, color].filter((field): field is string => {
+    return Boolean(field)
+  })
+  return { fields: [...new Set(fields)] }
 }
 
 export function createHighlightQuery(

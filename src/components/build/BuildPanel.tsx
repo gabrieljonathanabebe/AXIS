@@ -75,7 +75,7 @@ function BuildPanel({
               }
               isLoading={isLoading}
               name={activeDatasetSummary?.name ?? 'No dataset'}
-              rowCount={activeDatasetSummary?.row_count ?? dataset.rows.length}
+              rowCount={activeDatasetSummary?.row_count ?? 0}
               onUploadFile={onUploadFile}
             />
             {datasetError ? (

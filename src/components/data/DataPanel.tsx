@@ -19,6 +19,7 @@ import type { OptionItem } from '../ui/OptionsMenu'
 // ===== TYPES =================================================================
 type DataPanelProps = {
   dataset: Dataset
+  datasetId: string | null
   datasetName: string
   error: string | null
   isLoading: boolean
@@ -55,6 +56,7 @@ function getProfileStatus(
 // ===== COMPONENT =============================================================
 function DataPanel({
   dataset,
+  datasetId,
   datasetName,
   error,
   isLoading,
@@ -68,6 +70,7 @@ function DataPanel({
       return (
         <DataTable
           dataset={dataset}
+          datasetId={datasetId}
           profile={profile}
           semanticRoleOverrides={semanticRoleOverrides}
         />

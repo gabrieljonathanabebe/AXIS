@@ -11,15 +11,20 @@ from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import chart_query as cq
+from app import table_query as tq
 from app.ai_commands import run_ai_command
 from app.models import (
     AiCommandRequest,
     AiCommandResult,
     DatasetProfile,
-    DatasetRows,
     DatasetSummary,
     ChartQueryRequest,
     ChartQueryResult,
+    FieldValues,
+    PointsQueryRequest,
+    PointsQueryResult,
+    TableQueryRequest,
+    TableQueryResult,
 )
 from app.profiling import build_dataset_profile
 from app.schema_detection import create_fields
@@ -114,23 +119,19 @@ def get_dataset_profile(dataset_id: str) -> DatasetProfile:
     return stored_dataset.profile
 
 
-@app.get("/datasets/{dataset_id}/rows")
-def get_dataset_rows(
+@app.get("/datasets/{dataset_id}/fields/{field_name:path}/values")
+def get_field_values(
     dataset_id: str,
-    offset: int = 0,
+    field_name: str,
+    search: str = "",
     limit: int = 100,
-) -> DatasetRows:
-    stored_dataset = datasets.get(dataset_id)
-    if stored_dataset is None:
+) -> FieldValues:
+    stored = datasets.get(dataset_id)
+    if stored is None:
         raise HTTPException(status_code=404, detail="Dataset not found.")
-    bounded_limit = min(limit, 500)
-    frame_slice = stored_dataset.frame.slice(offset, bounded_limit)
-    return DatasetRows(
-        dataset_id=dataset_id,
-        offset=offset,
-        limit=bounded_limit,
-        rows=frame_slice.to_dicts(),
-    )
+    if field_name not in stored.frame.columns:
+        raise HTTPException(status_code=404, detail="Field not found.")
+    return tq.build_field_values(stored.frame, field_name, search, limit)
 
 
 @app.post("/datasets/{dataset_id}/chart-query")
@@ -149,6 +150,33 @@ def query_chart(
             status_code=422,
             detail=str(error),
         ) from error
+
+
+@app.post("/datasets/{dataset_id}/table-query")
+def query_table(dataset_id: str, query: TableQueryRequest) -> TableQueryResult:
+    stored = datasets.get(dataset_id)
+    if stored is None:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
+    try:
+        tq.validate_table_query(stored.summary, query)
+        return tq.build_table_query_result(stored.frame, query)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.post("/datasets/{dataset_id}/points-query")
+def query_points(
+    dataset_id: str,
+    query: PointsQueryRequest,
+) -> PointsQueryResult:
+    stored = datasets.get(dataset_id)
+    if stored is None:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
+    try:
+        cq.validate_points_query(stored.summary, query)
+        return cq.build_points_query_result(stored.frame, query)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
 
 
 # ===== AI COMMANDS ===========================================================

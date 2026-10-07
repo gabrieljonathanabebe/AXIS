@@ -5,7 +5,9 @@ import { useEffect, useRef } from 'react'
 import {
   createChartQuery,
   createHighlightQuery,
+  createPointsQuery,
 } from '../../chart/createChartQuery'
+
 import { createEChartOption } from '../../chart/echarts/createEChartOption'
 import { syncBrush } from '../../chart/echarts/createBrushOption'
 import {
@@ -21,11 +23,15 @@ import {
 
 import { isSameSelection } from '../../workspace/dataSelection'
 import { useChartQuery } from '../../hooks/useChartQuery'
+import { usePointsQuery } from '../../hooks/usePointsQuery'
 
 import type { AxisTitleEdit } from '../../types/ui'
-import type { ChartInstance, Dataset } from '../../types/chart'
+import type { ChartInstance, DataRow, Dataset } from '../../types/chart'
 import type { ChartTheme } from '../../chart/echarts/chartTheme'
 import type { DataSelection } from '../../types/workspace'
+
+// Stable empty list, so non-scatter charts do not re-render the option.
+const EMPTY_POINTS: DataRow[] = []
 
 type EChartCanvasProps = {
   chart: ChartInstance
@@ -106,6 +112,10 @@ function EChartCanvas({
   const { result, isLoading, error } = useChartQuery(datasetId, query)
   const highlightQuery = createHighlightQuery(query, selection)
   const { result: highlightResult } = useChartQuery(datasetId, highlightQuery)
+  const pointsQuery = usePointsQuery(datasetId, createPointsQuery(chart))
+  const points = pointsQuery.result?.rows ?? EMPTY_POINTS
+  const isChartLoading = isLoading || pointsQuery.isLoading
+  const chartError = error ?? pointsQuery.error
 
   useEffect(() => {
     const container = containerRef.current
@@ -136,6 +146,7 @@ function EChartCanvas({
         readChartTheme(),
         result,
         highlightResult,
+        points,
         selection,
         chart.id,
       ),
@@ -143,7 +154,15 @@ function EChartCanvas({
     )
     syncBrush(instance, chart, selection)
     syncAxisTitleEdit(instance, editingAxisTitle)
-  }, [chart, dataset, editingAxisTitle, highlightResult, result, selection])
+  }, [
+    chart,
+    dataset,
+    editingAxisTitle,
+    highlightResult,
+    points,
+    result,
+    selection,
+  ])
 
   useEffect(() => {
     const instance = chartRef.current
@@ -226,15 +245,15 @@ function EChartCanvas({
   }, [
     chart,
     dataset,
-    onClearSelection,
-    onEditAxisTitle,
-    onHoverAxisTitle,
-    onSelectData,
+    editingAxisTitle,
+    highlightResult,
+    points,
+    result,
     selection,
   ])
 
   useEffect(() => {
-    if (isLoading) {
+    if (isChartLoading) {
       chartRef.current?.showLoading('default', {
         text: 'Loading chart...',
         maskColor: 'rgba(255, 255, 255, 0)',
@@ -242,14 +261,14 @@ function EChartCanvas({
     } else {
       chartRef.current?.hideLoading()
     }
-  }, [isLoading])
+  }, [isChartLoading])
 
   return (
     <>
       <div className="echart-canvas" ref={containerRef} />
-      {error && (
+      {chartError && (
         <div className="chart-query-error" role="alert">
-          {error}
+          {chartError}
         </div>
       )}
     </>

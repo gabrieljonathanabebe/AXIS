@@ -168,9 +168,9 @@ export type DataField = {
 
 export type DataRow = Record<string, DataValue>
 
+// Rows stay in the backend; views query what they show.
 export type Dataset = {
   fields: DataField[]
-  rows: DataRow[]
 }
 
 export type DataValue = string | number | null

@@ -44,7 +44,7 @@ type UseChartWorkspaceParams = {
 type CreateChartAction = (chartId: string) => WorkspaceAction
 
 // ===== CONSTANTS =============================================================
-const EMPTY_DATASET: Dataset = { fields: [], rows: [] }
+const EMPTY_DATASET: Dataset = { fields: [] }
 
 // ===== FUNCTION ==============================================================
 export function useChartWorkspace({

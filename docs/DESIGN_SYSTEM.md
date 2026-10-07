@@ -276,7 +276,19 @@ werden.
   nur für die Zeilennummer bei Hover und den aktiven Sort-Pfeil;
 - Sortieren über die Titelzeile im Spaltenkopf: aufsteigend →
   absteigend → unsortiert; aktiver Pfeil dauerhaft sichtbar, inaktiver
-  nur bei Hover über dem Kopf (ohne Hover-Gerät immer leise sichtbar).
+  nur bei Hover über dem Kopf (ohne Hover-Gerät immer leise sichtbar);
+- Filter-Icon (`IconButton`, ghost, xs) neben dem Sortier-Button, gleiche
+  Sichtbarkeitsregel wie der Sort-Pfeil; öffnet ein Glass-`Popover` mit
+  einem Control je Semantic Role: Measure `RangeSlider` über die
+  Profil-Spanne, Temporal `RangeSlider` über die erkannte Granularität,
+  sonst `CheckList` mit Suche und Anzahl je Wert; Filter wirken sofort;
+- Toolbar über der Table: Zeilenanzahl, aktive Filter als entfernbare
+  `Chip`s (`isActive`) und „Clear all“; mit aktiven Filtern ist die
+  Leiste in `--color-accent-soft` mit Accent-Rand getönt, sonst ein
+  leiser Hinweis auf das Filtern im Spaltenkopf;
+- Rows werden beim Scrollen nachgeladen und virtualisiert; beim Laden
+  einer neuen Query bleiben die alten Zellen gedimmt sichtbar, Laden,
+  Fehler und „No matching rows“ zeigt `EmptyState` unter dem Header.
 
 ## 5. Build Panel
 
@@ -530,6 +542,7 @@ Verwenden:
 `Range Slider + Inputs`
 
 Nur verwenden, wenn tatsächlich ein Min-/Max-Intervall editiert wird.
+Aktuell als `RangeSlider` ohne Inputs umgesetzt (Table Filter).
 
 ### Field
 
@@ -568,7 +581,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Rotation Dial                | Axis Label Rotation             | drehen statt Gradzahl eintippen                  | implementiert (`RotationDial`)                               |
 | Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)        |
 | Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | teilweise (X/Y-Achsen im Chart)                              |
-| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips im Build Panel)                       |
+| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)              |
 | Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
 | Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`, `AlignmentControl`)          |
 | Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
@@ -753,6 +766,30 @@ reinem CSS ohne ECharts.
   Spaltenkopf der Table: 20 px).
 - Die Komponente kennt keine Fields; die Umrechnung aus dem Profil
   liegt in `createDistributionBars`.
+
+## 9f. CheckList
+
+`CheckList` ist eine kontrollierte Mehrfachauswahl: `options` (`label`,
+`value`, optional vorformatiertes `detail` wie eine Anzahl), `values`
+und `onValuesChange`.
+
+- Zeilen sind `Button`s mit `role="checkbox"` und `aria-checked`;
+  Electric Blue nur im Kästchen, die Zeile bleibt ruhig.
+- Die Liste scrollt ab 240 px selbst.
+- Die Komponente kennt keine Fields oder Filter; Einsatz im Table
+  Filter, später für Slicer.
+
+## 9g. RangeSlider
+
+`RangeSlider` wählt ein Intervall `[start, end]` zwischen `min` und
+`max` mit zwei nativen Range-Inputs auf einer Spur; die Griffe können
+sich nicht überholen.
+
+- Optik wie `Slider`: Thumb in `--color-control-handle` mit
+  Accent-Rand, nur der gewählte Bereich in Electric Blue.
+- Beschriftung von Start und Ende darunter über `formatValue`.
+- Generisch über Zahlen: Aufrufer übergeben Positionen (z. B. Indizes
+  von Datums- oder Werteschritten) und formatieren selbst.
 
 ## 10. Legend
 

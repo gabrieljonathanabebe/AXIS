@@ -562,6 +562,60 @@ nur einem Wert als Farbe, `color` statt `series` bei Bar.
 - verifiziert: `series` statt `color` bei Bar, Cache-Treffer nach neuem
   Chart, ein Override auf Dimension verhindert einen Pie mit 55 Werten
 
+### Full Data Access und Table Filter (implementiert)
+
+Table und Scatter arbeiten nicht mehr auf 100 Preview-Rows. Grundsatz:
+Das Backend rechnet über den ganzen Datensatz, das Frontend erhält nur,
+was es darstellt.
+
+- `POST /datasets/{id}/table-query`: Filter, stabile Sortierung
+  (`null` zuletzt) und Paging im Backend, `total_count` nach dem
+  Filtern; `sortRows` im Frontend entfernt
+- `useTableRows` lädt Seiten zu je 200 Rows beim Scrollen nach und
+  verwirft Antworten veralteter Queries; die Table virtualisiert die
+  Zeilen mit `@tanstack/react-virtual`
+- Scatter über `POST /datasets/{id}/points-query`: nur encodierte
+  Felder, ab 2.000 Rows stabil gesampelt; `GET /rows`, `fetchDatasetRows`
+  und `Dataset.rows` entfernt
+- Table Filter V1 pro Spalte, mit UND kombiniert, zusammen mit der
+  Sortierung:
+  - Dimension und Identifier: Werteliste (`CheckList`) mit Suche und
+    Anzahl über `GET /datasets/{id}/fields/{field}/values`
+  - Measure: `RangeSlider` über die Profil-Spanne in 200 Schritten
+  - Temporal: `RangeSlider` über die erkannte Granularität, Filter
+    `date_range`
+  - ohne passende Profil-Statistik Fallback auf die Werteliste
+- Filter teilen `build_filter_expression` und die Validierung mit der
+  Chart Query; `RangeChartFilter` erlaubt offene Grenzen; `contains`
+  wurde erprobt und wieder entfernt
+- Toolbar mit Zeilenanzahl („1,204 of 24,000 rows“), Filter-Chips und
+  „Clear all“; No-results- und Loading-State unter dem Header
+- neue wiederverwendbare Controls `CheckList` und `RangeSlider`
+- Demo-Dataset auf 24.000 Rows (60 Monate × 400) erweitert
+- verifiziert: kombinierte Filter mit Sortierung und Paging gegen das
+  Backend, Werteliste mit Suche, Points-Sample über den ganzen Zeitraum,
+  `npm run build`
+
+Entscheidung: Table Filter gelten nur für die Table View. Sie wirken
+nicht auf Charts und sind kein Workspace- oder Dashboard-Filter (siehe
+Filterebenen unter Dashboard Objects und Interaktion).
+
+### Refactoring und Vereinfachung (geplant, nach Full Data Access)
+
+Eigener Slice direkt nach Full Data Access und Table Filter, um den
+Überblick über die Codebase zurückzugewinnen:
+
+- gesamtes Projekt (Frontend und Backend) auf Duplikate, tote Pfade,
+  zu lange Dateien und unklare Verantwortlichkeiten prüfen
+- verhaltensneutral vereinfachen; keine neuen Features
+- `DataTable` in Komponenten aufteilen (z. B. `DataTableRow`,
+  Header-Zeile, Spacer); Logik in Hooks, `DataTable` nur Orchestrator
+- `useChartQuery`, `useTableRows`, `useFieldValues` und
+  `usePointsQuery` teilen fast dasselbe Ladeverhalten; Kandidat für
+  einen gemeinsamen Query-Hook
+- `createEChartOption` auf ein Params-Objekt umstellen
+- Ergebnis: aktualisierte `ARCHITECTURE.md` als verlässliche Übersicht
+
 ## 6. Later – Visualization Completion
 
 - Inspector-Polish für Scatter, Line, Bar, Pie und Donut
@@ -591,9 +645,13 @@ Mögliche Erweiterungen:
 
 - KPI Card
 - Text
-- Filter
 - grundlegende Dashboard Controls
-- gemeinsame Filter
+- Filterebenen (Idee, getrennt von den Table Filtern):
+  - Slicer als Dashboard-Objekte (Slider, Dropdown, Date Range), mit
+    denen Betrachter das Dashboard filtern
+  - Dashboard-weite Filter als eigene Ebene, die für alle Charts
+    gelten (ähnlich dem Filterbereich in Power BI)
+  - Cross Filtering über Selection (siehe unten)
 - Linked Visualizations
 - Selection und Selection Propagation (Klick-Selection implementiert,
   siehe Cross-Highlighting MVP)
@@ -825,8 +883,8 @@ waren:
   daher nicht erzwungen.
 - `npm run lint` meldet bestehende Fehler in `Popover`,
   `ScrubbableNumber`, `Slider` und `useChartQuery`.
-- Scatter rendert nur die ersten 100 Zeilen, die das Frontend über die
-  Rows-API lädt. Dasselbe gilt für die Table im Data-Workspace.
+- Table Filter und Sortierung sind lokaler State der `DataTable` und
+  gehen beim Wechsel auf Profile oder beim Neuladen verloren.
 - Cmd/Ctrl + B und Cmd/Ctrl + I schalten auch im Data-Workspace die
   ausgeblendeten Panels von Visualize um.
 - Der Fallback-Name `'No dataset'` steht in `BuildPanel` und `App`.
@@ -847,7 +905,7 @@ waren:
   in allen Charts einheitlich.
 - Die Selection unterstützt nur einen Wert; es gibt keine
   Mehrfachauswahl.
-- `createEChartOption` hat acht positionale Parameter und sollte auf ein
+- `createEChartOption` hat neun positionale Parameter und sollte auf ein
   Params-Objekt umgestellt werden.
 - Die Grid-Abstände des Plots stehen doppelt in `createEChartOption`
   und als `--chart-grid-*` in `ChartItem.css` (für die Achsen-Drop-Zones).

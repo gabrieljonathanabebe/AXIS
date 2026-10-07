@@ -2,17 +2,16 @@ import type { ScatterSeriesOption } from 'echarts'
 
 import type {
   ChartAppearanceSpec,
-  Dataset,
+  DataRow,
   DataValue,
 } from '../../../types/chart'
+
 import { createAxesOptions } from '../createAxesOptions'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { DIMMED_OPACITY } from './selectionStyle'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
-
 import { isRowInSelection } from '../../../workspace/dataSelection'
-
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
@@ -30,7 +29,7 @@ type CreateScatterSeriesParams = {
 }
 
 // ===== HELPER ================================================================
-function getValue(row: Dataset['rows'][number], fieldName?: string): DataValue {
+function getValue(row: DataRow, fieldName?: string): DataValue {
   if (!fieldName) {
     return null
   }
@@ -67,7 +66,7 @@ export function createScatterChartContent(
   context: ChartContentContext,
 ): ChartContent {
   // ===== CONSTANTS ===========================================================
-  const { chartType, dataset, selection, spec, theme } = context
+  const { chartType, dataset, points, selection, spec, theme } = context
   const { appearance } = spec
   const { encoding } = spec.data
   const colorFieldName = encoding.color
@@ -77,7 +76,7 @@ export function createScatterChartContent(
     encoding,
     dataset.fields,
   )
-  const rows = dataset.rows
+  const rows = points
 
   const data = rows.map((row) => ({
     itemStyle: isRowInSelection(row, selection)

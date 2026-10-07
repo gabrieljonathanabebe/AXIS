@@ -33,7 +33,8 @@
   text-overflow: ellipsis;
   transition:
     background var(--transition-fast),
-    color var(--transition-fast);
+    color var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .data-table-grid td.is-numeric {
@@ -55,6 +56,113 @@
 
 .data-table-missing {
   color: var(--color-text-disabled);
+}
+
+/* On cells, not on tbody: an opacity layer around the sticky index column
+   leaves neighbouring cells unpainted after loading. */
+.data-table.is-loading tbody td:not(.data-table-index) {
+  opacity: 0.55;
+}
+
+/* Keeps the scroll height of rows outside the virtual window. */
+.data-table-spacer td {
+  padding: 0;
+  border: 0;
+  pointer-events: none;
+}
+
+/* ===== STATUS ============================================================= */
+.data-table .empty-state {
+  position: sticky;
+  left: 0;
+  min-height: auto;
+}
+
+/* ===== TOOLBAR ============================================================ */
+.data-table-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: 0;
+}
+
+.data-table-toolbar {
+  --cluster-gap: var(--space-2);
+
+  flex-wrap: wrap;
+  min-height: calc(var(--control-height-xs) + 2 * var(--space-2));
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-subtle);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.data-table-toolbar.is-filtering {
+  background: var(--color-accent-soft);
+  border-color: var(--color-border-accent);
+}
+
+.data-table-count {
+  --cluster-gap: var(--space-2);
+
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table-count svg {
+  color: var(--color-accent);
+}
+
+.data-table-count strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.is-filtering .data-table-count strong {
+  color: var(--color-accent);
+}
+
+.data-table-hint {
+  --cluster-gap: var(--space-1);
+
+  margin-left: auto;
+  color: var(--color-text-disabled);
+  font-size: var(--font-size-2xs);
+}
+
+.data-filter-chip {
+  --cluster-gap: var(--space-1);
+
+  height: var(--control-height-xs);
+  padding: 0 var(--space-2) 0 var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-xs);
+}
+
+.data-filter-chip-label {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-filter-clear-all,
+.data-filter-clear {
+  height: var(--control-height-xs);
+  padding-inline: var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-xs);
+}
+
+.data-filter-clear-all {
+  background: transparent;
+  border-color: transparent;
 }
 
 /* ===== HEADER ============================================================= */
@@ -154,4 +262,25 @@
 
 .data-table-grid tr:hover .data-table-index {
   color: var(--color-accent);
+}
+
+/* ===== FILTER POPOVER ===================================================== */
+.data-filter-popover {
+  --stack-gap: var(--space-2);
+
+  z-index: 100;
+  width: min(260px, calc(100vw - 32px));
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.data-filter-title {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.data-filter-note {
+  color: var(--color-text-disabled);
+  font-size: var(--font-size-2xs);
 }

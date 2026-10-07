@@ -1,3 +1,4 @@
+from datetime import date
 from enum import StrEnum
 from typing import Any, Literal
 
@@ -91,13 +92,6 @@ class DatasetProfile(BaseModel):
     fields: list[FieldProfile]
 
 
-class DatasetRows(BaseModel):
-    dataset_id: str
-    offset: int
-    limit: int
-    rows: list[dict[str, Any]]
-
-
 class GroupAggregation(StrEnum):
     SUM = "sum"
     MEAN = "mean"
@@ -116,11 +110,22 @@ class ValuesChartFilter(BaseModel):
 class RangeChartFilter(BaseModel):
     kind: Literal["range"]
     field: str
-    min: float
-    max: float
+    min: float | None = None
+    max: float | None = None
 
 
 ChartFilter = ValuesChartFilter | RangeChartFilter
+
+
+# Table only; open bounds are None.
+class DateRangeTableFilter(BaseModel):
+    kind: Literal["date_range"]
+    field: str
+    start: date | None = None
+    end: date | None = None
+
+
+TableFilter = ChartFilter | DateRangeTableFilter
 
 
 class ChartQueryRequest(BaseModel):
@@ -133,6 +138,15 @@ class ChartQueryRequest(BaseModel):
     filters: list[ChartFilter] = []
 
 
+class PointsQueryRequest(BaseModel):
+    fields: list[str]
+
+
+class PointsQueryResult(BaseModel):
+    rows: list[dict[str, Any]]
+    total_count: int
+
+
 class ChartQueryPoint(BaseModel):
     x: str | None
     series: str | None
@@ -142,6 +156,30 @@ class ChartQueryPoint(BaseModel):
 
 class ChartQueryResult(BaseModel):
     points: list[ChartQueryPoint]
+
+
+class TableSort(BaseModel):
+    direction: Literal["asc", "desc"]
+    field: str
+
+
+class TableQueryRequest(BaseModel):
+    filters: list[TableFilter] = []
+    limit: int = 100
+    offset: int = 0
+    sort: TableSort | None = None
+
+
+class TableQueryResult(BaseModel):
+    offset: int
+    rows: list[dict[str, Any]]
+    total_count: int
+
+
+class FieldValues(BaseModel):
+    field: str
+    total_count: int
+    values: list[ValueCount]
 
 
 # ===== ACTIONS ===============================================================

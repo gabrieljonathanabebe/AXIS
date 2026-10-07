@@ -69,17 +69,19 @@ bleiben.
 
 Data und Visualize arbeiten auf demselben Dataset. `useDatasets` lädt
 beim Start das Demo-Dataset aus dem Backend und nach einem Upload das
-neue Dataset; Summary, Rows und `DatasetProfile` werden gemeinsam
-geladen und gemeinsam gesetzt. Der Data Workspace hat keine eigene
-Dataset- oder Upload-Logik. Profile-Ansicht und Build Panel gruppieren
+neue Dataset; Summary und `DatasetProfile` werden gemeinsam geladen und
+gemeinsam gesetzt. Rows lädt das Frontend nicht als Ganzes: jede Ansicht
+fragt im Backend genau das ab, was sie zeigt (Table: eine Seite Rows,
+aggregierte Charts: Gruppen, Scatter: ein Sample). Der Data Workspace
+hat keine eigene Dataset- oder Upload-Logik. Profile-Ansicht und Build Panel gruppieren
 Fields über das `DatasetProfile` und dieselben Semantic Role Overrides
 (siehe Abschnitt 11); die Table View liest daraus Role, Physical Type
 und Verteilung. Ask Cevyn nutzt es als Kontext für Claude (siehe Ask
 Cevyn).
 
-Die Table zeigt eine Preview: `fetchDatasetRows` lädt die ersten 100
-Rows; Sortierung (`sortRows`) ist lokaler UI-State und betrifft nur
-diese Rows.
+Die Table lädt Rows seitenweise über die Table Query und rendert nur
+die sichtbaren Zeilen; Sortierung und Table Filter laufen im Backend
+über den ganzen Datensatz (siehe Table Query).
 
 Ask Cevyn und Explore werden als integrierte Modi oder fokussierte
 Ansichten angebunden. Sie bilden keine unabhängige Suite neben dem
@@ -140,7 +142,8 @@ Start über `lifespan` mit der festen ID `demo` registriert, über
 denselben Weg wie ein Upload (`read_csv_frame`, `register_dataset`).
 Line-, Bar-, Pie- und Donut-Charts nutzen serverseitige
 Gruppierungsaggregationen.
-Scatter rendert bisher einen begrenzten Ausschnitt der Rohdaten.
+Scatter lädt Einzelpunkte über die Points Query, ab 2.000 Rows als
+Sample; die Table lädt seitenweise über die Table Query.
 
 Bei konkretem Bedarf vorgesehen:
 
@@ -339,8 +342,8 @@ Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
   denselben Kategorien darüber. Die Highlight-Linie verbindet Lücken.
 - Pie und Donut: Bei aktiver Selection werden nur die gefilterten Werte
   gezeigt. Die Farben hängen am Kategorienamen der Basis-Query.
-- Scatter: Zeilen, die nicht zur Selection passen, werden im Frontend
-  abgeblendet, ohne zusätzliche Query.
+- Scatter: Punkte des Samples, die nicht zur Selection passen, werden im
+  Frontend abgeblendet, ohne zusätzliche Query.
 
 Die Bedeutung einer Selection (Zeilenzugehörigkeit, Vergleich,
 Beschriftung) liegt in `src/workspace/dataSelection.ts` und wird von
@@ -973,7 +976,9 @@ Backend-Resultset. Der Request enthält:
 - `aggregation` für den Y-Wert;
 - optional `color` und `color_aggregation`;
 - `filters` als Liste von Wertefiltern `{ kind: 'values', field,
-values }` und Bereichsfiltern `{ kind: 'range', field, min, max }`.
+values }` und Bereichsfiltern `{ kind: 'range', field, min, max }`;
+  bei Bereichsfiltern darf eine Grenze `null` (offen) sein, aber nicht
+  beide.
 
 Filter werden vor der Gruppierung angewendet und untereinander mit UND
 verknüpft. Wertefilter vergleichen auf dem als String gecasteten
@@ -1000,6 +1005,54 @@ Der Request wird in der Chart-Domäne aus der `ChartInstance` abgeleitet
 aktiver Selection leitet `createHighlightQuery` daraus eine zweite
 Query ab, die die Selection als Filter trägt. Die Basis-Query bleibt
 dabei unverändert und wird nicht erneut geladen.
+
+### Points Query
+
+Scatter zeichnet Einzelzeilen statt Gruppen und nutzt deshalb
+`POST /datasets/{id}/points-query`:
+
+- Request: `fields`, die encodierten Felder (x, y, optional size und
+  color), abgeleitet über `createPointsQuery` aus der `ChartInstance`;
+- Ergebnis: `rows` mit nur diesen Spalten und `total_count` des
+  Datensatzes;
+- über `MAX_CHART_POINTS` (2.000) wird gesampelt statt abgeschnitten
+  (fester Seed, damit das Sample stabil bleibt); so zeigt der Scatter die
+  Verteilung des ganzen Datensatzes.
+
+Pro Chart ist genau eine Query aktiv: `createChartQuery` liefert für
+Scatter `null`, `createPointsQuery` für alle anderen Charttypen.
+`ChartContentContext.points` trägt das Sample in den ECharts-Adapter.
+
+### Table Query und Table Filter
+
+Die Table nutzt `POST /datasets/{id}/table-query` mit `offset`, `limit`
+(max. 500), optional `sort` (`field`, `direction`) und `filters`. Das
+Backend filtert, sortiert stabil (`maintain_order`, `null` zuletzt) und
+liefert eine Seite `rows` sowie `total_count` nach dem Filtern.
+
+```text
+DataTable (sort, filters)
+→ useTableRows (Seite 0, weitere Seiten beim Scrollen)
+→ table-query
+→ Rows im Virtualizer (@tanstack/react-virtual)
+```
+
+`TableFilter` ist `ChartFilter` plus `date_range` (`start`, `end` als
+ISO-Datum, eine Seite darf offen sein). Werte- und Bereichsfilter laufen
+über dieselbe `build_filter_expression` wie die Chart Query; offene
+Grenzen über `build_bounds_expression` für Zahlen und Datumswerte.
+Validierung (unbekanntes Field, Range nur numerisch, Date Range nur auf
+Datumsfeldern) ist mit der Chart Query geteilt.
+
+Die Werteliste für Wertefilter liefert
+`GET /datasets/{id}/fields/{field}/values` (optional `search`,
+höchstens 100 Werte, häufigste zuerst, `total_count` der passenden
+Werte). Gezählt wird mit derselben Funktion wie im Profiling
+(`count_values`).
+
+Entscheidung: Table Filter gelten nur für die Table View. Sie wirken
+nicht auf Charts und sind lokaler UI-State der `DataTable`. Slicer und
+dashboard-weite Filter sind eine eigene, spätere Ebene.
 
 ### Explore Candidate Pipeline
 

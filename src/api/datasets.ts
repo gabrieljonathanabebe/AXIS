@@ -1,4 +1,4 @@
-import type { DataField, DataRow, DatasetProfile } from '../types/chart'
+import type { DataField, DatasetProfile, ValueCount } from '../types/chart'
 import { get, post } from './client'
 
 export const DEMO_DATASET_ID = 'demo'
@@ -10,11 +10,10 @@ export type DatasetSummary = {
   fields: DataField[]
 }
 
-export type DatasetRows = {
-  dataset_id: string
-  offset: number
-  limit: number
-  rows: DataRow[]
+export type FieldValues = {
+  field: string
+  total_count: number
+  values: ValueCount[]
 }
 
 export function uploadDataset(file: File): Promise<DatasetSummary> {
@@ -29,18 +28,19 @@ export function fetchDatasetSummary(
   return get<DatasetSummary>(`/datasets/${datasetId}`)
 }
 
-export function fetchDatasetRows(
-  datasetId: string,
-  limit = 100,
-): Promise<DatasetRows> {
-  return get<DatasetRows>(`/datasets/${datasetId}/rows`, {
-    offset: 0,
-    limit,
-  })
-}
-
 export function fetchDatasetProfile(
   datasetId: string,
 ): Promise<DatasetProfile> {
   return get<DatasetProfile>(`/datasets/${datasetId}/profile`)
+}
+
+export function fetchFieldValues(
+  datasetId: string,
+  fieldName: string,
+  search: string,
+): Promise<FieldValues> {
+  const field = encodeURIComponent(fieldName)
+  return get<FieldValues>(`/datasets/${datasetId}/fields/${field}/values`, {
+    search,
+  })
 }

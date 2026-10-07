@@ -4,7 +4,7 @@
 
 @import './styles/ui/Button.css';
 @import './styles/ui/Chip.css';
-@import './styles/ui/Widget.css';
+@import './styles/ui/CheckList.css';
 @import './styles/ui/CollapsibleSection.css';
 @import './styles/ui/ColorControl.css';
 @import './styles/ui/ControlRow.css';
@@ -18,6 +18,7 @@
 @import './styles/ui/OptionsMenu.css';
 @import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
+@import './styles/ui/RangeSlider.css';
 @import './styles/ui/RotationDial.css';
 @import './styles/ui/ScrubbableNumber.css';
 @import './styles/ui/SelectControl.css';
@@ -26,6 +27,7 @@
 @import './styles/ui/StatWidget.css';
 @import './styles/ui/TextInput.css';
 @import './styles/ui/Toggle.css';
+@import './styles/ui/Widget.css';
 
 @import './styles/glass.css';
 @import './styles/utilities.css';

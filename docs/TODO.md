@@ -64,40 +64,25 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - fehlende Varianten (z. B. Währung, feste Nachkommastellen) dort
   ergänzen statt lokal
 
-## Control-Bar mit Filtern für die Table View
+## Ausbau der Table-Control-Bar
 
-- schmale Control-Bar über der Table statt Ribbon wie in Power Query
-  oder Excel: Zeilensuche, aktive Filter als `Chip`s, `+ Filter`,
-  Anzahl gefilterter Zeilen („48 of 60 rows“), Spalten ein- und
-  ausblenden
-- Filter-Popover mit Control je Semantic Role: Range für Measures,
-  Werteliste aus `value_counts` für Dimensions, Zeitraum für Temporal;
-  Wertebereiche aus dem `DatasetProfile`
+- Zeilensuche über alle Spalten
+- Spalten ein- und ausblenden
+- Measure-Range präziser: `RangeSlider` mit Zahlenfeldern
+  („Range Slider + Inputs“), da 200 Schritte bei schiefen Verteilungen
+  grob sind
+- Counts der Werteliste unter Berücksichtigung der übrigen Filter
 - Filter zusätzlich über ein Menü im Spaltenkopf anlegen
-- vorher klären: nur Table-Ansicht oder gemeinsamer Workspace-Filter
-  für Charts; Filter als Cevyn Action (Action Layer, AI); Filtern im
-  Frontend oder in der Backend-Query
-- aufbauen auf `Chip`, `Popover`, `TextInput` und dem `DatasetProfile`
+- Filter als Cevyn Action (Action Layer, AI)
 
-## Table View: alle Rows statt Preview
+## Empty-, Loading- und Error-State überarbeiten
 
-- aktuell lädt `fetchDatasetRows` nur die ersten 100 Rows; die Table
-  zeigt still einen Ausschnitt, Sortieren betrifft nur diesen
-- nicht alles in den Browser laden, sondern alles erreichbar machen:
-  Rows beim Scrollen seitenweise nachladen (`offset` gibt es im
-  Endpoint schon), nur sichtbare Zeilen rendern (Virtualisierung)
-- Sortierung ins Backend verlagern (z. B. `/rows?sort=…&direction=…`
-  über Polars), damit über den ganzen Datensatz sortiert wird
-- vor oder zusammen mit der Control-Bar, da Filter dieselbe Frage
-  Frontend oder Backend betrifft
-
-## Scatter nutzt Preview-Rows
-
-- `createScatterChartContent` zeichnet direkt `dataset.rows`; bei
-  großen Uploads zeigt der Scatter nur die ersten 100 Punkte, ohne
-  Hinweis
-- Scatter wie die übrigen Charts über die Backend-Chart-Query laden,
-  mit Punktlimit (`MAX_CHART_POINTS` in `chart_query.py`)
+- `EmptyState` visuell aufwerten und für Laden und Fehler besser
+  darstellbar machen (z. B. Icon, Spinner bzw. Skeleton beim Laden)
+- Error-State klar unterscheidbar mit rötlichen Farben aus den Tokens
+- als generische Fähigkeit von `EmptyState` (z. B. `tone`- oder
+  `variant`-Prop) statt eigener Sonderkomponenten; gilt für Data View,
+  Table und Charts
 
 ## Temporal als Unterart von Dimension
 

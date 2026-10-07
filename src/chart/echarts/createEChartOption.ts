@@ -1,7 +1,7 @@
 import type { EChartsOption } from 'echarts'
 
 import type { ChartQueryResult } from '../../api/chartQuery'
-import type { ChartSpec, ChartType, Dataset } from '../../types/chart'
+import type { ChartSpec, ChartType, DataRow, Dataset } from '../../types/chart'
 import { createBrushOption } from './createBrushOption'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartTheme } from './chartTheme'
@@ -20,6 +20,7 @@ export function createEChartOption(
   theme: ChartTheme,
   queryResult: ChartQueryResult | null,
   highlightResult: ChartQueryResult | null,
+  points: DataRow[],
   selection: DataSelection | null,
   chartId: string,
 ): EChartsOption {
@@ -36,6 +37,7 @@ export function createEChartOption(
     chartType,
     dataset,
     highlightResult,
+    points,
     queryResult,
     selection,
     spec,

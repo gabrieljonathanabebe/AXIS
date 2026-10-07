@@ -1,4 +1,4 @@
-import type { GroupAggregation } from '../types/chart'
+import type { DataRow, GroupAggregation } from '../types/chart'
 import { post } from './client'
 
 export type ChartFilter =
@@ -10,8 +10,8 @@ export type ChartFilter =
   | {
       kind: 'range'
       field: string
-      min: number
-      max: number
+      min: number | null
+      max: number | null
     }
 
 export type ChartQueryRequest = {
@@ -35,12 +35,32 @@ export type ChartQueryResult = {
   points: ChartQueryPoint[]
 }
 
+export type PointsQueryRequest = {
+  fields: string[]
+}
+
+export type PointsQueryResult = {
+  rows: DataRow[]
+  total_count: number
+}
+
 export function fetchChartQuery(
   datasetId: string,
   query: ChartQueryRequest,
 ): Promise<ChartQueryResult> {
   return post<ChartQueryResult>(
     `/datasets/${datasetId}/chart-query`,
+    JSON.stringify(query),
+    { 'Content-Type': 'application/json' },
+  )
+}
+
+export function fetchPointsQuery(
+  datasetId: string,
+  query: PointsQueryRequest,
+): Promise<PointsQueryResult> {
+  return post<PointsQueryResult>(
+    `/datasets/${datasetId}/points-query`,
     JSON.stringify(query),
     { 'Content-Type': 'application/json' },
   )

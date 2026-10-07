@@ -4,11 +4,10 @@ import { applySemanticRoleOverrides } from '../data/semanticRoles'
 import {
   DEMO_DATASET_ID,
   fetchDatasetProfile,
-  fetchDatasetRows,
   fetchDatasetSummary,
   uploadDataset,
 } from '../api/datasets'
-import type { DatasetRows, DatasetSummary } from '../api/datasets'
+import type { DatasetSummary } from '../api/datasets'
 import type {
   Dataset,
   DatasetProfile,
@@ -127,19 +126,6 @@ export function useDatasets(): useDatasetsResults {
 
 // ===== HELPERS ===============================================================
 async function loadDataset(summary: DatasetSummary): Promise<LoadedDataset> {
-  const [rowsResponse, profile] = await Promise.all([
-    fetchDatasetRows(summary.id),
-    fetchDatasetProfile(summary.id),
-  ])
-  return { dataset: toDataset(summary, rowsResponse), profile, summary }
-}
-
-function toDataset(
-  summary: DatasetSummary,
-  rowsResponse: DatasetRows,
-): Dataset {
-  return {
-    fields: summary.fields,
-    rows: rowsResponse.rows,
-  }
+  const profile = await fetchDatasetProfile(summary.id)
+  return { dataset: { fields: summary.fields }, profile, summary }
 }

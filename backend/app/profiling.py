@@ -87,14 +87,18 @@ def build_measure_statistics(values: pl.Series) -> MeasureStatistics:
     )
 
 
-def build_dimension_statistics(values: pl.Series) -> DimensionStatistics:
-    counts = (
+# Most frequent first; equal counts in alphabetical order.
+def count_values(values: pl.Series) -> pl.DataFrame:
+    return (
         values.cast(pl.String)
         .alias("value")
         .value_counts(name="count")
         .sort(["count", "value"], descending=[True, False])
-        .head(VALUE_COUNT_LIMIT)
     )
+
+
+def build_dimension_statistics(values: pl.Series) -> DimensionStatistics:
+    counts = count_values(values).head(VALUE_COUNT_LIMIT)
     return DimensionStatistics(
         value_counts=[
             ValueCount(value=value, count=count)

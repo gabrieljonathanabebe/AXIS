@@ -11,18 +11,18 @@ import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type {
   ChartAppearanceSpec,
   ChartEncoding,
-  Dataset,
+  DataRow,
 } from '../../types/chart'
 
 type CreateScatterVisualMapsParams = {
-  rows: Dataset['rows']
+  rows: DataRow[]
   encoding: ChartEncoding
   appearance: ChartAppearanceSpec
   colorEncodingMode: ColorEncodingMode
 }
 
 function createSizeVisualMap(
-  rows: Dataset['rows'],
+  rows: DataRow[],
   encoding: ChartEncoding,
   appearance: ChartAppearanceSpec,
 ): ContinuousVisualMapComponentOption | null {
@@ -54,7 +54,7 @@ function createSizeVisualMap(
 }
 
 function createColorVisualMap(
-  rows: Dataset['rows'],
+  rows: DataRow[],
   encoding: ChartEncoding,
   appearance: ChartAppearanceSpec,
   colorEncodingMode: ColorEncodingMode,
