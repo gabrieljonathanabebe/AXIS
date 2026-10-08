@@ -77,3 +77,5 @@ export type ValueCount = {
   value: string
   count: number
 }
+
+export type DataView = 'profile' | 'table'

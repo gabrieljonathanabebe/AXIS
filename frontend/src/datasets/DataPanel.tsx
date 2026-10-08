@@ -9,7 +9,7 @@ import SegmentedControl from '../shared/ui/SegmentedControl'
 
 import type { Dataset, DatasetProfile, SemanticRoleOverrides } from './types'
 import type { SemanticRole } from './types'
-import type { DataView } from '../types/ui'
+import type { DataView } from './types'
 import type { OptionItem } from '../shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================

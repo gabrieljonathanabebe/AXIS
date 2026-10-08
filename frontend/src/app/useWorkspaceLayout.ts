@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { WorkspaceView } from '../types/ui'
+import type { WorkspaceView } from './types'
 
 type useWorkspaceLayoutResults = {
   activeWorkspace: WorkspaceView

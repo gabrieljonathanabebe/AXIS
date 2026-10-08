@@ -1,4 +1,4 @@
-import type { ChartInstance, ChartLayout } from '../types/chart'
+import type { ChartInstance, ChartLayout } from '../charts/types'
 
 // ===== TYPES =================================================================
 type ChartSize = Pick<ChartLayout, 'height' | 'width'>

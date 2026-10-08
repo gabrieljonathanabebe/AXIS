@@ -11,7 +11,7 @@ import MiniHistogram from '../shared/ui/MiniHistogram'
 import type { DataField, FieldProfile } from '../datasets/types'
 import type { SemanticRole } from '../datasets/types'
 import type { TableFilter } from './tableApi'
-import type { HistogramBar } from '../types/ui'
+import type { HistogramBar } from '../shared/ui/MiniHistogram'
 import type { SortDirection } from './types'
 
 // ===== TYPES =================================================================

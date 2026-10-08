@@ -5,7 +5,7 @@ import type {
   WorkspaceHistoryState,
   WorkspaceSnapshot,
   WorkspaceState,
-} from '../types/workspace'
+} from './types'
 
 // ===== CONSTANTS =============================================================
 const COALESCE_WINDOW_MS = 500

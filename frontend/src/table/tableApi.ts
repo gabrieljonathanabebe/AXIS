@@ -1,6 +1,6 @@
 import type { DataRow, ValueCount } from '../datasets/types'
 import type { SortDirection } from './types'
-import type { ChartFilter } from '../api/chartQuery'
+import type { ChartFilter } from '../charts/chartsApi'
 import { get, post } from '../shared/api/client'
 
 // Table only; charts filter with ChartFilter. Dates are ISO strings.

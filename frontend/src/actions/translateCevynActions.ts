@@ -1,20 +1,16 @@
 import {
   createChartInstance,
   createDefaultChartSpec,
-} from '../chart/createChartInstance'
+} from '../charts/createChartInstance'
 import {
   DEFAULT_CHART_SIZE,
   findFreeChartLayout,
 } from '../workspace/chartLayout'
 import { workspaceReducer } from '../workspace/workspaceReducer'
 import { validateCevynAction } from './validateCevynAction'
-import type {
-  CevynAction,
-  CevynActionError,
-  CevynActionResult,
-} from '../types/actions'
+import type { CevynAction, CevynActionError, CevynActionResult } from './types'
 import type { Dataset } from '../datasets/types'
-import type { WorkspaceAction, WorkspaceState } from '../types/workspace'
+import type { WorkspaceAction, WorkspaceState } from '../workspace/types'
 
 // ===== HELPERS ===============================================================
 function createChart(

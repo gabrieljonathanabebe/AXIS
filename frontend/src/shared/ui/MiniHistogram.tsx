@@ -1,6 +1,10 @@
 import { formatNumber } from '../format/formatNumber'
 
-import type { HistogramBar } from '../../types/ui'
+export type HistogramBar = {
+  count: number
+  isMuted?: boolean
+  label: string
+}
 
 type MiniHistogramProps = {
   bars: HistogramBar[]

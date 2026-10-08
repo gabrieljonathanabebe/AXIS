@@ -1,6 +1,6 @@
-import type { ChartInstance, ChartSpec, ChartType } from '../types/chart'
+import type { ChartInstance, ChartSpec, ChartType } from '../charts/types'
 import { findFreeChartLayout, findNeighborChartId } from './chartLayout'
-import type { WorkspaceAction, WorkspaceState } from '../types/workspace'
+import type { WorkspaceAction, WorkspaceState } from './types'
 
 // ===== TYPES =================================================================
 type ChartUpdater = (chart: ChartInstance) => ChartInstance

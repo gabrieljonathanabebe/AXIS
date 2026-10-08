@@ -2,7 +2,7 @@ import { Copy, PanelLeft, PanelRight, Redo2, Trash2, Undo2 } from 'lucide-react'
 
 import { useCommandShortcuts } from './useCommandShortcuts'
 
-import type { WorkspaceCommands } from '../types/ui'
+import type { WorkspaceCommands } from './types'
 
 // ===== TYPES =================================================================
 type UseWorkspaceCommandsParams = {

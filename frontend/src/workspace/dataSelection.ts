@@ -1,5 +1,5 @@
 import type { DataRow } from '../datasets/types'
-import type { DataSelection, SelectionFilter } from '../types/workspace'
+import type { DataSelection, SelectionFilter } from './types'
 
 // ===== CONSTANTS =============================================================
 const numberFormat = new Intl.NumberFormat(undefined, {

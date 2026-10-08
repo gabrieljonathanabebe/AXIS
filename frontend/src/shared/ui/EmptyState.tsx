@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core'
-import type { DropTarget } from '../../types/ui'
+import type { DropTarget } from '../../workspace/types'
 import { useEffect, useRef } from 'react'
 
 type EmptyStateProps = {

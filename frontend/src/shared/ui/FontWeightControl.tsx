@@ -1,7 +1,7 @@
-import { FONT_WEIGHT_VALUES } from '../../chart/fontWeights'
+import { FONT_WEIGHT_VALUES } from '../../charts/fontWeights'
 import SegmentedControl from './SegmentedControl'
 
-import type { LabelFontWeight } from '../../types/chart'
+import type { LabelFontWeight } from '../../charts/types'
 
 type FontWeightControlProps = {
   label: string

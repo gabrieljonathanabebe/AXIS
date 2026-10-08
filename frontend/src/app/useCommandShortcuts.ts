@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import type { CommandShortcut, WorkspaceCommand } from '../types/ui'
+import type { CommandShortcut, WorkspaceCommand } from './types'
 
 // ===== HELPERS ===============================================================
 function isEditableTarget(target: EventTarget | null): boolean {

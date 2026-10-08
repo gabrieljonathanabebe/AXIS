@@ -1,9 +1,9 @@
-import type { EncodingKey } from '../chart/chartDefinitions'
+import type { EncodingKey } from '../charts/chartDefinitions'
 import type {
   CevynAction,
   CevynActionError,
   CevynActionParseResult,
-} from '../types/actions'
+} from './types'
 
 // ===== TYPES =================================================================
 type PropertyRule = {

@@ -1,0 +1,58 @@
+import AnimationWidget from './interaction/AnimationWidget'
+import { isLegendRelevant } from '../charts/isLegendRelevant'
+import { isRadialChartType } from '../charts/isRadialChartType'
+import LegendInteractionWidget from './interaction/LegendInteractionWidget'
+import TooltipWidget from './interaction/TooltipWidget'
+import ZoomWidget from './interaction/ZoomWidget'
+
+import type { ChartInspectorProps } from './types'
+
+type InteractionInspectorTabProps = Pick<
+  ChartInspectorProps,
+  'chart' | 'fields' | 'onSetInteraction'
+>
+
+function InteractionInspectorTab({
+  chart,
+  fields,
+  onSetInteraction,
+}: InteractionInspectorTabProps) {
+  const { interaction } = chart.spec
+  const isRadialChart = isRadialChartType(chart.type)
+  const showLegendInteraction = isLegendRelevant(chart, fields)
+  return (
+    <div className="stack inspector-tab-content">
+      {showLegendInteraction ? (
+        <LegendInteractionWidget
+          value={interaction.legend}
+          onChange={(legend) => {
+            onSetInteraction('legend', legend)
+          }}
+        />
+      ) : null}
+      <TooltipWidget
+        showTrigger={!isRadialChart}
+        value={interaction.tooltip}
+        onChange={(tooltip) => {
+          onSetInteraction('tooltip', tooltip)
+        }}
+      />
+      {!isRadialChart ? (
+        <ZoomWidget
+          value={interaction.zoom}
+          onChange={(zoom) => {
+            onSetInteraction('zoom', zoom)
+          }}
+        />
+      ) : null}
+      <AnimationWidget
+        value={interaction.animation}
+        onChange={(animation) => {
+          onSetInteraction('animation', animation)
+        }}
+      />
+    </div>
+  )
+}
+
+export default InteractionInspectorTab
