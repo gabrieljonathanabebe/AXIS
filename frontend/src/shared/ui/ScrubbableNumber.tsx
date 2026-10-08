@@ -1,9 +1,9 @@
 import { GripVertical } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
+import { useRef } from 'react'
 
 import Button from './Button'
-
-import type { PointerEvent as ReactPointerEvent } from 'react'
+import { useDraftValue } from '../useDraftValue'
 
 type ScrubbableNumberProps = {
   label: string
@@ -42,12 +42,8 @@ function ScrubbableNumber({
   pixelsPerStep = 6,
   onValueChange,
 }: ScrubbableNumberProps) {
-  const [draftValue, setDraftValue] = useState(String(value))
+  const [draftValue, setDraftValue] = useDraftValue(value)
   const dragState = useRef<DragState | null>(null)
-
-  useEffect(() => {
-    setDraftValue(String(value))
-  }, [value])
 
   function commitValue(nextValue: number): void {
     const normalizedValue = normalizeValue(nextValue, step)

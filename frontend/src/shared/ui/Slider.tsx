@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
+
+import { useDraftValue } from '../useDraftValue'
 
 type SliderProps = {
   label: string
@@ -22,17 +23,13 @@ function Slider({
   value,
   onValueChange,
 }: SliderProps) {
-  const [draftValue, setDraftValue] = useState(String(value))
+  const [draftValue, setDraftValue] = useDraftValue(value)
   const progress = ((value - min) / (max - min)) * 100
   const boundedProgress = Math.min(100, Math.max(0, progress))
 
   const sliderStyle: SliderStyle = {
     '--slider-progress': `${boundedProgress}%`,
   }
-
-  useEffect(() => {
-    setDraftValue(String(value))
-  }, [value])
 
   function commitDraftValue() {
     const parsedValue = Number(draftValue)

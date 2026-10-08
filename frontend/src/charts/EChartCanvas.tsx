@@ -1,6 +1,6 @@
 import * as echarts from 'echarts'
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
-import { useEffect, useRef } from 'react'
+import { useEffect, useEffectEvent, useRef } from 'react'
 
 import {
   createChartQuery,
@@ -118,18 +118,82 @@ function EChartCanvas({
   const isChartLoading = isLoading || pointsQuery.isLoading
   const chartError = error ?? pointsQuery.error
 
+  function getAxisTitleEdit(event: ECElementEvent): AxisTitleEdit | null {
+    const edit = createAxisTitleEditFromEvent(event)
+    const container = containerRef.current
+    return edit && container ? offsetAxisTitleEdit(edit, container) : null
+  }
+
+  // Effect events always see the latest props, so ECharts listeners are
+  // registered once when the chart is created.
+  const handleClick = useEffectEvent((event: ECElementEvent) => {
+    const axisTitleEdit = getAxisTitleEdit(event)
+    if (axisTitleEdit) {
+      onEditAxisTitle(axisTitleEdit)
+      return
+    }
+    const nextSelection = createSelectionFromEvent(chart, event, dataset.fields)
+    if (!nextSelection) {
+      return
+    }
+    if (isSameSelection(selection, nextSelection)) {
+      onClearSelection()
+      return
+    }
+    onSelectData(nextSelection)
+  })
+
+  const handleBrushEnd = useEffectEvent((event: unknown) => {
+    const nextSelection = createSelectionFromBrush(chart, event)
+    if (nextSelection) {
+      onSelectData(nextSelection)
+      return
+    }
+    onClearSelection()
+  })
+
+  const handleMouseOver = useEffectEvent((event: ECElementEvent) => {
+    const axisTitleEdit = getAxisTitleEdit(event)
+    if (axisTitleEdit) {
+      onHoverAxisTitle(axisTitleEdit)
+    }
+  })
+
+  const handleMouseOut = useEffectEvent((event: ECElementEvent) => {
+    if (isAxisTitleEvent(event)) {
+      onHoverAxisTitle(null)
+    }
+  })
+
+  const handleBackgroundClick = useEffectEvent((event: ElementEvent) => {
+    if (!event.target) {
+      onClearSelection()
+    }
+  })
+
   useEffect(() => {
     const container = containerRef.current
     if (!container) {
       return
     }
-    const chart = echarts.init(container)
-    chartRef.current = chart
-    const resizeObserver = new ResizeObserver(() => chart.resize())
+    const instance = echarts.init(container)
+    const zr = instance.getZr()
+    chartRef.current = instance
+    instance.on('click', (event) => handleClick(event))
+    instance.on('brushEnd', (event) => handleBrushEnd(event))
+    instance.on('mousemove', (event) => {
+      if (isAxisTitleEvent(event)) {
+        zr.setCursorStyle('text')
+      }
+    })
+    instance.on('mouseout', (event) => handleMouseOut(event))
+    instance.on('mouseover', (event) => handleMouseOver(event))
+    zr.on('click', (event) => handleBackgroundClick(event))
+    const resizeObserver = new ResizeObserver(() => instance.resize())
     resizeObserver.observe(container)
     return () => {
       resizeObserver.disconnect()
-      chart.dispose()
+      instance.dispose()
       chartRef.current = null
     }
   }, [])
@@ -155,94 +219,6 @@ function EChartCanvas({
     )
     syncBrush(instance, chart, selection)
     syncAxisTitleEdit(instance, editingAxisTitle)
-  }, [
-    chart,
-    dataset,
-    editingAxisTitle,
-    highlightResult,
-    points,
-    result,
-    selection,
-  ])
-
-  useEffect(() => {
-    const instance = chartRef.current
-    const container = containerRef.current
-    if (!instance || !container) {
-      return
-    }
-    const zr = instance.getZr()
-
-    function handleClick(event: ECElementEvent): void {
-      const axisTitleEdit = createAxisTitleEditFromEvent(event)
-      if (axisTitleEdit && container) {
-        onEditAxisTitle(offsetAxisTitleEdit(axisTitleEdit, container))
-        return
-      }
-      const nextSelection = createSelectionFromEvent(
-        chart,
-        event,
-        dataset.fields,
-      )
-
-      if (!nextSelection) {
-        return
-      }
-      if (isSameSelection(selection, nextSelection)) {
-        onClearSelection()
-        return
-      }
-      onSelectData(nextSelection)
-    }
-
-    function handleBackgroundClick(event: ElementEvent): void {
-      if (!event.target) {
-        onClearSelection()
-      }
-    }
-
-    function handleBrushEnd(event: unknown): void {
-      const nextSelection = createSelectionFromBrush(chart, event)
-      if (nextSelection) {
-        onSelectData(nextSelection)
-        return
-      }
-      onClearSelection()
-    }
-
-    function handleMouseMove(event: ECElementEvent): void {
-      if (isAxisTitleEvent(event)) {
-        zr.setCursorStyle('text')
-      }
-    }
-
-    function handleMouseOver(event: ECElementEvent): void {
-      const axisTitleEdit = createAxisTitleEditFromEvent(event)
-      if (axisTitleEdit && container) {
-        onHoverAxisTitle(offsetAxisTitleEdit(axisTitleEdit, container))
-      }
-    }
-
-    function handleMouseOut(event: ECElementEvent): void {
-      if (isAxisTitleEvent(event)) {
-        onHoverAxisTitle(null)
-      }
-    }
-
-    instance.on('click', handleClick)
-    instance.on('brushEnd', handleBrushEnd)
-    instance.on('mousemove', handleMouseMove)
-    instance.on('mouseout', handleMouseOut)
-    instance.on('mouseover', handleMouseOver)
-    zr.on('click', handleBackgroundClick)
-    return () => {
-      instance.off('click', handleClick)
-      instance.off('brushEnd', handleBrushEnd)
-      instance.off('mousemove', handleMouseMove)
-      instance.off('mouseout', handleMouseOut)
-      instance.off('mouseover', handleMouseOver)
-      zr.off('click', handleBackgroundClick)
-    }
   }, [
     chart,
     dataset,

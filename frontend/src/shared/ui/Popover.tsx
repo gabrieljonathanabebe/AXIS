@@ -46,7 +46,11 @@ function Popover({
   onOpenChange,
   renderTrigger,
 }: PopoverProps) {
-  const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
+  const {
+    context,
+    floatingStyles,
+    refs: { setFloating, setReference },
+  } = useFloating<HTMLButtonElement>({
     open,
     placement,
     strategy: 'fixed',
@@ -84,7 +88,7 @@ function Popover({
   return (
     <>
       {renderTrigger({
-        ref: refs.setReference,
+        ref: setReference,
         'aria-expanded': open,
         'aria-haspopup': role,
       })}
@@ -93,7 +97,7 @@ function Popover({
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false}>
             <div
-              ref={refs.setFloating}
+              ref={setFloating}
               className={className}
               style={floatingStyles}
               {...getFloatingProps({
