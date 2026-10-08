@@ -13,14 +13,21 @@ DEMO_DATASET_NAME = "Demo data"
 DEMO_DATASET_PATH = Path(__file__).parent / "data" / "demo.csv"
 
 
+# ===== STATE =================================================================
 @dataclass
 class StoredDataset:
+    """A loaded dataset: summary and profile for the API, frame for queries."""
+
     summary: DatasetSummary
     profile: DatasetProfile
     frame: pl.DataFrame
 
 
+# In-memory store by dataset id; empty again after a server restart.
 datasets: dict[str, StoredDataset] = {}
+
+
+# ===== FUNCTIONS =============================================================
 
 
 def read_csv_frame(source: BytesIO | Path) -> pl.DataFrame:

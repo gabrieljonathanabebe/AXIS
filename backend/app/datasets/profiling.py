@@ -2,6 +2,7 @@ from datetime import date
 
 import polars as pl
 
+from app.datasets import schema_detection
 from app.datasets.models import (
     DatasetProfile,
     DimensionStatistics,
@@ -13,7 +14,6 @@ from app.datasets.models import (
     TemporalStatistics,
     ValueCount,
 )
-from app.datasets import schema_detection
 
 # ===== CONSTANTS =============================================================
 VALUE_COUNT_LIMIT = 5
@@ -30,8 +30,17 @@ GRANULARITY_DAY_RANGES = [
 
 # ===== PROFILE ===============================================================
 def build_dataset_profile(
-    dataset_id: str, frame: pl.DataFrame
+    dataset_id: str,
+    frame: pl.DataFrame,
 ) -> DatasetProfile:
+    """
+    Profile every column and the dataset as a whole.
+    Args:
+        dataset_id: Id stored in the profile.
+        frame: Rows of the dataset.
+    Returns:
+        Row, column, missing and duplicate counts plus one profile per field.
+    """
     fields = [build_field_profile(column) for column in frame.get_columns()]
     return DatasetProfile(
         dataset_id=dataset_id,
@@ -44,6 +53,13 @@ def build_dataset_profile(
 
 
 def build_field_profile(column: pl.Series) -> FieldProfile:
+    """
+    Detect type and role of a column and compute its statistics.
+    Args:
+        column: One column of the dataset.
+    Returns:
+        The field profile; statistics follow the detected role.
+    """
     physical_type = schema_detection.infer_physical_type(column.dtype)
     values = column.drop_nulls()
     unique_count = values.n_unique()
@@ -68,6 +84,7 @@ def build_statistics(
     values: pl.Series,
     semantic_role: SemanticRole,
 ) -> FieldStatistics | None:
+    """Build the statistics that fit the role; identifiers get none."""
     if semantic_role == SemanticRole.MEASURE:
         return build_measure_statistics(values)
     if semantic_role == SemanticRole.DIMENSION:
@@ -78,6 +95,7 @@ def build_statistics(
 
 
 def build_measure_statistics(values: pl.Series) -> MeasureStatistics:
+    """Compute min, max, mean, median and histogram of a numeric field."""
     return MeasureStatistics(
         min=to_float(values.min()),
         max=to_float(values.max()),
@@ -87,8 +105,15 @@ def build_measure_statistics(values: pl.Series) -> MeasureStatistics:
     )
 
 
-# Most frequent first; equal counts in alphabetical order.
 def count_values(values: pl.Series) -> pl.DataFrame:
+    """
+    Count how often each value occurs, shared by profile and values filter.
+    Args:
+        values: Non-null values of a column.
+    Returns:
+        Columns value (as text) and count; most frequent first, equal
+        counts in alphabetical order.
+    """
     return (
         values.cast(pl.String)
         .alias("value")
@@ -98,6 +123,7 @@ def count_values(values: pl.Series) -> pl.DataFrame:
 
 
 def build_dimension_statistics(values: pl.Series) -> DimensionStatistics:
+    """List the most frequent values of a categorical field."""
     counts = count_values(values).head(VALUE_COUNT_LIMIT)
     return DimensionStatistics(
         value_counts=[
@@ -108,6 +134,7 @@ def build_dimension_statistics(values: pl.Series) -> DimensionStatistics:
 
 
 def build_temporal_statistics(values: pl.Series) -> TemporalStatistics:
+    """Compute date range, granularity and histogram of a date field."""
     return TemporalStatistics(
         min=format_temporal(values.min()),
         max=format_temporal(values.max()),
@@ -117,6 +144,14 @@ def build_temporal_statistics(values: pl.Series) -> TemporalStatistics:
 
 
 def detect_granularity(values: pl.Series) -> TemporalGranularity | None:
+    """
+    Detect the typical step between consecutive distinct dates.
+    Args:
+        values: Non-null date or datetime values.
+    Returns:
+        The granularity whose day range contains the most common gap, or
+        None for a single date or an irregular gap.
+    """
     gaps = values.cast(pl.Date).unique().sort().diff().drop_nulls()
     if gaps.is_empty():
         return None
@@ -132,6 +167,14 @@ def detect_granularity(values: pl.Series) -> TemporalGranularity | None:
 
 
 def build_histogram(values: pl.Series) -> list[int]:
+    """
+    Count values in equal-width bins between min and max.
+    Args:
+        values: Non-null numeric, date or datetime values.
+    Returns:
+        Up to HISTOGRAM_BIN_LIMIT counts, fewer if there are fewer distinct
+        values; a single count if all values are equal.
+    """
     numbers = values.to_physical().cast(pl.Float64)
     if numbers.is_empty():
         return []
@@ -154,8 +197,10 @@ def build_histogram(values: pl.Series) -> list[int]:
 
 # ===== HELPERS ===============================================================
 def format_temporal(value: object) -> str | None:
+    """Return a date as ISO text, anything else as None."""
     return value.isoformat() if isinstance(value, date) else None
 
 
 def to_float(value: object) -> float | None:
+    """Return a number as float, anything else as None."""
     return float(value) if isinstance(value, int | float) else None

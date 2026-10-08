@@ -36,7 +36,16 @@ ask follow-up questions; instead, suggest one prompt the user could send.
 """
 
 
+# ===== TOOL ==================================================================
 def build_input_schema(request: AiCommandRequest) -> dict[str, Any]:
+    """
+    Build the JSON schema of the action batch for this request.
+    Args:
+        request: AI request whose field names may be used.
+    Returns:
+        The schema of CevynActionBatch with every encoding restricted to
+        the dataset's field names, so Claude cannot invent fields.
+    """
     schema = CevynActionBatch.model_json_schema()
     field_names = [field.name for field in request.fields]
     if field_names:
@@ -46,6 +55,7 @@ def build_input_schema(request: AiCommandRequest) -> dict[str, Any]:
 
 
 def build_tool(request: AiCommandRequest) -> dict[str, Any]:
+    """Describe the run_cevyn_actions tool with this request's schema."""
     return {
         "description": "Run Cevyn actions on the chart workspace. All "
         "actions are applied together as one undo step.",
@@ -55,10 +65,20 @@ def build_tool(request: AiCommandRequest) -> dict[str, Any]:
     }
 
 
-# ===== HELPERS ===============================================================
+# ===== MESSAGES ==============================================================
 def build_system(
-    profile: DatasetProfile, request: AiCommandRequest
+    profile: DatasetProfile,
+    request: AiCommandRequest,
 ) -> list[dict[str, Any]]:
+    """
+    Build the system prompt with chart rules and dataset as cached context.
+    Args:
+        profile: Profile of the dataset the request works on.
+        request: AI request with chart rules and current field roles.
+    Returns:
+        Two system blocks: the fixed instructions and the context; the
+        context is cached because it stays the same across prompts.
+    """
     chart_rules = ai_context.build_chart_rules_context(request.chart_rules)
     dataset = ai_context.build_dataset_context(profile, request.fields)
     context = (
@@ -76,6 +96,7 @@ def build_system(
 
 
 def build_user_message(request: AiCommandRequest) -> str:
+    """Wrap the current charts and the user's prompt in tagged sections."""
     charts = [
         chart.model_dump(mode="json", exclude_none=True)
         for chart in request.charts
@@ -86,7 +107,16 @@ def build_user_message(request: AiCommandRequest) -> str:
     )
 
 
+# ===== RESULT ================================================================
 def read_result(response: BetaMessage) -> AiCommandResult:
+    """
+    Extract the proposed actions and Claude's text from the response.
+    Args:
+        response: Message returned by Claude.
+    Returns:
+        The actions of the tool call, or None if Claude did not call the
+        tool or stopped early, and the text shown in the status line.
+    """
     if response.stop_reason in ("max_tokens", "refusal"):
         return AiCommandResult(
             actions=None,
@@ -107,9 +137,12 @@ def read_result(response: BetaMessage) -> AiCommandResult:
     )
 
 
+# ===== STUB ==================================================================
 def find_field_name(
-    request: AiCommandRequest, role: SemanticRole
+    request: AiCommandRequest,
+    role: SemanticRole,
 ) -> str | None:
+    """Return the first field with the given role, or None."""
     return next(
         (field.name for field in request.fields if field.semantic_role == role),
         None,
@@ -117,6 +150,8 @@ def find_field_name(
 
 
 def create_stub_result(request: AiCommandRequest) -> AiCommandResult:
+    """Answer without Claude with a bar chart of the first dimension and
+    measure; used when CEVYN_AI_STUB=1."""
     dimension = find_field_name(request, SemanticRole.DIMENSION)
     measure = find_field_name(request, SemanticRole.MEASURE)
     if dimension is None or measure is None:
@@ -137,10 +172,22 @@ def create_stub_result(request: AiCommandRequest) -> AiCommandResult:
     )
 
 
-# ===== FUNCTION ==============================================================
+# ===== COMMAND ===============================================================
 def run_ai_command(
-    profile: DatasetProfile, request: AiCommandRequest
+    profile: DatasetProfile,
+    request: AiCommandRequest,
 ) -> AiCommandResult:
+    """
+    Turn a natural-language prompt into Cevyn actions via one Claude call.
+    Args:
+        profile: Profile of the dataset the request works on.
+        request: Prompt, current charts, fields and chart rules.
+    Returns:
+        The proposed actions and an optional message; the frontend
+        validates the actions before applying them as one undo step.
+    Raises:
+        AnthropicError: If the request to Claude fails.
+    """
     if os.getenv("CEVYN_AI_STUB") == "1":
         return create_stub_result(request)
     client = Anthropic()

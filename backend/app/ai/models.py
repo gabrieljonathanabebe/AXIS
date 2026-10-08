@@ -100,7 +100,10 @@ class CevynActionBatch(ActionModel):
 
 
 # ===== AI COMMANDS ===========================================================
+# Request and result of the ai-commands route; not part of the tool schema.
 class AiChartContext(BaseModel):
+    """A chart on the canvas as Claude sees it, addressed by its id."""
+
     aggregation: Aggregation
     encoding: ChartEncoding
     id: str
@@ -108,12 +111,9 @@ class AiChartContext(BaseModel):
     type: ChartType
 
 
-class AiCommandResult(BaseModel):
-    actions: list[Any] | None
-    message: str | None
-
-
 class AiEncodingRule(BaseModel):
+    """Required flag and recommended and allowed roles of one encoding."""
+
     key: str
     recommended_roles: list[SemanticRole]
     required: bool
@@ -121,13 +121,24 @@ class AiEncodingRule(BaseModel):
 
 
 class AiChartRule(BaseModel):
+    """Aggregations and encoding rules of one chart type, from the frontend."""
+
     encodings: list[AiEncodingRule]
     supported_aggregations: list[Aggregation]
     type: ChartType
 
 
 class AiCommandRequest(BaseModel):
+    """Prompt with the current charts, fields and chart rules."""
+
     chart_rules: list[AiChartRule]
     charts: list[AiChartContext]
     fields: list[Field]
     prompt: str
+
+
+class AiCommandResult(BaseModel):
+    """Proposed actions, validated by the frontend, and a status message."""
+
+    actions: list[Any] | None
+    message: str | None

@@ -4,7 +4,10 @@ from typing import Literal
 from pydantic import BaseModel
 
 
+# ===== TYPES =================================================================
 class PhysicalType(StrEnum):
+    """Storage type of a column, derived from its Polars dtype."""
+
     INTEGER = "integer"
     FLOAT = "float"
     STRING = "string"
@@ -14,6 +17,8 @@ class PhysicalType(StrEnum):
 
 
 class SemanticRole(StrEnum):
+    """Analytical meaning of a field; decides how charts may use it."""
+
     MEASURE = "measure"
     DIMENSION = "dimension"
     TEMPORAL = "temporal"
@@ -21,6 +26,8 @@ class SemanticRole(StrEnum):
 
 
 class TemporalGranularity(StrEnum):
+    """Most common step between consecutive dates of a field."""
+
     DAY = "day"
     WEEK = "week"
     MONTH = "month"
@@ -28,20 +35,35 @@ class TemporalGranularity(StrEnum):
     YEAR = "year"
 
 
+# ===== DATASET ===============================================================
 class Field(BaseModel):
+    """Name, physical type and detected semantic role of a column."""
+
     name: str
     physical_type: PhysicalType
     semantic_role: SemanticRole
 
 
 class DatasetSummary(BaseModel):
+    """Id, name, row count and fields the frontend works with."""
+
     id: str
     name: str
     row_count: int
     fields: list[Field]
 
 
+# ===== STATISTICS ============================================================
+class ValueCount(BaseModel):
+    """A value as text and how often it occurs."""
+
+    value: str
+    count: int
+
+
 class MeasureStatistics(BaseModel):
+    """Range, center and distribution of a numeric field."""
+
     kind: Literal["measure"] = "measure"
     min: float | None
     max: float | None
@@ -50,17 +72,16 @@ class MeasureStatistics(BaseModel):
     histogram: list[int]
 
 
-class ValueCount(BaseModel):
-    value: str
-    count: int
-
-
 class DimensionStatistics(BaseModel):
+    """Most frequent values of a categorical field."""
+
     kind: Literal["dimension"] = "dimension"
     value_counts: list[ValueCount]
 
 
 class TemporalStatistics(BaseModel):
+    """Date range as ISO text, granularity and distribution of a field."""
+
     kind: Literal["temporal"] = "temporal"
     min: str | None
     max: str | None
@@ -71,7 +92,10 @@ class TemporalStatistics(BaseModel):
 FieldStatistics = MeasureStatistics | DimensionStatistics | TemporalStatistics
 
 
+# ===== PROFILE ===============================================================
 class FieldProfile(BaseModel):
+    """Profile of one field; statistics follow the detected role."""
+
     name: str
     physical_type: PhysicalType
     semantic_role: SemanticRole
@@ -81,6 +105,8 @@ class FieldProfile(BaseModel):
 
 
 class DatasetProfile(BaseModel):
+    """Deterministic profile of a dataset, computed once at upload."""
+
     dataset_id: str
     row_count: int
     column_count: int

@@ -7,27 +7,17 @@ from app.datasets.models import (
     SemanticRole,
 )
 
-INTEGER_DTYPES = {
-    pl.Int8,
-    pl.Int16,
-    pl.Int32,
-    pl.Int64,
-    pl.UInt8,
-    pl.UInt16,
-    pl.UInt32,
-    pl.UInt64,
-}
-
-FLOAT_DTYPES = {
-    pl.Float32,
-    pl.Float64,
-}
+# ===== CONSTANTS =============================================================
+# Text columns this long or longer count as identifiers if all values differ.
+MIN_IDENTIFIER_ROWS = 50
 
 
+# ===== FUNCTIONS =============================================================
 def infer_physical_type(dtype: pl.DataType) -> PhysicalType:
-    if dtype in INTEGER_DTYPES:
+    """Map a Polars dtype to a physical type; unknown dtypes become string."""
+    if dtype.is_integer():
         return PhysicalType.INTEGER
-    if dtype in FLOAT_DTYPES:
+    if dtype.is_float():
         return PhysicalType.FLOAT
     if dtype == pl.Boolean:
         return PhysicalType.BOOLEAN
@@ -38,15 +28,22 @@ def infer_physical_type(dtype: pl.DataType) -> PhysicalType:
     return PhysicalType.STRING
 
 
-MIN_IDENTIFIER_ROWS = 50
-
-
 def infer_semantic_role(
     name: str,
     physical_type: PhysicalType,
     unique_count: int,
     value_count: int,
 ) -> SemanticRole:
+    """
+    Guess the analytical role of a field from its name, type and values.
+    Args:
+        name: Column name; "id" or a "_id" suffix marks an identifier.
+        physical_type: Physical type of the column.
+        unique_count: Number of distinct non-null values.
+        value_count: Number of non-null values.
+    Returns:
+        Identifier, temporal, measure or dimension, checked in this order.
+    """
     lowered_name = name.lower()
     if lowered_name.endswith("_id") or lowered_name == "id":
         return SemanticRole.IDENTIFIER
@@ -64,6 +61,7 @@ def infer_semantic_role(
 
 
 def create_fields(profile: DatasetProfile) -> list[Field]:
+    """Reduce the field profiles to the fields of the dataset summary."""
     return [
         Field(
             name=field.name,

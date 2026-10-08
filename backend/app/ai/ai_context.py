@@ -11,6 +11,15 @@ from app.datasets.models import (
 
 # ===== DATASET ===============================================================
 def build_dataset_context(profile: DatasetProfile, fields: list[Field]) -> str:
+    """
+    Describe the dataset for Claude, one line per field.
+    Args:
+        profile: Profile with statistics of every field.
+        fields: Current fields; their roles include the user's overrides.
+    Returns:
+        A row-count line followed by lines like
+        "revenue | integer | measure | max 980, mean 412, ...".
+    """
     roles = {field.name: field.semantic_role for field in fields}
     lines = [
         describe_field(field, roles.get(field.name, field.semantic_role))
@@ -20,6 +29,7 @@ def build_dataset_context(profile: DatasetProfile, fields: list[Field]) -> str:
 
 
 def describe_field(field: FieldProfile, role: SemanticRole) -> str:
+    """Join name, physical type, role, values and missing count with " | "."""
     parts = [
         field.name,
         field.physical_type,
@@ -32,8 +42,16 @@ def describe_field(field: FieldProfile, role: SemanticRole) -> str:
 
 
 def describe_values(field: FieldProfile, role: SemanticRole) -> str:
+    """
+    Summarize the values of a field according to its role.
+    Args:
+        field: Profile of the field.
+        role: Current role, possibly overridden by the user.
+    Returns:
+        Statistics for the role, or only the distinct count if the
+        statistics belong to the detected role and no longer fit.
+    """
     statistics = field.statistics
-    # Statistics follow the detected role; after an override they no longer fit.
     if statistics is None or statistics.kind != role:
         return f"{field.unique_count} distinct values"
     if isinstance(statistics, MeasureStatistics):
@@ -62,10 +80,12 @@ def describe_values(field: FieldProfile, role: SemanticRole) -> str:
 
 # ===== CHART RULES ===========================================================
 def build_chart_rules_context(chart_rules: list[AiChartRule]) -> str:
+    """Describe the aggregations and encoding roles of every chart type."""
     return "\n".join(describe_chart_rule(rule) for rule in chart_rules)
 
 
 def describe_chart_rule(rule: AiChartRule) -> str:
+    """Describe one chart type: a header line, then one line per encoding."""
     aggregations = ", ".join(rule.supported_aggregations)
     encodings = [
         describe_encoding_rule(encoding) for encoding in rule.encodings
@@ -76,6 +96,7 @@ def describe_chart_rule(rule: AiChartRule) -> str:
 
 
 def describe_encoding_rule(rule: AiEncodingRule) -> str:
+    """Describe an encoding like "  x, required: dimension; also temporal"."""
     label = f"{rule.key}, required" if rule.required else rule.key
     roles = ", ".join(rule.recommended_roles)
     if rule.supported_roles:
@@ -85,6 +106,7 @@ def describe_encoding_rule(rule: AiEncodingRule) -> str:
 
 # ===== HELPERS ===============================================================
 def format_number(value: float) -> str:
+    """Round large numbers to integers and others to three digits."""
     if abs(value) >= 1000:
         return f"{value:.0f}"
     return f"{value:.3g}"
