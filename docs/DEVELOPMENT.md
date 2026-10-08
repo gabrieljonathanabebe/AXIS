@@ -441,9 +441,13 @@ sichtbar ist; keine Kurz-Aliase. Models und Types direkt importieren
 (`from app.models import ChartQueryRequest`). Externe Libraries nach
 ihrer üblichen Konvention (`import polars as pl`).
 
-Docstrings an Pydantic-Modellen werden Teil des JSON-Schemas. Bei den
-Action-Modellen sind sie die Beschreibungen, die Claude im Ask-Cevyn-Tool
-liest; dort nur bewusst als Prompt-Änderung anpassen.
+Pydantic-Modelle erhalten einen einzeiligen Klassen-Docstring, gefolgt
+von einer Leerzeile vor den Feldern; `models.py` wird mit
+Abschnittsmarkern nach Endpoint bzw. Thema gegliedert. Klassen-Docstrings
+werden Teil des JSON-Schemas: bei Request- und Result-Modellen erscheinen
+sie nur in der API-Doku, bei den Action-Modellen in `app/ai/models.py`
+sind sie die Beschreibungen, die Claude im Ask-Cevyn-Tool liest; dort nur
+bewusst als Prompt-Änderung anpassen.
 
 TypeScript: exportierte Funktionen, Hooks und Komponenten erhalten einen
 einzeiligen JSDoc-Kommentar (`/** … */`). `@param` und `@returns` nur,
