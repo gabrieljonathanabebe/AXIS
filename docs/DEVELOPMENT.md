@@ -202,12 +202,15 @@ Wenn sinnvoll, eigene Icons über `createLucideIcon()` integrieren.
 
 ## 13. Verification
 
-Nach relevanten Frontend-Änderungen mindestens:
+Nach relevanten Frontend-Änderungen mindestens, im Ordner `frontend/`:
 
 ```bash
 npm run format
 npm run build
 ```
+
+`npm run format` formatiert neben dem Frontend auch `docs/`, `AGENTS.md`
+und `README.md`.
 
 Bei der Arbeit in Vertical Slices werden diese beiden Befehle einmalig
 am Ende des vollständigen Slices ausgeführt, nicht nach jedem einzelnen
@@ -276,8 +279,7 @@ ausdrücklich verlangt wurde.
 Format:
 
 ```bash
-npm run format
-npm run build
+(cd frontend && npm run format && npm run build)
 git status --short
 git add <betroffene-dateien>
 git diff --cached --check
@@ -346,7 +348,7 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
 - Dateipfade als klickbaren Markdown-Link relativ zum Repo-Root
   angeben, bei bestehenden Dateien mit Zeilenanker auf die
   Einfügestelle, z. B.
-  `[createAxesOptions.ts:97](src/chart/echarts/createAxesOptions.ts#L97)`
+  `[createAxesOptions.ts:97](frontend/src/chart/echarts/createAxesOptions.ts#L97)`
   oder für einen Bereich `#L97-L99`; neue Dateien ohne Zeilenanker;
 - Zeilennummern vor jedem Block aus dem aktuell gespeicherten Stand
   bestimmen, da sie sich durch vorherige Blöcke verschieben;

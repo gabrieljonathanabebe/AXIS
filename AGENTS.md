@@ -235,8 +235,7 @@ ausdrücklich verlangt.
 Der Vorschlag soll als kompakter Copy-Paste-Block erfolgen:
 
 ```bash
-npm run format
-npm run build
+(cd frontend && npm run format && npm run build)
 git status --short
 git add <betroffene-dateien>
 git diff --cached --check
