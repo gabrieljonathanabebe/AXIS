@@ -159,75 +159,6 @@ export type ColorScaleAppearance = {
   }
 }
 
-// ===== DATA ==================================================================
-export type DataField = {
-  name: string
-  physical_type: PhysicalType
-  semantic_role: SemanticRole
-}
-
-export type DataRow = Record<string, DataValue>
-
-// Rows stay in the backend; views query what they show.
-export type Dataset = {
-  fields: DataField[]
-}
-
-export type DataValue = string | number | null
-
-// User corrections of the detected semantic role, keyed by field name.
-export type SemanticRoleOverrides = Record<string, SemanticRole>
-
-export type DatasetProfile = {
-  dataset_id: string
-  row_count: number
-  column_count: number
-  missing_count: number
-  duplicate_rows: number
-  fields: FieldProfile[]
-}
-
-export type FieldProfile = {
-  name: string
-  physical_type: PhysicalType
-  semantic_role: SemanticRole
-  missing_count: number
-  unique_count: number
-  statistics: FieldStatistics | null
-}
-
-export type FieldStatistics =
-  MeasureStatistics | DimensionStatistics | TemporalStatistics
-
-export type MeasureStatistics = {
-  kind: 'measure'
-  min: number | null
-  max: number | null
-  mean: number | null
-  median: number | null
-  histogram: number[]
-}
-
-export type DimensionStatistics = {
-  kind: 'dimension'
-  value_counts: ValueCount[]
-}
-
-export type TemporalGranularity = 'day' | 'week' | 'month' | 'quarter' | 'year'
-
-export type TemporalStatistics = {
-  kind: 'temporal'
-  min: string | null
-  max: string | null
-  granularity: TemporalGranularity | null
-  histogram: number[]
-}
-
-export type ValueCount = {
-  value: string
-  count: number
-}
-
 // ===== FORMAT ================================================================
 export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'JPY'
 
@@ -304,9 +235,3 @@ export type ScatterSizeRange = {
 }
 
 export type ScatterSymbol = 'circle' | 'rect' | 'triangle' | 'diamond'
-
-// ===== TYPES =================================================================
-export type PhysicalType =
-  'integer' | 'float' | 'string' | 'boolean' | 'date' | 'datetime'
-
-export type SemanticRole = 'measure' | 'dimension' | 'temporal' | 'identifier'

@@ -13,7 +13,7 @@ import type {
   CevynActionError,
   CevynActionResult,
 } from '../types/actions'
-import type { Dataset } from '../types/chart'
+import type { Dataset } from '../datasets/types'
 import type { WorkspaceAction, WorkspaceState } from '../types/workspace'
 
 // ===== HELPERS ===============================================================

@@ -1,7 +1,7 @@
 import { Sparkles } from 'lucide-react'
 
-import ControlRow from '../../ui/ControlRow'
-import Slider from '../../ui/Slider'
+import ControlRow from '../../../shared/ui/ControlRow'
+import Slider from '../../../shared/ui/Slider'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInteractionSpec } from '../../../types/chart'

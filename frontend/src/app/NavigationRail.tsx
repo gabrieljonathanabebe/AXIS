@@ -1,9 +1,9 @@
 import { ChartNoAxesCombined, Database } from 'lucide-react'
 
-import IconButton from '../ui/IconButton'
+import IconButton from '../shared/ui/IconButton'
 
 import type { LucideIcon } from 'lucide-react'
-import type { WorkspaceView } from '../../types/ui'
+import type { WorkspaceView } from '../types/ui'
 
 // ===== TYPES =================================================================
 type NavigationRailProps = {

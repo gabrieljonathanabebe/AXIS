@@ -1,6 +1,7 @@
 import type { ECElementEvent } from 'echarts'
 
-import type { ChartInstance, DataField } from '../../types/chart'
+import type { ChartInstance } from '../../types/chart'
+import type { DataField } from '../../datasets/types'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 
 import type { DataSelection, SelectionFilter } from '../../types/workspace'

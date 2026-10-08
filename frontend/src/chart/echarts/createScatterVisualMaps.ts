@@ -8,11 +8,8 @@ import { getNumericDomain } from './getNumericDomain'
 
 import type { ColorEncodingMode } from '../getColorEncodingMode'
 
-import type {
-  ChartAppearanceSpec,
-  ChartEncoding,
-  DataRow,
-} from '../../types/chart'
+import type { ChartAppearanceSpec, ChartEncoding } from '../../types/chart'
+import type { DataRow } from '../../datasets/types'
 
 type CreateScatterVisualMapsParams = {
   rows: DataRow[]

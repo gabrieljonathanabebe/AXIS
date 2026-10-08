@@ -1,7 +1,7 @@
 import { MousePointerClick, Paintbrush, Table2 } from 'lucide-react'
 import type { KeyboardEvent, ReactNode } from 'react'
 
-import Button from '../ui/Button'
+import Button from '../../shared/ui/Button'
 
 export type InspectorTab = 'data' | 'appearance' | 'interaction'
 

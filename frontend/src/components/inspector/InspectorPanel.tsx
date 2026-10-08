@@ -2,7 +2,7 @@ import { SlidersHorizontal } from 'lucide-react'
 
 import ChartInspector from './ChartInspector'
 import DashboardInspector from './DashboardInspector'
-import Panel from '../ui/Panel'
+import Panel from '../../shared/ui/Panel'
 import type { ChartInstance } from '../../types/chart'
 import type { ChartInspectorProps, DashboardInspectorProps } from './types'
 

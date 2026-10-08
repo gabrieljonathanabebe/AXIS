@@ -1,12 +1,8 @@
 import type { EChartsOption } from 'echarts'
 
 import type { ChartQueryResult } from '../../../api/chartQuery'
-import type {
-  ChartSpec,
-  ChartType,
-  DataRow,
-  Dataset,
-} from '../../../types/chart'
+import type { ChartSpec, ChartType } from '../../../types/chart'
+import type { DataRow, Dataset } from '../../../datasets/types'
 import type { ChartTheme } from '../chartTheme'
 import type { DataSelection } from '../../../types/workspace'
 

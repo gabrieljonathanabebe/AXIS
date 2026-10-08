@@ -3,24 +3,24 @@ import { useRef, useState } from 'react'
 
 import DataTableColumnHeader from './DataTableColumnHeader'
 import DataTableToolbar from './DataTableToolbar'
-import { formatNumber } from '../../data/formatNumber'
-import { getSemanticRole } from '../../data/semanticRoles'
-import { setFieldFilter } from '../../data/tableFilters'
-import { useTableRows } from '../../hooks/useTableRows'
-import EmptyState from '../ui/EmptyState'
+import { formatNumber } from '../shared/format/formatNumber'
+import { getSemanticRole } from '../datasets/semanticRoles'
+import { setFieldFilter } from './tableFilters'
+import { useTableRows } from './useTableRows'
+import EmptyState from '../shared/ui/EmptyState'
 
 import type { UIEvent } from 'react'
-import type { TableFilter } from '../../api/tableQuery'
-import type { TableRows } from '../../hooks/useTableRows'
+import type { TableFilter } from './tableApi'
+import type { TableRows } from './useTableRows'
 import type {
   DataField,
   Dataset,
   DatasetProfile,
   FieldProfile,
-  SemanticRole,
   SemanticRoleOverrides,
-} from '../../types/chart'
-import type { SortDirection, TableSort } from '../../types/ui'
+} from '../datasets/types'
+import type { SemanticRole } from '../datasets/types'
+import type { SortDirection, TableSort } from './types'
 
 // ===== TYPES =================================================================
 type DataTableProps = {

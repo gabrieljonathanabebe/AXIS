@@ -1,9 +1,9 @@
 import { Grid2X2 } from 'lucide-react'
 
-import ColorControl from '../../ui/ColorControl'
-import ControlRow from '../../ui/ControlRow'
-import SegmentedControl from '../../ui/SegmentedControl'
-import Slider from '../../ui/Slider'
+import ColorControl from '../../../shared/ui/ColorControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import SegmentedControl from '../../../shared/ui/SegmentedControl'
+import Slider from '../../../shared/ui/Slider'
 import InspectorWidget from '../InspectorWidget'
 
 import type { GridAppearance, LineStyle } from '../../../types/chart'

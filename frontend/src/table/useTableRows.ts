@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { fetchTableQuery } from '../api/tableQuery'
+import { fetchTableQuery } from './tableApi'
 
-import type { TableFilter, TableQueryResult } from '../api/tableQuery'
-import type { DataRow } from '../types/chart'
-import type { TableSort } from '../types/ui'
+import type { TableFilter, TableQueryResult } from './tableApi'
+import type { DataRow } from '../datasets/types'
+import type { TableSort } from './types'
 
 // ===== TYPES =================================================================
 type TableRowsState = {

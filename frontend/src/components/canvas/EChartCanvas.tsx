@@ -26,7 +26,8 @@ import { useChartQuery } from '../../hooks/useChartQuery'
 import { usePointsQuery } from '../../hooks/usePointsQuery'
 
 import type { AxisTitleEdit } from '../../types/ui'
-import type { ChartInstance, DataRow, Dataset } from '../../types/chart'
+import type { ChartInstance } from '../../types/chart'
+import type { DataRow, Dataset } from '../../datasets/types'
 import type { ChartTheme } from '../../chart/echarts/chartTheme'
 import type { DataSelection } from '../../types/workspace'
 

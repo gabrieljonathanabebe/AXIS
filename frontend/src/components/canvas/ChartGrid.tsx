@@ -14,8 +14,8 @@ import type {
   ChartInstance,
   ChartLayout,
   ChartTitleAppearance,
-  Dataset,
 } from '../../types/chart'
+import type { Dataset } from '../../datasets/types'
 import type {
   ChartLayoutMode,
   DragPayload,

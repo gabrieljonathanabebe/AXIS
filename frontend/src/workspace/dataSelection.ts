@@ -1,4 +1,4 @@
-import type { DataRow } from '../types/chart'
+import type { DataRow } from '../datasets/types'
 import type { DataSelection, SelectionFilter } from '../types/workspace'
 
 // ===== CONSTANTS =============================================================

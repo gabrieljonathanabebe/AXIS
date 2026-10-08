@@ -7,18 +7,15 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import { groupFieldProfiles } from '../../data/fieldGroups'
-import { formatNumber, formatPercent } from '../../data/formatNumber'
-import { getSemanticRole } from '../../data/semanticRoles'
-import CollapsibleSection from '../ui/CollapsibleSection'
-import StatWidget from '../ui/StatWidget'
+import { groupFieldProfiles } from './fieldGroups'
+import { formatNumber, formatPercent } from '../shared/format/formatNumber'
+import { getSemanticRole } from './semanticRoles'
+import CollapsibleSection from '../shared/ui/CollapsibleSection'
+import StatWidget from '../shared/ui/StatWidget'
 import FieldProfileWidget from './FieldProfileWidget'
 
-import type {
-  DatasetProfile,
-  SemanticRole,
-  SemanticRoleOverrides,
-} from '../../types/chart'
+import type { DatasetProfile, SemanticRoleOverrides } from './types'
+import type { SemanticRole } from './types'
 
 // ===== TYPES =================================================================
 type DatasetProfileViewProps = {

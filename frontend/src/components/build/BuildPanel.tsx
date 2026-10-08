@@ -1,20 +1,20 @@
 import { Blocks, ChartColumn, Columns3, FolderOpen, Plus } from 'lucide-react'
 
-import Button from '../ui/Button'
+import Button from '../../shared/ui/Button'
 import ChartPicker from './ChartPicker'
-import CollapsibleSection from '../ui/CollapsibleSection'
-import DatasetCard from './DatasetCard'
-import { DEMO_DATASET_ID } from '../../api/datasets'
-import FieldList from './FieldList'
-import Panel from '../ui/Panel'
+import CollapsibleSection from '../../shared/ui/CollapsibleSection'
+import DatasetCard from '../../datasets/DatasetCard'
+import { DEMO_DATASET_ID } from '../../datasets/datasetsApi'
+import FieldList from '../../datasets/FieldList'
+import Panel from '../../shared/ui/Panel'
+import type { ChartType } from '../../types/chart'
 import type {
-  ChartType,
   Dataset,
   DatasetProfile,
   SemanticRoleOverrides,
-} from '../../types/chart'
+} from '../../datasets/types'
 
-import type { DatasetSummary } from '../../api/datasets'
+import type { DatasetSummary } from '../../datasets/datasetsApi'
 
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null

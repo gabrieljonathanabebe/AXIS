@@ -1,10 +1,7 @@
 import type { ScatterSeriesOption } from 'echarts'
 
-import type {
-  ChartAppearanceSpec,
-  DataRow,
-  DataValue,
-} from '../../../types/chart'
+import type { ChartAppearanceSpec } from '../../../types/chart'
+import type { DataRow, DataValue } from '../../../datasets/types'
 
 import { createAxesOptions } from '../createAxesOptions'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'

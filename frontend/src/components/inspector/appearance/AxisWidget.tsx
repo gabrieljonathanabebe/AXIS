@@ -1,14 +1,14 @@
 import { MoveHorizontal, MoveVertical } from 'lucide-react'
 
-import ColorControl from '../../ui/ColorControl'
-import ControlRow from '../../ui/ControlRow'
-import FontWeightControl from '../../ui/FontWeightControl'
+import ColorControl from '../../../shared/ui/ColorControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import FontWeightControl from '../../../shared/ui/FontWeightControl'
 import InspectorWidget from '../InspectorWidget'
-import RotationDial from '../../ui/RotationDial'
-import ScrubbableNumber from '../../ui/ScrubbableNumber'
-import SegmentedControl from '../../ui/SegmentedControl'
-import SelectControl from '../../ui/SelectControl'
-import TextInput from '../../ui/TextInput'
+import RotationDial from '../../../shared/ui/RotationDial'
+import ScrubbableNumber from '../../../shared/ui/ScrubbableNumber'
+import SegmentedControl from '../../../shared/ui/SegmentedControl'
+import SelectControl from '../../../shared/ui/SelectControl'
+import TextInput from '../../../shared/ui/TextInput'
 
 import type {
   AxisAppearance,

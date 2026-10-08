@@ -6,12 +6,8 @@ import {
   Donut,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import type {
-  Aggregation,
-  ChartEncoding,
-  ChartType,
-  SemanticRole,
-} from '../types/chart'
+import type { Aggregation, ChartEncoding, ChartType } from '../types/chart'
+import type { SemanticRole } from '../datasets/types'
 
 // ===== TYPES =================================================================
 export type EncodingKey = keyof ChartEncoding

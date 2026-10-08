@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { fetchFieldValues } from '../api/datasets'
+import { fetchFieldValues } from './tableApi'
 
-import type { FieldValues } from '../api/datasets'
+import type { FieldValues } from './tableApi'
 
 // ===== TYPES =================================================================
 type FieldValuesState = {

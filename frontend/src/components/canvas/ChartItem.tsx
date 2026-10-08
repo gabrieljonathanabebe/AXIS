@@ -10,10 +10,10 @@ import type {
   WorkspaceCommands,
 } from '../../types/ui'
 
-import CommandButton from '../ui/CommandButton'
+import CommandButton from '../../shared/ui/CommandButton'
 import EChartCanvas from './EChartCanvas'
-import EditableText from '../ui/EditableText'
-import InlineTextInput from '../ui/InlineTextInput'
+import EditableText from '../../shared/ui/EditableText'
+import InlineTextInput from '../../shared/ui/InlineTextInput'
 import { getChartDefinition } from '../../chart/chartDefinitions'
 import { getChartTitle, getDefaultChartTitle } from '../../chart/getChartTitle'
 import { moveChartLayout, resizeChartLayout } from '../../workspace/chartLayout'
@@ -25,8 +25,8 @@ import type {
   ChartInstance,
   ChartLayout,
   ChartTitleAppearance,
-  Dataset,
 } from '../../types/chart'
+import type { Dataset } from '../../datasets/types'
 import type { DataSelection } from '../../types/workspace'
 import type { GridDelta } from '../../workspace/chartLayout'
 

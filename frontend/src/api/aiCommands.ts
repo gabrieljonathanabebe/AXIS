@@ -1,12 +1,8 @@
-import type {
-  Aggregation,
-  ChartEncoding,
-  ChartType,
-  DataField,
-  SemanticRole,
-} from '../types/chart'
+import type { Aggregation, ChartEncoding, ChartType } from '../types/chart'
+import type { DataField } from '../datasets/types'
+import type { SemanticRole } from '../datasets/types'
 
-import { post } from './client'
+import { post } from '../shared/api/client'
 
 export type AiChartContext = {
   aggregation: Aggregation

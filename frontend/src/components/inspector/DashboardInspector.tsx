@@ -1,8 +1,8 @@
 import { LayoutDashboard, LayoutGrid } from 'lucide-react'
 
-import ControlRow from '../ui/ControlRow'
-import ScrubbableNumber from '../ui/ScrubbableNumber'
-import TextInput from '../ui/TextInput'
+import ControlRow from '../../shared/ui/ControlRow'
+import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
+import TextInput from '../../shared/ui/TextInput'
 import InspectorWidget from './InspectorWidget'
 
 import type { DashboardInspectorProps } from './types'

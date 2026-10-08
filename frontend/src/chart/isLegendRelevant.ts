@@ -1,4 +1,5 @@
-import type { ChartInstance, DataField } from '../types/chart'
+import type { ChartInstance } from '../types/chart'
+import type { DataField } from '../datasets/types'
 import { getColorEncodingMode } from './getColorEncodingMode'
 
 export function isLegendRelevant(

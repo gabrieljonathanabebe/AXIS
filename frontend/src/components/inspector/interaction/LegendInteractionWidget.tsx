@@ -1,7 +1,7 @@
 import { ListChecks } from 'lucide-react'
 
-import ControlRow from '../../ui/ControlRow'
-import SegmentedControl from '../../ui/SegmentedControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import SegmentedControl from '../../../shared/ui/SegmentedControl'
 import InspectorWidget from '../InspectorWidget'
 
 import type {

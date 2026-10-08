@@ -1,4 +1,4 @@
-import type { TemporalGranularity } from '../types/chart'
+import type { TemporalGranularity } from '../datasets/types'
 
 // ===== CONSTANTS =============================================================
 const monthsByGranularity: Partial<Record<TemporalGranularity, number>> = {

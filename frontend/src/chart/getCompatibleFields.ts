@@ -4,7 +4,8 @@ import {
   type EncodingKey,
 } from './chartDefinitions'
 
-import type { ChartType, DataField } from '../types/chart'
+import type { ChartType } from '../types/chart'
+import type { DataField } from '../datasets/types'
 
 export function getCompatibleFields(
   chartType: ChartType,

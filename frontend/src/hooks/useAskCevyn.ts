@@ -6,7 +6,8 @@ import { postAiCommand } from '../api/aiCommands'
 import type { AiChartContext, AiChartRule } from '../api/aiCommands'
 import type { ChartDefinition } from '../chart/chartDefinitions'
 import type { CevynActionError, CevynActionResult } from '../types/actions'
-import type { ChartInstance, Dataset } from '../types/chart'
+import type { ChartInstance } from '../types/chart'
+import type { Dataset } from '../datasets/types'
 
 // ===== TYPES =================================================================
 type UseAskCevynParams = {

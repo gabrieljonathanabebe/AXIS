@@ -1,10 +1,5 @@
-import type {
-  DataField,
-  FieldProfile,
-  PhysicalType,
-  SemanticRole,
-  SemanticRoleOverrides,
-} from '../types/chart'
+import type { DataField, FieldProfile, SemanticRoleOverrides } from './types'
+import type { PhysicalType, SemanticRole } from './types'
 
 // ===== CONSTANTS =============================================================
 export const semanticRoleLabels: Record<SemanticRole, string> = {

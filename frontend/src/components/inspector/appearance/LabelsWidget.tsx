@@ -1,10 +1,10 @@
 import { Tags } from 'lucide-react'
 
-import ColorControl from '../../ui/ColorControl'
-import ControlRow from '../../ui/ControlRow'
-import FontWeightControl from '../../ui/FontWeightControl'
-import ScrubbableNumber from '../../ui/ScrubbableNumber'
-import SelectControl from '../../ui/SelectControl'
+import ColorControl from '../../../shared/ui/ColorControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import FontWeightControl from '../../../shared/ui/FontWeightControl'
+import ScrubbableNumber from '../../../shared/ui/ScrubbableNumber'
+import SelectControl from '../../../shared/ui/SelectControl'
 import InspectorWidget from '../InspectorWidget'
 
 import type { LabelPosition, LabelsAppearance } from '../../../types/chart'

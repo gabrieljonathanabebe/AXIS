@@ -1,8 +1,8 @@
 import { Eye, EyeOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import CollapsibleSection from '../ui/CollapsibleSection'
-import IconButton from '../ui/IconButton'
+import CollapsibleSection from '../../shared/ui/CollapsibleSection'
+import IconButton from '../../shared/ui/IconButton'
 
 type InspectorWidgetProps = {
   title: string

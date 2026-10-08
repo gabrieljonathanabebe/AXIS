@@ -6,12 +6,12 @@ import {
   Palette,
 } from 'lucide-react'
 
-import ControlRow from '../../ui/ControlRow'
-import GradientControl from '../../ui/GradientControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import GradientControl from '../../../shared/ui/GradientControl'
 import InspectorWidget from '../InspectorWidget'
-import ScrubbableNumber from '../../ui/ScrubbableNumber'
-import SegmentedControl from '../../ui/SegmentedControl'
-import Toggle from '../../ui/Toggle'
+import ScrubbableNumber from '../../../shared/ui/ScrubbableNumber'
+import SegmentedControl from '../../../shared/ui/SegmentedControl'
+import Toggle from '../../../shared/ui/Toggle'
 
 import type { ColorScaleAppearance } from '../../../types/chart'
 

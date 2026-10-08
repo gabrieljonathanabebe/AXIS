@@ -1,11 +1,11 @@
-import AlignmentControl from '../../ui/AlignmentControl'
+import AlignmentControl from '../../../shared/ui/AlignmentControl'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, List } from 'lucide-react'
 
-import ColorControl from '../../ui/ColorControl'
-import ControlRow from '../../ui/ControlRow'
-import ScrubbableNumber from '../../ui/ScrubbableNumber'
-import Slider from '../../ui/Slider'
-import SegmentedControl from '../../ui/SegmentedControl'
+import ColorControl from '../../../shared/ui/ColorControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import ScrubbableNumber from '../../../shared/ui/ScrubbableNumber'
+import Slider from '../../../shared/ui/Slider'
+import SegmentedControl from '../../../shared/ui/SegmentedControl'
 import InspectorWidget from '../InspectorWidget'
 
 import type { LegendAppearance } from '../../../types/chart'

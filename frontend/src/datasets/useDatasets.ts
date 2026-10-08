@@ -1,19 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { applySemanticRoleOverrides } from '../data/semanticRoles'
+import { applySemanticRoleOverrides } from './semanticRoles'
 import {
   DEMO_DATASET_ID,
   fetchDatasetProfile,
   fetchDatasetSummary,
   uploadDataset,
-} from '../api/datasets'
-import type { DatasetSummary } from '../api/datasets'
-import type {
-  Dataset,
-  DatasetProfile,
-  SemanticRole,
-  SemanticRoleOverrides,
-} from '../types/chart'
+} from './datasetsApi'
+import type { DatasetSummary } from './datasetsApi'
+import type { Dataset, DatasetProfile, SemanticRoleOverrides } from './types'
+import type { SemanticRole } from './types'
 
 // ===== TYPES =================================================================
 type useDatasetsResults = {

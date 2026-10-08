@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 
-import type { ChartEncoding, ChartType, DataField } from './chart'
+import type { ChartEncoding, ChartType } from './chart'
+import type { DataField } from '../datasets/types'
 
 export type ActiveSidePanel = 'fields' | 'charts' | 'settings'
 
@@ -25,13 +26,6 @@ export type HistogramBar = {
   count: number
   isMuted?: boolean
   label: string
-}
-
-export type SortDirection = 'asc' | 'desc'
-
-export type TableSort = {
-  direction: SortDirection
-  fieldName: string
 }
 
 export type WorkspaceView = 'data' | 'visualize'

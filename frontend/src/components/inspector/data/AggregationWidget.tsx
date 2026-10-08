@@ -1,8 +1,8 @@
 import { Sigma } from 'lucide-react'
 
 import { getChartDefinition } from '../../../chart/chartDefinitions'
-import ControlRow from '../../ui/ControlRow'
-import SelectControl from '../../ui/SelectControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import SelectControl from '../../../shared/ui/SelectControl'
 import InspectorWidget from '../InspectorWidget'
 
 import type { Aggregation, GroupAggregation } from '../../../types/chart'

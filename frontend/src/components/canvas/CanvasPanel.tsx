@@ -1,9 +1,9 @@
 import AskCevynBar from './AskCevynBar'
 import ChartGrid from './ChartGrid'
-import CommandButton from '../ui/CommandButton'
-import EditableText from '../ui/EditableText'
-import EmptyState from '../ui/EmptyState'
-import Panel from '../ui/Panel'
+import CommandButton from '../../shared/ui/CommandButton'
+import EditableText from '../../shared/ui/EditableText'
+import EmptyState from '../../shared/ui/EmptyState'
+import Panel from '../../shared/ui/Panel'
 
 import type { AskCevynState } from '../../hooks/useAskCevyn'
 import type {
@@ -11,8 +11,8 @@ import type {
   ChartInstance,
   ChartLayout,
   ChartTitleAppearance,
-  Dataset,
 } from '../../types/chart'
+import type { Dataset } from '../../datasets/types'
 import type { DashboardSpec } from '../../types/dashboard'
 import type { DataSelection } from '../../types/workspace'
 

@@ -3,12 +3,8 @@ import type { LucideIcon } from 'lucide-react'
 
 import { getSemanticRole } from './semanticRoles'
 
-import type {
-  DataField,
-  FieldProfile,
-  SemanticRole,
-  SemanticRoleOverrides,
-} from '../types/chart'
+import type { DataField, FieldProfile, SemanticRoleOverrides } from './types'
+import type { SemanticRole } from './types'
 
 // ===== TYPES =================================================================
 export type FieldGroupKey = 'dimensions' | 'identifiers' | 'measures' | 'time'

@@ -1,4 +1,4 @@
-import { formatNumber } from '../../data/formatNumber'
+import { formatNumber } from '../format/formatNumber'
 
 import type { HistogramBar } from '../../types/ui'
 

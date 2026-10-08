@@ -1,7 +1,7 @@
 import { ZoomIn } from 'lucide-react'
 
-import ControlRow from '../../ui/ControlRow'
-import SelectControl from '../../ui/SelectControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import SelectControl from '../../../shared/ui/SelectControl'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInteractionSpec } from '../../../types/chart'

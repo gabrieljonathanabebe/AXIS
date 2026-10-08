@@ -2,9 +2,9 @@ import { FileSpreadsheet, UploadCloud } from 'lucide-react'
 import { useRef } from 'react'
 import type { ChangeEvent, DragEvent } from 'react'
 
-import { formatCompactNumber } from '../../data/formatNumber'
-import IconButton from '../ui/IconButton'
-import Widget from '../ui/Widget'
+import { formatCompactNumber } from '../shared/format/formatNumber'
+import IconButton from '../shared/ui/IconButton'
+import Widget from '../shared/ui/Widget'
 
 type DatasetCardProps = {
   fieldCount: number

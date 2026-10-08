@@ -8,8 +8,8 @@ import type {
   ChartInteractionSpec,
   ChartMarkKey,
   ChartType,
-  DataField,
 } from '../../types/chart'
+import type { DataField } from '../../datasets/types'
 
 import type { DashboardLayout, DashboardSpec } from '../../types/dashboard'
 

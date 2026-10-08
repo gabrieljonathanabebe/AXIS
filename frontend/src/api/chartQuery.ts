@@ -1,5 +1,6 @@
-import type { DataRow, GroupAggregation } from '../types/chart'
-import { post } from './client'
+import type { GroupAggregation } from '../types/chart'
+import type { DataRow } from '../datasets/types'
+import { post } from '../shared/api/client'
 
 export type ChartFilter =
   | {

@@ -1,4 +1,5 @@
-import type { ChartEncoding, ChartType, Dataset } from '../types/chart'
+import type { ChartEncoding, ChartType } from '../types/chart'
+import type { Dataset } from '../datasets/types'
 
 export function getDefaultEncoding(
   type: ChartType,

@@ -1,18 +1,16 @@
 import { RotateCcw } from 'lucide-react'
 
-import { createDistributionBars } from '../../data/fieldDistribution'
-import { formatNumber } from '../../data/formatNumber'
-import {
-  getAllowedSemanticRoles,
-  semanticRoleLabels,
-} from '../../data/semanticRoles'
-import IconButton from '../ui/IconButton'
-import MiniHistogram from '../ui/MiniHistogram'
-import SelectControl from '../ui/SelectControl'
-import Widget from '../ui/Widget'
+import { createDistributionBars } from './fieldDistribution'
+import { formatNumber } from '../shared/format/formatNumber'
+import { getAllowedSemanticRoles, semanticRoleLabels } from './semanticRoles'
+import IconButton from '../shared/ui/IconButton'
+import MiniHistogram from '../shared/ui/MiniHistogram'
+import SelectControl from '../shared/ui/SelectControl'
+import Widget from '../shared/ui/Widget'
 
-import type { FieldProfile, SemanticRole } from '../../types/chart'
-import type { OptionItem } from '../ui/OptionsMenu'
+import type { FieldProfile } from './types'
+import type { SemanticRole } from './types'
+import type { OptionItem } from '../shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
 type FieldProfileWidgetProps = {

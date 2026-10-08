@@ -1,11 +1,11 @@
 import { ListFilter, Rows3, X } from 'lucide-react'
 
-import { formatNumber } from '../../data/formatNumber'
-import { formatTableFilter } from '../../data/tableFilters'
-import Button from '../ui/Button'
-import Chip from '../ui/Chip'
+import { formatNumber } from '../shared/format/formatNumber'
+import { formatTableFilter } from './tableFilters'
+import Button from '../shared/ui/Button'
+import Chip from '../shared/ui/Chip'
 
-import type { TableFilter } from '../../api/tableQuery'
+import type { TableFilter } from './tableApi'
 
 // ===== TYPES =================================================================
 type DataTableToolbarProps = {

@@ -1,25 +1,22 @@
 import { ListFilter, Search } from 'lucide-react'
 import { useState } from 'react'
 
-import { formatDate } from '../../data/formatDate'
-import { formatNumber } from '../../data/formatNumber'
-import { createMeasureSteps } from '../../data/measureSteps'
-import { createTemporalSteps } from '../../data/temporalSteps'
-import { useFieldValues } from '../../hooks/useFieldValues'
-import Button from '../ui/Button'
-import CheckList from '../ui/CheckList'
-import IconButton from '../ui/IconButton'
-import Popover from '../ui/Popover'
-import RangeSlider from '../ui/RangeSlider'
-import TextInput from '../ui/TextInput'
+import { formatDate } from '../shared/format/formatDate'
+import { formatNumber } from '../shared/format/formatNumber'
+import { createMeasureSteps } from './measureSteps'
+import { createTemporalSteps } from './temporalSteps'
+import { useFieldValues } from './useFieldValues'
+import Button from '../shared/ui/Button'
+import CheckList from '../shared/ui/CheckList'
+import IconButton from '../shared/ui/IconButton'
+import Popover from '../shared/ui/Popover'
+import RangeSlider from '../shared/ui/RangeSlider'
+import TextInput from '../shared/ui/TextInput'
 
-import type { TableFilter } from '../../api/tableQuery'
-import type {
-  FieldProfile,
-  FieldStatistics,
-  SemanticRole,
-} from '../../types/chart'
-import type { CheckListOption } from '../ui/CheckList'
+import type { TableFilter } from './tableApi'
+import type { FieldProfile, FieldStatistics } from '../datasets/types'
+import type { SemanticRole } from '../datasets/types'
+import type { CheckListOption } from '../shared/ui/CheckList'
 
 // ===== TYPES =================================================================
 type DataTableFilterPopoverProps = {

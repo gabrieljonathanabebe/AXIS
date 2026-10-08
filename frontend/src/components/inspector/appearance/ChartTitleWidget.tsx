@@ -1,8 +1,8 @@
 import { Type } from 'lucide-react'
 
-import AlignmentControl from '../../ui/AlignmentControl'
-import ControlRow from '../../ui/ControlRow'
-import TextInput from '../../ui/TextInput'
+import AlignmentControl from '../../../shared/ui/AlignmentControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import TextInput from '../../../shared/ui/TextInput'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartTitleAppearance } from '../../../types/chart'

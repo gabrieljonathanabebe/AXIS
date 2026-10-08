@@ -10,8 +10,8 @@ import type {
   ChartMarkKey,
   ChartSpec,
   ChartType,
-  DataValue,
 } from './chart'
+import type { DataValue } from '../datasets/types'
 
 import type { DashboardSpec } from './dashboard'
 

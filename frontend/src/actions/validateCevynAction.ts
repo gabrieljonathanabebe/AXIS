@@ -5,12 +5,8 @@ import {
   type EncodingKey,
 } from '../chart/chartDefinitions'
 import type { CevynAction } from '../types/actions'
-import type {
-  Aggregation,
-  ChartEncoding,
-  ChartType,
-  Dataset,
-} from '../types/chart'
+import type { Aggregation, ChartEncoding, ChartType } from '../types/chart'
+import type { Dataset } from '../datasets/types'
 import type { WorkspaceState } from '../types/workspace'
 
 // ===== HELPERS ===============================================================

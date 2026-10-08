@@ -1,12 +1,12 @@
 import { Frame } from 'lucide-react'
 
-import ColorControl from '../../ui/ColorControl'
-import ControlRow from '../../ui/ControlRow'
-import ScrubbableNumber from '../../ui/ScrubbableNumber'
-import Slider from '../../ui/Slider'
+import ColorControl from '../../../shared/ui/ColorControl'
+import ControlRow from '../../../shared/ui/ControlRow'
+import ScrubbableNumber from '../../../shared/ui/ScrubbableNumber'
+import Slider from '../../../shared/ui/Slider'
 import InspectorWidget from '../InspectorWidget'
 
-import type { ColorPreset } from '../../ui/ColorControl'
+import type { ColorPreset } from '../../../shared/ui/ColorControl'
 import type { SetContainer } from '../types'
 import type {
   ChartContainerAppearance,

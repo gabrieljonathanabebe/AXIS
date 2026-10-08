@@ -1,7 +1,7 @@
-import { formatDate } from './formatDate'
-import { formatNumber } from './formatNumber'
+import { formatDate } from '../shared/format/formatDate'
+import { formatNumber } from '../shared/format/formatNumber'
 
-import type { TableFilter } from '../api/tableQuery'
+import type { TableFilter } from './tableApi'
 
 // ===== FUNCTIONS =============================================================
 // A range with one open bound reads as a single comparison.

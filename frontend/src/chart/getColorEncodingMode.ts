@@ -1,4 +1,5 @@
-import type { ChartEncoding, ChartType, DataField } from '../types/chart'
+import type { ChartEncoding, ChartType } from '../types/chart'
+import type { DataField } from '../datasets/types'
 import { isRadialChartType } from './isRadialChartType'
 
 export type ColorEncodingMode = 'constant' | 'categorical' | 'continuous'

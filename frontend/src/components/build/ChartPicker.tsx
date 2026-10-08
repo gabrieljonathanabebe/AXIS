@@ -5,7 +5,7 @@ import {
   chartDefinitionList,
   getChartDefinition,
 } from '../../chart/chartDefinitions'
-import WidgetButton from '../ui/WidgetButton'
+import WidgetButton from '../../shared/ui/WidgetButton'
 
 import type { ChartType } from '../../types/chart'
 

@@ -7,8 +7,8 @@ import type {
   ChartLayout,
   ChartSpec,
   ChartType,
-  Dataset,
 } from '../types/chart'
+import type { Dataset } from '../datasets/types'
 import { isRadialChartType } from './isRadialChartType'
 
 type CreateChartInstanceParams = {

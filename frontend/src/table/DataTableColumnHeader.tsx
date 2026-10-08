@@ -1,16 +1,18 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-import { createDistributionBars } from '../../data/fieldDistribution'
+import { createDistributionBars } from '../datasets/fieldDistribution'
 import DataTableFilterPopover from './DataTableFilterPopover'
-import { getFieldGroupDefinition } from '../../data/fieldGroups'
-import { semanticRoleLabels } from '../../data/semanticRoles'
-import IconBadge from '../ui/IconBadge'
-import MiniHistogram from '../ui/MiniHistogram'
+import { getFieldGroupDefinition } from '../datasets/fieldGroups'
+import { semanticRoleLabels } from '../datasets/semanticRoles'
+import IconBadge from '../shared/ui/IconBadge'
+import MiniHistogram from '../shared/ui/MiniHistogram'
 
-import type { DataField, FieldProfile, SemanticRole } from '../../types/chart'
-import type { TableFilter } from '../../api/tableQuery'
-import type { HistogramBar, SortDirection } from '../../types/ui'
+import type { DataField, FieldProfile } from '../datasets/types'
+import type { SemanticRole } from '../datasets/types'
+import type { TableFilter } from './tableApi'
+import type { HistogramBar } from '../types/ui'
+import type { SortDirection } from './types'
 
 // ===== TYPES =================================================================
 type DataTableColumnHeaderProps = {

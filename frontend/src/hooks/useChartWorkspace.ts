@@ -31,8 +31,8 @@ import type {
   ChartLayout,
   ChartTitleAppearance,
   ChartType,
-  Dataset,
 } from '../types/chart'
+import type { Dataset } from '../datasets/types'
 import type { DashboardLayout } from '../types/dashboard'
 import type { DataSelection, WorkspaceAction } from '../types/workspace'
 

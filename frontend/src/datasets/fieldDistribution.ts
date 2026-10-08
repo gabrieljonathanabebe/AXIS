@@ -1,7 +1,7 @@
-import { formatDate } from './formatDate'
-import { formatCompactNumber } from './formatNumber'
+import { formatDate } from '../shared/format/formatDate'
+import { formatCompactNumber } from '../shared/format/formatNumber'
 
-import type { FieldProfile } from '../types/chart'
+import type { FieldProfile } from './types'
 import type { HistogramBar } from '../types/ui'
 
 // ===== HELPERS ===============================================================
