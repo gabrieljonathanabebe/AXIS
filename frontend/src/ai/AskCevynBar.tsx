@@ -18,7 +18,7 @@ function AskCevynBar({ state, onAsk }: AskCevynBarProps) {
 
   return (
     <form
-      className="ask-cevyn-bar glass glass-thick"
+      className={`ask-cevyn-bar glass glass-thick ${isLoading ? 'is-thinking' : ''}`}
       onSubmit={(event) => {
         event.preventDefault()
         if (canSubmit) {
@@ -26,6 +26,7 @@ function AskCevynBar({ state, onAsk }: AskCevynBarProps) {
         }
       }}
     >
+      <span aria-hidden="true" className="ask-cevyn-glow" />
       <div className="ask-cevyn-input">
         <TextInput
           label="Ask Cevyn"

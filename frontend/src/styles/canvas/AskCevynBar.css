@@ -44,10 +44,94 @@
   }
 }
 
-.canvas-panel .panel-content {
-  position: relative;
+/* ===== THINKING GLOW ===================================================== */
+/* While the AI works, a slowly turning multi-color ring runs along the edge:
+   ::after of the bar draws the crisp ring, .ask-cevyn-glow a blurred copy as
+   soft halo. Both share one animated angle. */
+@property --ask-cevyn-glow-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
 }
 
-.canvas-panel .chart-grid {
-  padding-bottom: calc(var(--control-height-sm) + var(--space-8) * 2);
+.ask-cevyn-bar {
+  --ask-cevyn-glow-gradient: conic-gradient(
+    from var(--ask-cevyn-glow-angle),
+    var(--color-accent),
+    rgba(94, 214, 255, 0.85),
+    rgba(139, 108, 255, 0.9),
+    rgba(220, 92, 200, 0.75),
+    var(--color-accent)
+  );
+
+  animation: ask-cevyn-glow-turn 4s linear infinite paused;
+}
+
+.ask-cevyn-bar::after,
+.ask-cevyn-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  background: var(--ask-cevyn-glow-gradient);
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+.ask-cevyn-bar::after,
+.ask-cevyn-glow {
+  opacity: 0;
+  transition: opacity 360ms ease-out;
+}
+
+.ask-cevyn-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  filter: blur(6px);
+}
+
+.ask-cevyn-glow::before {
+  inset: -2px;
+  padding: 3px;
+}
+
+.ask-cevyn-bar.is-thinking {
+  animation-play-state: running;
+}
+
+.ask-cevyn-bar.is-thinking::after {
+  opacity: 1;
+  transition-duration: 220ms;
+}
+
+.ask-cevyn-bar.is-thinking .ask-cevyn-glow {
+  opacity: 0.75;
+  transition-duration: 220ms;
+}
+
+@keyframes ask-cevyn-glow-turn {
+  to {
+    --ask-cevyn-glow-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-cevyn-bar {
+    animation: none;
+  }
+
+  .ask-cevyn-bar::after,
+  .ask-cevyn-glow {
+    transition-duration: 120ms;
+  }
 }

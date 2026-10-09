@@ -562,6 +562,16 @@ nur einem Wert als Farbe, `color` statt `series` bei Bar.
 - verifiziert: `series` statt `color` bei Bar, Cache-Treffer nach neuem
   Chart, ein Override auf Dimension verhindert einen Pie mit 55 Werten
 
+### Ask Cevyn – Thinking Glow (implementiert)
+
+- während eine AI-Anfrage läuft (`status === 'loading'`), läuft ein
+  mehrfarbiger Ring (Akzent-Blau, Cyan, Violett, Magenta) langsam entlang
+  des Rands der Eingabeleiste, mit weichem Halo; blendet beim Ende der
+  Anfrage oder bei einem Fehler kurz aus
+- reines CSS: animierter Winkel per `@property`, Ring über
+  `mask`-Komposition wie beim Glass-Rand, keine Layoutverschiebung
+- bei `prefers-reduced-motion` statischer Ring ohne Drehung
+
 ### Full Data Access und Table Filter (implementiert)
 
 Table und Scatter arbeiten nicht mehr auf 100 Preview-Rows. Grundsatz:
