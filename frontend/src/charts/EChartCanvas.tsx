@@ -204,17 +204,17 @@ function EChartCanvas({
       return
     }
     instance.setOption(
-      createEChartOption(
-        chart.type,
-        chart.spec,
+      createEChartOption({
+        chartId: chart.id,
+        chartType: chart.type,
         dataset,
-        readChartTheme(),
-        result,
         highlightResult,
         points,
+        queryResult: result,
         selection,
-        chart.id,
-      ),
+        spec: chart.spec,
+        theme: readChartTheme(),
+      }),
       true,
     )
     syncBrush(instance, chart, selection)

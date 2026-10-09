@@ -1,31 +1,26 @@
 import type { EChartsOption } from 'echarts'
 
-import type { ChartQueryResult } from '../chartsApi'
-import type { ChartSpec, ChartType } from '../types'
-import type { DataRow, Dataset } from '../../datasets/types'
 import { createBrushOption } from './createBrushOption'
 import { getColorEncodingMode } from '../getColorEncodingMode'
-import type { ChartTheme } from './chartTheme'
-import type { DataSelection } from '../../workspace/types'
 import { createChartContent } from './content/createChartContent'
+import type { ChartContentContext } from './content/chartContentTypes'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createLegendOption } from './createLegendOption'
 import { createTooltipOption } from './createTooltipOption'
 import { isRadialChartType } from '../isRadialChartType'
 
+// ===== TYPES =================================================================
+type EChartOptionContext = ChartContentContext & {
+  chartId: string
+}
+
 // ===== FUNCTION ==============================================================
+/** Translates a chart and its query results into one ECharts option. */
 export function createEChartOption(
-  chartType: ChartType,
-  spec: ChartSpec,
-  dataset: Dataset,
-  theme: ChartTheme,
-  queryResult: ChartQueryResult | null,
-  highlightResult: ChartQueryResult | null,
-  points: DataRow[],
-  selection: DataSelection | null,
-  chartId: string,
+  context: EChartOptionContext,
 ): EChartsOption {
   // ===== CONSTANTS ===========================================================
+  const { chartId, chartType, dataset, selection, spec, theme } = context
   const { appearance, interaction } = spec
   const colorEncodingMode = getColorEncodingMode(
     chartType,
@@ -34,16 +29,7 @@ export function createEChartOption(
   )
   const isRadialChart = isRadialChartType(chartType)
   const isSelectionSource = selection?.sourceChartId === chartId
-  const content = createChartContent({
-    chartType,
-    dataset,
-    highlightResult,
-    points,
-    queryResult,
-    selection,
-    spec,
-    theme,
-  })
+  const content = createChartContent(context)
 
   // ===== RETURN ==============================================================
   return {
