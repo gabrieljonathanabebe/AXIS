@@ -33,6 +33,11 @@ const sortIconByDirection: Record<SortDirection, LucideIcon> = {
   desc: ArrowDown,
 }
 
+const ariaSortByDirection = {
+  asc: 'ascending',
+  desc: 'descending',
+} as const satisfies Record<SortDirection, string>
+
 // ===== HELPERS ===============================================================
 // Statistics follow the detected role; after an override they no longer fit.
 function createColumnBars(
@@ -66,39 +71,47 @@ function DataTableColumnHeader({
   const roleLabel = semanticRole ? semanticRoleLabels[semanticRole] : null
 
   return (
-    <div
-      className="data-column-header stack"
-      title={roleLabel ? `${field.name} · ${roleLabel}` : field.name}
+    <th
+      aria-sort={sortDirection ? ariaSortByDirection[sortDirection] : undefined}
+      scope="col"
     >
-      <div className="data-column-title cluster">
-        <button
-          className={`data-column-sort spread ${sortDirection ? 'is-sorted' : ''}`}
-          type="button"
-          onClick={onSort}
-        >
-          <IconBadge label={field.name}>
-            {Icon ? <Icon size={14} /> : null}
-          </IconBadge>
-          <SortIcon className="data-column-sort-icon" size={12} />
-        </button>
-        <DataTableFilterPopover
-          datasetId={datasetId}
-          fieldName={field.name}
-          filter={filter}
-          profileField={profileField}
-          semanticRole={semanticRole}
-          onFilterChange={onFilterChange}
-        />
+      <div
+        className="data-column-header stack"
+        title={roleLabel ? `${field.name} · ${roleLabel}` : field.name}
+      >
+        <div className="data-column-title cluster">
+          <button
+            className={`data-column-sort spread ${sortDirection ? 'is-sorted' : ''}`}
+            type="button"
+            onClick={onSort}
+          >
+            <IconBadge label={field.name}>
+              {Icon ? <Icon size={14} /> : null}
+            </IconBadge>
+            <SortIcon className="data-column-sort-icon" size={12} />
+          </button>
+          <DataTableFilterPopover
+            datasetId={datasetId}
+            fieldName={field.name}
+            filter={filter}
+            profileField={profileField}
+            semanticRole={semanticRole}
+            onFilterChange={onFilterChange}
+          />
+        </div>
+        <span className="data-column-type">
+          {profileField?.physical_type ?? field.physical_type}
+        </span>
+        <div className="data-column-distribution">
+          {bars.length > 0 ? (
+            <MiniHistogram
+              bars={bars}
+              label={`Distribution of ${field.name}`}
+            />
+          ) : null}
+        </div>
       </div>
-      <span className="data-column-type">
-        {profileField?.physical_type ?? field.physical_type}
-      </span>
-      <div className="data-column-distribution">
-        {bars.length > 0 ? (
-          <MiniHistogram bars={bars} label={`Distribution of ${field.name}`} />
-        ) : null}
-      </div>
-    </div>
+    </th>
   )
 }
 

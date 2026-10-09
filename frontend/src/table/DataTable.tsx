@@ -1,26 +1,23 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useState } from 'react'
 
-import DataTableColumnHeader from './DataTableColumnHeader'
-import DataTableToolbar from './DataTableToolbar'
-import { formatNumber } from '../shared/format/formatNumber'
 import { getSemanticRole } from '../datasets/semanticRoles'
+import EmptyState from '../shared/ui/EmptyState'
+import DataTableColumnHeader from './DataTableColumnHeader'
+import DataTableRow from './DataTableRow'
+import DataTableToolbar from './DataTableToolbar'
 import { setFieldFilter } from './tableFilters'
 import { useTableRows } from './useTableRows'
-import EmptyState from '../shared/ui/EmptyState'
 
 import type { UIEvent } from 'react'
-import type { TableFilter } from './tableApi'
-import type { TableRows } from './useTableRows'
 import type {
-  DataField,
   Dataset,
   DatasetProfile,
-  FieldProfile,
   SemanticRoleOverrides,
 } from '../datasets/types'
-import type { SemanticRole } from '../datasets/types'
-import type { SortDirection, TableSort } from './types'
+import type { TableFilter } from './tableApi'
+import type { DataTableColumn, TableSort } from './types'
+import type { TableRows } from './useTableRows'
 
 // ===== TYPES =================================================================
 type DataTableProps = {
@@ -30,23 +27,12 @@ type DataTableProps = {
   semanticRoleOverrides: SemanticRoleOverrides
 }
 
-type DataTableColumn = {
-  field: DataField
-  profileField: FieldProfile | null
-  semanticRole: SemanticRole | null
-}
-
 type DataTableStatus = {
   description: string
   title: string
 }
 
 // ===== CONSTANTS =============================================================
-const ariaSortByDirection = {
-  asc: 'ascending',
-  desc: 'descending',
-} as const satisfies Record<SortDirection, string>
-
 const ESTIMATED_ROW_HEIGHT = 33
 
 // Distance in pixels to the end of the loaded rows that loads the next page.
@@ -75,10 +61,6 @@ function createColumns(
         : null,
     }
   })
-}
-
-function formatCellValue(value: number | string): string {
-  return typeof value === 'number' ? formatNumber(value) : value
 }
 
 // Cycles ascending → descending → unsorted.
@@ -128,7 +110,6 @@ function DataTable({
   const tableRows = useTableRows(datasetId, sort, filters)
   const status = getTableStatus(tableRows, filters.length > 0)
   const scrollRef = useRef<HTMLDivElement | null>(null)
-
   const virtualizer = useVirtualizer({
     count: tableRows.rows.length,
     estimateSize: () => ESTIMATED_ROW_HEIGHT,
@@ -199,69 +180,38 @@ function DataTable({
               </th>
               {columns.map((column) => {
                 const { name } = column.field
-                const sortDirection =
-                  sort?.fieldName === name ? sort.direction : null
                 return (
-                  <th
-                    aria-sort={
-                      sortDirection
-                        ? ariaSortByDirection[sortDirection]
-                        : undefined
-                    }
-                    scope="col"
+                  <DataTableColumnHeader
+                    {...column}
+                    datasetId={datasetId}
+                    filter={filters.find((item) => item.field === name) ?? null}
                     key={name}
-                  >
-                    <DataTableColumnHeader
-                      {...column}
-                      datasetId={datasetId}
-                      filter={
-                        filters.find((filter) => filter.field === name) ?? null
-                      }
-                      onFilterChange={(filter) => {
-                        changeFilters(setFieldFilter(filters, name, filter))
-                      }}
-                      rowCount={rowCount}
-                      sortDirection={sortDirection}
-                      onSort={() => {
-                        changeSort(name)
-                      }}
-                    />
-                  </th>
+                    rowCount={rowCount}
+                    sortDirection={
+                      sort?.fieldName === name ? sort.direction : null
+                    }
+                    onFilterChange={(filter) => {
+                      changeFilters(setFieldFilter(filters, name, filter))
+                    }}
+                    onSort={() => {
+                      changeSort(name)
+                    }}
+                  />
                 )
               })}
             </tr>
           </thead>
           <tbody>
             {renderSpacer(paddingTop)}
-            {virtualRows.map((virtualRow) => {
-              const row = tableRows.rows[virtualRow.index]
-              return (
-                <tr
-                  data-index={virtualRow.index}
-                  key={virtualRow.key}
-                  ref={virtualizer.measureElement}
-                >
-                  <td className="data-table-index">{virtualRow.index + 1}</td>
-                  {columns.map(({ field, semanticRole }) => {
-                    const value = row[field.name]
-                    return (
-                      <td
-                        className={
-                          semanticRole === 'measure' ? 'is-numeric' : ''
-                        }
-                        key={field.name}
-                      >
-                        {value === null ? (
-                          <span className="data-table-missing">—</span>
-                        ) : (
-                          formatCellValue(value)
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
+            {virtualRows.map((virtualRow) => (
+              <DataTableRow
+                columns={columns}
+                index={virtualRow.index}
+                key={virtualRow.key}
+                ref={virtualizer.measureElement}
+                row={tableRows.rows[virtualRow.index]}
+              />
+            ))}
             {renderSpacer(paddingBottom)}
           </tbody>
         </table>
