@@ -16,6 +16,8 @@ type useDatasetsResults = {
   activeDatasetSummary: DatasetSummary | null
   dataset: Dataset | null
   datasetError: string | null
+  datasetId: string | null
+  datasetName: string
   isLoading: boolean
   profile: DatasetProfile | null
   semanticRoleOverrides: SemanticRoleOverrides
@@ -112,6 +114,8 @@ export function useDatasets(): useDatasetsResults {
     activeDatasetSummary: loadedDataset?.summary ?? null,
     dataset,
     datasetError,
+    datasetId: loadedDataset?.summary.id ?? null,
+    datasetName: loadedDataset?.summary.name ?? 'No dataset',
     isLoading,
     profile: loadedDataset?.profile ?? null,
     semanticRoleOverrides,

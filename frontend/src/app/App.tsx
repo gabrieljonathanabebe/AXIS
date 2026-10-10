@@ -19,6 +19,8 @@ function App() {
     activeDatasetSummary,
     dataset: uploadedDataset,
     datasetError,
+    datasetId,
+    datasetName,
     isLoading,
     profile,
     semanticRoleOverrides,
@@ -59,7 +61,7 @@ function App() {
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
     dataset,
-    datasetId: activeDatasetSummary?.id ?? null,
+    datasetId,
     runActions,
   })
 
@@ -104,6 +106,7 @@ function App() {
             <BuildPanel
               activeDatasetSummary={activeDatasetSummary}
               dataset={dataset}
+              datasetName={datasetName}
               isCollapsed={isBuildPanelCollapsed}
               datasetError={datasetError}
               isLoading={isLoading}
@@ -122,7 +125,7 @@ function App() {
               commands={commands}
               dashboard={dashboard}
               dataset={dataset}
-              datasetId={activeDatasetSummary?.id ?? null}
+              datasetId={datasetId}
               isDraggingField={activeDrag?.kind === 'field'}
               selectedChartId={selectedChartId}
               selection={selection}
@@ -142,8 +145,8 @@ function App() {
           <main className="workspace" hidden={activeWorkspace !== 'data'}>
             <DataPanel
               dataset={dataset}
-              datasetId={activeDatasetSummary?.id ?? null}
-              datasetName={activeDatasetSummary?.name ?? 'No dataset'}
+              datasetId={datasetId}
+              datasetName={datasetName}
               error={datasetError}
               isLoading={isLoading}
               profile={profile}

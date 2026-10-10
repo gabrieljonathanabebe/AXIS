@@ -19,6 +19,7 @@ import type { DatasetSummary } from '../datasets/datasetsApi'
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
   dataset: Dataset
+  datasetName: string
   isCollapsed: boolean
   datasetError: string | null
   isLoading: boolean
@@ -32,8 +33,9 @@ type BuildPanelProps = {
 function BuildPanel({
   activeDatasetSummary,
   dataset,
-  isCollapsed,
   datasetError,
+  datasetName,
+  isCollapsed,
   isLoading,
   onSelectChartType,
   onToggleCollapse,
@@ -74,7 +76,7 @@ function BuildPanel({
                 activeDatasetSummary.id === DEMO_DATASET_ID
               }
               isLoading={isLoading}
-              name={activeDatasetSummary?.name ?? 'No dataset'}
+              name={datasetName}
               rowCount={activeDatasetSummary?.row_count ?? 0}
               onUploadFile={onUploadFile}
             />
