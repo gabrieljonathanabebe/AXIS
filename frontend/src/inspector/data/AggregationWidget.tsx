@@ -9,10 +9,7 @@ import type { Aggregation, GroupAggregation } from '../../charts/types'
 import type { ChartInspectorProps } from '../types'
 
 // ===== PROPS =================================================================
-type AggregationWidgetProps = Pick<
-  ChartInspectorProps,
-  'chart' | 'onSetAggregation'
->
+type AggregationWidgetProps = Pick<ChartInspectorProps, 'actions' | 'chart'>
 
 // ===== GLOBAL CONSTANTS ======================================================
 const groupAggregationOptions = [
@@ -30,10 +27,7 @@ const aggregationOptions = [
 ] satisfies { label: string; value: Aggregation }[]
 
 // ===== COMPONENT =============================================================
-function AggregationWidget({
-  chart,
-  onSetAggregation,
-}: AggregationWidgetProps) {
+function AggregationWidget({ actions, chart }: AggregationWidgetProps) {
   // ===== LOCAL CONSTANTS ======
   const definition = getChartDefinition(chart.type)
   const activeOptions = aggregationOptions.filter((option) => {
@@ -53,7 +47,7 @@ function AggregationWidget({
           options={activeOptions}
           value={chart.spec.data.aggregation}
           onChange={(aggregation) => {
-            onSetAggregation('aggregation', aggregation)
+            actions.setAggregation('aggregation', aggregation)
           }}
         />
       </ControlRow>
@@ -64,7 +58,7 @@ function AggregationWidget({
             options={activeColorOptions}
             value={chart.spec.data.colorAggregation}
             onChange={(aggregation) => {
-              onSetAggregation('colorAggregation', aggregation)
+              actions.setAggregation('colorAggregation', aggregation)
             }}
           />
         </ControlRow>

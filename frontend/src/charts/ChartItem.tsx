@@ -24,7 +24,6 @@ import type {
   ChartEncoding,
   ChartInstance,
   ChartLayout,
-  ChartTitleAppearance,
 } from './types'
 import type { Dataset } from '../datasets/types'
 import type { DataSelection } from '../workspace/types'
@@ -54,7 +53,6 @@ type ChartItemProps = {
     value: ChartAppearanceSpec[TKey],
   ) => void
   onUpdateLayout: (chartId: string, layout: ChartLayout) => void
-  onUpdateTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
 
 type AxisDropZoneProps = {
@@ -179,7 +177,6 @@ function ChartItem({
   onSelectData,
   onUpdateAppearance,
   onUpdateLayout,
-  onUpdateTitle,
 }: ChartItemProps) {
   const itemRef = useRef<HTMLDivElement | null>(null)
   const [axisTitleEdit, setAxisTitleEdit] = useState<AxisTitleEdit | null>(null)
@@ -318,7 +315,9 @@ function ChartItem({
             label="Chart title"
             placeholder={getDefaultChartTitle(chart)}
             value={title.text}
-            onCommit={(text) => onUpdateTitle(chart.id, { ...title, text })}
+            onCommit={(text) =>
+              onUpdateAppearance(chart.id, 'title', { ...title, text })
+            }
           />
         </div>
       ) : null}

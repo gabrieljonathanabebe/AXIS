@@ -7,16 +7,11 @@ import ZoomWidget from './interaction/ZoomWidget'
 
 import type { ChartInspectorProps } from './types'
 
-type InteractionInspectorTabProps = Pick<
-  ChartInspectorProps,
-  'chart' | 'fields' | 'onSetInteraction'
->
-
 function InteractionInspectorTab({
+  actions,
   chart,
   fields,
-  onSetInteraction,
-}: InteractionInspectorTabProps) {
+}: ChartInspectorProps) {
   const { interaction } = chart.spec
   const isRadialChart = isRadialChartType(chart.type)
   const showLegendInteraction = isLegendRelevant(chart, fields)
@@ -26,7 +21,7 @@ function InteractionInspectorTab({
         <LegendInteractionWidget
           value={interaction.legend}
           onChange={(legend) => {
-            onSetInteraction('legend', legend)
+            actions.setInteraction('legend', legend)
           }}
         />
       ) : null}
@@ -34,21 +29,21 @@ function InteractionInspectorTab({
         showTrigger={!isRadialChart}
         value={interaction.tooltip}
         onChange={(tooltip) => {
-          onSetInteraction('tooltip', tooltip)
+          actions.setInteraction('tooltip', tooltip)
         }}
       />
       {!isRadialChart ? (
         <ZoomWidget
           value={interaction.zoom}
           onChange={(zoom) => {
-            onSetInteraction('zoom', zoom)
+            actions.setInteraction('zoom', zoom)
           }}
         />
       ) : null}
       <AnimationWidget
         value={interaction.animation}
         onChange={(animation) => {
-          onSetInteraction('animation', animation)
+          actions.setInteraction('animation', animation)
         }}
       />
     </div>

@@ -1,32 +1,27 @@
 import { SlidersHorizontal } from 'lucide-react'
 
+import Panel from '../shared/ui/Panel'
 import ChartInspector from './ChartInspector'
 import DashboardInspector from './DashboardInspector'
-import Panel from '../shared/ui/Panel'
-import type { ChartInstance } from '../charts/types'
-import type { ChartInspectorProps, DashboardInspectorProps } from './types'
 
-type InspectorPanelProps = Omit<ChartInspectorProps, 'chart'> &
-  DashboardInspectorProps & {
-    chart: ChartInstance | null
-    isCollapsed: boolean
-    onToggleCollapse: () => void
-  }
+import type { ChartInstance } from '../charts/types'
+import type { DataField } from '../datasets/types'
+import type { DashboardInspectorProps } from './types'
+
+type InspectorPanelProps = DashboardInspectorProps & {
+  chart: ChartInstance | null
+  fields: DataField[]
+  isCollapsed: boolean
+  onToggleCollapse: () => void
+}
 
 function InspectorPanel({
+  actions,
   chart,
   dashboard,
   fields,
   isCollapsed,
   onRenameDashboard,
-  onSetAggregation,
-  onSetAppearance,
-  onSetInteraction,
-  onSetChartAppearance,
-  onSetChartType,
-  onSetContainer,
-  onSetDashboardLayout,
-  onSetEncodingField,
   onToggleCollapse,
 }: InspectorPanelProps) {
   return (
@@ -42,22 +37,12 @@ function InspectorPanel({
       onToggleCollapse={onToggleCollapse}
     >
       {chart ? (
-        <ChartInspector
-          chart={chart}
-          fields={fields}
-          onSetAggregation={onSetAggregation}
-          onSetAppearance={onSetAppearance}
-          onSetInteraction={onSetInteraction}
-          onSetChartAppearance={onSetChartAppearance}
-          onSetChartType={onSetChartType}
-          onSetContainer={onSetContainer}
-          onSetEncodingField={onSetEncodingField}
-        />
+        <ChartInspector actions={actions} chart={chart} fields={fields} />
       ) : (
         <DashboardInspector
+          actions={actions}
           dashboard={dashboard}
           onRenameDashboard={onRenameDashboard}
-          onSetDashboardLayout={onSetDashboardLayout}
         />
       )}
     </Panel>

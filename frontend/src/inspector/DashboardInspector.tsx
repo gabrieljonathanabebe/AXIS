@@ -8,9 +8,9 @@ import InspectorWidget from './InspectorWidget'
 import type { DashboardInspectorProps } from './types'
 
 function DashboardInspector({
+  actions,
   dashboard,
   onRenameDashboard,
-  onSetDashboardLayout,
 }: DashboardInspectorProps) {
   return (
     <div className="stack inspector-tab-content">
@@ -33,7 +33,7 @@ function DashboardInspector({
             step={2}
             value={dashboard.layout.gap}
             onValueChange={(gap) => {
-              onSetDashboardLayout('gap', gap)
+              actions.setDashboardLayout('gap', gap)
             }}
           />
         </ControlRow>

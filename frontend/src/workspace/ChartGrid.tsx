@@ -9,7 +9,6 @@ import type {
   ChartAppearanceSpec,
   ChartInstance,
   ChartLayout,
-  ChartTitleAppearance,
 } from '../charts/types'
 import type { Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
@@ -37,7 +36,6 @@ type ChartGridProps = {
     value: ChartAppearanceSpec[TKey],
   ) => void
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
-  onUpdateChartTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
 
 type LayoutPreview = {
@@ -120,7 +118,6 @@ function ChartGrid({
   onSelectData,
   onUpdateChartAppearance,
   onUpdateChartLayout,
-  onUpdateChartTitle,
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
   const { active } = useDndContext()
@@ -206,7 +203,6 @@ function ChartGrid({
             onSelectData={onSelectData}
             onUpdateAppearance={onUpdateChartAppearance}
             onUpdateLayout={onUpdateChartLayout}
-            onUpdateTitle={onUpdateChartTitle}
           />
         )
       })}

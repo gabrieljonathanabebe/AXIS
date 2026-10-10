@@ -13,15 +13,10 @@ import type { ChartInspectorProps } from '../types'
 
 type EncodingsWidgetProps = Pick<
   ChartInspectorProps,
-  'chart' | 'fields' | 'onSetChartType' | 'onSetEncodingField'
+  'actions' | 'chart' | 'fields'
 >
 
-function EncodingsWidget({
-  chart,
-  fields,
-  onSetChartType,
-  onSetEncodingField,
-}: EncodingsWidgetProps) {
+function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
   const definition = getChartDefinition(chart.type)
   const { encoding: activeEncoding } = chart.spec.data
   const chartTypeOptions = chartDefinitionList.map(({ label, type }) => ({
@@ -35,7 +30,7 @@ function EncodingsWidget({
           label="Chart type"
           options={chartTypeOptions}
           value={chart.type}
-          onChange={onSetChartType}
+          onChange={actions.setChartType}
         />
       </ControlRow>
       {definition.encodings.map((encoding) => {
@@ -66,7 +61,7 @@ function EncodingsWidget({
               value={activeEncoding[encoding.key] ?? ''}
               placeholder="Select field"
               onChange={(fieldName) => {
-                onSetEncodingField(encoding.key, fieldName)
+                actions.setEncodingField(encoding.key, fieldName)
               }}
             />
           </ControlRow>

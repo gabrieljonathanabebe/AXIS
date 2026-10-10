@@ -15,7 +15,7 @@ import type { LineStyle, ScatterSymbol } from '../../charts/types'
 
 type MarkSeriesWidgetProps = Pick<
   ChartInspectorProps,
-  'chart' | 'fields' | 'onSetAppearance' | 'onSetChartAppearance'
+  'actions' | 'chart' | 'fields'
 >
 
 const scatterSymbolOptions = [
@@ -38,12 +38,7 @@ const scatterSymbolIcons = {
   diamond: Diamond,
 } satisfies Record<ScatterSymbol, typeof Circle>
 
-function MarkSeriesWidget({
-  chart,
-  fields,
-  onSetAppearance,
-  onSetChartAppearance,
-}: MarkSeriesWidgetProps) {
+function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
   // CONSTANTS
   const { appearance } = chart.spec
   const hasSizeEncoding = Boolean(chart.spec.data.encoding.size)
@@ -62,7 +57,7 @@ function MarkSeriesWidget({
             label="Chart color"
             value={appearance.color}
             onChange={(color) => {
-              onSetAppearance('color', color)
+              actions.setAppearance('color', color)
             }}
           />
         </ControlRow>
@@ -74,7 +69,7 @@ function MarkSeriesWidget({
             palettes={categoricalColorPalettes}
             value={appearance.colorScale.categorical.palette}
             onChange={(palette) => {
-              onSetAppearance('colorScale', {
+              actions.setAppearance('colorScale', {
                 ...appearance.colorScale,
                 categorical: {
                   ...appearance.colorScale.categorical,
@@ -97,7 +92,7 @@ function MarkSeriesWidget({
                 return <SymbolIcon aria-hidden="true" size={13} />
               }}
               onValueChange={(symbol) => {
-                onSetChartAppearance('scatter', 'symbol', symbol)
+                actions.setChartAppearance('scatter', 'symbol', symbol)
               }}
             />
           </ControlRow>
@@ -110,7 +105,7 @@ function MarkSeriesWidget({
                 step={1}
                 value={appearance.scatter.pointSize}
                 onValueChange={(pointSize) => {
-                  onSetChartAppearance('scatter', 'pointSize', pointSize)
+                  actions.setChartAppearance('scatter', 'pointSize', pointSize)
                 }}
               />
             </ControlRow>
@@ -123,7 +118,7 @@ function MarkSeriesWidget({
               step={0.05}
               value={appearance.scatter.opacity}
               onValueChange={(opacity) => {
-                onSetChartAppearance('scatter', 'opacity', opacity)
+                actions.setChartAppearance('scatter', 'opacity', opacity)
               }}
             />
           </ControlRow>
@@ -139,7 +134,7 @@ function MarkSeriesWidget({
               step={0.5}
               value={appearance.line.lineWidth}
               onValueChange={(lineWidth) => {
-                onSetChartAppearance('line', 'lineWidth', lineWidth)
+                actions.setChartAppearance('line', 'lineWidth', lineWidth)
               }}
             />
           </ControlRow>
@@ -155,7 +150,7 @@ function MarkSeriesWidget({
                 />
               )}
               onValueChange={(lineStyle) => {
-                onSetChartAppearance('line', 'lineStyle', lineStyle)
+                actions.setChartAppearance('line', 'lineStyle', lineStyle)
               }}
             />
           </ControlRow>
@@ -164,7 +159,7 @@ function MarkSeriesWidget({
               label="Smooth line"
               checked={appearance.line.smooth}
               onCheckedChange={(smooth) => {
-                onSetChartAppearance('line', 'smooth', smooth)
+                actions.setChartAppearance('line', 'smooth', smooth)
               }}
             />
           </ControlRow>
@@ -173,7 +168,7 @@ function MarkSeriesWidget({
               label="Show data points"
               checked={appearance.line.showSymbol}
               onCheckedChange={(showSymbol) => {
-                onSetChartAppearance('line', 'showSymbol', showSymbol)
+                actions.setChartAppearance('line', 'showSymbol', showSymbol)
               }}
             />
           </ControlRow>
@@ -182,7 +177,7 @@ function MarkSeriesWidget({
               label="Fill area below line"
               checked={appearance.line.areaFill}
               onCheckedChange={(areaFill) => {
-                onSetChartAppearance('line', 'areaFill', areaFill)
+                actions.setChartAppearance('line', 'areaFill', areaFill)
               }}
             />
           </ControlRow>
@@ -193,7 +188,7 @@ function MarkSeriesWidget({
                   label="Area fill color"
                   value={appearance.line.areaColor}
                   onChange={(areaColor) => {
-                    onSetChartAppearance('line', 'areaColor', areaColor)
+                    actions.setChartAppearance('line', 'areaColor', areaColor)
                   }}
                 />
               </ControlRow>
@@ -205,7 +200,11 @@ function MarkSeriesWidget({
                   step={0.05}
                   value={appearance.line.areaOpacity}
                   onValueChange={(areaOpacity) => {
-                    onSetChartAppearance('line', 'areaOpacity', areaOpacity)
+                    actions.setChartAppearance(
+                      'line',
+                      'areaOpacity',
+                      areaOpacity,
+                    )
                   }}
                 />
               </ControlRow>
@@ -223,7 +222,7 @@ function MarkSeriesWidget({
               step={2}
               value={appearance.bar.barWidth}
               onValueChange={(barWidth) => {
-                onSetChartAppearance('bar', 'barWidth', barWidth)
+                actions.setChartAppearance('bar', 'barWidth', barWidth)
               }}
             />
           </ControlRow>
@@ -235,7 +234,7 @@ function MarkSeriesWidget({
               step={1}
               value={appearance.bar.borderRadius}
               onValueChange={(borderRadius) => {
-                onSetChartAppearance('bar', 'borderRadius', borderRadius)
+                actions.setChartAppearance('bar', 'borderRadius', borderRadius)
               }}
             />
           </ControlRow>

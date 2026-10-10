@@ -10,7 +10,6 @@ import type {
   ChartAppearanceSpec,
   ChartInstance,
   ChartLayout,
-  ChartTitleAppearance,
 } from '../charts/types'
 import type { Dataset } from '../datasets/types'
 import type { DashboardSpec, DataSelection } from './types'
@@ -39,7 +38,6 @@ type CanvasPanelProps = {
   ) => void
 
   onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
-  onUpdateChartTitle: (chartId: string, title: ChartTitleAppearance) => void
 }
 
 function CanvasPanel({
@@ -58,7 +56,6 @@ function CanvasPanel({
   onSelectChart,
   onSelectData,
   onUpdateChartLayout,
-  onUpdateChartTitle,
   onUpdateChartAppearance,
 }: CanvasPanelProps) {
   return (
@@ -97,7 +94,6 @@ function CanvasPanel({
           onSelectData={onSelectData}
           onUpdateChartAppearance={onUpdateChartAppearance}
           onUpdateChartLayout={onUpdateChartLayout}
-          onUpdateChartTitle={onUpdateChartTitle}
         />
       ) : (
         <EmptyState

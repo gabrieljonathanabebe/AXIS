@@ -12,22 +12,11 @@ import MarkSeriesWidget from './appearance/MarkSeriesWidget'
 
 import type { ChartInspectorProps } from './types'
 
-type AppearanceInspectorTabProps = Pick<
-  ChartInspectorProps,
-  | 'chart'
-  | 'fields'
-  | 'onSetAppearance'
-  | 'onSetChartAppearance'
-  | 'onSetContainer'
->
-
 function AppearanceInspectorTab({
+  actions,
   chart,
   fields,
-  onSetAppearance,
-  onSetChartAppearance,
-  onSetContainer,
-}: AppearanceInspectorTabProps) {
+}: ChartInspectorProps) {
   // ===== CONSTANTS ===========================================================
   const { appearance } = chart.spec
   const isRadialChart = isRadialChartType(chart.type)
@@ -39,37 +28,35 @@ function AppearanceInspectorTab({
   // ===== RETURN ==============================================================
   return (
     <div className="stack inspector-tab-content">
-      <ContainerWidget value={chart.container} onChange={onSetContainer} />
+      <ContainerWidget
+        value={chart.container}
+        onChange={actions.setContainer}
+      />
       <ChartTitleWidget
         value={appearance.title}
         onChange={(title) => {
-          onSetAppearance('title', title)
+          actions.setAppearance('title', title)
         }}
       />
       <LabelsWidget
         isRadial={isRadialChart}
         value={appearance.labels}
         onChange={(labels) => {
-          onSetAppearance('labels', labels)
+          actions.setAppearance('labels', labels)
         }}
       />
-      <MarkSeriesWidget
-        chart={chart}
-        fields={fields}
-        onSetAppearance={onSetAppearance}
-        onSetChartAppearance={onSetChartAppearance}
-      />
+      <MarkSeriesWidget chart={chart} fields={fields} actions={actions} />
       {showLegend ? (
         <LegendWidget
           value={appearance.legend}
-          onChange={(legend) => onSetAppearance('legend', legend)}
+          onChange={(legend) => actions.setAppearance('legend', legend)}
         />
       ) : null}
       {showColorScale ? (
         <ColorScaleWidget
           value={appearance.colorScale.continuous}
           onChange={(continuous) => {
-            onSetAppearance('colorScale', {
+            actions.setAppearance('colorScale', {
               ...appearance.colorScale,
               continuous,
             })
@@ -81,21 +68,21 @@ function AppearanceInspectorTab({
           <GridWidget
             value={appearance.grid}
             onChange={(grid) => {
-              onSetAppearance('grid', grid)
+              actions.setAppearance('grid', grid)
             }}
           />
           <AxisWidget
             orientation="x"
             value={appearance.xAxis}
             onChange={(xAxis) => {
-              onSetAppearance('xAxis', xAxis)
+              actions.setAppearance('xAxis', xAxis)
             }}
           />
           <AxisWidget
             orientation="y"
             value={appearance.yAxis}
             onChange={(yAxis) => {
-              onSetAppearance('yAxis', yAxis)
+              actions.setAppearance('yAxis', yAxis)
             }}
           />
         </>

@@ -2,6 +2,7 @@ import { DndContext } from '@dnd-kit/core'
 
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
+import { createInspectorActions } from '../inspector/createInspectorActions'
 import DataPanel from '../datasets/DataPanel'
 import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
 import InspectorPanel from '../inspector/InspectorPanel'
@@ -34,6 +35,7 @@ function App() {
     clearSelection,
     dashboard,
     dataset,
+    dispatch,
     duplicateChart,
     handleDragEnd,
     handleDragStart,
@@ -46,20 +48,17 @@ function App() {
     selectChart,
     selection,
     sensors,
-    setAggregation,
-    setChartAppearance,
-    setChartType,
-    setEncodingField,
     setSelection,
     undo,
-    updateAppearance,
     updateChartAppearance,
     updateChartLayout,
-    updateChartTitle,
-    updateContainer,
-    updateDashboardLayout,
-    updateInteraction,
   } = useChartWorkspace({ dataset: uploadedDataset })
+
+  const inspectorActions = createInspectorActions({
+    dataset,
+    dispatch,
+    selectedChartId,
+  })
 
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
@@ -137,22 +136,14 @@ function App() {
               onSelectData={setSelection}
               onUpdateChartAppearance={updateChartAppearance}
               onUpdateChartLayout={updateChartLayout}
-              onUpdateChartTitle={updateChartTitle}
             />
             <InspectorPanel
+              actions={inspectorActions}
               chart={selectedChart}
               dashboard={dashboard}
               fields={dataset.fields}
               isCollapsed={isInspectorCollapsed}
               onRenameDashboard={renameDashboard}
-              onSetAggregation={setAggregation}
-              onSetAppearance={updateAppearance}
-              onSetInteraction={updateInteraction}
-              onSetChartAppearance={setChartAppearance}
-              onSetChartType={setChartType}
-              onSetContainer={updateContainer}
-              onSetDashboardLayout={updateDashboardLayout}
-              onSetEncodingField={setEncodingField}
               onToggleCollapse={toggleInspector}
             />
           </main>

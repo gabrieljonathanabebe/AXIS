@@ -1,44 +1,27 @@
-import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useReducer } from 'react'
 
-import {
-  createChartInstance,
-  createDefaultChartSpec,
-} from '../charts/createChartInstance'
+import { parseCevynActions } from '../actions/parseCevynActions'
+import { translateCevynActions } from '../actions/translateCevynActions'
+import { createChartInstance } from '../charts/createChartInstance'
+import { DEFAULT_CHART_SIZE, findFreeChartLayout } from './chartLayout'
+import { useWorkspaceDnd } from './useWorkspaceDnd'
 import {
   initialWorkspaceHistory,
   workspaceHistoryReducer,
 } from './workspaceHistory'
 
-import { DEFAULT_CHART_SIZE, findFreeChartLayout } from './chartLayout'
-import { parseCevynActions } from '../actions/parseCevynActions'
-import { translateCevynActions } from '../actions/translateCevynActions'
-
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import type { ActiveDrag, DragPayload, DropTarget } from './types'
 import type { CevynActionResult } from '../actions/types'
 import type {
-  ChartAggregationKey,
   ChartAppearanceSpec,
-  ChartContainerAppearance,
-  ChartDataSpec,
-  ChartEncoding,
-  ChartInteractionSpec,
-  ChartMarkKey,
   ChartLayout,
-  ChartTitleAppearance,
   ChartType,
 } from '../charts/types'
 import type { Dataset } from '../datasets/types'
-import type { DashboardLayout } from './types'
 import type { DataSelection, WorkspaceAction } from './types'
 
-// ===== TYPES =================================================================
 type UseChartWorkspaceParams = {
   dataset?: Dataset | null
 }
-
-type CreateChartAction = (chartId: string) => WorkspaceAction
 
 // ===== CONSTANTS =============================================================
 const EMPTY_DATASET: Dataset = { fields: [] }
@@ -56,18 +39,9 @@ export function useChartWorkspace({
   const { charts, dashboard, selectedChartId, selection } = history.present
   const canRedo = history.future.length > 0
   const canUndo = history.past.length > 0
-
   const selectedChart =
     charts.find((chart) => chart.id === selectedChartId) ?? null
-
-  const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 6,
-      },
-    }),
-  )
+  const dnd = useWorkspaceDnd(dispatch, addChart)
 
   function dispatch(action: WorkspaceAction): void {
     dispatchHistory({ type: 'history/apply', action, timestamp: Date.now() })
@@ -101,18 +75,12 @@ export function useChartWorkspace({
     return result
   }
 
-  // Dev only: run Cevyn Actions from the console until AI Commands exist.
+  // Dev only: run Cevyn Actions from the console via `cevyn.run(...)`.
   useEffect(() => {
     if (import.meta.env.DEV) {
       Object.assign(window, { cevyn: { run: runActions } })
     }
   })
-
-  function dispatchForSelectedChart(createAction: CreateChartAction): void {
-    if (selectedChartId) {
-      dispatch(createAction(selectedChartId))
-    }
-  }
 
   function addChart(type: ChartType): void {
     dispatch({
@@ -149,15 +117,6 @@ export function useChartWorkspace({
     dispatch({ type: 'selection/clear' })
   }
 
-  function setChartType(type: ChartType): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/setType',
-      chartId,
-      chartType: type,
-      defaultSpec: createDefaultChartSpec(type, dataset),
-    }))
-  }
-
   function updateChartAppearance<TKey extends keyof ChartAppearanceSpec>(
     chartId: string,
     key: TKey,
@@ -174,129 +133,12 @@ export function useChartWorkspace({
     dispatch({ type: 'chart/updateLayout', chartId, patch: layout })
   }
 
-  function updateChartTitle(
-    chartId: string,
-    title: ChartTitleAppearance,
-  ): void {
-    dispatch({ type: 'chart/updateAppearance', chartId, patch: { title } })
-  }
-
-  function updateAppearance<TKey extends keyof ChartAppearanceSpec>(
-    key: TKey,
-    value: ChartAppearanceSpec[TKey],
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateAppearance',
-      chartId,
-      patch: { [key]: value },
-    }))
-  }
-
-  function updateContainer<TKey extends keyof ChartContainerAppearance>(
-    key: TKey,
-    value: ChartContainerAppearance[TKey],
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateContainer',
-      chartId,
-      patch: { [key]: value },
-    }))
-  }
-
-  function updateInteraction<TKey extends keyof ChartInteractionSpec>(
-    key: TKey,
-    value: ChartInteractionSpec[TKey],
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateInteraction',
-      chartId,
-      patch: { [key]: value },
-    }))
-  }
-
   function renameDashboard(name: string): void {
     dispatch({ type: 'dashboard/update', patch: { name } })
   }
 
-  function updateDashboardLayout<TKey extends keyof DashboardLayout>(
-    key: TKey,
-    value: DashboardLayout[TKey],
-  ): void {
-    dispatch({ type: 'dashboard/updateLayout', patch: { [key]: value } })
-  }
-
-  function setEncodingField(
-    encodingKey: keyof ChartEncoding,
-    fieldName: string,
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateEncoding',
-      chartId,
-      patch: { [encodingKey]: fieldName || undefined },
-    }))
-  }
-
-  function setAggregation<TKey extends ChartAggregationKey>(
-    key: TKey,
-    aggregation: ChartDataSpec[TKey],
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateAggregation',
-      chartId,
-      patch: { [key]: aggregation },
-    }))
-  }
-
-  function setChartAppearance<
-    TMark extends ChartMarkKey,
-    TOptionKey extends keyof ChartAppearanceSpec[TMark],
-  >(
-    mark: TMark,
-    optionKey: TOptionKey,
-    value: ChartAppearanceSpec[TMark][TOptionKey],
-  ): void {
-    dispatchForSelectedChart((chartId) => ({
-      type: 'chart/updateMarkAppearance',
-      chartId,
-      mark,
-      patch: { [optionKey]: value },
-    }))
-  }
-
-  function getDragPayload(
-    event: DragStartEvent | DragEndEvent,
-  ): DragPayload | null {
-    return event.active.data.current?.payload ?? null
-  }
-
-  function getDropTarget(event: DragEndEvent): DropTarget | null {
-    return event.over?.data.current?.target ?? null
-  }
-
-  function handleDragStart(event: DragStartEvent): void {
-    setActiveDrag(getDragPayload(event))
-  }
-
-  function handleDragEnd(event: DragEndEvent): void {
-    const payload = getDragPayload(event)
-    const target = getDropTarget(event)
-    setActiveDrag(null)
-    if (payload?.kind === 'chart-type' && target?.kind === 'canvas') {
-      addChart(payload.chartType)
-      return
-    }
-    if (payload?.kind === 'field' && target?.kind === 'encoding') {
-      dispatch({ type: 'chart/select', chartId: target.chartId })
-      dispatch({
-        type: 'chart/updateEncoding',
-        chartId: target.chartId,
-        patch: { [target.encodingKey]: payload.field.name },
-      })
-    }
-  }
-
   return {
-    activeDrag,
+    ...dnd,
     addChart,
     canRedo,
     canUndo,
@@ -304,9 +146,8 @@ export function useChartWorkspace({
     clearSelection,
     dashboard,
     dataset,
+    dispatch,
     duplicateChart,
-    handleDragEnd,
-    handleDragStart,
     redo,
     removeChart,
     renameDashboard,
@@ -315,19 +156,9 @@ export function useChartWorkspace({
     selectedChartId,
     selectChart,
     selection,
-    sensors,
-    setAggregation,
-    setChartAppearance,
-    setChartType,
-    setEncodingField,
     setSelection,
     undo,
-    updateAppearance,
     updateChartAppearance,
     updateChartLayout,
-    updateChartTitle,
-    updateContainer,
-    updateDashboardLayout,
-    updateInteraction,
   }
 }

@@ -54,20 +54,26 @@ export type SetDashboardLayout = <TKey extends keyof DashboardLayout>(
   value: DashboardLayout[TKey],
 ) => void
 
+/** Everything the inspector changes on the selected chart and dashboard. */
+export type InspectorActions = {
+  setAggregation: SetAggregation
+  setAppearance: SetAppearance
+  setChartAppearance: SetChartAppearance
+  setChartType: SetChartType
+  setContainer: SetContainer
+  setDashboardLayout: SetDashboardLayout
+  setEncodingField: SetEncodingField
+  setInteraction: SetInteraction
+}
+
 export type ChartInspectorProps = {
+  actions: InspectorActions
   chart: ChartInstance
   fields: DataField[]
-  onSetAggregation: SetAggregation
-  onSetAppearance: SetAppearance
-  onSetChartType: SetChartType
-  onSetContainer: SetContainer
-  onSetInteraction: SetInteraction
-  onSetChartAppearance: SetChartAppearance
-  onSetEncodingField: SetEncodingField
 }
 
 export type DashboardInspectorProps = {
+  actions: InspectorActions
   dashboard: DashboardSpec
   onRenameDashboard: (name: string) => void
-  onSetDashboardLayout: SetDashboardLayout
 }

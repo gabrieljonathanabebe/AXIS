@@ -8,48 +8,16 @@ import InteractionInspectorTab from './InteractionInspectorTab'
 import type { InspectorTab } from './InspectorTabs'
 import type { ChartInspectorProps } from './types'
 
-function ChartInspector({
-  chart,
-  fields,
-  onSetAggregation,
-  onSetAppearance,
-  onSetInteraction,
-  onSetChartAppearance,
-  onSetChartType,
-  onSetContainer,
-  onSetEncodingField,
-}: ChartInspectorProps) {
+function ChartInspector(props: ChartInspectorProps) {
   const [activeTab, setActiveTab] = useState<InspectorTab>('data')
   return (
     <InspectorTabs
       value={activeTab}
       onValueChange={setActiveTab}
       panels={{
-        data: (
-          <DataInspectorTab
-            chart={chart}
-            fields={fields}
-            onSetAggregation={onSetAggregation}
-            onSetChartType={onSetChartType}
-            onSetEncodingField={onSetEncodingField}
-          />
-        ),
-        appearance: (
-          <AppearanceInspectorTab
-            chart={chart}
-            fields={fields}
-            onSetAppearance={onSetAppearance}
-            onSetChartAppearance={onSetChartAppearance}
-            onSetContainer={onSetContainer}
-          />
-        ),
-        interaction: (
-          <InteractionInspectorTab
-            chart={chart}
-            fields={fields}
-            onSetInteraction={onSetInteraction}
-          />
-        ),
+        data: <DataInspectorTab {...props} />,
+        appearance: <AppearanceInspectorTab {...props} />,
+        interaction: <InteractionInspectorTab {...props} />,
       }}
     />
   )

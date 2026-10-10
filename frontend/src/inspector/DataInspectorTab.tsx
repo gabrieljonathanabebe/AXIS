@@ -3,31 +3,11 @@ import EncodingsWidget from './data/EncodingsWidget'
 
 import type { ChartInspectorProps } from './types'
 
-type DataInspectorTabProps = Pick<
-  ChartInspectorProps,
-  | 'chart'
-  | 'fields'
-  | 'onSetAggregation'
-  | 'onSetChartType'
-  | 'onSetEncodingField'
->
-
-function DataInspectorTab({
-  chart,
-  fields,
-  onSetAggregation,
-  onSetChartType,
-  onSetEncodingField,
-}: DataInspectorTabProps) {
+function DataInspectorTab({ actions, chart, fields }: ChartInspectorProps) {
   return (
     <div className="stack inspector-tab-content">
-      <EncodingsWidget
-        chart={chart}
-        fields={fields}
-        onSetChartType={onSetChartType}
-        onSetEncodingField={onSetEncodingField}
-      />
-      <AggregationWidget chart={chart} onSetAggregation={onSetAggregation} />
+      <EncodingsWidget actions={actions} chart={chart} fields={fields} />
+      <AggregationWidget actions={actions} chart={chart} />
     </div>
   )
 }
