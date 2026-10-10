@@ -5,6 +5,7 @@ import {
   createAggregatedSeriesOption,
   type AggregatedSeriesData,
 } from './createAggregatedSeriesOption'
+import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { DIMMED_OPACITY } from './selectionStyle'
 
@@ -61,7 +62,9 @@ export function createAggregatedChartContent(
     encoding,
     dataset.fields,
   )
-  const hasBarColor = chartType === 'bar' && colorEncodingMode === 'continuous'
+  const hasBarColor =
+    hasAggregatedColor(chartType, encoding) &&
+    colorEncodingMode === 'continuous'
   const palette = appearance.colorScale.categorical.palette
   const seriesNames = encoding.series
     ? Array.from(new Set(points.map((point) => point.series)))

@@ -1,6 +1,8 @@
 import { color } from 'echarts'
 import type { BrushComponentOption, ECharts } from 'echarts'
 
+import { isPointsChartType } from '../chartDefinitions'
+
 import type { ChartInstance, ChartType } from '../types'
 import type { DataSelection } from '../../workspace/types'
 import type { ChartTheme } from './chartTheme'
@@ -29,7 +31,7 @@ function getBrushCoordRange(
 
 // ===== FUNCTIONS =============================================================
 export function isBrushableChart(chartType: ChartType): boolean {
-  return chartType === 'scatter'
+  return isPointsChartType(chartType)
 }
 
 export function createBrushOption(

@@ -3,6 +3,7 @@ import type { ECElementEvent } from 'echarts'
 import type { ChartInstance } from '../types'
 import type { DataField } from '../../datasets/types'
 import { getColorEncodingMode } from '../getColorEncodingMode'
+import { isPointsChartType } from '../chartDefinitions'
 
 import type { DataSelection, SelectionFilter } from '../../workspace/types'
 
@@ -58,7 +59,7 @@ export function createSelectionFromEvent(
   if (event.componentType !== 'series') {
     return null
   }
-  if (chart.type === 'scatter') {
+  if (isPointsChartType(chart.type)) {
     return createScatterSelection(chart, event, fields)
   }
   const fieldName = chart.spec.data.encoding.x

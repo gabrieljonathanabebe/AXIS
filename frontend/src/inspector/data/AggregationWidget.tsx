@@ -1,6 +1,10 @@
 import { Sigma } from 'lucide-react'
 
-import { getChartDefinition } from '../../charts/chartDefinitions'
+import {
+  getChartDefinition,
+  hasAggregatedColor,
+} from '../../charts/chartDefinitions'
+
 import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
 import InspectorWidget from '../InspectorWidget'
@@ -36,8 +40,10 @@ function AggregationWidget({ actions, chart }: AggregationWidgetProps) {
   const activeColorOptions = groupAggregationOptions.filter((option) => {
     return definition.supportedAggregations.includes(option.value)
   })
-  const showColorAggregation =
-    chart.type === 'bar' && Boolean(chart.spec.data.encoding.color)
+  const showColorAggregation = hasAggregatedColor(
+    chart.type,
+    chart.spec.data.encoding,
+  )
   // ===== RETURN ======
   return (
     <InspectorWidget title="Aggregation" icon={<Sigma size={16} />}>

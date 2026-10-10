@@ -4,7 +4,7 @@ import type { ChartSpec, ChartType } from '../types'
 import type { ChartTheme } from './chartTheme'
 import { createTooltipFormatter } from './createTooltipFormatter'
 import type { DataSelection } from '../../workspace/types'
-import { isRadialChartType } from '../isRadialChartType'
+import { isRadialChartType } from '../chartDefinitions'
 
 // ===== TYPES =================================================================
 type CreateTooltipOptionsParams = {

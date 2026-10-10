@@ -10,11 +10,24 @@ import type { Aggregation, ChartEncoding, ChartType } from './types'
 import type { SemanticRole } from '../datasets/types'
 
 // ===== TYPES =================================================================
-export type EncodingKey = keyof ChartEncoding
+
+export type ChartCoordinates = 'cartesian' | 'radial'
+
+export type ChartDataMode = 'aggregated' | 'points'
+
+export type ChartDefinition = {
+  type: ChartType
+  label: string
+  icon: LucideIcon
+  coordinates: ChartCoordinates
+  dataMode: ChartDataMode
+  encodings: EncodingDefinition[]
+  inspectorSections: InspectorSection[]
+  defaultAggregation: Aggregation
+  supportedAggregations: Aggregation[]
+}
 
 export type CompatibilityLevel = 'recommended' | 'supported' | 'invalid'
-
-export type InspectorSection = 'data' | 'appearance' | 'axes' | 'interaction'
 
 export type EncodingDefinition = {
   key: EncodingKey
@@ -24,15 +37,9 @@ export type EncodingDefinition = {
   supportedRoles: SemanticRole[]
 }
 
-export type ChartDefinition = {
-  type: ChartType
-  label: string
-  icon: LucideIcon
-  encodings: EncodingDefinition[]
-  inspectorSections: InspectorSection[]
-  defaultAggregation: Aggregation
-  supportedAggregations: Aggregation[]
-}
+export type EncodingKey = keyof ChartEncoding
+
+export type InspectorSection = 'data' | 'appearance' | 'axes' | 'interaction'
 
 // ===== CONSTANTS =============================================================
 const radialEncodings = [
@@ -57,6 +64,8 @@ export const chartDefinitions = {
     type: 'scatter',
     label: 'Scatter',
     icon: ChartScatter,
+    coordinates: 'cartesian',
+    dataMode: 'points',
     defaultAggregation: 'none',
     supportedAggregations: ['none'],
     inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
@@ -95,6 +104,8 @@ export const chartDefinitions = {
     type: 'line',
     label: 'Line',
     icon: ChartLine,
+    coordinates: 'cartesian',
+    dataMode: 'aggregated',
     defaultAggregation: 'sum',
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
@@ -125,6 +136,8 @@ export const chartDefinitions = {
   bar: {
     type: 'bar',
     label: 'Bar',
+    coordinates: 'cartesian',
+    dataMode: 'aggregated',
     icon: ChartColumn,
     defaultAggregation: 'sum',
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
@@ -161,6 +174,8 @@ export const chartDefinitions = {
     ],
   },
   pie: {
+    coordinates: 'radial',
+    dataMode: 'aggregated',
     defaultAggregation: 'sum',
     encodings: radialEncodings,
     icon: ChartPie,
@@ -170,6 +185,8 @@ export const chartDefinitions = {
     type: 'pie',
   },
   donut: {
+    coordinates: 'radial',
+    dataMode: 'aggregated',
     defaultAggregation: 'sum',
     encodings: radialEncodings,
     icon: Donut,
@@ -209,4 +226,25 @@ export function getSemanticCompatibility(
   }
 
   return 'invalid'
+}
+
+/** Aggregated charts with a color encoding aggregate the color field too. */
+export function hasAggregatedColor(
+  type: ChartType,
+  encoding: ChartEncoding,
+): boolean {
+  const definition = getChartDefinition(type)
+  return (
+    definition.dataMode === 'aggregated' &&
+    definition.encodings.some(({ key }) => key === 'color') &&
+    Boolean(encoding.color)
+  )
+}
+
+export function isPointsChartType(type: ChartType): boolean {
+  return getChartDefinition(type).dataMode === 'points'
+}
+
+export function isRadialChartType(type: ChartType): boolean {
+  return getChartDefinition(type).coordinates === 'radial'
 }

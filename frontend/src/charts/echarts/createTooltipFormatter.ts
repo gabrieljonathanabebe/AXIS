@@ -2,6 +2,7 @@ import type { ChartSpec, ChartType } from '../types'
 import type { DataSelection } from '../../workspace/types'
 import { formatSelectionLabel } from '../../workspace/dataSelection'
 import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
+import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
 
 type TooltipValue = string | number | null | undefined
 
@@ -64,14 +65,14 @@ export function createTooltipFormatter({
   spec,
 }: CreateTooltipFormatterParams): TooltipFormatter {
   const { encoding } = spec.data
-  const hasBarColor = chartType === 'bar' && Boolean(encoding.color)
+  const hasBarColor = hasAggregatedColor(chartType, encoding)
   return (params) => {
     const entries = asParams(params)
     const first = entries[0]
     if (!first) {
       return ''
     }
-    if (chartType === 'scatter') {
+    if (isPointsChartType(chartType)) {
       const values = Array.isArray(first.value) ? first.value : []
 
       const fields = [

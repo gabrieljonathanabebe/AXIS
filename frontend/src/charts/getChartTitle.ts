@@ -1,3 +1,5 @@
+import { isPointsChartType } from './chartDefinitions'
+
 import type { ChartInstance } from './types'
 
 export function getDefaultChartTitle(chart: ChartInstance): string {
@@ -7,7 +9,7 @@ export function getDefaultChartTitle(chart: ChartInstance): string {
   }
   const xLabel = x ?? 'Category'
   const yLabel = y ?? 'Value'
-  return chart.type === 'scatter'
+  return isPointsChartType(chart.type)
     ? `${yLabel} vs. ${xLabel}`
     : `${yLabel} by ${xLabel}`
 }

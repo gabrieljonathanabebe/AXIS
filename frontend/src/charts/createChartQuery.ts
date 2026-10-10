@@ -1,3 +1,5 @@
+import { hasAggregatedColor, isPointsChartType } from './chartDefinitions'
+
 import type {
   ChartFilter,
   ChartQueryRequest,
@@ -21,14 +23,16 @@ export function createChartQuery(
 ): ChartQueryRequest | null {
   const { aggregation, colorAggregation, encoding } = chart.spec.data
   if (
-    chart.type === 'scatter' ||
+    isPointsChartType(chart.type) ||
     aggregation === 'none' ||
     !encoding.x ||
     !encoding.y
   ) {
     return null
   }
-  const colorField = chart.type === 'bar' ? (encoding.color ?? null) : null
+  const colorField = hasAggregatedColor(chart.type, encoding)
+    ? (encoding.color ?? null)
+    : null
   return {
     aggregation,
     color: colorField,
@@ -45,7 +49,7 @@ export function createPointsQuery(
   chart: ChartInstance,
 ): PointsQueryRequest | null {
   const { color, size, x, y } = chart.spec.data.encoding
-  if (chart.type !== 'scatter' || !x || !y) {
+  if (!isPointsChartType(chart.type) || !x || !y) {
     return null
   }
   const fields = [x, y, size, color].filter((field): field is string => {

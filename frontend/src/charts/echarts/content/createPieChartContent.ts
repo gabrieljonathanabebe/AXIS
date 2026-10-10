@@ -1,6 +1,6 @@
 import type { PieSeriesOption } from 'echarts'
 
-import { isRadialChartType } from '../../isRadialChartType'
+import { isRadialChartType } from '../../chartDefinitions'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'

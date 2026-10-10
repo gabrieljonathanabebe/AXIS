@@ -1,5 +1,4 @@
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
-import { getChartDefinition } from './chartDefinitions'
 import { getDefaultEncoding } from './getDefaultEncoding'
 import type {
   ChartContainerAppearance,
@@ -9,7 +8,11 @@ import type {
   ChartType,
 } from './types'
 import type { Dataset } from '../datasets/types'
-import { isRadialChartType } from './isRadialChartType'
+import {
+  getChartDefinition,
+  isPointsChartType,
+  isRadialChartType,
+} from './chartDefinitions'
 
 type CreateChartInstanceParams = {
   type: ChartType
@@ -31,7 +34,8 @@ export function createDefaultChartSpec(
   dataset: Dataset,
 ): ChartSpec {
   const definition = getChartDefinition(type)
-  const isRadialChart = isRadialChartType(type)
+  // Points and radial charts have no category axis; marks are single items.
+  const hasItemMarks = isPointsChartType(type) || isRadialChartType(type)
   return {
     data: {
       encoding: getDefaultEncoding(type, dataset),
@@ -116,7 +120,7 @@ export function createDefaultChartSpec(
       },
       labels: {
         enabled: false,
-        position: type === 'scatter' || isRadialChart ? 'right' : 'top',
+        position: hasItemMarks ? 'right' : 'top',
         color: '#eef4ff',
         fontSize: 12,
         fontWeight: 'medium',
@@ -151,7 +155,7 @@ export function createDefaultChartSpec(
       },
       tooltip: {
         enabled: true,
-        trigger: type === 'scatter' || isRadialChart ? 'item' : 'axis',
+        trigger: hasItemMarks ? 'item' : 'axis',
         fields: [],
         valueFormat: 'auto',
         delay: 0,

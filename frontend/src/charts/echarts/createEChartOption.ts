@@ -7,7 +7,7 @@ import type { ChartContentContext } from './content/chartContentTypes'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createLegendOption } from './createLegendOption'
 import { createTooltipOption } from './createTooltipOption'
-import { isRadialChartType } from '../isRadialChartType'
+import { isRadialChartType } from '../chartDefinitions'
 
 // ===== TYPES =================================================================
 type EChartOptionContext = ChartContentContext & {

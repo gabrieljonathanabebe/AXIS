@@ -1,6 +1,6 @@
 import AnimationWidget from './interaction/AnimationWidget'
 import { isLegendRelevant } from '../charts/isLegendRelevant'
-import { isRadialChartType } from '../charts/isRadialChartType'
+import { isRadialChartType } from '../charts/chartDefinitions'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import TooltipWidget from './interaction/TooltipWidget'
 import ZoomWidget from './interaction/ZoomWidget'
