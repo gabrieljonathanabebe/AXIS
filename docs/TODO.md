@@ -114,3 +114,12 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   kommen generisch über Props
 - `EmptyState` zusammen mit dem Punkt „Empty-, Loading- und Error-State
   überarbeiten“ angehen
+
+## Cevyn-Action-Schema aus OpenAPI generieren
+
+- das Schema der Cevyn Actions existiert doppelt: Pydantic-Modelle in
+  `backend/app/ai/models.py` und `actionShapes` in
+  `frontend/src/actions/parseCevynActions.ts`; der Abgleich ist manuell
+- Frontend-Types bzw. Strukturprüfung per Codegen aus dem
+  OpenAPI-Schema des Backends erzeugen, damit eine neue Action nur
+  einmal beschrieben wird

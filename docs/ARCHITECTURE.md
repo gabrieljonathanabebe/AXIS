@@ -193,9 +193,10 @@ actions/     Action Layer (Cevyn Actions)
   `<domäne>Api.ts` (z. B. `chartsApi.ts`) und laufen über
   `shared/api/client.ts` (`get`, `post` für FormData, `postJson` für
   JSON-Requests).
-- Unterordner entstehen nur für eine klar abgegrenzte Gruppe innerhalb
-  einer Domäne (z. B. `charts/echarts/content`, `inspector/appearance`,
-  `shared/ui`), nicht für Dateiarten wie `components/` oder `hooks/`.
+- Unterordner gibt es aktuell für abgegrenzte Gruppen innerhalb einer
+  Domäne (z. B. `charts/echarts/content`, `inspector/appearance`,
+  `shared/ui`). Eine feste Regel für Unterordner ist noch nicht
+  beschlossen.
 - Styles liegen aktuell noch zentral unter `src/styles/<bereich>/`.
 
 Laden von Backend-Daten: `shared/useQuery` kapselt das gemeinsame

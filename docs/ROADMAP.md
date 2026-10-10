@@ -937,4 +937,4 @@ waren:
   (siehe `TODO.md`).
 - Das Schema der Cevyn Actions existiert doppelt: als Pydantic-Modelle
   im Backend und als `actionShapes` im Frontend; der Abgleich ist
-  manuell.
+  manuell (siehe `TODO.md`).
