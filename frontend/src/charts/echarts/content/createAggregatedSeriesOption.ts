@@ -16,7 +16,7 @@ type CreateAggregatedSeriesOptionParams = {
   chartType: AggregatedChartType
   color: string | undefined
   data: AggregatedSeriesData
-  hasBarColor: boolean
+  hasColorValue: boolean
   isHighlight: boolean
   name: string | null
   opacity: number | undefined
@@ -31,7 +31,7 @@ export function createAggregatedSeriesOption({
   chartType,
   color,
   data,
-  hasBarColor,
+  hasColorValue,
   isHighlight,
   name,
   opacity,
@@ -74,8 +74,8 @@ export function createAggregatedSeriesOption({
   return {
     barWidth: appearance.bar.barWidth,
     data,
-    dimensions: hasBarColor ? ['category', 'value', 'colorValue'] : undefined,
-    encode: hasBarColor
+    dimensions: hasColorValue ? ['category', 'value', 'colorValue'] : undefined,
+    encode: hasColorValue
       ? {
           x: 'category',
           y: 'value',

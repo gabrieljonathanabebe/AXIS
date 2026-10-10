@@ -16,7 +16,7 @@ function createSeriesData(
   points: ChartQueryPoint[],
   categories: string[],
   name: string | null,
-  hasBarColor: boolean,
+  hasColorValue: boolean,
 ): AggregatedSeriesData {
   const pointsByCategory = new Map(
     points
@@ -28,7 +28,7 @@ function createSeriesData(
     if (!point) {
       return null
     }
-    return hasBarColor
+    return hasColorValue
       ? [category, point.value, point.color_value]
       : point.value
   })
@@ -62,7 +62,7 @@ export function createAggregatedChartContent(
     encoding,
     dataset.fields,
   )
-  const hasBarColor =
+  const hasColorValue =
     hasAggregatedColor(chartType, encoding) &&
     colorEncodingMode === 'continuous'
   const palette = appearance.colorScale.categorical.palette
@@ -85,8 +85,8 @@ export function createAggregatedChartContent(
       appearance,
       chartType,
       color: getSeriesColor(index),
-      data: createSeriesData(points, categories, name, hasBarColor),
-      hasBarColor,
+      data: createSeriesData(points, categories, name, hasColorValue),
+      hasColorValue,
       isHighlight: false,
       name,
       opacity: highlightPoints ? DIMMED_OPACITY : undefined,
@@ -104,9 +104,9 @@ export function createAggregatedChartContent(
             highlightPoints,
             categories,
             name,
-            hasBarColor,
+            hasColorValue,
           ),
-          hasBarColor,
+          hasColorValue,
           isHighlight: true,
           name,
           opacity: undefined,
@@ -115,7 +115,7 @@ export function createAggregatedChartContent(
       })
     : []
 
-  const colorVisualMap = hasBarColor
+  const colorVisualMap = hasColorValue
     ? createContinuousColorVisualMap({
         appearance: appearance.colorScale.continuous,
         dimension: 2,

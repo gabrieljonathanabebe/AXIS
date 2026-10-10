@@ -65,7 +65,7 @@ export function createTooltipFormatter({
   spec,
 }: CreateTooltipFormatterParams): TooltipFormatter {
   const { encoding } = spec.data
-  const hasBarColor = hasAggregatedColor(chartType, encoding)
+  const hasColorValue = hasAggregatedColor(chartType, encoding)
   return (params) => {
     const entries = asParams(params)
     const first = entries[0]
@@ -112,7 +112,7 @@ export function createTooltipFormatter({
 
       const valueRow = createRow(label, value, entry.marker)
 
-      if (!hasBarColor || !encoding.color || !values) {
+      if (!hasColorValue || !encoding.color || !values) {
         return [valueRow]
       }
 
