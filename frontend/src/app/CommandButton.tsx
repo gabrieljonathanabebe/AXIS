@@ -1,14 +1,19 @@
 import IconButton from '../shared/ui/IconButton'
 
-import type { IconButtonSize } from '../shared/ui/IconButton'
+import type { IconButtonSize, IconButtonVariant } from '../shared/ui/IconButton'
 import type { WorkspaceCommand } from './types'
 
 type CommandButtonProps = {
   command: WorkspaceCommand
   size?: IconButtonSize
+  variant?: IconButtonVariant
 }
 
-function CommandButton({ command, size = 'md' }: CommandButtonProps) {
+function CommandButton({
+  command,
+  size = 'md',
+  variant = 'default',
+}: CommandButtonProps) {
   const Icon = command.icon
 
   return (
@@ -16,6 +21,7 @@ function CommandButton({ command, size = 'md' }: CommandButtonProps) {
       disabled={!command.isEnabled}
       label={command.label}
       size={size}
+      variant={variant}
       onClick={command.run}
     >
       <Icon size={size === 'sm' ? 16 : 18} />

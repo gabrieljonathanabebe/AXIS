@@ -77,7 +77,8 @@ export type ChartContainerAppearance = {
 export type ChartContainerBackground =
   { kind: ChartContainerBackgroundPreset } | { kind: 'color'; color: string }
 
-export type ChartContainerBackgroundPreset = 'glass' | 'surface' | 'none'
+export type ChartContainerBackgroundPreset =
+  'surface' | 'glass' | 'blue' | 'violet'
 
 export type ChartDataSpec = {
   encoding: ChartEncoding

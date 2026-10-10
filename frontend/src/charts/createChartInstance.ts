@@ -23,7 +23,7 @@ type CreateChartInstanceParams = {
 
 export function createDefaultChartContainer(): ChartContainerAppearance {
   return {
-    background: { kind: 'glass' },
+    background: { kind: 'surface' },
     padding: 8,
     borderRadius: 24,
   }

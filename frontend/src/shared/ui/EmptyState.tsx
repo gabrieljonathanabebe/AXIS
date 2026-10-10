@@ -1,27 +1,16 @@
-import { useDroppable } from '@dnd-kit/core'
-import type { DropTarget } from '../../workspace/types'
 import { useEffect, useRef } from 'react'
 
 type EmptyStateProps = {
   description?: string
-  dropId?: string
-  dropTarget?: DropTarget
   recoverFocus?: boolean
   title: string
 }
 
 function EmptyState({
   description,
-  dropId,
-  dropTarget,
   recoverFocus = false,
   title,
 }: EmptyStateProps) {
-  const droppable = useDroppable({
-    data: { target: dropTarget },
-    disabled: !dropId,
-    id: dropId ?? 'empty-state',
-  })
   const elementRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -34,13 +23,8 @@ function EmptyState({
 
   return (
     <div
-      className={`empty-state ${droppable.isOver ? 'is-over' : ''}`}
-      ref={(node) => {
-        elementRef.current = node
-        if (dropId) {
-          droppable.setNodeRef(node)
-        }
-      }}
+      className="empty-state"
+      ref={elementRef}
       tabIndex={recoverFocus ? -1 : undefined}
     >
       <strong>{title}</strong>

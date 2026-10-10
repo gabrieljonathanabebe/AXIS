@@ -19,7 +19,7 @@ export const CHART_GRID = {
 }
 
 export const DEFAULT_CHART_SIZE: ChartSize = {
-  height: 16,
+  height: 14,
   width: 12,
 }
 

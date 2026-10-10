@@ -20,17 +20,10 @@ type ContainerWidgetProps = {
 }
 
 const backgroundPresets = [
-  { label: 'Glass', value: 'glass', fill: 'var(--glass-fill-thick)' },
-  {
-    label: 'Surface',
-    value: 'surface',
-    fill: 'var(--color-background-subtle)',
-  },
-  {
-    label: 'None',
-    value: 'none',
-    fill: 'repeating-conic-gradient(var(--color-border-default) 0 25%, transparent 0 50%) 50% / 8px 8px',
-  },
+  { label: 'Surface', value: 'surface', fill: 'var(--glass-fill-regular)' },
+  { label: 'Glass', value: 'glass', fill: 'var(--glass-fill-liquid)' },
+  { label: 'Blue', value: 'blue', fill: 'var(--chart-fill-blue)' },
+  { label: 'Violet', value: 'violet', fill: 'var(--chart-fill-violet)' },
 ] satisfies (ColorPreset & { value: ChartContainerBackgroundPreset })[]
 
 function isBackgroundPreset(

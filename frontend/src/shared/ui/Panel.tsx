@@ -51,6 +51,8 @@ function Panel({
   ) : null
   const titleContent =
     heading ?? (title ? <IconBadge label={title}>{icon}</IconBadge> : null)
+  const hasHeader = Boolean(titleContent || actions || collapseButton)
+
   return (
     <Element
       className={`panel ${isEmbedded ? 'is-embedded' : 'glass glass-thin'} ${isFilled ? 'is-filled' : ''} ${isScrollable ? 'is-scrollable' : ''} ${isCollapsed ? 'is-collapsed' : ''} ${className}`}
@@ -64,7 +66,7 @@ function Panel({
         >
           {icon}
         </IconButton>
-      ) : (
+      ) : hasHeader ? (
         <header className="panel-header">
           {titleContent ? (
             <h2 className="panel-title">{titleContent}</h2>
@@ -76,7 +78,7 @@ function Panel({
             </div>
           ) : null}
         </header>
-      )}
+      ) : null}
       {children ? (
         <div className="panel-content" hidden={isCollapsed}>
           {children}

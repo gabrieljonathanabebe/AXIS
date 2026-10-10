@@ -8,24 +8,13 @@
   padding: var(--space-8);
   color: var(--color-text-primary);
   text-align: center;
-  border: var(--border-width-thin) dashed transparent;
   border-radius: var(--radius-lg);
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
 }
 
 .empty-state span {
   max-width: 420px;
   color: var(--color-text-secondary);
   line-height: 1.5;
-}
-
-.empty-state.is-over {
-  color: var(--color-accent);
-  background: var(--color-surface-active);
-  border-color: var(--color-border-accent);
 }
 
 .empty-state:focus-visible {

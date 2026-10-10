@@ -1,9 +1,15 @@
 import { useDndContext, useDndMonitor, useDroppable } from '@dnd-kit/core'
 import { useState } from 'react'
 import type { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
-import type { CSSProperties, PointerEvent } from 'react'
+import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 
-import { CHART_GRID, moveChartLayout, resizeChartLayout } from './chartLayout'
+import {
+  CHART_GRID,
+  DEFAULT_CHART_SIZE,
+  findFreeChartLayout,
+  moveChartLayout,
+  resizeChartLayout,
+} from './chartLayout'
 
 import type { ChartInstance, ChartLayout } from '../charts/types'
 import type { Dataset } from '../datasets/types'
@@ -23,6 +29,7 @@ import ChartItem from '../charts/ChartItem'
 type ChartGridProps = {
   actions: CanvasActions
   charts: ChartInstance[]
+  children?: ReactNode
   commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
@@ -101,6 +108,7 @@ function getDraggedLayout(
 function ChartGrid({
   actions,
   charts,
+  children,
   commands,
   dataset,
   datasetId,
@@ -167,7 +175,7 @@ function ChartGrid({
 
   return (
     <div
-      className={`chart-grid ${isOver ? 'is-over' : ''}`}
+      className="chart-grid"
       ref={setNodeRef}
       style={{ ...gridStyle, gap }}
       onPointerDown={handlePointerDown}
@@ -192,6 +200,13 @@ function ChartGrid({
           />
         )
       })}
+      {isOver ? (
+        <div
+          className="chart-drop-preview"
+          style={getGridArea(findFreeChartLayout(charts, DEFAULT_CHART_SIZE))}
+        />
+      ) : null}
+      {children}
     </div>
   )
 }

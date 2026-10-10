@@ -21,7 +21,12 @@ import { getChartTitle, getDefaultChartTitle } from './getChartTitle'
 import { moveChartLayout, resizeChartLayout } from '../workspace/chartLayout'
 
 import type { CSSProperties, KeyboardEvent } from 'react'
-import type { ChartEncoding, ChartInstance } from './types'
+import type {
+  ChartContainerBackground,
+  ChartEncoding,
+  ChartInstance,
+} from './types'
+
 import type { Dataset } from '../datasets/types'
 import type { GridDelta } from '../workspace/chartLayout'
 
@@ -95,6 +100,14 @@ const layoutHandleLabels: Record<ChartLayoutMode, string> = {
   se: 'Resize chart from bottom right corner',
   sw: 'Resize chart from bottom left corner',
   w: 'Resize chart from left edge',
+}
+
+const backgroundClassNames: Record<ChartContainerBackground['kind'], string> = {
+  blue: 'glass is-background-blue',
+  color: 'glass is-background-color',
+  glass: 'glass glass-liquid',
+  surface: 'glass',
+  violet: 'glass is-background-violet',
 }
 
 const layoutHandleModes = Object.keys(layoutHandleLabels) as ChartLayoutMode[]
@@ -174,12 +187,7 @@ function ChartItem({
   const { container } = chart
   const { background } = container
   const title = chart.spec.appearance.title
-  const backgroundClassName =
-    background.kind === 'glass'
-      ? 'glass'
-      : background.kind === 'none'
-        ? ''
-        : 'is-background-solid'
+  const backgroundClassName = backgroundClassNames[background.kind]
   const itemStyle: ChartItemStyle = {
     ...style,
     '--chart-canvas-inset': `${container.padding}px`,

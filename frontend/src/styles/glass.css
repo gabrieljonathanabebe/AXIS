@@ -32,6 +32,16 @@
     saturate(var(--glass-saturation));
 }
 
+.glass-liquid {
+  --glass-fill: var(--glass-fill-liquid);
+  --glass-border: var(--glass-border-liquid);
+  --glass-highlight: var(--glass-highlight-liquid);
+
+  backdrop-filter: blur(var(--blur-md)) saturate(var(--glass-saturation));
+  -webkit-backdrop-filter: blur(var(--blur-md))
+    saturate(var(--glass-saturation));
+}
+
 .glass-thick {
   --glass-fill: var(--glass-fill-thick);
 

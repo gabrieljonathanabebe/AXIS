@@ -21,9 +21,16 @@
   overflow: hidden;
 }
 
-.chart-item.is-surface-plain {
-  background: var(--color-background-subtle);
-  border: var(--border-width-thin) solid var(--color-border-default);
+.chart-item.is-background-blue {
+  --glass-fill: var(--chart-fill-blue);
+}
+
+.chart-item.is-background-violet {
+  --glass-fill: var(--chart-fill-violet);
+}
+
+.chart-item.is-background-color {
+  --glass-fill: var(--chart-background);
 }
 
 .chart-item::after {
