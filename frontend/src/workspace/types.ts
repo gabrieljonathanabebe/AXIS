@@ -98,6 +98,19 @@ export type WorkspaceAction =
       selection: DataSelection
     }
 
+/** Everything the canvas changes on charts and the data selection. */
+export type CanvasActions = {
+  clearSelection: () => void
+  selectChart: (chartId: string | null) => void
+  selectData: (selection: DataSelection) => void
+  updateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
+    chartId: string,
+    key: TKey,
+    value: ChartAppearanceSpec[TKey],
+  ) => void
+  updateChartLayout: (chartId: string, layout: ChartLayout) => void
+}
+
 // ===== HISTORY ===============================================================
 export type WorkspaceSnapshot = Pick<
   WorkspaceState,

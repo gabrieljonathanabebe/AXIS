@@ -5,20 +5,23 @@ import type { CSSProperties, PointerEvent } from 'react'
 
 import { CHART_GRID, moveChartLayout, resizeChartLayout } from './chartLayout'
 
-import type {
-  ChartAppearanceSpec,
-  ChartInstance,
-  ChartLayout,
-} from '../charts/types'
+import type { ChartInstance, ChartLayout } from '../charts/types'
 import type { Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
-import type { ChartLayoutMode, DragPayload, DropTarget } from './types'
+import type {
+  CanvasActions,
+  ChartLayoutMode,
+  DataSelection,
+  DragPayload,
+  DropTarget,
+} from './types'
 import type { GridDelta } from './chartLayout'
-import type { DataSelection } from './types'
+
 import ChartItem from '../charts/ChartItem'
 
 // ===== TYPES =================================================================
 type ChartGridProps = {
+  actions: CanvasActions
   charts: ChartInstance[]
   commands: WorkspaceCommands
   dataset: Dataset
@@ -27,15 +30,6 @@ type ChartGridProps = {
   isDraggingField: boolean
   selectedChartId: string | null
   selection: DataSelection | null
-  onClearSelection: () => void
-  onSelectChart: (chartId: string | null) => void
-  onSelectData: (selection: DataSelection) => void
-  onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
-    chartId: string,
-    key: TKey,
-    value: ChartAppearanceSpec[TKey],
-  ) => void
-  onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
 }
 
 type LayoutPreview = {
@@ -105,6 +99,7 @@ function getDraggedLayout(
 
 // ===== COMPONENT =============================================================
 function ChartGrid({
+  actions,
   charts,
   commands,
   dataset,
@@ -113,11 +108,6 @@ function ChartGrid({
   isDraggingField,
   selectedChartId,
   selection,
-  onClearSelection,
-  onSelectChart,
-  onSelectData,
-  onUpdateChartAppearance,
-  onUpdateChartLayout,
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
   const { active } = useDndContext()
@@ -158,7 +148,7 @@ function ChartGrid({
       const preview = getLayoutPreview(event)
       setLayoutPreview(null)
       if (preview) {
-        onUpdateChartLayout(preview.chartId, preview.layout)
+        actions.updateChartLayout(preview.chartId, preview.layout)
       }
     },
     onDragMove(event) {
@@ -171,7 +161,7 @@ function ChartGrid({
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>): void {
     if (event.target === event.currentTarget) {
-      onSelectChart(null)
+      actions.selectChart(null)
     }
   }
 
@@ -189,6 +179,7 @@ function ChartGrid({
             : chart.layout
         return (
           <ChartItem
+            actions={actions}
             chart={chart}
             commands={commands}
             dataset={dataset}
@@ -198,11 +189,6 @@ function ChartGrid({
             key={chart.id}
             selection={selection}
             style={getGridArea(layout)}
-            onClearSelection={onClearSelection}
-            onSelect={onSelectChart}
-            onSelectData={onSelectData}
-            onUpdateAppearance={onUpdateChartAppearance}
-            onUpdateLayout={onUpdateChartLayout}
           />
         )
       })}

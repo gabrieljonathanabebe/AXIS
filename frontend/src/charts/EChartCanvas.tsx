@@ -29,20 +29,19 @@ import type { AxisTitleEdit } from './types'
 import type { ChartInstance } from './types'
 import type { DataRow, Dataset } from '../datasets/types'
 import type { ChartTheme } from './echarts/chartTheme'
-import type { DataSelection } from '../workspace/types'
+import type { CanvasActions, DataSelection } from '../workspace/types'
 
 // Stable empty list, so non-scatter charts do not re-render the option.
 const EMPTY_POINTS: DataRow[] = []
 
 type EChartCanvasProps = {
+  actions: CanvasActions
   chart: ChartInstance
   dataset: Dataset
   datasetId: string | null
   editingAxisTitle: AxisTitleEdit['axis'] | null
-  onClearSelection: () => void
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
-  onSelectData: (selection: DataSelection) => void
   selection: DataSelection | null
 }
 
@@ -97,14 +96,13 @@ function offsetAxisTitleEdit(
 }
 
 function EChartCanvas({
+  actions,
   chart,
   dataset,
   datasetId,
   editingAxisTitle,
-  onClearSelection,
   onEditAxisTitle,
   onHoverAxisTitle,
-  onSelectData,
   selection,
 }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -137,19 +135,19 @@ function EChartCanvas({
       return
     }
     if (isSameSelection(selection, nextSelection)) {
-      onClearSelection()
+      actions.clearSelection()
       return
     }
-    onSelectData(nextSelection)
+    actions.selectData(nextSelection)
   })
 
   const handleBrushEnd = useEffectEvent((event: unknown) => {
     const nextSelection = createSelectionFromBrush(chart, event)
     if (nextSelection) {
-      onSelectData(nextSelection)
+      actions.selectData(nextSelection)
       return
     }
-    onClearSelection()
+    actions.clearSelection()
   })
 
   const handleMouseOver = useEffectEvent((event: ECElementEvent) => {
@@ -167,7 +165,7 @@ function EChartCanvas({
 
   const handleBackgroundClick = useEffectEvent((event: ElementEvent) => {
     if (!event.target) {
-      onClearSelection()
+      actions.clearSelection()
     }
   })
 

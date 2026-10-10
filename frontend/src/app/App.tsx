@@ -31,8 +31,8 @@ function App() {
     addChart,
     canRedo,
     canUndo,
+    canvasActions,
     charts,
-    clearSelection,
     dashboard,
     dataset,
     dispatch,
@@ -45,13 +45,9 @@ function App() {
     runActions,
     selectedChart,
     selectedChartId,
-    selectChart,
     selection,
     sensors,
-    setSelection,
     undo,
-    updateChartAppearance,
-    updateChartLayout,
   } = useChartWorkspace({ dataset: uploadedDataset })
 
   const inspectorActions = createInspectorActions({
@@ -120,6 +116,7 @@ function App() {
               semanticRoleOverrides={semanticRoleOverrides}
             />
             <CanvasPanel
+              actions={canvasActions}
               askCevynState={askCevynState}
               charts={charts}
               commands={commands}
@@ -130,12 +127,7 @@ function App() {
               selectedChartId={selectedChartId}
               selection={selection}
               onAskCevyn={askCevyn}
-              onClearSelection={clearSelection}
               onRenameDashboard={renameDashboard}
-              onSelectChart={selectChart}
-              onSelectData={setSelection}
-              onUpdateChartAppearance={updateChartAppearance}
-              onUpdateChartLayout={updateChartLayout}
             />
             <InspectorPanel
               actions={inspectorActions}

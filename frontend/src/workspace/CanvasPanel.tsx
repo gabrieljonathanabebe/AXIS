@@ -6,16 +6,13 @@ import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 
 import type { AskCevynState } from '../ai/useAskCevyn'
-import type {
-  ChartAppearanceSpec,
-  ChartInstance,
-  ChartLayout,
-} from '../charts/types'
+import type { ChartInstance } from '../charts/types'
 import type { Dataset } from '../datasets/types'
-import type { DashboardSpec, DataSelection } from './types'
+import type { CanvasActions, DashboardSpec, DataSelection } from './types'
 import type { WorkspaceCommands } from '../app/types'
 
 type CanvasPanelProps = {
+  actions: CanvasActions
   askCevynState: AskCevynState
   charts: ChartInstance[]
   commands: WorkspaceCommands
@@ -27,20 +24,11 @@ type CanvasPanelProps = {
   selectedChartId: string | null
   selection: DataSelection | null
   onAskCevyn: (prompt: string) => void
-  onClearSelection: () => void
   onRenameDashboard: (name: string) => void
-  onSelectChart: (chartId: string | null) => void
-  onSelectData: (selection: DataSelection) => void
-  onUpdateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
-    chartId: string,
-    key: TKey,
-    value: ChartAppearanceSpec[TKey],
-  ) => void
-
-  onUpdateChartLayout: (chartId: string, layout: ChartLayout) => void
 }
 
 function CanvasPanel({
+  actions,
   askCevynState,
   charts,
   commands,
@@ -51,12 +39,7 @@ function CanvasPanel({
   selectedChartId,
   selection,
   onAskCevyn,
-  onClearSelection,
   onRenameDashboard,
-  onSelectChart,
-  onSelectData,
-  onUpdateChartLayout,
-  onUpdateChartAppearance,
 }: CanvasPanelProps) {
   return (
     <Panel
@@ -81,6 +64,7 @@ function CanvasPanel({
     >
       {charts.length > 0 ? (
         <ChartGrid
+          actions={actions}
           charts={charts}
           commands={commands}
           dataset={dataset}
@@ -89,11 +73,6 @@ function CanvasPanel({
           isDraggingField={isDraggingField}
           selectedChartId={selectedChartId}
           selection={selection}
-          onClearSelection={onClearSelection}
-          onSelectChart={onSelectChart}
-          onSelectData={onSelectData}
-          onUpdateChartAppearance={onUpdateChartAppearance}
-          onUpdateChartLayout={onUpdateChartLayout}
         />
       ) : (
         <EmptyState

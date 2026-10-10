@@ -17,7 +17,7 @@ import type {
   ChartType,
 } from '../charts/types'
 import type { Dataset } from '../datasets/types'
-import type { DataSelection, WorkspaceAction } from './types'
+import type { CanvasActions, DataSelection, WorkspaceAction } from './types'
 
 type UseChartWorkspaceParams = {
   dataset?: Dataset | null
@@ -109,7 +109,7 @@ export function useChartWorkspace({
     dispatch({ type: 'chart/select', chartId })
   }
 
-  function setSelection(selection: DataSelection): void {
+  function selectData(selection: DataSelection): void {
     dispatch({ type: 'selection/set', selection })
   }
 
@@ -137,13 +137,21 @@ export function useChartWorkspace({
     dispatch({ type: 'dashboard/update', patch: { name } })
   }
 
+  const canvasActions: CanvasActions = {
+    clearSelection,
+    selectChart,
+    selectData,
+    updateChartAppearance,
+    updateChartLayout,
+  }
+
   return {
     ...dnd,
     addChart,
     canRedo,
     canUndo,
+    canvasActions,
     charts,
-    clearSelection,
     dashboard,
     dataset,
     dispatch,
@@ -154,11 +162,7 @@ export function useChartWorkspace({
     runActions,
     selectedChart,
     selectedChartId,
-    selectChart,
     selection,
-    setSelection,
     undo,
-    updateChartAppearance,
-    updateChartLayout,
   }
 }

@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 
 import type { WorkspaceCommands } from '../app/types'
 import type {
+  CanvasActions,
   ChartLayoutMode,
+  DataSelection,
   DragPayload,
   DropTarget,
 } from '../workspace/types'
@@ -19,14 +21,8 @@ import { getChartTitle, getDefaultChartTitle } from './getChartTitle'
 import { moveChartLayout, resizeChartLayout } from '../workspace/chartLayout'
 
 import type { CSSProperties, KeyboardEvent } from 'react'
-import type {
-  ChartAppearanceSpec,
-  ChartEncoding,
-  ChartInstance,
-  ChartLayout,
-} from './types'
+import type { ChartEncoding, ChartInstance } from './types'
 import type { Dataset } from '../datasets/types'
-import type { DataSelection } from '../workspace/types'
 import type { GridDelta } from '../workspace/chartLayout'
 
 type ChartItemStyle = CSSProperties & {
@@ -36,6 +32,7 @@ type ChartItemStyle = CSSProperties & {
 }
 
 type ChartItemProps = {
+  actions: CanvasActions
   chart: ChartInstance
   commands: WorkspaceCommands
   dataset: Dataset
@@ -44,15 +41,6 @@ type ChartItemProps = {
   isSelected: boolean
   selection: DataSelection | null
   style: CSSProperties
-  onClearSelection: () => void
-  onSelect: (chartId: string | null) => void
-  onSelectData: (selection: DataSelection) => void
-  onUpdateAppearance: <TKey extends keyof ChartAppearanceSpec>(
-    chartId: string,
-    key: TKey,
-    value: ChartAppearanceSpec[TKey],
-  ) => void
-  onUpdateLayout: (chartId: string, layout: ChartLayout) => void
 }
 
 type AxisDropZoneProps = {
@@ -164,6 +152,7 @@ function getAxisTitleHoverStyle({
 }
 
 function ChartItem({
+  actions,
   chart,
   commands,
   dataset,
@@ -172,11 +161,6 @@ function ChartItem({
   isSelected,
   selection,
   style,
-  onClearSelection,
-  onSelect,
-  onSelectData,
-  onUpdateAppearance,
-  onUpdateLayout,
 }: ChartItemProps) {
   const itemRef = useRef<HTMLDivElement | null>(null)
   const [axisTitleEdit, setAxisTitleEdit] = useState<AxisTitleEdit | null>(null)
@@ -230,16 +214,16 @@ function ChartItem({
             top: false,
           })
         : moveChartLayout(chart.layout, delta)
-      onUpdateLayout(chart.id, layout)
+      actions.updateChartLayout(chart.id, layout)
       return
     }
 
     if (event.key === 'Escape') {
       if (selection) {
-        onClearSelection()
+        actions.clearSelection()
         return
       }
-      onSelect(null)
+      actions.selectChart(null)
       event.currentTarget.blur()
     }
   }
@@ -251,7 +235,7 @@ function ChartItem({
 
   function commitAxisTitle(axis: AxisTitleEdit['axis'], text: string): void {
     const axisKey = `${axis}Axis` as const
-    onUpdateAppearance(chart.id, axisKey, {
+    actions.updateChartAppearance(chart.id, axisKey, {
       ...chart.spec.appearance[axisKey],
       title: text,
     })
@@ -269,9 +253,9 @@ function ChartItem({
       role="group"
       style={itemStyle}
       tabIndex={0}
-      onFocus={() => onSelect(chart.id)}
+      onFocus={() => actions.selectChart(chart.id)}
       onKeyDown={handleKeyDown}
-      onPointerDown={() => onSelect(chart.id)}
+      onPointerDown={() => actions.selectChart(chart.id)}
     >
       <div className="chart-encoding-overlay">
         <AxisDropZone
@@ -295,14 +279,13 @@ function ChartItem({
       ) : null}
 
       <EChartCanvas
+        actions={actions}
         chart={chart}
         dataset={dataset}
         datasetId={datasetId}
         editingAxisTitle={axisTitleEdit?.axis ?? null}
-        onClearSelection={onClearSelection}
         onEditAxisTitle={handleEditAxisTitle}
         onHoverAxisTitle={setHoveredAxisTitle}
-        onSelectData={onSelectData}
         selection={selection}
       />
       {title.enabled ? (
@@ -316,7 +299,10 @@ function ChartItem({
             placeholder={getDefaultChartTitle(chart)}
             value={title.text}
             onCommit={(text) =>
-              onUpdateAppearance(chart.id, 'title', { ...title, text })
+              actions.updateChartAppearance(chart.id, 'title', {
+                ...title,
+                text,
+              })
             }
           />
         </div>
