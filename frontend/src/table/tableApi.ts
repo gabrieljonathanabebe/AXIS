@@ -1,7 +1,7 @@
 import type { DataRow, ValueCount } from '../datasets/types'
 import type { SortDirection } from './types'
 import type { ChartFilter } from '../charts/chartsApi'
-import { get, post } from '../shared/api/client'
+import { get, postJson } from '../shared/api/client'
 
 // Table only; charts filter with ChartFilter. Dates are ISO strings.
 export type TableFilter =
@@ -35,11 +35,7 @@ export function fetchTableQuery(
   datasetId: string,
   query: TableQueryRequest,
 ): Promise<TableQueryResult> {
-  return post<TableQueryResult>(
-    `/datasets/${datasetId}/table-query`,
-    JSON.stringify(query),
-    { 'Content-Type': 'application/json' },
-  )
+  return postJson<TableQueryResult>(`/datasets/${datasetId}/table-query`, query)
 }
 
 export type FieldValues = {

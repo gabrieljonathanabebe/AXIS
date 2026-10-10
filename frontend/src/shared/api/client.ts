@@ -68,12 +68,21 @@ export function get<TResponse>(
 
 export function post<TResponse>(
   path: string,
-  body?: BodyInit,
-  headers?: HeadersInit,
+  body: BodyInit,
 ): Promise<TResponse> {
   return request<TResponse>(path, {
     body,
-    headers,
+    method: 'POST',
+  })
+}
+
+export function postJson<TResponse>(
+  path: string,
+  body: unknown,
+): Promise<TResponse> {
+  return request<TResponse>(path, {
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
     method: 'POST',
   })
 }

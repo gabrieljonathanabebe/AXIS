@@ -2,7 +2,7 @@ import type { Aggregation, ChartEncoding, ChartType } from '../charts/types'
 import type { DataField } from '../datasets/types'
 import type { SemanticRole } from '../datasets/types'
 
-import { post } from '../shared/api/client'
+import { postJson } from '../shared/api/client'
 
 export type AiChartContext = {
   aggregation: Aggregation
@@ -41,9 +41,8 @@ export function postAiCommand(
   datasetId: string,
   request: AiCommandRequest,
 ): Promise<AiCommandResult> {
-  return post<AiCommandResult>(
+  return postJson<AiCommandResult>(
     `/datasets/${datasetId}/ai-commands`,
-    JSON.stringify(request),
-    { 'Content-Type': 'application/json' },
+    request,
   )
 }

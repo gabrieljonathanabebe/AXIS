@@ -1,6 +1,6 @@
 import type { GroupAggregation } from './types'
 import type { DataRow } from '../datasets/types'
-import { post } from '../shared/api/client'
+import { postJson } from '../shared/api/client'
 
 export type ChartFilter =
   | {
@@ -49,20 +49,15 @@ export function fetchChartQuery(
   datasetId: string,
   query: ChartQueryRequest,
 ): Promise<ChartQueryResult> {
-  return post<ChartQueryResult>(
-    `/datasets/${datasetId}/chart-query`,
-    JSON.stringify(query),
-    { 'Content-Type': 'application/json' },
-  )
+  return postJson<ChartQueryResult>(`/datasets/${datasetId}/chart-query`, query)
 }
 
 export function fetchPointsQuery(
   datasetId: string,
   query: PointsQueryRequest,
 ): Promise<PointsQueryResult> {
-  return post<PointsQueryResult>(
+  return postJson<PointsQueryResult>(
     `/datasets/${datasetId}/points-query`,
-    JSON.stringify(query),
-    { 'Content-Type': 'application/json' },
+    query,
   )
 }
