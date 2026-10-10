@@ -639,6 +639,23 @@ Codebase gesucht zu werden.
   (Code-Struktur, Callback-Bündel, Chart-Fähigkeiten)
 - verifiziert: `tsc`, `npm run lint`, Prettier nach jedem Schritt
 
+### Canvas-Polish (implementiert)
+
+Kleiner Layout-Slice nach dem Refactoring:
+
+- Trennung Dashboard (Seite) und Editor (Werkzeug) auf der Canvas:
+  Titel und Grid bilden `.dashboard-surface`, Undo/Redo schweben als
+  Toolbar (`glass glass-thick`, Ghost-Buttons) darüber
+- eigene Canvas-Fläche (`--canvas-background`) zwischen Build und
+  Inspector, ohne Panel-Header
+- Drop-Vorschau beim Ziehen eines Charttyps statt hervorgehobener
+  Gesamtfläche, auch auf der leeren Canvas
+- Standardhöhe neuer Charts von 16 auf 14 Grid-Zeilen
+- Chart-Background: Bug behoben (Surface und eigene Farben waren
+  transparent); Presets Surface (Default), Glass, Blue, Violet und
+  eigene Farbe; Glass als neue Stufe `glass-liquid`
+- verifiziert: `tsc`, `npm run lint`, Prettier; Optik im Browser
+
 ## 6. Later – Visualization Completion
 
 - Inspector-Polish für Scatter, Line, Bar, Pie und Donut
@@ -932,9 +949,8 @@ waren:
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
-- `AlignmentControl`, `FontWeightControl` und `EmptyState` in
-  `shared/ui` importieren Domain-Types aus `charts` bzw. `workspace`
-  (siehe `TODO.md`).
+- `AlignmentControl` und `FontWeightControl` in `shared/ui`
+  importieren Domain-Types aus `charts` (siehe `TODO.md`).
 - Das Schema der Cevyn Actions existiert doppelt: als Pydantic-Modelle
   im Backend und als `actionShapes` im Frontend; der Abgleich ist
   manuell (siehe `TODO.md`).

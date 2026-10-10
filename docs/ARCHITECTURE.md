@@ -492,7 +492,8 @@ type ChartContainerAppearance = {
 }
 
 type ChartContainerBackground =
-  { kind: 'glass' | 'surface' | 'none' } | { kind: 'color'; color: string }
+  | { kind: 'surface' | 'glass' | 'blue' | 'violet' }
+  | { kind: 'color'; color: string }
 
 type ChartInstance = {
   id: string

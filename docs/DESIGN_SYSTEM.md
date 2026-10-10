@@ -34,11 +34,18 @@ Glasflächen werden zentral über die Klasse `.glass`
 (`src/styles/glass.css`) und die `--glass-*`-Tokens umgesetzt, nicht
 pro Komponente.
 
-| Stufe   | Klassen             | Verwendung                                                                           | Blur        |
-| ------- | ------------------- | ------------------------------------------------------------------------------------ | ----------- |
-| thin    | `glass glass-thin`  | Panels                                                                               | `--blur-md` |
-| regular | `glass`             | Collapsible Sections (Variante `widget`), Charts auf der Canvas (Default-Background) | keiner      |
-| thick   | `glass glass-thick` | Dropdowns, Popover                                                                   | `--blur-lg` |
+| Stufe   | Klassen              | Verwendung                                                                    | Blur        |
+| ------- | -------------------- | ----------------------------------------------------------------------------- | ----------- |
+| thin    | `glass glass-thin`   | Panels                                                                        | `--blur-md` |
+| regular | `glass`              | Collapsible Sections (Variante `widget`), Charts mit Background Surface       | keiner      |
+| liquid  | `glass glass-liquid` | Charts mit Background Glass                                                   | `--blur-md` |
+| thick   | `glass glass-thick`  | Dropdowns, Popover, schwebendes Editor-Chrome (Canvas-Toolbar, Ask Cevyn Bar) | `--blur-lg` |
+
+`glass-liquid` ist die durchscheinende Stufe: kaum Füllung, Blur mit
+Sättigung, Glanzfleck oben links (`--glass-fill-liquid`), hellere
+Lichtkante (`--glass-border-liquid`) und inneres Leuchten
+(`--glass-highlight-liquid`). Sie wirkt nur auf einem Hintergrund mit
+Farbverlauf, deshalb liegt sie auf der Canvas-Fläche.
 
 Bestandteile:
 
@@ -47,7 +54,9 @@ Bestandteile:
 - `--glass-highlight`: feine innere Glanzlinie an der Oberkante;
 - `--glass-shadow`: naher Kontaktschatten plus weiter Tiefenschatten;
 - `--background-ambient`: weiche Farbflächen hinter der App, damit das
-  Glas sichtbar Licht bricht.
+  Glas sichtbar Licht bricht;
+- `--canvas-background`: eigene, leicht aufgehellte Fläche der Canvas
+  mit Blau oben und Violett unten rechts; Grundlage für Glass-Charts.
 
 Regeln:
 
@@ -177,10 +186,9 @@ Alle drei Bereiche nutzen `Panel`.
 - `icon` und `title` sind optional. `heading` ersetzt das Icon-Label
   durch eigenen Inhalt im selben `h2`; `title` bleibt ein String für
   die Labels „Hide …“ und „Show …“.
-- Die Canvas zeigt über `heading` den Dashboard-Namen als
-  `EditableText`, rechts Undo und Redo. Objektbezogene Aktionen gehören
-  nicht in die Toolbar, sondern an das Objekt (siehe
-  Chart-Aktionsleiste).
+- Ohne Titel, `actions` und Collapse-Button rendert `Panel` keinen
+  Header (Canvas, siehe unten). Objektbezogene Aktionen gehören nicht in
+  eine Toolbar, sondern an das Objekt (siehe Chart-Aktionsleiste).
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
 - Inhaltshöhe: `isScrollable` lässt das Panel seinen Inhalt selbst
@@ -206,6 +214,37 @@ Build Panel und Inspector sind unabhängig einklappbar:
 
 Auf schmaleren Viewports können Panels zu Overlays oder Drawern
 werden.
+
+### Canvas: Dashboard und Editor
+
+Die Canvas trennt das Dashboard (das Ergebnis) vom Editor (dem
+Werkzeug). Entscheidungsfrage für jedes neue Element:
+
+> Würde man es in der Präsentation oder im Export sehen?
+
+| Ja → Dashboard                     | Nein → Editor                            |
+| ---------------------------------- | ---------------------------------------- |
+| Dashboard-Titel, später Untertitel | Undo, Redo, später Zoom, Present, Export |
+| Charts, später KPI, Text, Slicer   | Ask Cevyn Bar                            |
+| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Inspector, Build    |
+
+```text
+Canvas Panel (--canvas-background, ohne Panel-Header)
+├── .canvas-toolbar     schwebend oben rechts, glass glass-thick
+├── .dashboard-surface  Titel + ChartGrid, die „Seite“
+└── AskCevynBar         schwebend unten
+```
+
+- Die ganze Fläche zwischen den Haarlinien zu Build und Inspector ist
+  die Seite; sie hat keinen eigenen Rahmen und keinen Radius.
+- `.dashboard-surface` ist der unsichtbare Rahmen um Titel und Grid.
+  Ein späterer Präsentationsmodus zeigt genau dieses Element.
+- Editor-Elemente schweben mit eigenem Z-Index über der Seite. Die
+  Toolbar enthält `CommandButton`s in `sm` und `ghost`; die Pille ist
+  die einzige Fläche.
+- Toolbar und Titelzeile sind beide 36 px hoch und liegen auf einer
+  Linie. Der Titel ist auf 480 px begrenzt, damit sein Eingabefeld
+  nicht unter die Toolbar läuft.
 
 ## 4a. Data Workspace
 
@@ -671,7 +710,7 @@ Eigene Presets:
 `ColorControl` akzeptiert optional `presets`. Ohne die Prop gelten die
 Standardfarben. Ein Preset kann statt einer Hex-Farbe einen
 Token-Wert tragen und über `fill` eine eigene Vorschau-Fläche zeigen,
-z. B. Glass, Surface oder transparent beim Chart-Background. Solche
+z. B. Surface, Glass, Blue und Violet beim Chart-Background. Solche
 Presets verwenden im Active State den Electric-Blue-Ring und eine feine
 Kante, damit dunkle oder transparente Flächen sichtbar bleiben.
 
@@ -719,8 +758,8 @@ eigene Optik.
 
 `CommandButton` rendert einen `WorkspaceCommand` als `IconButton`:
 Label, Icon und Aktion kommen aus dem Command, `disabled` aus
-`isEnabled`. `size` (`sm | md`) wird an `IconButton` durchgereicht;
-das Icon ist 16 bzw. 18 px groß.
+`isEnabled`. `size` (`sm | md`) und `variant` (`default | ghost`)
+werden an `IconButton` durchgereicht; das Icon ist 16 bzw. 18 px groß.
 
 Buttons für Workspace-Befehle werden immer über `CommandButton` aus der
 Registry gebaut, nicht als eigener `IconButton` mit eigenem Handler.
@@ -983,10 +1022,17 @@ Move und Resize rasten während des Drags live im Canvas-Grid ein.
 Der Container eines Charts wird im Inspector unter „Container“
 formatiert:
 
-- Background über `ColorControl` mit den Presets Glass (Default),
-  Surface und None sowie eigener Farbe;
+- Background über `ColorControl` mit den Presets Surface (Default),
+  Glass, Blue und Violet sowie eigener Farbe;
 - Padding über `ScrubbableNumber`;
 - Radius über `Slider`.
+
+Alle Backgrounds bauen auf `.glass` auf (Lichtkante, Schatten) und
+ändern nur die Füllung über `--glass-fill`: Surface ist die
+Standardfüllung, Blue und Violet nutzen `--chart-fill-blue` bzw.
+`--chart-fill-violet` (pro Theme), eigene Farben `--chart-background`.
+Glass nutzt `glass-liquid`. Die Zuordnung Background → Klassen steht
+als `Record` in `ChartItem`.
 
 Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand
 ist mindestens halb so groß wie der Radius, damit Start- und
@@ -1059,5 +1105,10 @@ kommuniziert:
 ### Drop Targets
 
 Drop Targets tragen ihre Bedeutung als typisiertes `DropTarget`.
-`EmptyState` kann über `dropId` und `dropTarget` selbst als Drop Target
-dienen.
+
+Charttypen werden auf das `ChartGrid` gezogen, auch wenn die Canvas
+leer ist; der `EmptyState` liegt dann nur als Hinweis darüber und ist
+kein Drop Target. Während des Drags zeigt ein gestrichelter Platzhalter
+(`chart-drop-preview`) Größe und Position des neuen Charts. Er nutzt
+dieselbe Berechnung wie das Einfügen (`findFreeChartLayout` mit
+`DEFAULT_CHART_SIZE`).

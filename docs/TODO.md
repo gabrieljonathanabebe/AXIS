@@ -32,9 +32,9 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Icon und Beschreibung möglichst aus der Chart Registry
   (`chartDefinitions`) statt pro Komponente
 
-## Weitere Actions im Canvas-Header
+## Weitere Actions in der Canvas-Toolbar
 
-- Canvas-Header zeigt aktuell nur Undo und Redo
+- die schwebende Canvas-Toolbar zeigt aktuell nur Undo und Redo
 - weitere canvasbezogene Actions ergänzen, z. B. Zoom, Save, Export
 - als Commands über die Command-Registry und `CommandButton`
 
@@ -108,12 +108,10 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 ## Generische Props für Shared Controls
 
 - `AlignmentControl` und `FontWeightControl` in `shared/ui` importieren
-  Chart-Types (`HorizontalAlignment`, `LabelFontWeight`), `EmptyState`
-  den Workspace-Type `DropTarget`
-- Ziel: `shared/` kennt keine Domäne; Werte, Optionen bzw. Drop-Daten
-  kommen generisch über Props
-- `EmptyState` zusammen mit dem Punkt „Empty-, Loading- und Error-State
-  überarbeiten“ angehen
+  Chart-Types (`HorizontalAlignment`, `LabelFontWeight`)
+- Ziel: `shared/` kennt keine Domäne; Werte und Optionen kommen
+  generisch über Props
+- `EmptyState` ist bereits entkoppelt (keine Drop-Logik mehr)
 
 ## Cevyn-Action-Schema aus OpenAPI generieren
 
@@ -123,3 +121,11 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Frontend-Types bzw. Strukturprüfung per Codegen aus dem
   OpenAPI-Schema des Backends erzeugen, damit eine neue Action nur
   einmal beschrieben wird
+
+## Auto-Hide der Canvas-Toolbar
+
+- die Toolbar gehört zum Editor, nicht zum Dashboard, und soll die
+  Seite möglichst wenig überdecken
+- ausblenden, wenn nicht gebraucht; einblenden bei Hover am oberen
+  Rand der Canvas, per Shortcut und kurz nach einer Aktion
+- im späteren Präsentationsmodus ganz ausgeblendet
