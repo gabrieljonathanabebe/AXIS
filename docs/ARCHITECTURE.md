@@ -154,6 +154,58 @@ Bei konkretem Bedarf vorgesehen:
 PostgreSQL kann später für Application Metadata und persistente
 Projects verwendet werden.
 
+### Code-Struktur
+
+Frontend und Backend sind nach Domänen gegliedert, nicht nach
+Dateiarten. Eine Domäne bündelt alles, was zu ihr gehört: Komponenten,
+Hooks, Logik, Types und API-Zugriff.
+
+Backend (`backend/app/`):
+
+```text
+main.py      App, CORS, Lifespan, Router-Registrierung
+datasets/    Upload, Store, Schema Detection, Profiling
+queries/     Chart-, Points-, Table- und Field-Values-Query, filters.py
+ai/          Ask Cevyn: Claude-Aufruf und Kontext
+```
+
+- Jede Domäne hat ein eigenes `router.py` (Endpoints) und `models.py`
+  (Pydantic Request/Result); die Logik liegt in eigenen Modulen
+  daneben. `main.py` enthält keine Endpoints.
+- `queries/filters.py` baut Filter-Ausdrücke und prüft Filter; Chart-
+  und Table Query nutzen dieselben Funktionen.
+
+Frontend (`frontend/src/`):
+
+```text
+app/         App Shell, Commands, Workspace-Layout
+shared/      API-Client, UI-Controls, Formatierung, generische Hooks
+datasets/    Dataset laden, Profil, Semantic Roles, Data Panel
+table/       Table View, Table Query, Table Filter
+charts/      Chart Registry, ChartItem, Queries, echarts/ (Adapter)
+workspace/   Workspace State, Reducer, History, Canvas, Drag and Drop
+inspector/   Inspector mit data/, appearance/, interaction/
+ai/          Ask Cevyn
+actions/     Action Layer (Cevyn Actions)
+```
+
+- Jede Domäne hat eine `types.ts`. Backend-Zugriffe liegen in
+  `<domäne>Api.ts` (z. B. `chartsApi.ts`) und laufen über
+  `shared/api/client.ts` (`get`, `post` für FormData, `postJson` für
+  JSON-Requests).
+- Unterordner entstehen nur für eine klar abgegrenzte Gruppe innerhalb
+  einer Domäne (z. B. `charts/echarts/content`, `inspector/appearance`,
+  `shared/ui`), nicht für Dateiarten wie `components/` oder `hooks/`.
+- Styles liegen aktuell noch zentral unter `src/styles/<bereich>/`.
+
+Laden von Backend-Daten: `shared/useQuery` kapselt das gemeinsame
+Ladeverhalten. Der Hook lädt neu, sobald sich der Inhalt des Requests
+ändert, verwirft veraltete Antworten und lädt bei `request === null`
+nichts. Mit `keepPreviousResult` bleibt das letzte Ergebnis bis zur
+neuen Antwort sichtbar. `useChartQuery`, `usePointsQuery` und
+`useFieldValues` sind dünne Wrapper darum; `useTableRows` bleibt
+eigenständig, weil es Seiten nachlädt.
+
 ## 5. Technical Architecture
 
 ```mermaid
@@ -232,7 +284,7 @@ verteilt werden.
 
 ### ECharts Adapter
 
-Renderer-spezifischer Code liegt unter `src/chart/echarts`.
+Renderer-spezifischer Code liegt unter `src/charts/echarts`.
 
 `createEChartOption` ist ein kleiner Orchestrator. Er kombiniert allgemeine
 Optionen wie Tooltip, Legend und Interaktion mit dem
@@ -255,7 +307,7 @@ durchscheint.
 Der Charttitel wird als HTML-Header im `ChartItem` gerendert, nicht als
 ECharts-`title`. Er bleibt Teil der `ChartSpec`
 (`appearance.title`), weil er den Inhalt beschreibt. Der automatische
-Titel („Y by X“) wird in `src/chart/getChartTitle.ts` abgeleitet und
+Titel („Y by X“) wird in `src/charts/getChartTitle.ts` abgeleitet und
 von Header, Inline-Editing und `aria-label` gemeinsam genutzt.
 
 Die Achsentitel rendert weiterhin ECharts. Für das Inline-Editing
@@ -367,7 +419,32 @@ Beispiele:
 - kompatible Semantic Roles;
 - verfügbare Inspector Properties;
 - Defaults;
-- Aggregation Rules.
+- Aggregation Rules;
+- Fähigkeiten (`dataMode`, `coordinates`).
+
+Alle Definitionen liegen in `src/charts/chartDefinitions.ts`,
+typisiert als `Record<ChartType, ChartDefinition>`. Typabhängiges
+Verhalten fragt die Fähigkeiten einer Definition ab, nicht den
+Typnamen:
+
+| Fähigkeit     | Werte                  | steuert                                                                             |
+| ------------- | ---------------------- | ----------------------------------------------------------------------------------- |
+| `dataMode`    | `aggregated`, `points` | Chart- oder Points-Query, Titel „vs.“/„by“, Selection per Klick oder Brush, Tooltip |
+| `coordinates` | `cartesian`, `radial`  | Grid, Zoom, Tooltip-Trigger, Farbmodus, Inspector-Bereiche                          |
+
+Abfragen laufen über Helper in `chartDefinitions.ts`:
+`isPointsChartType`, `isRadialChartType` und `hasAggregatedColor`
+(aggregierter Chart mit `color`-Encoding in der Definition und gesetztem
+Color-Feld; dann wird das Color-Feld mitaggregiert).
+
+Ein neuer Charttyp braucht damit einen Eintrag in `chartDefinitions`,
+einen Content-Builder in der Registry (siehe Abschnitt 6) und ggf.
+eigene Mark-Appearance. Wo sich ein Typ tatsächlich anders darstellt,
+bleibt die Abfrage bewusst am Typnamen: Mark-Controls im
+`MarkSeriesWidget`, die Line-Series in `createAggregatedSeriesOption`,
+der Donut-Radius und die Start-Encodings in `getDefaultEncoding`. Ein
+neuer Wert für `dataMode` oder `coordinates` (z. B. für Histogram oder
+Radar) erweitert die Union und die betroffenen Helper.
 
 ### ChartSpec
 
@@ -455,7 +532,7 @@ type DashboardSpec = {
 ```
 
 `DashboardSpec` beschreibt Einstellungen, die für das ganze Dashboard
-gelten (`src/types/dashboard.ts`). `layout.gap` ist der Abstand in Pixeln
+gelten (`src/workspace/types.ts`). `layout.gap` ist der Abstand in Pixeln
 zwischen den Grid-Zellen. Spaltenzahl und Zeilenhöhe bleiben Konstanten
 (siehe Canvas Layout), damit bestehende `ChartLayout`s ihre Bedeutung
 behalten. Aktuell gibt es genau ein Dashboard, daher tragen
@@ -538,10 +615,37 @@ später für Ask Cevyn und Explore (siehe Abschnitt 16). Externe
 Aufträge laufen nicht direkt als `WorkspaceAction`, sondern über den
 Action Layer.
 
+### Callback-Bündel in der UI
+
+`useChartWorkspace` hält den Workspace State und reicht Änderungen als
+Callbacks an die UI. Zusammengehörige Callbacks, die durch mehrere
+Komponenten-Ebenen gereicht werden, werden zu einem typisierten
+`<Bereich>Actions`-Objekt gebündelt und als ein Prop `actions`
+übergeben. Einzelne Callbacks oder solche, die nur eine Ebene tief
+gehen, bleiben `on…`-Props.
+
+| Objekt             | Type                 | erzeugt in               | Weg                                                        |
+| ------------------ | -------------------- | ------------------------ | ---------------------------------------------------------- |
+| `InspectorActions` | `inspector/types.ts` | `createInspectorActions` | `InspectorPanel` → Tabs → Widgets                          |
+| `CanvasActions`    | `workspace/types.ts` | `useChartWorkspace`      | `CanvasPanel` → `ChartGrid` → `ChartItem` → `EChartCanvas` |
+
+- `InspectorActions` bearbeiten den ausgewählten Chart bzw. das
+  Dashboard und brauchen deshalb keine `chartId`.
+- `CanvasActions` adressieren den Chart explizit (Selection, Layout,
+  Titel und Achsentitel direkt im Chart).
+- Bewusst einzeln bleiben z. B. `onAskCevyn`, `onRenameDashboard` sowie
+  `onEditAxisTitle` und `onHoverAxisTitle` (lokaler State in
+  `ChartItem`).
+- Diese Objekte sind UI-Verdrahtung, keine Domain-Actions. Sie
+  dispatchen intern `WorkspaceAction`s.
+
+Drag and Drop liegt in `useWorkspaceDnd` (Sensoren, aktiver Drag,
+Drop-Auswertung) und wird von `useChartWorkspace` eingebunden.
+
 ### Action Layer
 
 `CevynAction`s sind externe, absichtsbasierte Aufträge, z. B. später von
-AI Commands (`src/types/actions.ts`). Sie adressieren Fields per Name
+AI Commands (`src/actions/types.ts`). Sie adressieren Fields per Name
 und bestehende Charts per `chartId`; neue IDs, Layouts oder Default
 Specs enthalten sie nicht. Der Action Layer
 prüft sie und übersetzt sie in bestehende `WorkspaceAction`s
@@ -612,7 +716,7 @@ Workspace-Logik:
 ```text
 AskCevynBar (Canvas)
 → useAskCevyn          (dataset.fields, Charts, Chart-Regeln)
-→ POST /datasets/{id}/ai-commands   (backend/app/ai_commands.py)
+→ POST /datasets/{id}/ai-commands   (backend/app/ai/ai_commands.py)
 → Kontext aus DatasetProfile + Chart-Regeln   (ai_context.py)
 → Claude, Tool run_cevyn_actions
 → AiCommandResult      ({ actions: unknown[] | null, message })
@@ -895,7 +999,7 @@ Dataset
 Profile Results sind deterministische Datenprodukte. AI kann sie
 priorisieren und erklären, berechnet sie aber nicht selbst.
 
-Implementiert in `backend/app/profiling.py`:
+Implementiert in `backend/app/datasets/profiling.py`:
 
 - Das `DatasetProfile` wird beim Upload einmal berechnet, im
   `StoredDataset` gehalten und über `GET /datasets/{id}/profile`
@@ -921,11 +1025,11 @@ Implementiert in `backend/app/profiling.py`:
 - Die Semantic Role wird nur an einer Stelle erkannt
   (`infer_semantic_role` in `schema_detection.py`). Die Fields der
   `DatasetSummary` tragen dieselbe erkannte `semantic_role`.
-- Im Frontend liegen die Types im DATA-Abschnitt von
-  `src/types/chart.ts`, der Abruf in `fetchDatasetProfile`.
-- `groupFieldProfiles` (`src/data/fieldGroups.ts`) gruppiert Field
+- Im Frontend liegen die Types in `src/datasets/types.ts`, der Abruf
+  in `fetchDatasetProfile`.
+- `groupFieldProfiles` (`src/datasets/fieldGroups.ts`) gruppiert Field
   Profiles nach Semantic Role mit denselben Gruppen wie das Build
-  Panel. `createDistributionBars` (`src/data/fieldDistribution.ts`)
+  Panel. `createDistributionBars` (`src/datasets/fieldDistribution.ts`)
   übersetzt Histogramm bzw. `value_counts` in UI-Balken; Dimensions
   erhalten zusätzlich „Other“ für die übrigen Werte.
 
@@ -944,7 +1048,7 @@ SemanticRoleOverrides                   { fieldName: SemanticRole }
   geladenen Dataset und wird beim Laden eines neuen Datensatzes
   geleert. Ein Override, der der erkannten Role entspricht, wird
   entfernt.
-- `src/data/semanticRoles.ts` enthält die effektive Role
+- `src/datasets/semanticRoles.ts` enthält die effektive Role
   (`getSemanticRole`), die Labels und die je Physical Type erlaubten
   Roles (`getAllowedSemanticRoles`); die erkannte Role ist immer
   erlaubt.
@@ -1020,7 +1124,8 @@ Scatter zeichnet Einzelzeilen statt Gruppen und nutzt deshalb
   Verteilung des ganzen Datensatzes.
 
 Pro Chart ist genau eine Query aktiv: `createChartQuery` liefert für
-Scatter `null`, `createPointsQuery` für alle anderen Charttypen.
+Charts mit `dataMode: 'points'` (Scatter) `null`, `createPointsQuery`
+für alle anderen (siehe Abschnitt 7).
 `ChartContentContext.points` trägt das Sample in den ECharts-Adapter.
 
 ### Table Query und Table Filter
@@ -1182,26 +1287,14 @@ Später möglich:
 
 Chart-Kompatibilität soll primär auf Semantic Types basieren.
 
-Das Profiling liefert Semantic Roles (`measure`, `dimension`,
-`temporal`, `identifier`). Sie sind das Zielkonzept und ersetzen
-`semantic_type` schrittweise. Übergangsweise wird `semantic_type` im
-Backend 1:1 aus der Role abgeleitet:
-
-```text
-measure    → numeric
-dimension  → categorical
-temporal   → temporal
-identifier → identifier
-```
-
-Es gibt dadurch nur eine Erkennungslogik. Bestehende Frontend-Logik
-liest bis zur Umstellung weiter `semantic_type`.
+Umgesetzt sind diese Semantic Types als Semantic Roles (`measure`,
+`dimension`, `temporal`, `identifier`), erkannt allein im Profiling
+(siehe Abschnitt 11). Ein separates `semantic_type` gibt es nicht mehr.
 
 Das Build Panel gruppiert Fields über `groupFields`
-(`src/data/fieldGroups.ts`). Die Zuordnung Field → Gruppe liegt allein
-in `getFieldGroupKey` und leitet sich aktuell aus `semantic_type` ab.
-Mit Slice 5 wird nur diese Zuordnung auf die Semantic Role umgestellt;
-das Build Panel bleibt strukturell unverändert.
+(`src/datasets/fieldGroups.ts`). Die Zuordnung Field → Gruppe liegt
+allein in `getFieldGroupKey` und leitet sich aus der effektiven
+Semantic Role (inklusive Overrides) ab.
 
 ## 15. Compatibility
 

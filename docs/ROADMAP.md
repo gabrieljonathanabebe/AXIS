@@ -328,7 +328,7 @@ DatasetProfile
 
 ### Zwischenschritt – Demo-Dataset im Backend (implementiert)
 
-- Demo-Dataset als `backend/app/data/demo.csv`, beim Start des
+- Demo-Dataset als `backend/app/datasets/data/demo.csv`, beim Start des
   Backends unter der festen ID `demo` registriert
 - Upload und Demo nutzen denselben Weg (`read_csv_frame`,
   `register_dataset`); keine duplizierte Upload-Logik
@@ -610,21 +610,34 @@ Entscheidung: Table Filter gelten nur für die Table View. Sie wirken
 nicht auf Charts und sind kein Workspace- oder Dashboard-Filter (siehe
 Filterebenen unter Dashboard Objects und Interaktion).
 
-### Refactoring und Vereinfachung (geplant, nach Full Data Access)
+### Refactoring und Vereinfachung (implementiert)
 
-Eigener Slice direkt nach Full Data Access und Table Filter, um den
-Überblick über die Codebase zurückzugewinnen:
+Verhaltensneutraler Slice nach Full Data Access, um den Überblick über
+die Codebase zurückzugewinnen. Ziel ist Skalierbarkeit: Neue Features
+sollen an einer erwartbaren Stelle andocken, statt quer durch die
+Codebase gesucht zu werden.
 
-- gesamtes Projekt (Frontend und Backend) auf Duplikate, tote Pfade,
-  zu lange Dateien und unklare Verantwortlichkeiten prüfen
-- verhaltensneutral vereinfachen; keine neuen Features
-- `DataTable` in Komponenten aufteilen (z. B. `DataTableRow`,
-  Header-Zeile, Spacer); Logik in Hooks, `DataTable` nur Orchestrator
-- `useChartQuery`, `useTableRows`, `useFieldValues` und
-  `usePointsQuery` teilen fast dasselbe Ladeverhalten; Kandidat für
-  einen gemeinsamen Query-Hook
-- `createEChartOption` auf ein Params-Objekt umstellen
-- Ergebnis: aktualisierte `ARCHITECTURE.md` als verlässliche Übersicht
+- Backend nach Domänen: `datasets/`, `queries/`, `ai/` mit je
+  `router.py` und `models.py`; `main.py` nur App-Verdrahtung;
+  gemeinsame Filterlogik in `queries/filters.py`; Docstrings für alle
+  Funktionen
+- Frontend unter `frontend/` nach Domänen sortiert, je Domäne eine
+  `types.ts`, API-Module als `<domäne>Api.ts`
+- gemeinsamer Lade-Hook `shared/useQuery` für Chart-, Points- und
+  Field-Values-Query; `useDraftValue` für lokale Entwürfe
+- alle Lint-Fehler behoben; `strict` in den tsconfigs explizit
+- `createEChartOption` mit Context-Objekt; `DataTable` in Row,
+  Kopfzelle und `DataTableFilterForm` aufgeteilt
+- `useChartWorkspace` entflochten: `useWorkspaceDnd`,
+  `createInspectorActions`; Callback-Gruppen als `InspectorActions` und
+  `CanvasActions` statt einzelner Props
+- `useDatasets` liefert `datasetId` und `datasetName`; `postJson` im
+  API-Client
+- Chart-Fähigkeiten (`dataMode`, `coordinates`) in `chartDefinitions`;
+  typabhängiges Verhalten fragt die Definition statt des Typnamens
+- `ARCHITECTURE.md` als verlässliche Übersicht aktualisiert
+  (Code-Struktur, Callback-Bündel, Chart-Fähigkeiten)
+- verifiziert: `tsc`, `npm run lint`, Prettier nach jedem Schritt
 
 ## 6. Later – Visualization Completion
 
@@ -889,15 +902,12 @@ Visual-Analytics-Workflow.
 Bekannte offene Punkte, die nicht Teil eines abgeschlossenen Slices
 waren:
 
-- `tsconfig.app.json` aktiviert keinen `strict`-Mode, Null-Checks werden
-  daher nicht erzwungen.
-- `npm run lint` meldet bestehende Fehler in `Popover`,
-  `ScrubbableNumber`, `Slider` und `useChartQuery`.
+- `npm run lint` meldet eine Warnung (`react-hooks/incompatible-library`)
+  für `useVirtualizer` in `DataTable`; sie kommt aus der Library.
 - Table Filter und Sortierung sind lokaler State der `DataTable` und
   gehen beim Wechsel auf Profile oder beim Neuladen verloren.
 - Cmd/Ctrl + B und Cmd/Ctrl + I schalten auch im Data-Workspace die
   ausgeblendeten Panels von Visualize um.
-- Der Fallback-Name `'No dataset'` steht in `BuildPanel` und `App`.
 - In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte
   breiter als das Fenster werden. Die Ursache ist noch nicht geklärt.
 - Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
@@ -906,7 +916,8 @@ waren:
 - Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
   verloren; sie gehören später in den serialisierbaren Project State.
 - Zahlen werden an mehreren Stellen mit eigenem `Intl.NumberFormat`
-  formatiert statt über `src/data/formatNumber.ts` (siehe `TODO.md`).
+  formatiert statt über `src/shared/format/formatNumber.ts` (siehe
+  `TODO.md`).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
   am Tagesrand um einen Tag abweichen.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder
@@ -915,11 +926,15 @@ waren:
   in allen Charts einheitlich.
 - Die Selection unterstützt nur einen Wert; es gibt keine
   Mehrfachauswahl.
-- `createEChartOption` hat neun positionale Parameter und sollte auf ein
-  Params-Objekt umgestellt werden.
 - Die Grid-Abstände des Plots stehen doppelt in `createEChartOption`
   und als `--chart-grid-*` in `ChartItem.css` (für die Achsen-Drop-Zones).
 - Ein späterer PNG-/SVG-Export über ECharts enthält den HTML-Titel und
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
+- `AlignmentControl`, `FontWeightControl` und `EmptyState` in
+  `shared/ui` importieren Domain-Types aus `charts` bzw. `workspace`
+  (siehe `TODO.md`).
+- Das Schema der Cevyn Actions existiert doppelt: als Pydantic-Modelle
+  im Backend und als `actionShapes` im Frontend; der Abgleich ist
+  manuell.

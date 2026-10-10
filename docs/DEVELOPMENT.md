@@ -348,7 +348,7 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
 - Dateipfade als klickbaren Markdown-Link relativ zum Repo-Root
   angeben, bei bestehenden Dateien mit Zeilenanker auf die
   Einfügestelle, z. B.
-  `[createAxesOptions.ts:97](frontend/src/chart/echarts/createAxesOptions.ts#L97)`
+  `[createAxesOptions.ts:97](frontend/src/charts/echarts/createAxesOptions.ts#L97)`
   oder für einen Bereich `#L97-L99`; neue Dateien ohne Zeilenanker;
 - Zeilennummern vor jedem Block aus dem aktuell gespeicherten Stand
   bestimmen, da sie sich durch vorherige Blöcke verschieben;
@@ -437,11 +437,11 @@ def read_csv_frame(source: BytesIO | Path) -> pl.DataFrame:
 ```
 
 Imports im Backend: Funktionen eigener Module über das Modul importieren
-und mit Punkt aufrufen (`from app import store` →
+und mit Punkt aufrufen (`from app.datasets import store` →
 `store.register_dataset(...)`), damit die Zuständigkeit am Aufruf
 sichtbar ist; keine Kurz-Aliase. Models und Types direkt importieren
-(`from app.models import ChartQueryRequest`). Externe Libraries nach
-ihrer üblichen Konvention (`import polars as pl`).
+(`from app.queries.models import ChartQueryRequest`). Externe Libraries
+nach ihrer üblichen Konvention (`import polars as pl`).
 
 Pydantic-Modelle erhalten einen einzeiligen Klassen-Docstring, gefolgt
 von einer Leerzeile vor den Feldern; `models.py` wird mit

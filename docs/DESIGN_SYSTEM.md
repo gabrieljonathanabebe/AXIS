@@ -365,7 +365,7 @@ FIELDS
 
 ### Fields
 
-- Gruppen über `groupFields` aus `src/data/fieldGroups.ts`:
+- Gruppen über `groupFields` aus `src/datasets/fieldGroups.ts`:
 
 ```text
 #    Measures      measure
@@ -744,7 +744,7 @@ Zahl (`--font-size-lg`, tabular nums), optional ein Anteilsbalken
 Ellipsis und Tooltip).
 
 - `value` ist bereits formatiert; formatiert wird über
-  `src/data/formatNumber.ts`.
+  `src/shared/format/formatNumber.ts`.
 - Der Balken zeigt immer den Anteil des Werts am Ganzen.
 - Padding und Radius entsprechen den Chart-Picker-Kacheln. Andere
   Kacheln (z. B. `FieldProfileWidget`) nutzen die Basisklassen

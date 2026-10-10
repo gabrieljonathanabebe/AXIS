@@ -56,8 +56,8 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 
 ## Zahlenformatierung zentralisieren
 
-- `src/data/formatNumber.ts` wird die Single Source of Truth für das
-  Formatieren von Zahlen in der gesamten App
+- `src/shared/format/formatNumber.ts` wird die Single Source of Truth
+  für das Formatieren von Zahlen in der gesamten App
 - bestehende eigene `Intl.NumberFormat`-Stellen darauf umstellen,
   z. B. Color-Scale-Labels (zeigen teils sehr viele Nachkommastellen),
   Tooltips, Achsenlabels, Selection-Werte
@@ -96,3 +96,21 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   Kategorie-Encodings), statt `dimension` und `temporal` an mehreren
   Stellen aufzuzählen
 - Build-Panel-Gruppen und Icons können flach bleiben
+
+## CSS neben die Komponenten legen
+
+- Styles liegen zentral unter `src/styles/<bereich>/`, die Komponenten
+  dagegen in den Domänen-Ordnern
+- prüfen, ob jede Komponente ihre CSS-Datei im eigenen Ordner bekommt
+  (z. B. `charts/ChartItem.css`); globale Tokens, Themes und Basis
+  bleiben in `src/styles/`
+
+## Generische Props für Shared Controls
+
+- `AlignmentControl` und `FontWeightControl` in `shared/ui` importieren
+  Chart-Types (`HorizontalAlignment`, `LabelFontWeight`), `EmptyState`
+  den Workspace-Type `DropTarget`
+- Ziel: `shared/` kennt keine Domäne; Werte, Optionen bzw. Drop-Daten
+  kommen generisch über Props
+- `EmptyState` zusammen mit dem Punkt „Empty-, Loading- und Error-State
+  überarbeiten“ angehen
