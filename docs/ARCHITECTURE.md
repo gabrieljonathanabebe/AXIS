@@ -291,6 +291,28 @@ Renderer-spezifischer Code liegt unter `src/charts/echarts`.
 Optionen wie Tooltip, Legend und Interaktion mit dem
 charttypspezifischen Content.
 
+### Zahlen- und Datumsformatierung
+
+Zahlen und Datumswerte werden nur über `src/shared/format/`
+formatiert (`formatNumber.ts`, `formatDate.ts`). Eigene
+`Intl.NumberFormat`- oder `Intl.DateTimeFormat`-Instanzen außerhalb
+davon gibt es nicht. Die Locale steht als `LOCALE` in
+`src/shared/config.ts`, der Sammelstelle für app-weite
+Frontend-Einstellungen; Domain-Konstanten bleiben in ihrem Ordner.
+
+`createNumberFormatter(style, currency)` liefert einen Formatter für
+`number`, `percent` oder `currency`. Im Adapter übersetzt
+`createAxisNumberFormatter(axis)` das Achsenformat aus der `ChartSpec`
+in einen solchen Formatter. Achsenlabels, Datenlabels (Bar, Line,
+Scatter) und der Tooltip nutzen diese eine Regel, dadurch zeigen sie
+denselben Wert gleich an:
+
+- Datenlabels folgen dem Format der Y-Achse; Pie zeigt Anteile (`{d}%`);
+- der Tooltip wertet `interaction.tooltip.valueFormat` aus, `auto`
+  folgt der Y-Achse;
+- die Enden der Colorbar nutzen `formatCompactNumber`;
+- Datumsachsen nutzen `formatDate` wie Table und Filter.
+
 ### Container vs. Content
 
 Ein Chart auf der Canvas besteht aus zwei Verantwortungsbereichen:

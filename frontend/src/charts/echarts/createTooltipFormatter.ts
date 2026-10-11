@@ -1,8 +1,15 @@
 import type { ChartSpec, ChartType } from '../types'
+import { createAxisNumberFormatter } from './createAxisLabelFormatter'
 import type { DataSelection } from '../../workspace/types'
 import { formatSelectionLabel } from '../../workspace/dataSelection'
 import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
 import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
+import {
+  createNumberFormatter,
+  formatNumber,
+} from '../../shared/format/formatNumber'
+
+import type { NumberFormatter } from '../../shared/format/formatNumber'
 
 type TooltipValue = string | number | null | undefined
 
@@ -26,20 +33,35 @@ function escapeHtml(value: TooltipValue): string {
     .replaceAll("'", '&#039;')
 }
 
-function formatValue(value: TooltipValue): string {
+function formatValue(
+  value: TooltipValue,
+  formatNumericValue: NumberFormatter,
+): string {
   if (typeof value !== 'number') {
     return escapeHtml(value ?? 'No value')
   }
-  return new Intl.NumberFormat(undefined, {
-    maximumFractionDigits: 2,
-  }).format(value)
+  return formatNumericValue(value)
 }
 
-function createRow(label: string, value: TooltipValue, marker = ''): string {
+// 'auto' follows the value axis, e.g. a currency Y axis shows € in the tooltip.
+function createValueFormatter(spec: ChartSpec): NumberFormatter {
+  const { valueFormat } = spec.interaction.tooltip
+  const { yAxis } = spec.appearance
+  return valueFormat === 'auto'
+    ? createAxisNumberFormatter(yAxis)
+    : createNumberFormatter(valueFormat, yAxis.currency)
+}
+
+function createRow(
+  label: string,
+  value: TooltipValue,
+  marker = '',
+  formatNumericValue: NumberFormatter = formatNumber,
+): string {
   return [
     '<div class="chart-tooltip-row">',
     `<span>${marker}${escapeHtml(label)}</span>`,
-    `<strong>${formatValue(value)}</strong>`,
+    `<strong>${formatValue(value, formatNumericValue)}</strong>`,
     '</div>',
   ].join('')
 }
@@ -68,6 +90,8 @@ export function createTooltipFormatter({
 }: CreateTooltipFormatterParams): TooltipFormatter {
   const { encoding } = spec.data
   const hasColorValue = hasAggregatedColor(chartType, encoding)
+  const formatMeasureValue = createValueFormatter(spec)
+  const formatXValue = createAxisNumberFormatter(spec.appearance.xAxis)
   return (params) => {
     const entries = asParams(params)
     const first = entries[0]
@@ -78,16 +102,16 @@ export function createTooltipFormatter({
       const values = Array.isArray(first.value) ? first.value : []
 
       const fields = [
-        [encoding.x, values[0]],
-        [encoding.y, values[1]],
-        [encoding.size, values[2]],
-        [encoding.color, values[3]],
+        [encoding.x, values[0], formatXValue],
+        [encoding.y, values[1], formatMeasureValue],
+        [encoding.size, values[2], formatNumber],
+        [encoding.color, values[3], formatNumber],
       ] as const
 
       return fields
         .filter(([name]) => Boolean(name))
-        .map(([name, value]) => {
-          return createRow(name ?? '', value)
+        .map(([name, value, formatFieldValue]) => {
+          return createRow(name ?? '', value, '', formatFieldValue)
         })
         .join('')
     }
@@ -112,7 +136,7 @@ export function createTooltipFormatter({
         : selectionLabel
       const label = isHighlight ? highlightLabel : baseLabel
 
-      const valueRow = createRow(label, value, entry.marker)
+      const valueRow = createRow(label, value, entry.marker, formatMeasureValue)
 
       if (!hasColorValue || !encoding.color || !values) {
         return [valueRow]

@@ -688,11 +688,14 @@ Features. Bisher umgesetzt:
   Achsen-Drop-Zonen und ihre `--chart-grid-*`-Werte in `ChartItem.css`
 - mehr Abstand unter dem Panel-Header (`--space-4`) in allen Panels mit
   Header (Build, Inspector, Data View)
+- Zahlenformatierung zentralisiert: Achsen, Datenlabels, Tooltip,
+  Colorbar und Selection formatieren über `src/shared/format/`;
+  einheitliche Locale aus `src/shared/config.ts`; Datumsachsen über
+  `formatDate`; Tooltip wertet `valueFormat` aus
 - verifiziert: `tsc`, `npm run lint`, Prettier und `npm run build`;
   Optik und Verhalten im Browser
 
-Offen in diesem Slice: Zahlenformatierung,
-generische Props für Shared Controls, Canvas-Toolbar,
+Offen in diesem Slice: generische Props für Shared Controls, Canvas-Toolbar,
 Chart-Zusammenfassung, Dashboard-Einstellungen.
 
 ## 6. Later – Visualization Completion
@@ -971,9 +974,6 @@ waren:
   begrenzt werden.
 - Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
   verloren; sie gehören später in den serialisierbaren Project State.
-- Zahlen werden an mehreren Stellen mit eigenem `Intl.NumberFormat`
-  formatiert statt über `src/shared/format/formatNumber.ts` (siehe
-  `TODO.md`).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
   am Tagesrand um einen Tag abweichen.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder

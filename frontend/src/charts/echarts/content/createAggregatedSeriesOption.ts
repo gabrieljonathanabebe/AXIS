@@ -1,6 +1,7 @@
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
 
 import type { ChartAppearanceSpec } from '../../types'
+import { createAxisNumberFormatter } from '../createAxisLabelFormatter'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
 
@@ -43,7 +44,10 @@ export function createAggregatedSeriesOption({
 }: CreateAggregatedSeriesOptionParams): AggregatedSeriesOption {
   // ===== CONSTANTS ===========================================================
   const label = {
-    ...createSeriesLabelOption(appearance.labels),
+    ...createSeriesLabelOption(
+      appearance.labels,
+      createAxisNumberFormatter(appearance.yAxis),
+    ),
     show: opacity === undefined && appearance.labels.enabled,
   }
   const id = isHighlight ? `${HIGHLIGHT_SERIES_PREFIX}${name ?? ''}` : undefined

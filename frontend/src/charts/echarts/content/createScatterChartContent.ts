@@ -4,6 +4,7 @@ import type { ChartAppearanceSpec } from '../../types'
 import type { DataRow, DataValue } from '../../../datasets/types'
 
 import { createAxesOptions } from '../createAxesOptions'
+import { createAxisNumberFormatter } from '../createAxisLabelFormatter'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { DIMMED_OPACITY } from './selectionStyle'
@@ -51,7 +52,10 @@ function createScatterSeries({
       color: itemColor,
       opacity: appearance.scatter.opacity,
     },
-    label: createSeriesLabelOption(appearance.labels),
+    label: createSeriesLabelOption(
+      appearance.labels,
+      createAxisNumberFormatter(appearance.yAxis),
+    ),
     name,
     symbol: appearance.scatter.symbol,
     symbolSize: sizeFieldName ? undefined : appearance.scatter.pointSize,

@@ -1,6 +1,7 @@
 import type { ContinuousVisualMapComponentOption } from 'echarts'
 
 import type { ColorScaleAppearance } from '../types'
+import { formatCompactNumber } from '../../shared/format/formatNumber'
 import { getNumericDomain } from './getNumericDomain'
 
 type CreateContinuousColorVisualMapParams = {
@@ -38,7 +39,9 @@ export function createContinuousColorVisualMap({
     orient: appearance.orientation,
     right: appearance.position === 'right' ? 16 : undefined,
     show: appearance.visible,
-    text: appearance.labels ? [String(max), String(min)] : ['', ''],
+    text: appearance.labels
+      ? [formatCompactNumber(max), formatCompactNumber(min)]
+      : ['', ''],
     top: 'middle',
     type: 'continuous',
   }

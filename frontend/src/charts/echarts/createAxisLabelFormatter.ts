@@ -1,4 +1,10 @@
 import type { AxisAppearance } from '../types'
+import {
+  createNumberFormatter,
+  formatNumber,
+} from '../../shared/format/formatNumber'
+import { formatDate } from '../../shared/format/formatDate'
+import type { NumberFormatter } from '../../shared/format/formatNumber'
 
 type AxisLabelValue = string | number
 
@@ -22,45 +28,29 @@ export function createAxisLabelFormatter(
   }
 
   if (axis.format === 'date') {
-    const formatter = new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-    })
-
     return (value) => {
       const date = new Date(value)
-
-      return Number.isNaN(date.getTime())
-        ? String(value)
-        : formatter.format(date)
+      return Number.isNaN(date.getTime()) ? String(value) : formatDate(value)
     }
   }
 
-  const options: Intl.NumberFormatOptions =
-    axis.format === 'percent'
-      ? {
-          style: 'percent',
-          maximumFractionDigits: 1,
-        }
-      : axis.format === 'currency'
-        ? {
-            style: 'currency',
-            currency: axis.currency,
-            currencyDisplay: 'narrowSymbol',
-            maximumFractionDigits: 2,
-          }
-        : {
-            maximumFractionDigits: 2,
-          }
-
-  const formatter = new Intl.NumberFormat(undefined, options)
+  const formatNumericValue = createAxisNumberFormatter(axis)
 
   return (value) => {
     const numericValue = toFiniteNumber(value)
 
     return numericValue === null
       ? String(value)
-      : formatter.format(numericValue)
+      : formatNumericValue(numericValue)
   }
+}
+
+/** Number formatter for values on this axis, e.g. data labels on Y. */
+export function createAxisNumberFormatter(
+  axis: AxisAppearance,
+): NumberFormatter {
+  if (axis.format === 'auto' || axis.format === 'date') {
+    return formatNumber
+  }
+  return createNumberFormatter(axis.format, axis.currency)
 }

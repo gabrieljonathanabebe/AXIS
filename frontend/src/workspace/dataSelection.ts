@@ -1,10 +1,6 @@
+import { formatNumber } from '../shared/format/formatNumber'
 import type { DataRow } from '../datasets/types'
 import type { DataSelection, SelectionFilter } from './types'
-
-// ===== CONSTANTS =============================================================
-const numberFormat = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 2,
-})
 
 // ===== FUNCTIONS =============================================================
 export function isSameSelection(
@@ -49,8 +45,8 @@ export function formatSelectionLabel(selection: DataSelection): string {
   return selection.filters
     .map((filter) => {
       if (filter.kind === 'range') {
-        const min = numberFormat.format(filter.min)
-        const max = numberFormat.format(filter.max)
+        const min = formatNumber(filter.min)
+        const max = formatNumber(filter.max)
         return `${filter.field} ${min}–${max}`
       }
       return filter.values.join(', ')

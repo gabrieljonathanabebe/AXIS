@@ -31,16 +31,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - weitere canvasbezogene Actions ergänzen, z. B. Zoom, Save, Export
 - als Commands über die Command-Registry und `CommandButton`
 
-## Zahlenformatierung zentralisieren
-
-- `src/shared/format/formatNumber.ts` wird die Single Source of Truth
-  für das Formatieren von Zahlen in der gesamten App
-- bestehende eigene `Intl.NumberFormat`-Stellen darauf umstellen,
-  z. B. Color-Scale-Labels (zeigen teils sehr viele Nachkommastellen),
-  Tooltips, Achsenlabels, Selection-Werte
-- fehlende Varianten (z. B. Währung, feste Nachkommastellen) dort
-  ergänzen statt lokal
-
 ## Ausbau der Table-Control-Bar
 
 - Zeilensuche über alle Spalten
@@ -106,3 +96,12 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - ausblenden, wenn nicht gebraucht; einblenden bei Hover am oberen
   Rand der Canvas, per Shortcut und kurz nach einer Aktion
 - im späteren Präsentationsmodus ganz ausgeblendet
+
+## Control für das Tooltip-Werteformat
+
+- `interaction.tooltip.valueFormat` wird seit der zentralen
+  Zahlenformatierung ausgewertet, hat aber kein Control im Inspector
+- `auto` folgt dem Format der Y-Achse; `number`, `percent` und
+  `currency` überschreiben es (Währung kommt von der Y-Achse)
+- Control im Interaction-Tab ergänzen, als `SelectControl` wie das
+  Achsenformat im `AxisWidget`
