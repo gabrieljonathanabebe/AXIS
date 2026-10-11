@@ -686,10 +686,12 @@ Features. Bisher umgesetzt:
   Slot pro Encoding (`EncodingDropSlots`), Kompatibilität über
   `getSemanticCompatibility`, ungültige Slots deaktiviert; ersetzt die
   Achsen-Drop-Zonen und ihre `--chart-grid-*`-Werte in `ChartItem.css`
+- mehr Abstand unter dem Panel-Header (`--space-4`) in allen Panels mit
+  Header (Build, Inspector, Data View)
 - verifiziert: `tsc`, `npm run lint`, Prettier und `npm run build`;
   Optik und Verhalten im Browser
 
-Offen in diesem Slice: Abstand Panel-Header, Zahlenformatierung,
+Offen in diesem Slice: Zahlenformatierung,
 generische Props für Shared Controls, Canvas-Toolbar,
 Chart-Zusammenfassung, Dashboard-Einstellungen.
 

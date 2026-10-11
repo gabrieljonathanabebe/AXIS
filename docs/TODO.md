@@ -15,13 +15,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - beides im Layout-Widget des `DashboardInspector`, undo-fähig über
   `dashboard/updateLayout` bzw. eine passende Dashboard-Action
 
-## Abstand zwischen Panel-Header und Inhalt
-
-- im Build Panel und im Inspector etwas mehr Luft zwischen Header und
-  erstem Inhalt
-- passende Stelle prüfen (`margin-bottom` von `.panel-header` oder
-  Abstand im Panel-Inhalt), ohne die Canvas ungewollt mitzuändern
-
 ## Chart-Zusammenfassung über den Inspector-Tabs
 
 - im Inspector über dem Segmented Control Data | Appearance |
