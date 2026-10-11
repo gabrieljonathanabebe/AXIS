@@ -117,12 +117,40 @@
   transform: translateY(-50%);
 }
 
+.chart-axis-format-button {
+  position: absolute;
+  z-index: 4;
+}
+
+.chart-axis-format-button.is-x-axis {
+  margin-left: var(--space-1);
+  transform: translateY(-50%);
+}
+
+.chart-axis-format-button.is-y-axis {
+  margin-top: calc(-1 * var(--space-1));
+  transform: translate(-50%, -100%);
+}
+
 .chart-axis-title-hover {
   position: absolute;
   box-sizing: content-box;
   margin-block: calc(-1 * var(--space-1));
   padding-block: var(--space-1);
   pointer-events: none;
+}
+
+.chart-axis-popover {
+  --glass-border: var(--color-border-accent);
+  --glass-fill: var(--glass-fill-elevated);
+  --glass-shadow: var(--shadow-lg), var(--shadow-accent);
+
+  z-index: 100;
+  width: min(280px, calc(100vw - 32px));
+  max-height: min(560px, calc(100dvh - 32px));
+  overflow-y: auto;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
 }
 
 .chart-axis-title-hover.is-y-axis {

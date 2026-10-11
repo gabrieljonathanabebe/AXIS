@@ -695,8 +695,65 @@ Features. Bisher umgesetzt:
 - verifiziert: `tsc`, `npm run lint`, Prettier und `npm run build`;
   Optik und Verhalten im Browser
 
-Offen in diesem Slice: generische Props für Shared Controls, Canvas-Toolbar,
-Chart-Zusammenfassung, Dashboard-Einstellungen.
+Offen in diesem Slice: Canvas-Toolbar, Chart-Zusammenfassung,
+Dashboard-Einstellungen. Generische Props für Shared Controls sind
+zurückgestellt und werden mit der Bearbeitung direkt am Chart
+angegangen (siehe `TODO.md`).
+Der Slice pausiert, als Nächstes kommt die Bearbeitung am Chart.
+
+### Bearbeitung am Chart (in Arbeit)
+
+Chart-Elemente direkt auf der Canvas formatieren, unabhängig vom
+Inspector. Langfristig ersetzt die Bearbeitung am Objekt den Inspector
+(siehe `PRODUCT_VISION.md`). Beschlossen:
+
+- Auswahl wie in Figma: erst den Chart auswählen, dann ein Element
+  darin
+- am ausgewählten Chart zeigt ein Element beim Hover ein Stift-Symbol;
+  ein Klick darauf öffnet ein Popover mit dem passenden Widget
+- ein Klick auf den Text selbst (Chart-Titel, Achsentitel) bleibt
+  Inline-Editing
+- Popover und Inspector ändern denselben Wert über dieselbe Action,
+  damit ist das Popover undo-fähig
+- Marks und Farben über einen Klick auf eine Serie
+- Container und Hintergrund über einen Trigger in der Canvas-Toolbar;
+  die Toolbar ist ein Kandidat für alle Einstellungen ohne eigenes
+  Element im Chart
+- Encodings werden im Build Panel über ein X entfernt (wie in Power
+  BI), nicht durch Wegziehen
+
+Bisher umgesetzt (X- und Y-Achse):
+
+- Stift neben dem gehoverten Achsentitel am ausgewählten Chart; er
+  bleibt, bis der Pointer den Chart verlässt
+- Popover neben dem Chart (`right-start`, weicht nach links aus) mit
+  Header, Schließen-Button und dem `AxisWidget` in der Variante `bare`
+- `Popover`: optionaler `anchor` statt Trigger-Button, optionaler
+  `title` mit Header und X, verschachtelte Popovers über einen
+  `FloatingTree`
+- erhöhte Ebene für das Popover: `--glass-fill-elevated`, tiefer
+  Schatten, Akzent-Rahmen und -Schein
+- Fokus während der Bearbeitung: Serien und die andere Achse auf 25 %
+  Deckkraft, die bearbeitete Achse leuchtet (`syncAxisHighlight`)
+- automatische Titel als Platzhalter: `getDefaultAxisTitle` für
+  Achsen (Popover, Inspector, Inline-Editing), `getDefaultChartTitle`
+  im Inspector
+- verifiziert: `tsc`, `npm run lint`, Prettier; Verhalten im Browser
+
+Als Nächstes:
+
+1. Editor-Host: ein Zustand „Chart + Element“ und eine Stelle, die das
+   passende Widget zeigt; die Popovers ziehen aus `ChartItem` heraus
+2. Titel und Legende nach demselben Muster
+3. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
+4. Serien-Klick für Marks und Farben
+5. Toolbar-Trigger für Container und Hintergrund
+6. X für Encodings im Build Panel
+
+Offen: `ChartItem` (`charts/`) importiert `AxisWidget` aus
+`inspector/`; das löst sich mit dem Editor-Host bzw. wenn die Widgets
+den Inspector verlassen. Die generischen Props für Shared Controls
+werden dabei mit angegangen (siehe `TODO.md`).
 
 ## 6. Later – Visualization Completion
 

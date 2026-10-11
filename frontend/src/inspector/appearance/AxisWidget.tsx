@@ -15,14 +15,17 @@ import type {
   AxisFormat,
   CurrencyCode,
 } from '../../charts/types'
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 
 // ===== TYPES =================================================================
 type AxisOrientation = 'x' | 'y'
 
 type AxisWidgetProps = {
+  defaultTitle?: string
+  onChange: (value: AxisAppearance) => void
   orientation: AxisOrientation
   value: AxisAppearance
-  onChange: (value: AxisAppearance) => void
+  variant?: InspectorWidgetVariant
 }
 
 type TickMode = 'auto' | 'custom'
@@ -51,7 +54,13 @@ const tickModeOptions = [
 const DEFAULT_TICK_COUNT = 5
 
 // ===== FUNCTIONS =============================================================
-function AxisWidget({ orientation, value, onChange }: AxisWidgetProps) {
+function AxisWidget({
+  defaultTitle,
+  orientation,
+  value,
+  onChange,
+  variant,
+}: AxisWidgetProps) {
   const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
   const AxisIcon = orientation === 'x' ? MoveHorizontal : MoveVertical
   const { labels, titleStyle } = value
@@ -66,12 +75,13 @@ function AxisWidget({ orientation, value, onChange }: AxisWidgetProps) {
           onChange({ ...value, enabled })
         },
       }}
+      variant={variant}
     >
       <ControlRow label="Title">
         <TextInput
           label={`${title} title`}
           value={value.title}
-          placeholder="Automatic"
+          placeholder={defaultTitle || 'Automatic'}
           onValueChange={(axisTitle) => {
             onChange({
               ...value,

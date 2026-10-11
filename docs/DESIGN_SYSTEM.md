@@ -56,6 +56,9 @@ Bestandteile:
 - `--glass-border`: Lichtkante als Verlaufsring, oben links hell;
 - `--glass-highlight`: feine innere Glanzlinie an der Oberkante;
 - `--glass-shadow`: naher Kontaktschatten plus weiter Tiefenschatten;
+- `--glass-fill-elevated`: hellere, fast deckende Füllung für Flächen,
+  die über Karten schweben (Popover am Chart); im Dark Theme heller als
+  die Karten, weil höhere Ebenen dort heller wirken;
 - `--background-ambient`: weiche Farbflächen hinter der App, damit das
   Glas sichtbar Licht bricht;
 - `--canvas-background`: eigene, leicht aufgehellte Fläche der Canvas
@@ -465,6 +468,11 @@ Inspector-Widgets sind plain Sections wie im Build Panel:
 Abhängige Unteroptionen (`.inspector-widget-subproperties`) sind um
 `--indent-nested` eingerückt.
 
+`InspectorWidget` hat eine `variant` (`section` als Default, `bare`).
+`bare` rendert nur die Controls ohne Section-Rahmen, z. B. im Popover
+am Chart. Widgets wie `AxisWidget` reichen `variant` durch; Ein- und
+Ausblenden bleibt im Inspector.
+
 Inspector-Widgets sind unabhängig vom Chart-Zustand auf- und
 zuklappbar. Eine optionale Eye-Aktion im Header (`IconButton` mit
 `variant="ghost"` und `size="xs"` im `actions`-Slot) steuert die
@@ -640,7 +648,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
-| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`)                                   |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`, Achsen-Popover am Chart)          |
 | Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                      |
 | Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                      |
 | Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (automatische Achsentitel, Tick Count Auto/Custom) |
@@ -844,7 +852,23 @@ sich nicht überholen.
 - Generisch über Zahlen: Aufrufer übergeben Positionen (z. B. Indizes
   von Datums- oder Werteschritten) und formatieren selbst.
 
-## 9h. EmptyState
+## 9h. Popover
+
+`Popover` ist die eine schwebende Fläche für Dropdowns, Farbwähler und
+Einstellungen am Chart (Floating UI, Portal, Schließen per Escape oder
+Klick daneben):
+
+- `renderTrigger` rendert einen eigenen Auslöser; alternativ
+  positioniert `anchor` das Popover an einem Element oder einem
+  virtuellen Rechteck, ohne eigenen Button (z. B. neben einem Chart).
+- Ein optionaler `title` erzeugt einen Header mit Titel und einem
+  Schließen-Button (`IconButton`, `ghost`, `xs`). Ohne `title` bleibt
+  das Popover kopflos (Dropdowns, Farbwähler).
+- Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
+  ein Kind-Popover (z. B. Farbwähler im Achsen-Popover) schließt das
+  Eltern-Popover nicht.
+
+## 9i. EmptyState
 
 `EmptyState` ist das eine Muster für leere, ladende und fehlerhafte
 Bereiche (Canvas, Chart, Data View, Table). Unterschiede laufen über
@@ -1100,6 +1124,26 @@ Der ausgewählte Chart zeigt oben rechts auf Höhe des Titels eine
 Aktionsleiste mit Duplicate und Delete (`CommandButton`, Größe `sm`).
 Sie liegt über Auswahlring und Layout-Handles und erscheint nur am
 ausgewählten Chart.
+
+### Bearbeitung am Chart
+
+Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
+X- und Y-Achse):
+
+- Hover über den Achsentitel zeigt einen Stift (`IconButton`, `xs`);
+  er bleibt, bis der Pointer den Chart verlässt.
+- Klick auf den Text bleibt Inline-Editing, Klick auf den Stift öffnet
+  das Popover.
+- Das Popover steht neben dem Chart (`right-start`, weicht nach links
+  aus), nie auf ihm, damit Änderungen live sichtbar bleiben. Es trägt
+  einen Header mit Titel und X, `--glass-fill-elevated`,
+  `--shadow-lg` plus `--shadow-accent` und einen Rahmen in
+  `--color-border-accent`.
+- Fokus statt Farbe: Während das Popover offen ist, treten Serien,
+  Labels und die andere Achse auf 25 % Deckkraft zurück. Die
+  bearbeitete Achse (Linie, Tick-Labels, Titel) leuchtet im
+  Akzent-Ton; die Textfarben bleiben erhalten, weil das Popover sie
+  bearbeitet.
 
 ### Tastaturbedienung
 

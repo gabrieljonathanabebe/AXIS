@@ -3,6 +3,10 @@ import ChartTitleWidget from './appearance/ChartTitleWidget'
 import ColorScaleWidget from './appearance/ColorScaleWidget'
 import ContainerWidget from './appearance/ContainerWidget'
 import { getColorEncodingMode } from '../charts/getColorEncodingMode'
+import {
+  getDefaultAxisTitle,
+  getDefaultChartTitle,
+} from '../charts/getChartTitle'
 import GridWidget from './appearance/GridWidget'
 import { isLegendRelevant } from '../charts/isLegendRelevant'
 import { isRadialChartType } from '../charts/chartDefinitions'
@@ -33,6 +37,7 @@ function AppearanceInspectorTab({
         onChange={actions.setContainer}
       />
       <ChartTitleWidget
+        defaultTitle={getDefaultChartTitle(chart, fields)}
         value={appearance.title}
         onChange={(title) => {
           actions.setAppearance('title', title)
@@ -72,6 +77,7 @@ function AppearanceInspectorTab({
             }}
           />
           <AxisWidget
+            defaultTitle={getDefaultAxisTitle(chart, fields, 'x')}
             orientation="x"
             value={appearance.xAxis}
             onChange={(xAxis) => {
@@ -79,6 +85,7 @@ function AppearanceInspectorTab({
             }}
           />
           <AxisWidget
+            defaultTitle={getDefaultAxisTitle(chart, fields, 'y')}
             orientation="y"
             value={appearance.yAxis}
             onChange={(yAxis) => {

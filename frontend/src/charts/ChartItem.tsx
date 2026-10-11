@@ -1,4 +1,4 @@
-import { GripHorizontal } from 'lucide-react'
+import { GripHorizontal, Pencil } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
 import { useEffect, useRef, useState } from 'react'
 
@@ -11,20 +11,36 @@ import type {
 } from '../workspace/types'
 import type { AxisTitleEdit } from './types'
 
+import AxisWidget from '../inspector/appearance/AxisWidget'
 import CommandButton from '../app/CommandButton'
 import EChartCanvas from './EChartCanvas'
 import EditableText from '../shared/ui/EditableText'
 import EncodingDropSlots from './EncodingDropSlots'
+import IconButton from '../shared/ui/IconButton'
 import InlineTextInput from '../shared/ui/InlineTextInput'
 import { getChartDefinition } from './chartDefinitions'
-import { getChartTitle, getDefaultChartTitle } from './getChartTitle'
+import {
+  getChartTitle,
+  getDefaultAxisTitle,
+  getDefaultChartTitle,
+} from './getChartTitle'
 import { moveChartLayout, resizeChartLayout } from '../workspace/chartLayout'
+import Popover from '../shared/ui/Popover'
 
 import type { CSSProperties, KeyboardEvent } from 'react'
-import type { ChartContainerBackground, ChartInstance } from './types'
+import type {
+  AxisAppearance,
+  ChartContainerBackground,
+  ChartInstance,
+} from './types'
 
 import type { DataField, Dataset } from '../datasets/types'
 import type { GridDelta } from '../workspace/chartLayout'
+
+type AxisPopover = {
+  anchor: HTMLElement
+  axis: AxisTitleEdit['axis']
+}
 
 type ChartItemStyle = CSSProperties & {
   '--chart-canvas-inset': string
@@ -109,6 +125,15 @@ function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
   }
 }
 
+function getAxisFormatButtonStyle({
+  axis,
+  rect,
+}: AxisTitleEdit): CSSProperties {
+  return axis === 'x'
+    ? { left: rect.x + rect.width, top: rect.y + rect.height / 2 }
+    : { left: rect.x + rect.width / 2, top: rect.y }
+}
+
 function getAxisTitleHoverStyle({
   height,
   width,
@@ -139,6 +164,8 @@ function ChartItem({
   const [hoveredAxisTitle, setHoveredAxisTitle] =
     useState<AxisTitleEdit | null>(null)
   const definition = getChartDefinition(chart.type)
+  const [formatAxis, setFormatAxis] = useState<AxisTitleEdit | null>(null)
+  const [axisPopover, setAxisPopover] = useState<AxisPopover | null>(null)
   const { container } = chart
   const { background } = container
   const title = chart.spec.appearance.title
@@ -196,6 +223,27 @@ function ChartItem({
     setAxisTitleEdit(edit)
   }
 
+  function handleHoverAxisTitle(edit: AxisTitleEdit | null): void {
+    setHoveredAxisTitle(edit)
+    if (edit) {
+      setFormatAxis(edit)
+    }
+  }
+
+  function openAxisPopover(edit: AxisTitleEdit): void {
+    const item = itemRef.current
+    if (item) {
+      setAxisPopover({ anchor: item, axis: edit.axis })
+    }
+  }
+
+  function updateAxis(
+    axis: AxisTitleEdit['axis'],
+    value: AxisAppearance,
+  ): void {
+    actions.updateChartAppearance(chart.id, `${axis}Axis`, value)
+  }
+
   function commitAxisTitle(axis: AxisTitleEdit['axis'], text: string): void {
     const axisKey = `${axis}Axis` as const
     actions.updateChartAppearance(chart.id, axisKey, {
@@ -217,6 +265,7 @@ function ChartItem({
       onFocus={() => actions.selectChart(chart.id)}
       onKeyDown={handleKeyDown}
       onPointerDown={() => actions.selectChart(chart.id)}
+      onPointerLeave={() => setFormatAxis(null)}
     >
       {draggedField ? (
         <EncodingDropSlots
@@ -239,8 +288,9 @@ function ChartItem({
         dataset={dataset}
         datasetId={datasetId}
         editingAxisTitle={axisTitleEdit?.axis ?? null}
+        highlightedAxis={axisPopover?.axis ?? null}
         onEditAxisTitle={handleEditAxisTitle}
-        onHoverAxisTitle={setHoveredAxisTitle}
+        onHoverAxisTitle={handleHoverAxisTitle}
         selection={selection}
       />
       {title.enabled ? (
@@ -270,11 +320,53 @@ function ChartItem({
           }
           key={axisTitleEdit.axis}
           label={`${axisTitleEdit.axis.toUpperCase()} axis title`}
-          placeholder={chart.spec.data.encoding[axisTitleEdit.axis] ?? ''}
+          placeholder={getDefaultAxisTitle(
+            chart,
+            dataset.fields,
+            axisTitleEdit.axis,
+          )}
           style={getAxisTitleInputStyle(axisTitleEdit)}
           onClose={() => setAxisTitleEdit(null)}
           onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
         />
+      ) : null}
+      {isSelected && formatAxis && !axisTitleEdit ? (
+        <IconButton
+          className={`chart-axis-format-button is-${formatAxis.axis}-axis`}
+          label={`Format ${formatAxis.axis.toUpperCase()} axis`}
+          size="xs"
+          style={getAxisFormatButtonStyle(formatAxis)}
+          onClick={() => openAxisPopover(formatAxis)}
+        >
+          <Pencil size={12} />
+        </IconButton>
+      ) : null}
+      {axisPopover ? (
+        <Popover
+          anchor={axisPopover.anchor}
+          className="chart-axis-popover glass glass-thick"
+          label={`${axisPopover.axis.toUpperCase()} axis format`}
+          open
+          placement="right-start"
+          title={`${axisPopover.axis.toUpperCase()} Axis`}
+          onOpenChange={(open) => {
+            if (!open) {
+              setAxisPopover(null)
+            }
+          }}
+        >
+          <AxisWidget
+            defaultTitle={getDefaultAxisTitle(
+              chart,
+              dataset.fields,
+              axisPopover.axis,
+            )}
+            orientation={axisPopover.axis}
+            value={chart.spec.appearance[`${axisPopover.axis}Axis`]}
+            variant="bare"
+            onChange={(value) => updateAxis(axisPopover.axis, value)}
+          />
+        </Popover>
       ) : null}
       {isSelected ? (
         <div className="chart-item-actions">

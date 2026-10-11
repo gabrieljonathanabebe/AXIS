@@ -79,6 +79,9 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Ziel: `shared/` kennt keine Domäne; Werte und Optionen kommen
   generisch über Props
 - `EmptyState` ist bereits entkoppelt (keine Drop-Logik mehr)
+- zurückgestellt: zusammen mit der Bearbeitung direkt am Chart
+  angehen, weil dann ohnehin feststeht, wo die Appearance-Widgets und
+  ihre Optionen künftig liegen
 
 ## Cevyn-Action-Schema aus OpenAPI generieren
 
@@ -105,3 +108,13 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   `currency` überschreiben es (Währung kommt von der Y-Achse)
 - Control im Interaction-Tab ergänzen, als `SelectControl` wie das
   Achsenformat im `AxisWidget`
+
+## Chart-Palette vom UI-Akzent trennen
+
+- das Akzent-Blau der Oberfläche (Auswahl-Ring, Popover-Rahmen, Stift,
+  Achsen-Markierung) ist zugleich die erste Datenfarbe der Charts
+- auf blauen Charts gehen Auswahl- und Bearbeitungs-Markierungen
+  dadurch unter
+- prüfen, ob die Standard-Palette (`appearance.color`,
+  `colorScale.categorical.palette`) mit einer Farbe beginnt, die sich
+  klar vom UI-Akzent abhebt, wie bei Tableau

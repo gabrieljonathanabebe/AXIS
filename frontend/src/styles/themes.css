@@ -80,6 +80,12 @@
     rgba(22, 26, 34, 0.84),
     rgba(12, 15, 21, 0.8)
   );
+  --glass-fill-elevated: linear-gradient(
+    180deg,
+    rgba(36, 42, 54, 0.94),
+    rgba(26, 31, 41, 0.92)
+  );
+
   --glass-border: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.28),
@@ -209,6 +215,12 @@
     rgba(255, 255, 255, 0.92),
     rgba(248, 251, 255, 0.86)
   );
+  --glass-fill-elevated: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(250, 252, 255, 0.96)
+  );
+
   --glass-border: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.95),

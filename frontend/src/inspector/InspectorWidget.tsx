@@ -4,6 +4,8 @@ import type { ReactNode } from 'react'
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
 import IconButton from '../shared/ui/IconButton'
 
+export type InspectorWidgetVariant = 'bare' | 'section'
+
 type InspectorWidgetProps = {
   title: string
   icon?: ReactNode
@@ -13,6 +15,7 @@ type InspectorWidgetProps = {
     visible: boolean
     onChange: (visible: boolean) => void
   }
+  variant?: InspectorWidgetVariant
 }
 
 function InspectorWidget({
@@ -20,8 +23,16 @@ function InspectorWidget({
   icon,
   children,
   defaultOpen = true,
+  variant = 'section',
   visibility,
 }: InspectorWidgetProps) {
+  const content = (
+    <div className="stack inspector-widget-content">{children}</div>
+  )
+  // Bare renders only the controls, e.g. in a popover on the chart.
+  if (variant === 'bare') {
+    return content
+  }
   return (
     <CollapsibleSection
       title={title}
@@ -44,7 +55,7 @@ function InspectorWidget({
         ) : undefined
       }
     >
-      <div className="stack inspector-widget-content">{children}</div>
+      {content}
     </CollapsibleSection>
   )
 }

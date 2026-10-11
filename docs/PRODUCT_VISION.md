@@ -190,6 +190,15 @@ Appearance
 Interaction
 ```
 
+Langfristige Richtung (geplant): Wie ein Objekt aussieht und sich
+verhält, wird direkt am Objekt bearbeitet, nicht mehr im Inspector.
+Ein Element im ausgewählten Chart (Achse, Titel, Legende, Serie) öffnet
+seine Einstellungen in einem Popover neben dem Chart; Einstellungen
+ohne eigenes Element erreicht man über die Canvas-Toolbar. Das Build
+Panel beschreibt dann nur noch, was gerendert wird: Charttyp, Fields,
+Encodings und später Calculated Fields. Der Inspector wird
+schrittweise abgelöst; die Canvas gewinnt dadurch Platz.
+
 ## 6. Data Handling für Visual Analytics
 
 Data Handling ist bewusst auf die Anforderungen visueller Analyse

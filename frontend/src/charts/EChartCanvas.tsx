@@ -14,6 +14,7 @@ import { syncBrush } from './echarts/createBrushOption'
 import {
   createAxisTitleEditFromEvent,
   isAxisTitleEvent,
+  syncAxisHighlight,
   syncAxisTitleEdit,
 } from './echarts/createAxisTitleEditFromEvent'
 
@@ -43,6 +44,7 @@ type EChartCanvasProps = {
   dataset: Dataset
   datasetId: string | null
   editingAxisTitle: AxisTitleEdit['axis'] | null
+  highlightedAxis: AxisTitleEdit['axis'] | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
   selection: DataSelection | null
@@ -104,6 +106,7 @@ function EChartCanvas({
   dataset,
   datasetId,
   editingAxisTitle,
+  highlightedAxis,
   onEditAxisTitle,
   onHoverAxisTitle,
   selection,
@@ -211,6 +214,7 @@ function EChartCanvas({
     if (!instance) {
       return
     }
+    const theme = readChartTheme()
     instance.setOption(
       createEChartOption({
         chartId: chart.id,
@@ -221,16 +225,18 @@ function EChartCanvas({
         queryResult: result,
         selection,
         spec: chart.spec,
-        theme: readChartTheme(),
+        theme,
       }),
       true,
     )
     syncBrush(instance, chart, selection)
+    syncAxisHighlight(instance, highlightedAxis, theme.accent)
     syncAxisTitleEdit(instance, editingAxisTitle)
   }, [
     chart,
     dataset,
     editingAxisTitle,
+    highlightedAxis,
     highlightResult,
     points,
     result,

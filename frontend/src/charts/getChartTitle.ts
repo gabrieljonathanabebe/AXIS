@@ -28,3 +28,14 @@ export function getChartTitle(
     getDefaultChartTitle(chart, fields)
   )
 }
+
+// Mirrors the axis names in the ECharts adapter: x shows its field,
+// y the value label (e.g. "Count of country").
+export function getDefaultAxisTitle(
+  chart: ChartInstance,
+  fields: DataField[],
+  axis: 'x' | 'y',
+): string {
+  const { data } = chart.spec
+  return (axis === 'x' ? data.encoding.x : getValueLabel(data, fields)) ?? ''
+}

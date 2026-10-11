@@ -18,6 +18,7 @@
 @import './styles/ui/OptionsMenu.css';
 @import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
+@import './styles/ui/Popover.css';
 @import './styles/ui/RangeSlider.css';
 @import './styles/ui/RotationDial.css';
 @import './styles/ui/ScrubbableNumber.css';

@@ -331,7 +331,10 @@ Der Charttitel wird als HTML-Header im `ChartItem` gerendert, nicht als
 ECharts-`title`. Er bleibt Teil der `ChartSpec`
 (`appearance.title`), weil er den Inhalt beschreibt. Der automatische
 Titel („Y by X“) wird in `src/charts/getChartTitle.ts` abgeleitet und
-von Header, Inline-Editing und `aria-label` gemeinsam genutzt.
+von Header, Inline-Editing und `aria-label` gemeinsam genutzt. Dort
+liegt auch `getDefaultAxisTitle` (X: Feldname, Y: Value Label wie
+„Count of country“); es spiegelt die Achsennamen im Adapter und dient
+Inspector, Popover und Inline-Editing als Platzhalter.
 
 Die Achsentitel rendert weiterhin ECharts. Für das Inline-Editing
 übersetzt der Adapter (`createAxisTitleEditFromEvent.ts`) Klick und
@@ -347,6 +350,21 @@ ECharts click/mouseover (axisName)
 → ChartItem Overlay
 → chart/updateAppearance
 ```
+
+Das Formatieren einer Achse direkt am Chart nutzt dasselbe
+Hover-Event: `ChartItem` merkt sich die zuletzt gehoverte Achse und
+zeigt am ausgewählten Chart einen Stift. Der öffnet ein `Popover`
+neben dem Chart mit dem `AxisWidget` (Variante `bare`); Änderungen
+laufen über `chart/updateAppearance` wie im Inspector. Solange das
+Popover offen ist, legt `syncAxisHighlight` nach dem Rendern
+Editor-Zustand in die ECharts-Instanz (bearbeitete Achse leuchtet,
+Rest gedimmt), analog zu `syncAxisTitleEdit` und `syncBrush`. Dieser
+Zustand gehört nicht zur `ChartSpec` und verschwindet mit dem nächsten
+vollständigen `setOption`.
+
+Offen: `ChartItem` importiert dafür `AxisWidget` aus `inspector/`.
+Geplant ist ein Editor-Host mit dem Zustand „Chart + Element“, der das
+passende Widget zeigt (siehe `ROADMAP.md`).
 
 Chart-Content wird über eine typsichere Registry erzeugt:
 

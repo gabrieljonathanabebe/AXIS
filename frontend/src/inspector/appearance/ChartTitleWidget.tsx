@@ -8,11 +8,16 @@ import InspectorWidget from '../InspectorWidget'
 import type { ChartTitleAppearance } from '../../charts/types'
 
 type ChartTitleWidgetProps = {
+  defaultTitle?: string
   value: ChartTitleAppearance
   onChange: (value: ChartTitleAppearance) => void
 }
 
-function ChartTitleWidget({ value, onChange }: ChartTitleWidgetProps) {
+function ChartTitleWidget({
+  defaultTitle,
+  value,
+  onChange,
+}: ChartTitleWidgetProps) {
   return (
     <InspectorWidget
       title="Title"
@@ -28,7 +33,7 @@ function ChartTitleWidget({ value, onChange }: ChartTitleWidgetProps) {
         <TextInput
           label="Title"
           value={value.text}
-          placeholder="Automatic"
+          placeholder={defaultTitle || 'Automatic'}
           onValueChange={(text) => {
             onChange({
               ...value,
