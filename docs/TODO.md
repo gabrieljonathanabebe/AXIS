@@ -38,22 +38,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - weitere canvasbezogene Actions ergänzen, z. B. Zoom, Save, Export
 - als Commands über die Command-Registry und `CommandButton`
 
-## Sortierung numerischer X-Kategorien im Line-Chart
-
-- Line-Chart mit numerischem X-Field (z. B. `home_goals`) zeigt die
-  Kategorien in Datenreihenfolge (2, 1, 0, 4, 3 …) statt sortiert
-- prüfen, ob die Sortierung in die Backend-Chart-Query oder in den
-  ECharts-Adapter gehört
-
-## Chart Picker nach Auf- und Zuklappen des Build Panels
-
-- nach Zuklappen und erneutem Aufklappen des Build Panels haben die
-  Kacheln im Chart Picker (Visuals) einen sehr großen vertikalen
-  Abstand zwischen den beiden Reihen
-- vermutlich streckt sich das Grid während oder nach der
-  Breiten-Transition auf die Panel-Höhe; Ursache in `ChartPicker.css`
-  bzw. im Flex-Layout von `.build-panel-content` prüfen
-
 ## Zahlenformatierung zentralisieren
 
 - `src/shared/format/formatNumber.ts` wird die Single Source of Truth
@@ -75,14 +59,28 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Filter zusätzlich über ein Menü im Spaltenkopf anlegen
 - Filter als Cevyn Action (Action Layer, AI)
 
-## Empty-, Loading- und Error-State überarbeiten
+## Ghost-Vorschau im leeren Chart
 
-- `EmptyState` visuell aufwerten und für Laden und Fehler besser
-  darstellbar machen (z. B. Icon, Spinner bzw. Skeleton beim Laden)
-- Error-State klar unterscheidbar mit rötlichen Farben aus den Tokens
-- als generische Fähigkeit von `EmptyState` (z. B. `tone`- oder
-  `variant`-Prop) statt eigener Sonderkomponenten; gilt für Data View,
-  Table und Charts
+- Idee: leere Charts zeigen statt des Typ-Icons eine graue Skizze des
+  echten Charts (z. B. fünf Balken, Donut mit vier Segmenten), ähnlich
+  Power BI
+- braucht Beispieldaten pro Charttyp in der Chart Registry und einen
+  eigenen Render-Pfad im ECharts-Adapter, abgestimmt auf Theme und
+  Chart-Größe
+
+## Drop-Slots für alle Encodings
+
+- die Achsen-Drop-Zonen in `ChartItem` sind nur bei Hover sichtbar,
+  hängen an der Achsengeometrie (im Empty State unsichtbar, bei
+  Pie/Donut ohne Achsen) und decken nur X und Y ab
+- stattdessen beim Ziehen eines Felds ein Overlay mit einem Slot pro
+  Encoding aus `definition.encodings` (z. B. X Axis, Y Axis, Series,
+  Color, Size), sichtbar während des ganzen Drags
+- Kompatibilität über `getSemanticCompatibility` mit der Rolle des
+  gezogenen Felds: empfohlen betont, unterstützt normal, ungültig
+  deaktiviert; belegte Slots zeigen das aktuelle Feld
+- Drop-Target `{ kind: 'encoding', encodingKey }` bleibt; alte
+  Achsen-Zonen und ihr CSS entfallen
 
 ## Temporal als Unterart von Dimension
 

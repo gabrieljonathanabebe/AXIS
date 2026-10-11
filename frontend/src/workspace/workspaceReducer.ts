@@ -1,4 +1,11 @@
-import type { ChartInstance, ChartSpec, ChartType } from '../charts/types'
+import { getChartDefinition } from '../charts/chartDefinitions'
+import type {
+  ChartEncoding,
+  ChartInstance,
+  ChartSpec,
+  ChartType,
+} from '../charts/types'
+
 import { findFreeChartLayout, findNeighborChartId } from './chartLayout'
 import type { WorkspaceAction, WorkspaceState } from './types'
 
@@ -53,11 +60,34 @@ function duplicateChart(
   }
 }
 
+// Keeps the fields the new type can encode; points and aggregated charts
+// read data differently, so switching between them starts empty.
+function carryOverEncoding(
+  encoding: ChartEncoding,
+  fromType: ChartType,
+  toType: ChartType,
+): ChartEncoding {
+  const target = getChartDefinition(toType)
+  if (getChartDefinition(fromType).dataMode !== target.dataMode) {
+    return {}
+  }
+  return Object.fromEntries(
+    Object.entries(encoding).filter(([key]) => {
+      return target.encodings.some((definition) => definition.key === key)
+    }),
+  )
+}
+
 function setChartType(
   chart: ChartInstance,
   chartType: ChartType,
   defaultSpec: ChartSpec,
 ): ChartInstance {
+  // Legend and labels sit differently in cartesian and radial charts.
+  const isCoordinatesChange =
+    getChartDefinition(chart.type).coordinates !==
+    getChartDefinition(chartType).coordinates
+  const { appearance } = isCoordinatesChange ? defaultSpec : chart.spec
   return {
     ...chart,
     type: chartType,
@@ -67,10 +97,22 @@ function setChartType(
         ...chart.spec.appearance,
         labels: {
           ...chart.spec.appearance.labels,
+          enabled: appearance.labels.enabled,
           position: defaultSpec.appearance.labels.position,
         },
+        legend: {
+          ...chart.spec.appearance.legend,
+          position: appearance.legend.position,
+        },
       },
-      data: defaultSpec.data,
+      data: {
+        ...defaultSpec.data,
+        encoding: carryOverEncoding(
+          chart.spec.data.encoding,
+          chart.type,
+          chartType,
+        ),
+      },
       interaction: {
         ...chart.spec.interaction,
         tooltip: {

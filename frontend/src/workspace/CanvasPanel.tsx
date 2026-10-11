@@ -1,10 +1,11 @@
+import { LayoutDashboard } from 'lucide-react'
+
 import AskCevynBar from '../ai/AskCevynBar'
 import ChartGrid from './ChartGrid'
 import CommandButton from '../app/CommandButton'
 import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
-
 import type { AskCevynState } from '../ai/useAskCevyn'
 import type { ChartInstance } from '../charts/types'
 import type { Dataset } from '../datasets/types'
@@ -80,6 +81,8 @@ function CanvasPanel({
             <EmptyState
               title="Drop chart type here"
               description="Choose a visual from the Build panel to start."
+              icon={<LayoutDashboard />}
+              iconVariant="illustration"
               recoverFocus
             />
           ) : null}

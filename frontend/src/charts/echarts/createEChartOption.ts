@@ -2,6 +2,7 @@ import type { EChartsOption } from 'echarts'
 
 import { createBrushOption } from './createBrushOption'
 import { getColorEncodingMode } from '../getColorEncodingMode'
+import { getValueLabel } from '../getEffectiveAggregation'
 import { createChartContent } from './content/createChartContent'
 import type { ChartContentContext } from './content/chartContentTypes'
 import { createDataZoomOption } from './createDataZoomOption'
@@ -67,6 +68,7 @@ export function createEChartOption(
       selection,
       spec,
       theme,
+      valueLabel: getValueLabel(spec.data, dataset.fields),
     }),
     visualMap: content.visualMap,
     xAxis: content.xAxis,

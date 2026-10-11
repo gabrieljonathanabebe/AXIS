@@ -25,6 +25,10 @@ type CreateAggregatedSeriesOptionParams = {
 
 type AggregatedSeriesOption = BarSeriesOption | LineSeriesOption
 
+// ===== CONSTANTS =============================================================
+// Above this many points, line symbols merge into a bead chain.
+const MAX_LINE_SYMBOLS = 30
+
 // ===== FUNCTION ==============================================================
 export function createAggregatedSeriesOption({
   appearance,
@@ -65,7 +69,9 @@ export function createAggregatedSeriesOption({
         width: appearance.line.lineWidth,
       },
       name: name ?? undefined,
-      showSymbol: isHighlight || appearance.line.showSymbol,
+      showSymbol:
+        isHighlight ||
+        (appearance.line.showSymbol && data.length <= MAX_LINE_SYMBOLS),
       smooth: appearance.line.smooth,
       type: 'line',
       xAxisIndex,

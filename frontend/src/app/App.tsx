@@ -53,7 +53,6 @@ function App() {
   } = useChartWorkspace({ dataset: uploadedDataset })
 
   const inspectorActions = createInspectorActions({
-    dataset,
     dispatch,
     selectedChartId,
   })

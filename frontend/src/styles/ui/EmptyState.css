@@ -11,7 +11,7 @@
   border-radius: var(--radius-lg);
 }
 
-.empty-state span {
+.empty-state-description {
   max-width: 420px;
   color: var(--color-text-secondary);
   line-height: 1.5;
@@ -20,4 +20,71 @@
 .empty-state:focus-visible {
   outline: var(--border-width-thick) solid var(--color-border-accent);
   outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+/* ===== ICON =============================================================== */
+.empty-state-icon {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-secondary);
+}
+
+.empty-state-icon.is-badge {
+  width: 40px;
+  height: 40px;
+  background: var(--color-surface-subtle);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.empty-state-icon.is-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+.empty-state-icon.is-illustration {
+  opacity: 0.4;
+}
+
+.empty-state-icon.is-illustration svg {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1.5;
+}
+
+/* ===== TONE =============================================================== */
+.empty-state.is-danger strong,
+.empty-state.is-danger .empty-state-icon {
+  color: var(--color-danger);
+}
+
+.empty-state.is-danger .empty-state-icon.is-badge {
+  background: var(--color-danger-soft);
+  border-color: var(--color-border-danger);
+}
+
+/* ===== SIZE =============================================================== */
+.empty-state.is-sm {
+  gap: var(--space-2);
+  padding: var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+.empty-state.is-sm .empty-state-description {
+  font-size: var(--font-size-xs);
+}
+
+.empty-state.is-sm .empty-state-icon.is-badge {
+  width: 32px;
+  height: 32px;
+}
+
+.empty-state.is-sm .empty-state-icon.is-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.empty-state.is-sm .empty-state-icon.is-illustration svg {
+  width: 48px;
+  height: 48px;
 }

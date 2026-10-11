@@ -54,8 +54,8 @@ const radialEncodings = [
     key: 'y',
     label: 'Value',
     recommendedRoles: ['measure'],
-    required: true,
-    supportedRoles: [],
+    required: false,
+    supportedRoles: ['dimension', 'temporal'],
   },
 ] satisfies EncodingDefinition[]
 
@@ -120,9 +120,9 @@ export const chartDefinitions = {
       {
         key: 'y',
         label: 'Y Axis',
-        required: true,
+        required: false,
         recommendedRoles: ['measure'],
-        supportedRoles: [],
+        supportedRoles: ['dimension', 'temporal'],
       },
       {
         key: 'series',
@@ -153,9 +153,9 @@ export const chartDefinitions = {
       {
         key: 'y',
         label: 'Value',
-        required: true,
+        required: false,
         recommendedRoles: ['measure'],
-        supportedRoles: [],
+        supportedRoles: ['dimension', 'temporal'],
       },
       {
         key: 'series',
@@ -247,4 +247,14 @@ export function isPointsChartType(type: ChartType): boolean {
 
 export function isRadialChartType(type: ChartType): boolean {
   return getChartDefinition(type).coordinates === 'radial'
+}
+
+// Required encodings that are still empty, e.g. X of a new bar chart.
+export function getMissingEncodings(
+  type: ChartType,
+  encoding: ChartEncoding,
+): EncodingDefinition[] {
+  return getChartDefinition(type).encodings.filter((definition) => {
+    return definition.required && !encoding[definition.key]
+  })
 }

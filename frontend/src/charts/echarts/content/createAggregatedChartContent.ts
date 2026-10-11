@@ -7,6 +7,7 @@ import {
 } from './createAggregatedSeriesOption'
 import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
+import { getValueLabel } from '../../getEffectiveAggregation'
 import { DIMMED_OPACITY } from './selectionStyle'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
@@ -131,6 +132,7 @@ export function createAggregatedChartContent(
     chartType,
     encoding,
     theme,
+    valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 
   return {

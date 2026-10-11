@@ -17,6 +17,7 @@ type CreateAxesOptionsParams = {
   chartType: ChartType
   encoding: ChartEncoding
   theme: ChartTheme
+  valueLabel: string | undefined
 }
 
 type AxesOptions = {
@@ -52,6 +53,7 @@ export function createAxesOptions({
   chartType,
   encoding,
   theme,
+  valueLabel,
 }: CreateAxesOptionsParams): AxesOptions {
   const isCategoryXAxis = chartType !== 'scatter'
   return {
@@ -112,7 +114,7 @@ export function createAxesOptions({
       },
       max: appearance.yAxis.max ?? undefined,
       min: appearance.yAxis.min ?? undefined,
-      name: appearance.yAxis.title.trim() || encoding.y || '',
+      name: appearance.yAxis.title.trim() || valueLabel || '',
       nameGap: 48,
       nameLocation: 'middle',
       nameTextStyle: createAxisNameTextStyle(appearance.yAxis.titleStyle),

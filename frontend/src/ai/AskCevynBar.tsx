@@ -38,7 +38,7 @@ function AskCevynBar({ state, onAsk }: AskCevynBarProps) {
         />
         <IconButton label="Send" size="sm" type="submit" disabled={!canSubmit}>
           {isLoading ? (
-            <LoaderCircle className="ask-cevyn-spinner" size={16} />
+            <LoaderCircle className="spin" size={16} />
           ) : (
             <ArrowUp size={16} />
           )}

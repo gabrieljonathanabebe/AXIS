@@ -4,6 +4,10 @@ import {
   getChartDefinition,
   hasAggregatedColor,
 } from '../../charts/chartDefinitions'
+import {
+  getEffectiveAggregation,
+  isCountOnly,
+} from '../../charts/getEffectiveAggregation'
 
 import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
@@ -13,7 +17,10 @@ import type { Aggregation, GroupAggregation } from '../../charts/types'
 import type { ChartInspectorProps } from '../types'
 
 // ===== PROPS =================================================================
-type AggregationWidgetProps = Pick<ChartInspectorProps, 'actions' | 'chart'>
+type AggregationWidgetProps = Pick<
+  ChartInspectorProps,
+  'actions' | 'chart' | 'fields'
+>
 
 // ===== GLOBAL CONSTANTS ======================================================
 const groupAggregationOptions = [
@@ -31,7 +38,7 @@ const aggregationOptions = [
 ] satisfies { label: string; value: Aggregation }[]
 
 // ===== COMPONENT =============================================================
-function AggregationWidget({ actions, chart }: AggregationWidgetProps) {
+function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
   // ===== LOCAL CONSTANTS ======
   const definition = getChartDefinition(chart.type)
   const activeOptions = aggregationOptions.filter((option) => {
@@ -40,6 +47,7 @@ function AggregationWidget({ actions, chart }: AggregationWidgetProps) {
   const activeColorOptions = groupAggregationOptions.filter((option) => {
     return definition.supportedAggregations.includes(option.value)
   })
+  const isCountForced = isCountOnly(chart.spec.data, fields)
   const showColorAggregation = hasAggregatedColor(
     chart.type,
     chart.spec.data.encoding,
@@ -49,9 +57,10 @@ function AggregationWidget({ actions, chart }: AggregationWidgetProps) {
     <InspectorWidget title="Aggregation" icon={<Sigma size={16} />}>
       <ControlRow label="Value function">
         <SelectControl
+          disabled={isCountForced}
           label="Value aggregation"
           options={activeOptions}
-          value={chart.spec.data.aggregation}
+          value={getEffectiveAggregation(chart.spec.data, fields)}
           onChange={(aggregation) => {
             actions.setAggregation('aggregation', aggregation)
           }}

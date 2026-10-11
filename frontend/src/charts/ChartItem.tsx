@@ -251,7 +251,7 @@ function ChartItem({
 
   return (
     <div
-      aria-label={getChartTitle(chart)}
+      aria-label={getChartTitle(chart, dataset.fields)}
       className={`chart-item ${backgroundClassName} ${
         title.enabled ? 'has-header' : ''
       } ${isDraggingField ? 'is-dragging-field' : ''} ${
@@ -304,7 +304,7 @@ function ChartItem({
           <EditableText
             className="chart-item-title"
             label="Chart title"
-            placeholder={getDefaultChartTitle(chart)}
+            placeholder={getDefaultChartTitle(chart, dataset.fields)}
             value={title.text}
             onCommit={(text) =>
               actions.updateChartAppearance(chart.id, 'title', {

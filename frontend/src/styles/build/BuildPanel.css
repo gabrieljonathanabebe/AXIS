@@ -9,7 +9,7 @@
 }
 
 .panel-error {
-  color: var(--color-accent);
+  color: var(--color-danger);
   font-size: var(--font-size-md);
 }
 

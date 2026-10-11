@@ -87,7 +87,6 @@ export function useChartWorkspace({
       type: 'chart/add',
       chart: createChartInstance({
         type,
-        dataset,
         layout: findFreeChartLayout(charts, DEFAULT_CHART_SIZE),
       }),
     })

@@ -41,15 +41,18 @@ pro Komponente.
 | liquid  | `glass glass-liquid` | Charts mit Background Glass                                                   | `--blur-md` |
 | thick   | `glass glass-thick`  | Dropdowns, Popover, schwebendes Editor-Chrome (Canvas-Toolbar, Ask Cevyn Bar) | `--blur-lg` |
 
-`glass-liquid` ist die durchscheinende Stufe: kaum Füllung, Blur mit
-Sättigung, Glanzfleck oben links (`--glass-fill-liquid`), hellere
-Lichtkante (`--glass-border-liquid`) und inneres Leuchten
-(`--glass-highlight-liquid`). Sie wirkt nur auf einem Hintergrund mit
-Farbverlauf, deshalb liegt sie auf der Canvas-Fläche.
+`glass-liquid` ist die durchscheinende Stufe: Füllung ab transparent
+mit einem Hauch Weiß unten (`--glass-fill-liquid`), Blur mit
+Sättigung, hellere Lichtkante (`--glass-border-liquid`) und zwei feine
+Kantenlinien (`--glass-highlight-liquid`), ohne weißen Glanzfleck oder
+inneres Leuchten. Sie wirkt nur auf einem Hintergrund mit Farbverlauf,
+deshalb liegt sie auf der Canvas-Fläche.
 
 Bestandteile:
 
-- `--glass-fill-*`: leichter vertikaler Verlauf, oben heller;
+- `--glass-fill-*`: leichter vertikaler Verlauf; im Dark Theme
+  beginnen `thin`, `regular` und `liquid` oben transparent, damit das
+  Glas nicht milchig wirkt;
 - `--glass-border`: Lichtkante als Verlaufsring, oben links hell;
 - `--glass-highlight`: feine innere Glanzlinie an der Oberkante;
 - `--glass-shadow`: naher Kontaktschatten plus weiter Tiefenschatten;
@@ -97,6 +100,17 @@ bright core
 ```
 
 Nicht jedes blaue Element benötigt einen Glow.
+
+### Danger
+
+Fehler verwenden eigene Tokens statt Electric Blue:
+
+- `--color-danger`: Text und Icon eines Fehlers;
+- `--color-danger-soft`: Fläche, z. B. Badge im Error-State;
+- `--color-border-danger`: Rand dazu.
+
+Beispiele: `EmptyState` mit `tone="danger"`, Upload-Fehler im Build
+Panel (`.panel-error`), Fehlermeldungen von Ask Cevyn.
 
 ## 3. Layout Architecture
 
@@ -830,6 +844,30 @@ sich nicht überholen.
 - Generisch über Zahlen: Aufrufer übergeben Positionen (z. B. Indizes
   von Datums- oder Werteschritten) und formatieren selbst.
 
+## 9h. EmptyState
+
+`EmptyState` ist das eine Muster für leere, ladende und fehlerhafte
+Bereiche (Canvas, Chart, Data View, Table). Unterschiede laufen über
+Props, nicht über Sonderkomponenten:
+
+| Prop          | Werte                             | Wirkung                                                               |
+| ------------- | --------------------------------- | --------------------------------------------------------------------- |
+| `icon`        | ReactNode                         | Icon über dem Titel; Größe steuert das CSS                            |
+| `iconVariant` | `badge` (Default), `illustration` | kleiner Kreis für Status oder großes, blasses Icon                    |
+| `tone`        | `neutral` (Default), `danger`     | `danger`: Titel und Icon rot, Badge mit Danger-Fläche, `role="alert"` |
+| `size`        | `md` (Default), `sm`              | `sm` für Chart-Karten: weniger Padding, kleinere Schrift              |
+
+- `illustration` steht für „hier fehlt noch etwas“: leere Canvas
+  (`LayoutDashboard`), leeres Chart (Icon des Charttyps aus
+  `chartDefinitions`, damit leere Charts unterscheidbar bleiben).
+- `badge` steht für Status: Laden (`LoaderCircle` mit Utility
+  `.spin`), keine Treffer (`SearchX`), Fehler (`TriangleAlert`).
+- Status-Helper wie `getTableStatus` geben direkt `EmptyStateProps`
+  zurück.
+- Im Chart liegt der Zustand über dem Canvas (`.chart-state`); das
+  ECharts-Canvas ist dann per `visibility` ausgeblendet, damit leere
+  Achsen oder der Pie-Ring den Hinweis nicht überdecken.
+
 ## 10. Legend
 
 Legend erklärt diskrete Series oder Kategorien.
@@ -857,6 +895,12 @@ Interaktives Legend-Verhalten gehört zu:
 Inspector
 → Interaction
 ```
+
+Die Legend scrollt statt überzulaufen: `layout` `auto` und `scroll`
+ergeben eine ECharts-Scroll-Legend mit Blätter-Pfeilen in Text- und
+Inactive-Farbe, `plain` eine einfache Legend. Pie und Donut rücken zur
+Gegenseite einer sichtbaren Legend (`getPieCenter`); ihre Legend steht
+per Default rechts, Prozent-Labels innerhalb der Segmente.
 
 Die Legend Interaction erscheint nur bei einer relevanten Legend. Der
 Eye-Button aktiviert oder deaktiviert die Auswahl, ohne die sichtbare

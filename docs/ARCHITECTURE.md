@@ -434,18 +434,20 @@ Typnamen:
 | `coordinates` | `cartesian`, `radial`  | Grid, Zoom, Tooltip-Trigger, Farbmodus, Inspector-Bereiche                          |
 
 Abfragen laufen über Helper in `chartDefinitions.ts`:
-`isPointsChartType`, `isRadialChartType` und `hasAggregatedColor`
+`isPointsChartType`, `isRadialChartType`, `hasAggregatedColor`
 (aggregierter Chart mit `color`-Encoding in der Definition und gesetztem
-Color-Feld; dann wird das Color-Feld mitaggregiert).
+Color-Feld; dann wird das Color-Feld mitaggregiert) und
+`getMissingEncodings` (Encodings mit `required: true`, die noch leer
+sind; Grundlage des Empty State im Chart).
 
 Ein neuer Charttyp braucht damit einen Eintrag in `chartDefinitions`,
 einen Content-Builder in der Registry (siehe Abschnitt 6) und ggf.
 eigene Mark-Appearance. Wo sich ein Typ tatsächlich anders darstellt,
 bleibt die Abfrage bewusst am Typnamen: Mark-Controls im
-`MarkSeriesWidget`, die Line-Series in `createAggregatedSeriesOption`,
-der Donut-Radius und die Start-Encodings in `getDefaultEncoding`. Ein
-neuer Wert für `dataMode` oder `coordinates` (z. B. für Histogram oder
-Radar) erweitert die Union und die betroffenen Helper.
+`MarkSeriesWidget`, die Line-Series in `createAggregatedSeriesOption`
+und der Donut-Radius. Ein neuer Wert für `dataMode` oder `coordinates`
+(z. B. für Histogram oder Radar) erweitert die Union und die
+betroffenen Helper.
 
 ### ChartSpec
 
@@ -465,6 +467,33 @@ Aggregation = Sum
 ChartDefinition ist die Regel.
 
 ChartSpec ist die konkrete Konfiguration.
+
+Neue Charts starten mit leerem Encoding (`createDefaultChartSpec`
+kennt den Datensatz nicht); Cevyn rät keine Felder. Beim Typwechsel
+behält `carryOverEncoding` im Reducer die Encodings, die der neue Typ
+kennt; zwischen `points` und `aggregated` startet das Encoding leer.
+Wechselt dabei `coordinates` (kartesisch ↔ radial), übernimmt das Chart
+Label-Sichtbarkeit und Legend-Position aus dem Default des neuen Typs.
+
+### Abgeleitete Aggregation
+
+Was ein aggregiertes Chart tatsächlich abfragt, wird beim Lesen aus
+Spec und Feldern abgeleitet (`getEffectiveAggregation.ts`), nicht beim
+Setzen von Y gespeichert:
+
+- `getValueField`: Feld des Werts; ist Y leer, zählt das Chart X
+  (`y = x`).
+- `isCountOnly`: Y leer oder Y kein Measure → es wird gezählt.
+- `getEffectiveAggregation`: `count` in diesen Fällen, sonst die
+  gespeicherte `aggregation`.
+- `getValueLabel`: Name des Werts für Achse, Tooltip und Titel, z. B.
+  „Count of country“.
+
+Query, Inspector (Aggregation-Select deaktiviert mit „Count“),
+Beschriftung und Default-Titel lesen dieselbe Ableitung. Die
+gespeicherte Aggregation bleibt erhalten und gilt wieder, sobald ein
+Measure auf Y liegt. Y ist deshalb bei Bar, Line, Pie und Donut nicht
+`required` und akzeptiert alle Roles; Measures bleiben `recommended`.
 
 Encodings referenzieren Fields nur über den Namen
 (`ChartEncoding = { x?: string, … }`). Semantic Role und Physical Type
@@ -695,8 +724,9 @@ unknown (JSON)
 - Aktuelle Actions:
   - `chart/create` (Charttyp, optional Encoding und Aggregation)
     → `chart/add`;
-  - `chart/setType` → `chart/setType`; Encoding und Aggregation werden
-    wie im Inspector auf die Defaults des neuen Typs zurückgesetzt;
+  - `chart/setType` → `chart/setType`; wie im Inspector bleiben
+    passende Encodings erhalten (`carryOverEncoding`), die Aggregation
+    kommt aus dem Default des neuen Typs;
   - `chart/updateEncoding` → `chart/updateEncoding`;
   - `chart/updateAggregation` (nur `aggregation`)
     → `chart/updateAggregation`;
@@ -1066,7 +1096,7 @@ SemanticRoleOverrides                   { fieldName: SemanticRole }
   bleibt der Platz leer.
 - `useDatasets` wendet die Overrides über `applySemanticRoleOverrides`
   auf die `DataField`s an und gibt ein Dataset mit effektiven Roles
-  aus. Compatibility, Default Encodings, Color Mode und der
+  aus. Compatibility, abgeleitete Aggregation, Color Mode und der
   ECharts-Adapter lesen nur `field.semantic_role` und kennen weder
   Profil noch Overrides.
 - Geplant: Overrides werden Teil des serialisierbaren Project State
@@ -1100,6 +1130,12 @@ Das Resultset enthält pro Gruppe:
 - optional `series`;
 - `value`;
 - optional `color_value`.
+
+Reihenfolge der Gruppen: Ist X numerisch oder temporal, sortiert das
+Backend aufsteigend nach X; sonst absteigend nach der Summe von `value`
+je X über alle Series (größte Kategorie zuerst). `null` steht zuletzt,
+die Series-Reihenfolge innerhalb eines X bleibt stabil. Das Frontend
+übernimmt die Reihenfolge unverändert.
 
 `color_value` ist ein zusätzlich aggregiertes Ergebnisfeld und verändert
 weder die Gruppierung noch `value`. Color darf dasselbe Feld wie Y mit einer

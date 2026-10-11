@@ -1,5 +1,6 @@
 import * as echarts from 'echarts'
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
+import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
 import {
@@ -21,6 +22,8 @@ import {
   createSelectionFromEvent,
 } from './echarts/createSelectionFromEvent'
 
+import EmptyState from '../shared/ui/EmptyState'
+import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
 import { isSameSelection } from '../workspace/dataSelection'
 import { useChartQuery } from './useChartQuery'
 import { usePointsQuery } from './usePointsQuery'
@@ -107,7 +110,7 @@ function EChartCanvas({
 }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
-  const query = createChartQuery(chart)
+  const query = createChartQuery(chart, dataset.fields)
   const { result, isLoading, error } = useChartQuery(datasetId, query)
   const highlightQuery = createHighlightQuery(query, selection)
   const { result: highlightResult } = useChartQuery(datasetId, highlightQuery)
@@ -115,6 +118,13 @@ function EChartCanvas({
   const points = pointsQuery.result?.rows ?? EMPTY_POINTS
   const isChartLoading = isLoading || pointsQuery.isLoading
   const chartError = error ?? pointsQuery.error
+  const missingLabels = getMissingEncodings(
+    chart.type,
+    chart.spec.data.encoding,
+  ).map((definition) => definition.label)
+
+  const isEmpty = missingLabels.length > 0
+  const ChartIcon = getChartDefinition(chart.type).icon
 
   function getAxisTitleEdit(event: ECElementEvent): AxisTitleEdit | null {
     const edit = createAxisTitleEditFromEvent(event)
@@ -240,10 +250,30 @@ function EChartCanvas({
 
   return (
     <>
-      <div className="echart-canvas" ref={containerRef} />
+      <div
+        className={`echart-canvas ${isEmpty || chartError ? 'is-empty' : ''}`}
+        ref={containerRef}
+      />
+      {isEmpty && (
+        <div className="chart-state">
+          <EmptyState
+            description="Drag it from the Build panel or pick it in the Inspector."
+            icon={<ChartIcon />}
+            iconVariant="illustration"
+            size="sm"
+            title={`Drop a field on ${missingLabels.join(' and ')}`}
+          />
+        </div>
+      )}
       {chartError && (
-        <div className="chart-query-error" role="alert">
-          {chartError}
+        <div className="chart-state">
+          <EmptyState
+            description={chartError}
+            icon={<TriangleAlert />}
+            size="sm"
+            title="Chart unavailable"
+            tone="danger"
+          />
         </div>
       )}
     </>

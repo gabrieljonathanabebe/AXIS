@@ -1,8 +1,14 @@
 .chart-type-picker {
   --grid-gap: var(--space-2);
   --grid-min: 56px;
-
+  --grid-repeat: 3;
   width: 100%;
+}
+
+@media (max-width: 960px) {
+  .chart-type-picker {
+    --grid-repeat: auto-fit;
+  }
 }
 
 .chart-type-option {

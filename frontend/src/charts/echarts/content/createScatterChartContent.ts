@@ -8,6 +8,7 @@ import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { DIMMED_OPACITY } from './selectionStyle'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
+import { getValueLabel } from '../../getEffectiveAggregation'
 import { isRowInSelection } from '../../../workspace/dataSelection'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -134,6 +135,7 @@ export function createScatterChartContent(
     chartType,
     encoding,
     theme,
+    valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 
   return {

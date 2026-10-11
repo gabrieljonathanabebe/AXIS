@@ -16,10 +16,8 @@ import type { WorkspaceAction, WorkspaceState } from '../workspace/types'
 function createChart(
   action: Extract<CevynAction, { type: 'chart/create' }>,
   state: WorkspaceState,
-  dataset: Dataset,
 ): WorkspaceAction {
   const chart = createChartInstance({
-    dataset,
     layout: findFreeChartLayout(state.charts, DEFAULT_CHART_SIZE),
     type: action.chartType,
   })
@@ -43,11 +41,10 @@ function createChart(
 function translateCevynAction(
   action: CevynAction,
   state: WorkspaceState,
-  dataset: Dataset,
 ): WorkspaceAction {
   switch (action.type) {
     case 'chart/create':
-      return createChart(action, state, dataset)
+      return createChart(action, state)
     case 'chart/remove':
       return { type: 'chart/remove', chartId: action.chartId }
     case 'chart/setTitle': {
@@ -65,7 +62,7 @@ function translateCevynAction(
         type: 'chart/setType',
         chartId: action.chartId,
         chartType: action.chartType,
-        defaultSpec: createDefaultChartSpec(action.chartType, dataset),
+        defaultSpec: createDefaultChartSpec(action.chartType),
       }
     case 'chart/updateAggregation':
       return {
@@ -98,7 +95,7 @@ export function translateCevynActions(
       errors.push(...messages.map((message) => ({ index, message })))
       return
     }
-    const workspaceAction = translateCevynAction(action, draft, dataset)
+    const workspaceAction = translateCevynAction(action, draft)
     workspaceActions.push(workspaceAction)
     draft = workspaceReducer(draft, workspaceAction)
   })

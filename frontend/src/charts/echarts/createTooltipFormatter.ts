@@ -56,6 +56,7 @@ type CreateTooltipFormatterParams = {
   isSelectionSource: boolean
   selection: DataSelection | null
   spec: ChartSpec
+  valueLabel: string | undefined
 }
 
 export function createTooltipFormatter({
@@ -63,6 +64,7 @@ export function createTooltipFormatter({
   isSelectionSource,
   selection,
   spec,
+  valueLabel,
 }: CreateTooltipFormatterParams): TooltipFormatter {
   const { encoding } = spec.data
   const hasColorValue = hasAggregatedColor(chartType, encoding)
@@ -96,8 +98,8 @@ export function createTooltipFormatter({
       const values = Array.isArray(rawValue) ? rawValue : null
       const value = Array.isArray(rawValue) ? rawValue[1] : rawValue
       const baseLabel = encoding.series
-        ? entry.seriesName || encoding.y || 'Value'
-        : encoding.y || 'Value'
+        ? entry.seriesName || valueLabel || 'Value'
+        : valueLabel || 'Value'
       const selectionLabel = selection ? formatSelectionLabel(selection) : ''
       const isHighlight = Boolean(
         selection && entry.seriesId?.startsWith(HIGHLIGHT_SERIES_PREFIX),

@@ -4,15 +4,17 @@
   top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
 }
 
-.chart-query-error {
+.echart-canvas.is-empty {
+  visibility: hidden;
+}
+
+.chart-state {
   position: absolute;
   inset: var(--chart-canvas-inset);
   top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
 
   display: grid;
-  place-items: center;
-  color: var(--color-text-secondary);
-  background: var(--color-surface-overlay);
+  pointer-events: none;
 }
 
 .chart-tooltip-heading {

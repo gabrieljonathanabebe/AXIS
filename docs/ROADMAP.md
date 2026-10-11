@@ -656,6 +656,39 @@ Kleiner Layout-Slice nach dem Refactoring:
   eigene Farbe; Glass als neue Stufe `glass-liquid`
 - verifiziert: `tsc`, `npm run lint`, Prettier; Optik im Browser
 
+### TODO-Abarbeitung (in Arbeit)
+
+Slice zum Abarbeiten von `docs/TODO.md`, erst Bugs, dann Struktur und
+Features. Bisher umgesetzt:
+
+- Chart Picker: feste drei Spalten (`--grid-repeat: 3`), damit das Grid
+  beim Aufklappen des Build Panels nicht umbricht; unter 960 px wieder
+  `auto-fit`
+- Reihenfolge der Chart-Query im Backend: numerisches und temporales X
+  aufsteigend, Text-X absteigend nach Gesamtwert
+- Count ohne Measure: Y akzeptiert alle Roles und ist optional; ohne
+  Measure auf Y bzw. mit leerem Y wird gezählt („Count of country“),
+  abgeleitet über `getEffectiveAggregation`; Inspector zeigt „Count“
+  deaktiviert
+- leerer Start: kein geratenes Default-Encoding mehr
+  (`getDefaultEncoding` entfernt); Typwechsel behält passende Encodings
+  (`carryOverEncoding`)
+- Empty-, Loading- und Error-State: `EmptyState` mit `icon`,
+  `iconVariant`, `tone` und `size`; Danger-Tokens; leere Charts zeigen
+  das Typ-Icon als Illustration, Fehler ein rotes Badge; Data View,
+  Table und Canvas mit Status-Icons; gemeinsame Utility `.spin`
+- Chart-Defaults: Titel an; Pie/Donut mit Legend rechts und
+  Prozent-Labels in den Segmenten; Scroll-Legend über `layout`; Pie
+  weicht der Legend aus; Line-Symbole nur bis 30 Punkte
+- Liquid Glass ohne weißen Glanz; Thin- und Regular-Glass beginnen
+  transparent
+- verifiziert: `tsc`, `npm run lint`, Prettier und `npm run build`;
+  Optik und Verhalten im Browser
+
+Offen in diesem Slice: Abstand Panel-Header, Zahlenformatierung,
+generische Props für Shared Controls, Canvas-Toolbar,
+Chart-Zusammenfassung, Dashboard-Einstellungen, Drop-Slots.
+
 ## 6. Later – Visualization Completion
 
 - Inspector-Polish für Scatter, Line, Bar, Pie und Donut

@@ -1,8 +1,10 @@
+import { LoaderCircle, Rows3, SearchX, TriangleAlert } from 'lucide-react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useState } from 'react'
 
 import { getSemanticRole } from '../datasets/semanticRoles'
 import EmptyState from '../shared/ui/EmptyState'
+import type { EmptyStateProps } from '../shared/ui/EmptyState'
 import DataTableColumnHeader from './DataTableColumnHeader'
 import DataTableRow from './DataTableRow'
 import DataTableToolbar from './DataTableToolbar'
@@ -25,11 +27,6 @@ type DataTableProps = {
   datasetId: string | null
   profile: DatasetProfile | null
   semanticRoleOverrides: SemanticRoleOverrides
-}
-
-type DataTableStatus = {
-  description: string
-  title: string
 }
 
 // ===== CONSTANTS =============================================================
@@ -77,23 +74,37 @@ function getNextSort(
 function getTableStatus(
   { error, isLoading, rows }: TableRows,
   hasFilters: boolean,
-): DataTableStatus | null {
+): EmptyStateProps | null {
   if (rows.length > 0) {
     return null
   }
   if (error) {
-    return { description: error, title: 'Rows unavailable' }
+    return {
+      description: error,
+      icon: <TriangleAlert />,
+      title: 'Rows unavailable',
+      tone: 'danger',
+    }
   }
   if (isLoading) {
-    return { description: 'Loading rows…', title: 'Loading' }
+    return {
+      description: 'Loading rows…',
+      icon: <LoaderCircle className="spin" />,
+      title: 'Loading',
+    }
   }
   if (hasFilters) {
     return {
       description: 'No rows match the active filters.',
+      icon: <SearchX />,
       title: 'No matching rows',
     }
   }
-  return { description: 'This dataset has no rows.', title: 'No rows' }
+  return {
+    description: 'This dataset has no rows.',
+    icon: <Rows3 />,
+    title: 'No rows',
+  }
 }
 
 // ===== COMPONENT =============================================================

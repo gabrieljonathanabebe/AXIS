@@ -66,12 +66,17 @@ export function createLegendOption({
       appearance.position === 'left' || appearance.position === 'right'
         ? 'vertical'
         : 'horizontal',
+    pageIconColor: appearance.textColor,
+    pageIconInactiveColor: appearance.inactiveColor,
+    pageTextStyle: { color: appearance.textColor },
     selectedMode: interaction.enabled ? interaction.selectionMode : false,
     show: appearance.visible && colorEncodingMode === 'categorical',
     textStyle: {
       color: appearance.textColor,
       fontSize: appearance.fontSize,
     },
+    // Scrolls instead of overflowing when items exceed the chart width.
+    type: appearance.layout === 'plain' ? 'plain' : 'scroll',
     ...createLegendPlacement(appearance),
   }
 }

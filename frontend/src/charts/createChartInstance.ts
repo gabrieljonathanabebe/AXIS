@@ -1,5 +1,4 @@
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
-import { getDefaultEncoding } from './getDefaultEncoding'
 import type {
   ChartContainerAppearance,
   ChartInstance,
@@ -7,7 +6,6 @@ import type {
   ChartSpec,
   ChartType,
 } from './types'
-import type { Dataset } from '../datasets/types'
 import {
   getChartDefinition,
   isPointsChartType,
@@ -16,7 +14,6 @@ import {
 
 type CreateChartInstanceParams = {
   type: ChartType
-  dataset: Dataset
   layout: ChartLayout
   id?: string
 }
@@ -24,21 +21,19 @@ type CreateChartInstanceParams = {
 export function createDefaultChartContainer(): ChartContainerAppearance {
   return {
     background: { kind: 'surface' },
-    padding: 8,
+    padding: 4,
     borderRadius: 24,
   }
 }
 
-export function createDefaultChartSpec(
-  type: ChartType,
-  dataset: Dataset,
-): ChartSpec {
+export function createDefaultChartSpec(type: ChartType): ChartSpec {
   const definition = getChartDefinition(type)
+  const isRadialChart = isRadialChartType(type)
   // Points and radial charts have no category axis; marks are single items.
-  const hasItemMarks = isPointsChartType(type) || isRadialChartType(type)
+  const hasItemMarks = isPointsChartType(type) || isRadialChart
   return {
     data: {
-      encoding: getDefaultEncoding(type, dataset),
+      encoding: {},
       aggregation: definition.defaultAggregation,
       colorAggregation: 'mean',
     },
@@ -66,7 +61,7 @@ export function createDefaultChartSpec(
         lineStyle: 'solid',
       },
       title: {
-        enabled: false,
+        enabled: true,
         text: '',
         alignment: 'start',
       },
@@ -106,7 +101,7 @@ export function createDefaultChartSpec(
       },
       legend: {
         visible: true,
-        position: 'bottom',
+        position: isRadialChart ? 'right' : 'bottom',
         alignment: 'center',
         symbol: 'auto',
         textColor: '#eef4ff',
@@ -119,8 +114,8 @@ export function createDefaultChartSpec(
         inactiveColor: '#8b95a7',
       },
       labels: {
-        enabled: false,
-        position: hasItemMarks ? 'right' : 'top',
+        enabled: isRadialChart,
+        position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
         color: '#eef4ff',
         fontSize: 12,
         fontWeight: 'medium',
@@ -176,14 +171,13 @@ export function createDefaultChartSpec(
 
 export function createChartInstance({
   type,
-  dataset,
   layout,
   id = crypto.randomUUID(),
 }: CreateChartInstanceParams): ChartInstance {
   return {
     id,
     type,
-    spec: createDefaultChartSpec(type, dataset),
+    spec: createDefaultChartSpec(type),
     layout,
     container: createDefaultChartContainer(),
   }

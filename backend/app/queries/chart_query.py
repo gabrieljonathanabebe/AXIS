@@ -54,7 +54,9 @@ def aggregate_chart_frame(
         frame: Filtered rows of the dataset.
         query: Encoding and aggregations of the chart.
     Returns:
-        One row per group with columns x, series, value and color_value.
+        One row per group with columns x, series, value and color_value;
+        sorted by X if X is numeric or temporal, else by the total value
+        per X in descending order.
     """
     group_fields = [pl.col(query.x).alias("x")]
     if query.series is not None:
@@ -74,10 +76,20 @@ def aggregate_chart_frame(
                 "color_value",
             )
         )
-    return frame.group_by(
+    aggregated = frame.group_by(
         group_fields,
         maintain_order=True,
     ).agg(expressions)
+    x_dtype = aggregated.schema["x"]
+    if x_dtype.is_numeric() or x_dtype.is_temporal():
+        return aggregated.sort("x", maintain_order=True, nulls_last=True)
+    x_total = pl.col("value").sum().over("x")
+    return aggregated.sort(
+        x_total,
+        descending=True,
+        maintain_order=True,
+        nulls_last=True,
+    )
 
 
 def build_chart_query_result(

@@ -31,17 +31,7 @@
 }
 
 .ask-cevyn-messages.is-error {
-  color: var(--color-accent);
-}
-
-.ask-cevyn-spinner {
-  animation: ask-cevyn-spin 1s linear infinite;
-}
-
-@keyframes ask-cevyn-spin {
-  to {
-    transform: rotate(360deg);
-  }
+  color: var(--color-danger);
 }
 
 /* ===== THINKING GLOW ===================================================== */

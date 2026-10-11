@@ -1,12 +1,10 @@
 import { createDefaultChartSpec } from '../charts/createChartInstance'
 
-import type { Dataset } from '../datasets/types'
 import type { WorkspaceAction } from '../workspace/types'
 import type { InspectorActions } from './types'
 
 // ===== TYPES =================================================================
 type InspectorActionsParams = {
-  dataset: Dataset
   dispatch: (action: WorkspaceAction) => void
   selectedChartId: string | null
 }
@@ -14,7 +12,6 @@ type InspectorActionsParams = {
 // ===== FUNCTION ==============================================================
 /** Turns inspector edits into workspace actions for the selected chart. */
 export function createInspectorActions({
-  dataset,
   dispatch,
   selectedChartId,
 }: InspectorActionsParams): InspectorActions {
@@ -54,7 +51,7 @@ export function createInspectorActions({
         type: 'chart/setType',
         chartId,
         chartType: type,
-        defaultSpec: createDefaultChartSpec(type, dataset),
+        defaultSpec: createDefaultChartSpec(type),
       }))
     },
     setContainer: (key, value) => {

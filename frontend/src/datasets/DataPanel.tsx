@@ -1,9 +1,10 @@
-import { FileSpreadsheet } from 'lucide-react'
+import { FileSpreadsheet, LoaderCircle, TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 
 import DatasetProfileView from './DatasetProfileView'
 import DataTable from '../table/DataTable'
 import EmptyState from '../shared/ui/EmptyState'
+import type { EmptyStateProps } from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import SegmentedControl from '../shared/ui/SegmentedControl'
 
@@ -24,11 +25,6 @@ type DataPanelProps = {
   onSemanticRoleChange: (fieldName: string, role: SemanticRole) => void
 }
 
-type DataViewPlaceholder = {
-  description: string
-  title: string
-}
-
 // ===== CONSTANTS =============================================================
 const dataViewOptions: OptionItem<DataView>[] = [
   { label: 'Profile', value: 'profile' },
@@ -39,13 +35,19 @@ const dataViewOptions: OptionItem<DataView>[] = [
 function getProfileStatus(
   isLoading: boolean,
   error: string | null,
-): DataViewPlaceholder {
+): EmptyStateProps {
   if (isLoading) {
-    return { description: 'Profiling the dataset…', title: 'Loading profile' }
+    return {
+      description: 'Profiling the dataset…',
+      icon: <LoaderCircle className="spin" />,
+      title: 'Loading profile',
+    }
   }
   return {
     description: error ?? 'No profile is available for this dataset.',
+    icon: <TriangleAlert />,
     title: 'Profile unavailable',
+    tone: error ? 'danger' : 'neutral',
   }
 }
 

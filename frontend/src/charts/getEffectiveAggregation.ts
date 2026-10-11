@@ -1,0 +1,41 @@
+import type { Aggregation, ChartDataSpec } from './types'
+import type { DataField } from '../datasets/types'
+
+// An aggregated chart with only X set counts the rows per X value.
+export function getValueField(data: ChartDataSpec): string | undefined {
+  const { x, y } = data.encoding
+  return data.aggregation === 'none' ? y : (y ?? x)
+}
+
+// Only measures can be summed or averaged; any other field on Y is counted.
+export function isCountOnly(data: ChartDataSpec, fields: DataField[]): boolean {
+  if (data.aggregation === 'none') {
+    return false
+  }
+  if (!data.encoding.y) {
+    return Boolean(data.encoding.x)
+  }
+  const yField = fields.find((field) => field.name === data.encoding.y)
+  return yField !== undefined && yField.semantic_role !== 'measure'
+}
+
+export function getEffectiveAggregation(
+  data: ChartDataSpec,
+  fields: DataField[],
+): Aggregation {
+  return isCountOnly(data, fields) ? 'count' : data.aggregation
+}
+
+// Names the value axis after what is drawn, e.g. "Count of country".
+export function getValueLabel(
+  data: ChartDataSpec,
+  fields: DataField[],
+): string | undefined {
+  const valueField = getValueField(data)
+  if (!valueField) {
+    return undefined
+  }
+  return getEffectiveAggregation(data, fields) === 'count'
+    ? `Count of ${valueField}`
+    : valueField
+}

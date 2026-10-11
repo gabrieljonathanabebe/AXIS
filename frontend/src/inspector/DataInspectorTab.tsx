@@ -7,7 +7,7 @@ function DataInspectorTab({ actions, chart, fields }: ChartInspectorProps) {
   return (
     <div className="stack inspector-tab-content">
       <EncodingsWidget actions={actions} chart={chart} fields={fields} />
-      <AggregationWidget actions={actions} chart={chart} />
+      <AggregationWidget actions={actions} chart={chart} fields={fields} />
     </div>
   )
 }

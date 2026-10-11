@@ -13,6 +13,7 @@ type CreateTooltipOptionsParams = {
   selection: DataSelection | null
   spec: ChartSpec
   theme: ChartTheme
+  valueLabel: string | undefined
 }
 
 // ===== FUNCTION ==============================================================
@@ -22,6 +23,7 @@ export function createTooltipOption({
   selection,
   spec,
   theme,
+  valueLabel,
 }: CreateTooltipOptionsParams): TooltipComponentOption {
   const { tooltip } = spec.interaction
   return {
@@ -39,6 +41,7 @@ export function createTooltipOption({
       isSelectionSource,
       selection,
       spec,
+      valueLabel,
     }),
     show: tooltip.enabled,
     showDelay: tooltip.delay,
