@@ -68,20 +68,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   eigenen Render-Pfad im ECharts-Adapter, abgestimmt auf Theme und
   Chart-Größe
 
-## Drop-Slots für alle Encodings
-
-- die Achsen-Drop-Zonen in `ChartItem` sind nur bei Hover sichtbar,
-  hängen an der Achsengeometrie (im Empty State unsichtbar, bei
-  Pie/Donut ohne Achsen) und decken nur X und Y ab
-- stattdessen beim Ziehen eines Felds ein Overlay mit einem Slot pro
-  Encoding aus `definition.encodings` (z. B. X Axis, Y Axis, Series,
-  Color, Size), sichtbar während des ganzen Drags
-- Kompatibilität über `getSemanticCompatibility` mit der Rolle des
-  gezogenen Felds: empfohlen betont, unterstützt normal, ungültig
-  deaktiviert; belegte Slots zeigen das aktuelle Feld
-- Drop-Target `{ kind: 'encoding', encodingKey }` bleibt; alte
-  Achsen-Zonen und ihr CSS entfallen
-
 ## Temporal als Unterart von Dimension
 
 - in gängigen Semantic Layern (Tableau, Looker, dbt) ist Zeit eine Art

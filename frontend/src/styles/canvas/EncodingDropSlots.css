@@ -1,0 +1,95 @@
+.encoding-drop-slots {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: var(--space-2);
+  padding: var(--space-6) max(var(--space-6), calc(50% - 180px));
+  border-radius: inherit;
+}
+
+/* Pushes the chart behind the slots; relies on the slots being first child. */
+.encoding-drop-slots ~ * {
+  opacity: 0.2;
+}
+
+.encoding-drop-slot {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--color-surface-overlay);
+  border: var(--border-width-thin) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.encoding-drop-slot-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.encoding-drop-slot-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.encoding-drop-slot-hint {
+  color: var(--color-accent);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.encoding-drop-slot-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.encoding-drop-slot.is-filled .encoding-drop-slot-value {
+  color: var(--color-text-primary);
+}
+
+.encoding-drop-slot.is-recommended {
+  background:
+    linear-gradient(var(--color-accent-soft), var(--color-accent-soft)),
+    var(--color-surface-overlay);
+  border-color: var(--color-accent);
+}
+
+.encoding-drop-slot.is-recommended .encoding-drop-slot-label {
+  color: var(--color-accent);
+}
+
+.encoding-drop-slot.is-invalid {
+  opacity: 0.45;
+}
+
+.encoding-drop-slot.is-invalid .encoding-drop-slot-value {
+  color: var(--color-text-disabled);
+}
+
+.encoding-drop-slot.is-over {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-accent);
+}
+
+.encoding-drop-slot.is-over .encoding-drop-slot-label,
+.encoding-drop-slot.is-over .encoding-drop-slot-hint,
+.encoding-drop-slot.is-over .encoding-drop-slot-value {
+  color: var(--color-text-inverse);
+}

@@ -1,5 +1,5 @@
 import { GripHorizontal } from 'lucide-react'
-import { useDraggable, useDroppable } from '@dnd-kit/core'
+import { useDraggable } from '@dnd-kit/core'
 import { useEffect, useRef, useState } from 'react'
 
 import type { WorkspaceCommands } from '../app/types'
@@ -8,26 +8,22 @@ import type {
   ChartLayoutMode,
   DataSelection,
   DragPayload,
-  DropTarget,
 } from '../workspace/types'
 import type { AxisTitleEdit } from './types'
 
 import CommandButton from '../app/CommandButton'
 import EChartCanvas from './EChartCanvas'
 import EditableText from '../shared/ui/EditableText'
+import EncodingDropSlots from './EncodingDropSlots'
 import InlineTextInput from '../shared/ui/InlineTextInput'
 import { getChartDefinition } from './chartDefinitions'
 import { getChartTitle, getDefaultChartTitle } from './getChartTitle'
 import { moveChartLayout, resizeChartLayout } from '../workspace/chartLayout'
 
 import type { CSSProperties, KeyboardEvent } from 'react'
-import type {
-  ChartContainerBackground,
-  ChartEncoding,
-  ChartInstance,
-} from './types'
+import type { ChartContainerBackground, ChartInstance } from './types'
 
-import type { Dataset } from '../datasets/types'
+import type { DataField, Dataset } from '../datasets/types'
 import type { GridDelta } from '../workspace/chartLayout'
 
 type ChartItemStyle = CSSProperties & {
@@ -42,47 +38,10 @@ type ChartItemProps = {
   commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
-  isDraggingField: boolean
+  draggedField: DataField | null
   isSelected: boolean
   selection: DataSelection | null
   style: CSSProperties
-}
-
-type AxisDropZoneProps = {
-  axis: keyof ChartEncoding
-  chartId: string
-  isDraggingField: boolean
-  label: string
-}
-
-function AxisDropZone({
-  axis,
-  chartId,
-  isDraggingField,
-  label,
-}: AxisDropZoneProps) {
-  const target: DropTarget = {
-    chartId,
-    encodingKey: axis,
-    kind: 'encoding',
-  }
-  const { isOver, setNodeRef } = useDroppable({
-    data: { target },
-    disabled: !isDraggingField,
-    id: `chart:${chartId}:encoding:${axis}`,
-  })
-  return (
-    <div
-      aria-label={`Drop field to set ${label}`}
-      className={`axis-drop-zone ${axis}-axis-drop-zone ${isOver ? 'is-over' : ''}`}
-      ref={setNodeRef}
-    >
-      <span className="axis-highlight-line" />
-      <span className="axis-highlight-dot axis-highlight-dot-start" />
-      <span className="axis-highlight-dot axis-highlight-dot-end" />
-      <span className="axis-drop-label">Drop here to set {label}</span>
-    </div>
-  )
 }
 
 type ChartLayoutHandleProps = {
@@ -170,7 +129,7 @@ function ChartItem({
   commands,
   dataset,
   datasetId,
-  isDraggingField,
+  draggedField,
   isSelected,
   selection,
   style,
@@ -180,10 +139,6 @@ function ChartItem({
   const [hoveredAxisTitle, setHoveredAxisTitle] =
     useState<AxisTitleEdit | null>(null)
   const definition = getChartDefinition(chart.type)
-  const xLabel =
-    definition.encodings.find((encoding) => encoding.key === 'x')?.label ?? 'X'
-  const yLabel =
-    definition.encodings.find((encoding) => encoding.key === 'y')?.label ?? 'Y'
   const { container } = chart
   const { background } = container
   const title = chart.spec.appearance.title
@@ -253,8 +208,6 @@ function ChartItem({
     <div
       aria-label={getChartTitle(chart, dataset.fields)}
       className={`chart-item ${backgroundClassName} ${
-        title.enabled ? 'has-header' : ''
-      } ${isDraggingField ? 'is-dragging-field' : ''} ${
         isSelected ? 'is-selected' : ''
       }`}
       ref={itemRef}
@@ -265,20 +218,14 @@ function ChartItem({
       onKeyDown={handleKeyDown}
       onPointerDown={() => actions.selectChart(chart.id)}
     >
-      <div className="chart-encoding-overlay">
-        <AxisDropZone
-          axis="x"
+      {draggedField ? (
+        <EncodingDropSlots
           chartId={chart.id}
-          isDraggingField={isDraggingField}
-          label={xLabel}
+          definition={definition}
+          encoding={chart.spec.data.encoding}
+          field={draggedField}
         />
-        <AxisDropZone
-          axis="y"
-          chartId={chart.id}
-          isDraggingField={isDraggingField}
-          label={yLabel}
-        />
-      </div>
+      ) : null}
       {hoveredAxisTitle && !axisTitleEdit ? (
         <span
           className={`editable-text-highlight chart-axis-title-hover is-${hoveredAxisTitle.axis}-axis`}

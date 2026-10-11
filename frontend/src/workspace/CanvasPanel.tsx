@@ -8,7 +8,7 @@ import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import type { AskCevynState } from '../ai/useAskCevyn'
 import type { ChartInstance } from '../charts/types'
-import type { Dataset } from '../datasets/types'
+import type { DataField, Dataset } from '../datasets/types'
 import type { CanvasActions, DashboardSpec, DataSelection } from './types'
 import type { WorkspaceCommands } from '../app/types'
 
@@ -20,7 +20,7 @@ type CanvasPanelProps = {
   dashboard: DashboardSpec
   dataset: Dataset
   datasetId: string | null
-  isDraggingField: boolean
+  draggedField: DataField | null
   recoverFocus?: boolean
   selectedChartId: string | null
   selection: DataSelection | null
@@ -36,7 +36,7 @@ function CanvasPanel({
   dashboard,
   dataset,
   datasetId,
-  isDraggingField,
+  draggedField,
   selectedChartId,
   selection,
   onAskCevyn,
@@ -73,7 +73,7 @@ function CanvasPanel({
           dataset={dataset}
           datasetId={datasetId}
           gap={dashboard.layout.gap}
-          isDraggingField={isDraggingField}
+          draggedField={draggedField}
           selectedChartId={selectedChartId}
           selection={selection}
         >

@@ -633,7 +633,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                      |
 | Rotation Dial                | Axis Label Rotation             | drehen statt Gradzahl eintippen                  | implementiert (`RotationDial`)                               |
 | Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)        |
-| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | teilweise (X/Y-Achsen im Chart)                              |
+| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | implementiert (`EncodingDropSlots`)                          |
 | Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)              |
 | Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
 | Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`, `AlignmentControl`)          |
@@ -1156,3 +1156,23 @@ kein Drop Target. Während des Drags zeigt ein gestrichelter Platzhalter
 (`chart-drop-preview`) Größe und Position des neuen Charts. Er nutzt
 dieselbe Berechnung wie das Einfügen (`findFreeChartLayout` mit
 `DEFAULT_CHART_SIZE`).
+
+Felder werden auf `EncodingDropSlots` gezogen. Während des ganzen
+Feld-Drags liegt über jedem Chart ein Overlay mit einem Slot pro
+Encoding aus `definition.encodings`, auch im Empty State und bei Charts
+ohne Achsen. Der Chart dahinter tritt per Opacity zurück, ohne Blur.
+Die Slots stehen zentriert in einem 2er-Grid und zeigen ihren Zustand:
+
+- recommended: Akzentrand, Akzenttönung, Akzent-Label und der Hinweis
+  „Recommended“ neben dem Label;
+- supported: neutraler Rand;
+- invalid: ausgegraut mit ⊘ und „Not compatible“, nimmt keinen Drop an;
+- leer: „Drop here“;
+- belegt: „Replaces <Feld>“;
+- is-over: volle Akzentfläche mit Glow und invertierter Schrift.
+
+Die Einstufung kommt aus `getSemanticCompatibility` mit der Semantic
+Role des gezogenen Felds. Die Wertzeile beschreibt, was der Drop
+bewirkt, nicht nur den Inhalt des Slots. So bezieht sich
+„Recommended“ erkennbar auf das gezogene Feld und nicht auf das Feld,
+das gerade im Slot liegt.

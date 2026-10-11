@@ -44,6 +44,7 @@
 @import './styles/canvas/CanvasPanel.css';
 @import './styles/canvas/ChartItem.css';
 @import './styles/canvas/EChartCanvas.css';
+@import './styles/canvas/EncodingDropSlots.css';
 
 @import './styles/data/DataTable.css';
 @import './styles/data/DataPanel.css';

@@ -682,12 +682,16 @@ Features. Bisher umgesetzt:
   weicht der Legend aus; Line-Symbole nur bis 30 Punkte
 - Liquid Glass ohne weißen Glanz; Thin- und Regular-Glass beginnen
   transparent
+- Drop-Slots für alle Encodings: beim Feld-Drag ein Overlay mit einem
+  Slot pro Encoding (`EncodingDropSlots`), Kompatibilität über
+  `getSemanticCompatibility`, ungültige Slots deaktiviert; ersetzt die
+  Achsen-Drop-Zonen und ihre `--chart-grid-*`-Werte in `ChartItem.css`
 - verifiziert: `tsc`, `npm run lint`, Prettier und `npm run build`;
   Optik und Verhalten im Browser
 
 Offen in diesem Slice: Abstand Panel-Header, Zahlenformatierung,
 generische Props für Shared Controls, Canvas-Toolbar,
-Chart-Zusammenfassung, Dashboard-Einstellungen, Drop-Slots.
+Chart-Zusammenfassung, Dashboard-Einstellungen.
 
 ## 6. Later – Visualization Completion
 
@@ -976,8 +980,6 @@ waren:
   in allen Charts einheitlich.
 - Die Selection unterstützt nur einen Wert; es gibt keine
   Mehrfachauswahl.
-- Die Grid-Abstände des Plots stehen doppelt in `createEChartOption`
-  und als `--chart-grid-*` in `ChartItem.css` (für die Achsen-Drop-Zones).
 - Ein späterer PNG-/SVG-Export über ECharts enthält den HTML-Titel und
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden

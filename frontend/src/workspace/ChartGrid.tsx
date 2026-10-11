@@ -12,7 +12,7 @@ import {
 } from './chartLayout'
 
 import type { ChartInstance, ChartLayout } from '../charts/types'
-import type { Dataset } from '../datasets/types'
+import type { DataField, Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
 import type {
   CanvasActions,
@@ -34,7 +34,7 @@ type ChartGridProps = {
   dataset: Dataset
   datasetId: string | null
   gap: number
-  isDraggingField: boolean
+  draggedField: DataField | null
   selectedChartId: string | null
   selection: DataSelection | null
 }
@@ -113,7 +113,7 @@ function ChartGrid({
   dataset,
   datasetId,
   gap,
-  isDraggingField,
+  draggedField,
   selectedChartId,
   selection,
 }: ChartGridProps) {
@@ -192,7 +192,7 @@ function ChartGrid({
             commands={commands}
             dataset={dataset}
             datasetId={datasetId}
-            isDraggingField={isDraggingField}
+            draggedField={draggedField}
             isSelected={chart.id === selectedChartId}
             key={chart.id}
             selection={selection}

@@ -125,7 +125,9 @@ function App() {
               dashboard={dashboard}
               dataset={dataset}
               datasetId={datasetId}
-              isDraggingField={activeDrag?.kind === 'field'}
+              draggedField={
+                activeDrag?.kind === 'field' ? activeDrag.field : null
+              }
               selectedChartId={selectedChartId}
               selection={selection}
               onAskCevyn={askCevyn}

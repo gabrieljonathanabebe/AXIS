@@ -9,13 +9,6 @@
     var(--chart-canvas-inset),
     calc(var(--chart-radius, 0px) / 2)
   );
-  --chart-content-top: var(--chart-canvas-inset);
-  --chart-grid-top: 56px;
-  --chart-grid-right: 56px;
-  --chart-grid-bottom: 72px;
-  --chart-grid-left: 88px;
-  --axis-hit-size: 92px;
-  --axis-line-offset: calc(var(--axis-hit-size) / 2);
   color: var(--color-text-secondary);
   border-radius: var(--chart-radius, var(--radius-lg));
   overflow: hidden;
@@ -56,147 +49,6 @@
   outline: none;
 }
 
-.chart-encoding-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.axis-drop-zone {
-  position: absolute;
-  color: var(--color-accent);
-  pointer-events: none;
-}
-
-.x-axis-drop-zone {
-  right: calc(var(--chart-handle-size) + var(--chart-grid-right));
-  bottom: calc(
-    var(--chart-handle-size) + var(--chart-grid-bottom) -
-      var(--axis-line-offset)
-  );
-  left: calc(var(--chart-handle-size) + var(--chart-grid-left));
-  height: var(--axis-hit-size);
-}
-
-.y-axis-drop-zone {
-  top: calc(var(--chart-content-top) + var(--chart-grid-top));
-  bottom: calc(var(--chart-handle-size) + var(--chart-grid-bottom));
-  left: calc(
-    var(--chart-handle-size) + var(--chart-grid-left) - var(--axis-line-offset)
-  );
-  width: var(--axis-hit-size);
-}
-
-.axis-highlight-line,
-.axis-highlight-dot,
-.axis-drop-label {
-  position: absolute;
-  opacity: 0;
-  transition:
-    opacity var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.axis-highlight-line {
-  background: var(--color-accent);
-  box-shadow: var(--shadow-accent);
-}
-
-.x-axis-drop-zone .axis-highlight-line {
-  right: 0;
-  bottom: var(--axis-line-offset);
-  left: 0;
-  height: 2px;
-}
-
-.y-axis-drop-zone .axis-highlight-line {
-  top: calc(
-    var(--chart-canvas-inset) + var(--chart-header-height) +
-      var(--chart-grid-top)
-  );
-  bottom: 0;
-  left: var(--axis-line-offset);
-  width: 2px;
-}
-
-.axis-highlight-dot {
-  width: 12px;
-  height: 12px;
-  background: var(--color-background);
-  border: var(--border-width-thick) solid var(--color-accent);
-  border-radius: var(--radius-pill);
-  box-shadow: var(--shadow-accent);
-}
-
-.x-axis-drop-zone .axis-highlight-dot {
-  bottom: calc(var(--axis-line-offset) - 5px);
-}
-
-.x-axis-drop-zone .axis-highlight-dot-start {
-  left: -6px;
-}
-
-.x-axis-drop-zone .axis-highlight-dot-end {
-  right: -6px;
-}
-
-.y-axis-drop-zone .axis-highlight-dot {
-  left: calc(var(--axis-line-offset) - 5px);
-}
-
-.y-axis-drop-zone .axis-highlight-dot-start {
-  top: -6px;
-}
-
-.y-axis-drop-zone .axis-highlight-dot-end {
-  bottom: -6px;
-}
-
-.axis-drop-label {
-  padding: 0 var(--space-3);
-  color: var(--color-accent);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  text-shadow: 0 0 16px var(--color-accent);
-  white-space: nowrap;
-}
-
-.x-axis-drop-zone .axis-drop-label {
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-}
-
-.y-axis-drop-zone .axis-drop-label {
-  top: 50%;
-  left: 0;
-  transform: rotate(-90deg) translateX(-50%) translateY(-8px);
-  transform-origin: left center;
-}
-
-.axis-drop-zone.is-over .axis-highlight-line,
-.axis-drop-zone.is-over .axis-highlight-dot,
-.axis-drop-zone.is-over .axis-drop-label {
-  opacity: 1;
-}
-
-.x-axis-drop-zone.is-over .axis-drop-label {
-  transform: translateX(-50%);
-}
-
-.y-axis-drop-zone.is-over .axis-drop-label {
-  transform: rotate(-90deg) translateX(-50%);
-}
-
-.chart-item.is-dragging-field .axis-drop-zone {
-  pointer-events: auto;
-}
-
-.chart-item.is-dragging-field .chart-encoding-overlay {
-  pointer-events: auto;
-}
-
 .chart-layout-handle {
   position: absolute;
   z-index: 3;
@@ -218,12 +70,6 @@
 .chart-move-handle svg {
   opacity: 0;
   transition: opacity var(--transition-fast);
-}
-
-.chart-item.has-header {
-  --chart-content-top: calc(
-    var(--chart-header-top) + var(--chart-header-height)
-  );
 }
 
 .chart-item-header {

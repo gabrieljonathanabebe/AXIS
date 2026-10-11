@@ -885,6 +885,12 @@ Daten statt über ID-Strings:
 - `DropTarget`: `canvas` oder `encoding` mit `chartId` und
   `encodingKey`.
 
+Das gezogene Feld (`draggedField`) wird von `App` bis `ChartItem`
+gereicht. `EncodingDropSlots` bewertet jeden Slot über
+`getSemanticCompatibility` und deaktiviert ungültige Droppables.
+`useWorkspaceDnd` erhält deshalb nur gültige Encoding-Drops und prüft
+die Kompatibilität nicht erneut.
+
 ## 9. Inspector Architecture
 
 Chart Inspector:
