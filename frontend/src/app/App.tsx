@@ -1,7 +1,9 @@
 import { DndContext } from '@dnd-kit/core'
+import { useState } from 'react'
 
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
+import ChartFormatPopover from '../inspector/ChartFormatPopover'
 import { createInspectorActions } from '../inspector/createInspectorActions'
 import DataPanel from '../datasets/DataPanel'
 import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
@@ -13,6 +15,8 @@ import { useChartWorkspace } from '../workspace/useChartWorkspace'
 import { useDatasets } from '../datasets/useDatasets'
 import { useWorkspaceCommands } from './useWorkspaceCommands'
 import { useWorkspaceLayout } from './useWorkspaceLayout'
+
+import type { ChartFormatTarget } from '../inspector/types'
 
 function App() {
   const {
@@ -56,6 +60,13 @@ function App() {
     dispatch,
     selectedChartId,
   })
+
+  // Format popovers belong to the selected chart and close when it changes.
+  const [formatTarget, setFormatTarget] = useState<ChartFormatTarget | null>(
+    null,
+  )
+  const activeFormatTarget =
+    formatTarget?.chartId === selectedChartId ? formatTarget : null
 
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
@@ -128,9 +139,11 @@ function App() {
               draggedField={
                 activeDrag?.kind === 'field' ? activeDrag.field : null
               }
+              formatTarget={activeFormatTarget}
               selectedChartId={selectedChartId}
               selection={selection}
               onAskCevyn={askCevyn}
+              onFormatElement={setFormatTarget}
               onRenameDashboard={renameDashboard}
             />
             <InspectorPanel
@@ -142,6 +155,15 @@ function App() {
               onRenameDashboard={renameDashboard}
               onToggleCollapse={toggleInspector}
             />
+            {selectedChart && activeFormatTarget ? (
+              <ChartFormatPopover
+                actions={inspectorActions}
+                chart={selectedChart}
+                fields={dataset.fields}
+                target={activeFormatTarget}
+                onClose={() => setFormatTarget(null)}
+              />
+            ) : null}
           </main>
           <main className="workspace" hidden={activeWorkspace !== 'data'}>
             <DataPanel

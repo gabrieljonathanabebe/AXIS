@@ -351,20 +351,36 @@ ECharts click/mouseover (axisName)
 → chart/updateAppearance
 ```
 
-Das Formatieren einer Achse direkt am Chart nutzt dasselbe
+Das Formatieren eines Elements direkt am Chart nutzt dasselbe
 Hover-Event: `ChartItem` merkt sich die zuletzt gehoverte Achse und
-zeigt am ausgewählten Chart einen Stift. Der öffnet ein `Popover`
-neben dem Chart mit dem `AxisWidget` (Variante `bare`); Änderungen
-laufen über `chart/updateAppearance` wie im Inspector. Solange das
-Popover offen ist, legt `syncAxisHighlight` nach dem Rendern
-Editor-Zustand in die ECharts-Instanz (bearbeitete Achse leuchtet,
-Rest gedimmt), analog zu `syncAxisTitleEdit` und `syncBrush`. Dieser
-Zustand gehört nicht zur `ChartSpec` und verschwindet mit dem nächsten
-vollständigen `setOption`.
+zeigt am ausgewählten Chart einen Stift. Ein Klick meldet nur Element
+und Anker nach oben (`onFormatElement`); `ChartItem` kennt keine
+Inspector-Widgets.
 
-Offen: `ChartItem` importiert dafür `AxisWidget` aus `inspector/`.
-Geplant ist ein Editor-Host mit dem Zustand „Chart + Element“, der das
-passende Widget zeigt (siehe `ROADMAP.md`).
+```text
+Stift in ChartItem
+→ onFormatElement(element, anchor)
+→ ChartGrid ergänzt chartId → ChartFormatTarget
+→ App: formatTarget (React State, nicht im Reducer)
+→ ChartFormatPopover (inspector/) mit dem Widget in Variante bare
+→ inspectorActions.setAppearance → chart/updateAppearance
+```
+
+- `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
+  Elemente als Schlüssel von `ChartAppearanceSpec`, aktuell
+  `xAxis | yAxis`.
+- `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
+  DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
+  für den ausgewählten Chart und schließt, sobald sich die Auswahl
+  ändert.
+- `ChartFormatPopover` nutzt dieselben `inspectorActions` und denselben
+  ausgewählten Chart wie das `InspectorPanel`; es ist eine zweite
+  Darstellung derselben Bearbeitung.
+- Solange das Popover offen ist, legt `syncAxisHighlight` nach dem
+  Rendern Editor-Zustand in die ECharts-Instanz (bearbeitete Achse
+  leuchtet, Rest gedimmt), analog zu `syncAxisTitleEdit` und
+  `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und
+  verschwindet mit dem nächsten vollständigen `setOption`.
 
 Chart-Content wird über eine typsichere Registry erzeugt:
 

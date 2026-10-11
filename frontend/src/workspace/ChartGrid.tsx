@@ -11,6 +11,7 @@ import {
   resizeChartLayout,
 } from './chartLayout'
 
+import type { ChartFormatTarget } from '../inspector/types'
 import type { ChartInstance, ChartLayout } from '../charts/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
@@ -35,8 +36,10 @@ type ChartGridProps = {
   datasetId: string | null
   gap: number
   draggedField: DataField | null
+  formatTarget: ChartFormatTarget | null
   selectedChartId: string | null
   selection: DataSelection | null
+  onFormatElement: (target: ChartFormatTarget) => void
 }
 
 type LayoutPreview = {
@@ -114,8 +117,10 @@ function ChartGrid({
   datasetId,
   gap,
   draggedField,
+  formatTarget,
   selectedChartId,
   selection,
+  onFormatElement,
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
   const { active } = useDndContext()
@@ -193,10 +198,16 @@ function ChartGrid({
             dataset={dataset}
             datasetId={datasetId}
             draggedField={draggedField}
+            formattedElement={
+              formatTarget?.chartId === chart.id ? formatTarget.element : null
+            }
             isSelected={chart.id === selectedChartId}
             key={chart.id}
             selection={selection}
             style={getGridArea(layout)}
+            onFormatElement={(element, anchor) =>
+              onFormatElement({ anchor, chartId: chart.id, element })
+            }
           />
         )
       })}

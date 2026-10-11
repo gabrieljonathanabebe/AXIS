@@ -52,5 +52,6 @@
 @import './styles/data/DataProfile.css';
 
 @import './styles/dnd/DragPreviewOverlay.css';
+@import './styles/inspector/ChartFormatPopover.css';
 @import './styles/inspector/InspectorTabs.css';
 @import './styles/inspector/InspectorWidget.css';

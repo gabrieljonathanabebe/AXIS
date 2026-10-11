@@ -738,22 +738,23 @@ Bisher umgesetzt (X- und Y-Achse):
 - automatische Titel als Platzhalter: `getDefaultAxisTitle` für
   Achsen (Popover, Inspector, Inline-Editing), `getDefaultChartTitle`
   im Inspector
+- Editor-Host: `formatTarget` („Chart + Element + Anker“) in `App`,
+  `ChartFormatPopover` in `inspector/` zeigt das Widget mit denselben
+  `inspectorActions` wie der Inspector; `ChartItem` meldet nur noch
+  Element und Anker und importiert nichts mehr aus `inspector/`
 - verifiziert: `tsc`, `npm run lint`, Prettier; Verhalten im Browser
 
 Als Nächstes:
 
-1. Editor-Host: ein Zustand „Chart + Element“ und eine Stelle, die das
-   passende Widget zeigt; die Popovers ziehen aus `ChartItem` heraus
-2. Titel und Legende nach demselben Muster
-3. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
-4. Serien-Klick für Marks und Farben
-5. Toolbar-Trigger für Container und Hintergrund
-6. X für Encodings im Build Panel
+1. Titel und Legende nach demselben Muster
+2. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
+3. Serien-Klick für Marks und Farben
+4. Toolbar-Trigger für Container und Hintergrund
+5. X für Encodings im Build Panel
 
-Offen: `ChartItem` (`charts/`) importiert `AxisWidget` aus
-`inspector/`; das löst sich mit dem Editor-Host bzw. wenn die Widgets
-den Inspector verlassen. Die generischen Props für Shared Controls
-werden dabei mit angegangen (siehe `TODO.md`).
+Offen: wo die Widgets liegen, wenn der Inspector wegfällt; die
+generischen Props für Shared Controls werden dabei mit angegangen
+(siehe `TODO.md`).
 
 ## 6. Later – Visualization Completion
 

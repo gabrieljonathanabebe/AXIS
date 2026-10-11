@@ -1,0 +1,12 @@
+.chart-format-popover {
+  --glass-border: var(--color-border-accent);
+  --glass-fill: var(--glass-fill-elevated);
+  --glass-shadow: var(--shadow-lg), var(--shadow-accent);
+
+  z-index: 100;
+  width: min(280px, calc(100vw - 32px));
+  max-height: min(560px, calc(100dvh - 32px));
+  overflow-y: auto;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}

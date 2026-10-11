@@ -349,7 +349,12 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   angeben, bei bestehenden Dateien mit Zeilenanker auf die
   Einfügestelle, z. B.
   `[createAxesOptions.ts:97](frontend/src/charts/echarts/createAxesOptions.ts#L97)`
-  oder für einen Bereich `#L97-L99`; neue Dateien ohne Zeilenanker;
+  oder für einen Bereich `#L97-L99`; bei mehrdeutigen Dateinamen (z. B.
+  `types.ts`) den Ordner im Linktext mitnennen;
+- neue Dateien ohne Zeilenanker und mit dem vollständigen Pfad ab
+  Repo-Root als Linktext, z. B.
+  „Neue Datei `frontend/src/inspector/ChartFormatPopover.tsx`“, da
+  der Link selbst noch auf keine Datei zeigt;
 - Zeilennummern vor jedem Block aus dem aktuell gespeicherten Stand
   bestimmen, da sie sich durch vorherige Blöcke verschieben;
 - keinen Code in Fließtext oder Aufzählungspunkte packen;

@@ -4,6 +4,7 @@ import type {
   ChartContainerAppearance,
   ChartDataSpec,
   ChartEncoding,
+  ChartFormatElement,
   ChartInstance,
   ChartInteractionSpec,
   ChartMarkKey,
@@ -64,6 +65,13 @@ export type InspectorActions = {
   setDashboardLayout: SetDashboardLayout
   setEncodingField: SetEncodingField
   setInteraction: SetInteraction
+}
+
+/** The chart element whose format popover is open, anchored to its chart. */
+export type ChartFormatTarget = {
+  anchor: HTMLElement
+  chartId: string
+  element: ChartFormatElement
 }
 
 export type ChartInspectorProps = {

@@ -10,6 +10,7 @@ import type { AskCevynState } from '../ai/useAskCevyn'
 import type { ChartInstance } from '../charts/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { CanvasActions, DashboardSpec, DataSelection } from './types'
+import type { ChartFormatTarget } from '../inspector/types'
 import type { WorkspaceCommands } from '../app/types'
 
 type CanvasPanelProps = {
@@ -21,10 +22,12 @@ type CanvasPanelProps = {
   dataset: Dataset
   datasetId: string | null
   draggedField: DataField | null
+  formatTarget: ChartFormatTarget | null
   recoverFocus?: boolean
   selectedChartId: string | null
   selection: DataSelection | null
   onAskCevyn: (prompt: string) => void
+  onFormatElement: (target: ChartFormatTarget) => void
   onRenameDashboard: (name: string) => void
 }
 
@@ -37,9 +40,11 @@ function CanvasPanel({
   dataset,
   datasetId,
   draggedField,
+  formatTarget,
   selectedChartId,
   selection,
   onAskCevyn,
+  onFormatElement,
   onRenameDashboard,
 }: CanvasPanelProps) {
   return (
@@ -74,8 +79,10 @@ function CanvasPanel({
           datasetId={datasetId}
           gap={dashboard.layout.gap}
           draggedField={draggedField}
+          formatTarget={formatTarget}
           selectedChartId={selectedChartId}
           selection={selection}
+          onFormatElement={onFormatElement}
         >
           {charts.length === 0 ? (
             <EmptyState

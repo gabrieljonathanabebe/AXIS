@@ -95,6 +95,12 @@ export type ChartEncoding = {
   series?: string
 }
 
+/** Chart elements that can be formatted directly on the chart. */
+export type ChartFormatElement = keyof Pick<
+  ChartAppearanceSpec,
+  'xAxis' | 'yAxis'
+>
+
 export type ChartInstance = {
   id: string
   type: ChartType
