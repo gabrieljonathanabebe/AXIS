@@ -28,12 +28,7 @@ export type AxisLabelsAppearance = {
 
 export type AxisTitleEdit = {
   axis: 'x' | 'y'
-  rect: {
-    height: number
-    width: number
-    x: number
-    y: number
-  }
+  rect: ChartElementRect
 }
 
 export type AxisTitleStyle = {
@@ -86,6 +81,14 @@ export type ChartDataSpec = {
   colorAggregation: GroupAggregation
 }
 
+/** Bounds of a chart element inside the chart item, in pixels. */
+export type ChartElementRect = {
+  height: number
+  width: number
+  x: number
+  y: number
+}
+
 // Field names; roles and types are resolved from the dataset when read.
 export type ChartEncoding = {
   x?: string
@@ -98,7 +101,7 @@ export type ChartEncoding = {
 /** Chart elements that can be formatted directly on the chart. */
 export type ChartFormatElement = keyof Pick<
   ChartAppearanceSpec,
-  'title' | 'xAxis' | 'yAxis'
+  'legend' | 'title' | 'xAxis' | 'yAxis'
 >
 
 export type ChartInstance = {

@@ -9,7 +9,11 @@ import type {
   DataSelection,
   DragPayload,
 } from '../workspace/types'
-import type { AxisTitleEdit, ChartFormatElement } from './types'
+import type {
+  AxisTitleEdit,
+  ChartElementRect,
+  ChartFormatElement,
+} from './types'
 
 import CommandButton from '../app/CommandButton'
 import EChartCanvas from './EChartCanvas'
@@ -31,11 +35,11 @@ import type { ChartContainerBackground, ChartInstance } from './types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { GridDelta } from '../workspace/chartLayout'
 
-type FormatButtonPlacement = 'above' | 'after' | 'before'
+type FormatButtonPlacement = 'above' | 'after' | 'before' | 'corner'
 
 type FormatHint = {
   element: ChartFormatElement
-  rect: AxisTitleEdit['rect']
+  rect: ChartElementRect
   placement: FormatButtonPlacement
 }
 
@@ -76,10 +80,14 @@ const layoutHandleLabels: Record<ChartLayoutMode, string> = {
   w: 'Resize chart from left edge',
 }
 
+/** Elements that are areas rather than text; they show their bounds. */
+const REGION_ELEMENTS: ReadonlySet<ChartFormatElement> = new Set(['legend'])
+
 /** Room the pencil needs next to an element, including its gap. */
 const FORMAT_BUTTON_SPACE = 32
 
 const formatButtonLabels: Record<ChartFormatElement, string> = {
+  legend: 'Format legend',
   title: 'Format title',
   xAxis: 'Format X axis',
   yAxis: 'Format Y axis',
@@ -134,14 +142,20 @@ function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
 }
 
 /**
- * Places the pencil above the rotated y axis title; all other elements get
- * it on the right, or on the left when the chart edge leaves no room.
+ * Places the format pencil next to an element where the chart has room.
+ * @param element Element whose pencil is placed.
+ * @param rect Bounds of the element inside the chart item.
+ * @param itemWidth Width of the chart item.
+ * @returns Above, after or before the element.
  */
 function getFormatButtonPlacement(
   element: ChartFormatElement,
-  rect: AxisTitleEdit['rect'],
+  rect: ChartElementRect,
   itemWidth: number,
 ): FormatButtonPlacement {
+  if (REGION_ELEMENTS.has(element)) {
+    return 'corner'
+  }
   if (element === 'yAxis') {
     return 'above'
   }
@@ -160,14 +174,13 @@ function getFormatButtonStyle({ placement, rect }: FormatHint): CSSProperties {
       return { left: rect.x + rect.width, top: middle }
     case 'before':
       return { left: rect.x, top: middle }
+    case 'corner':
+      return { left: rect.x + rect.width, top: rect.y }
   }
 }
 
 /** Measures an element relative to the chart item, like the ECharts rects. */
-function getRectInItem(
-  target: Element,
-  item: HTMLElement,
-): AxisTitleEdit['rect'] {
+function getRectInItem(target: Element, item: HTMLElement): ChartElementRect {
   const targetRect = target.getBoundingClientRect()
   const itemRect = item.getBoundingClientRect()
   return {
@@ -178,12 +191,13 @@ function getRectInItem(
   }
 }
 
-function getAxisTitleHoverStyle({
+/** Positions an overlay exactly over a rect. */
+function getRectStyle({
   height,
   width,
   x,
   y,
-}: AxisTitleEdit['rect']): CSSProperties {
+}: ChartElementRect): CSSProperties {
   return {
     height,
     left: x,
@@ -215,6 +229,7 @@ function ChartItem({
   const { background } = container
   const title = chart.spec.appearance.title
   const backgroundClassName = backgroundClassNames[background.kind]
+  const canShowFormatHint = isSelected && !axisTitleEdit && !formattedElement
   const itemStyle: ChartItemStyle = {
     ...style,
     '--chart-canvas-inset': `${container.padding}px`,
@@ -287,7 +302,7 @@ function ChartItem({
   /** Shows the format pencil of an element where the chart has room. */
   function showFormatHint(
     element: ChartFormatElement,
-    rect: AxisTitleEdit['rect'],
+    rect: ChartElementRect,
   ): void {
     const itemWidth = itemRef.current?.clientWidth ?? 0
     setFormatHint({
@@ -338,7 +353,15 @@ function ChartItem({
       {hoveredAxisTitle && !axisTitleEdit ? (
         <span
           className={`editable-text-highlight chart-axis-title-hover is-${hoveredAxisTitle.axis}-axis`}
-          style={getAxisTitleHoverStyle(hoveredAxisTitle.rect)}
+          style={getRectStyle(hoveredAxisTitle.rect)}
+        />
+      ) : null}
+      {canShowFormatHint &&
+      formatHint &&
+      REGION_ELEMENTS.has(formatHint.element) ? (
+        <span
+          className="chart-format-region"
+          style={getRectStyle(formatHint.rect)}
         />
       ) : null}
 
@@ -351,6 +374,7 @@ function ChartItem({
         formattedElement={formattedElement}
         onEditAxisTitle={handleEditAxisTitle}
         onHoverAxisTitle={handleHoverAxisTitle}
+        onHoverLegend={(rect) => showFormatHint('legend', rect)}
         selection={selection}
       />
       {title.enabled ? (
@@ -393,7 +417,7 @@ function ChartItem({
           onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
         />
       ) : null}
-      {isSelected && formatHint && !axisTitleEdit ? (
+      {canShowFormatHint && formatHint ? (
         <IconButton
           className={`chart-format-button is-${formatHint.placement}`}
           label={formatButtonLabels[formatHint.element]}

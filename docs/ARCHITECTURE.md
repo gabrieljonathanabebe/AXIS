@@ -352,9 +352,12 @@ ECharts click/mouseover (axisName)
 ```
 
 Das Formatieren eines Elements direkt am Chart beginnt mit einem
-Hover: Achsentitel melden ihn über das Adapter-Event, der HTML-Titel
-über `EditableText` (`onPointerEnter`). `ChartItem` hält genau einen
-`formatHint` (Element, Rechteck, Platzierung) und zeigt dafür am
+Hover: Achsentitel und Legende melden ihn über Adapter-Events
+(`createAxisTitleEditFromEvent`, `createLegendRectFromEvent`), der
+HTML-Titel über `EditableText` (`onPointerEnter`). Alle liefern ein
+`ChartElementRect` in Koordinaten des Charts. `ChartItem` hält genau
+einen `formatHint` mit getrennter Identität (`element`), Geometrie
+(`rect`) und Auslöser (`placement` des Stifts) und zeigt dafür am
 ausgewählten Chart einen Stift. Ein Klick meldet nur Element und Anker
 nach oben (`onFormatElement`); `ChartItem` kennt keine
 Inspector-Widgets.
@@ -370,7 +373,7 @@ Stift in ChartItem
 
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
   Elemente als Schlüssel von `ChartAppearanceSpec`, aktuell
-  `title | xAxis | yAxis`. `ChartFormatPopover` ordnet sie in
+  `legend | title | xAxis | yAxis`. `ChartFormatPopover` ordnet sie in
   `renderFormatWidget` per `switch` ihrem Widget zu.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
@@ -386,6 +389,13 @@ Stift in ChartItem
   werden keine Achsen gesetzt. Analog zu `syncAxisTitleEdit` und
   `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und
   verschwindet mit dem nächsten vollständigen `setOption`.
+
+Das Plot-Grid kartesischer Charts (`createGridOption`) weicht einer
+sichtbaren Legende aus: Rand der Legende (`LEGEND_EDGE_OFFSETS`, auch
+für ihre Platzierung genutzt), ihre Größe (eine Zeile oben und unten,
+breitester Eintrag per Canvas-Messung links und rechts) und ein
+Abstand zum Plot pro Seite. Pie und Donut weichen über `getPieCenter`
+aus.
 
 Chart-Content wird über eine typsichere Registry erzeugt:
 

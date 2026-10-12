@@ -16,23 +16,21 @@ type LegendPlacement = Pick<
   'top' | 'bottom' | 'left' | 'right'
 >
 
+// ===== CONSTANTS =============================================================
+/** Distance of the legend to the chart edge; more at the top, below the title. */
+export const LEGEND_EDGE_OFFSETS = {
+  bottom: 8,
+  left: 8,
+  right: 8,
+  top: 16,
+} satisfies Record<LegendAppearance['position'], number>
+
 // ===== HELPER ================================================================
 function createLegendPlacement(appearance: LegendAppearance): LegendPlacement {
   const { alignment, position } = appearance
   const isVertical = position === 'left' || position === 'right'
-  const placement: LegendPlacement = {}
-
-  if (position === 'bottom') {
-    placement.bottom = 8
-  }
-  if (position === 'left') {
-    placement.left = 8
-  }
-  if (position === 'right') {
-    placement.right = 8
-  }
-  if (position === 'top') {
-    placement.top = 8
+  const placement: LegendPlacement = {
+    [position]: LEGEND_EDGE_OFFSETS[position],
   }
 
   if (isVertical) {
@@ -75,6 +73,7 @@ export function createLegendOption({
       color: appearance.textColor,
       fontSize: appearance.fontSize,
     },
+    triggerEvent: true,
     // Scrolls instead of overflowing when items exceed the chart width.
     type: appearance.layout === 'plain' ? 'plain' : 'scroll',
     ...createLegendPlacement(appearance),

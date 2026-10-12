@@ -722,7 +722,7 @@ Inspector. Langfristig ersetzt die Bearbeitung am Objekt den Inspector
 - Encodings werden im Build Panel über ein X entfernt (wie in Power
   BI), nicht durch Wegziehen
 
-Bisher umgesetzt (Titel, X- und Y-Achse):
+Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
 
 - Stift neben dem gehoverten Element (Chart-Titel, Achsentitel) am
   ausgewählten Chart; ein gemeinsamer `formatHint`, ein Stift
@@ -745,11 +745,23 @@ Bisher umgesetzt (Titel, X- und Y-Achse):
   `ChartFormatPopover` in `inspector/` zeigt das Widget mit denselben
   `inspectorActions` wie der Inspector; `ChartItem` meldet nur noch
   Element und Anker und importiert nichts mehr aus `inspector/`
+- Legende: Hover über ECharts (`triggerEvent`), gemessen wird die ganze
+  Legende (`createLegendRectFromEvent`); als Fläche zeigt sie eine
+  Region mit dem Stift in ihrer rechten oberen Ecke; Klicks auf
+  Legendeneinträge gehen weiter an ECharts
+- Stift und Region sind ausgeblendet, solange ein Popover des Charts
+  offen ist
+- das Plot-Grid weicht der Legende aus (`createGridOption`), auf allen
+  vier Seiten; die Ränder der Legende stehen an einer Stelle
+  (`LEGEND_EDGE_OFFSETS`)
+- `Popover` bleibt im Viewport: `shift` schiebt bei Platzmangel auch
+  horizontal
 - verifiziert: `tsc`, `npm run lint`, Prettier; Verhalten im Browser
 
 Als Nächstes:
 
-1. Legende nach demselben Muster
+1. Format-Einstieg in der Canvas-Toolbar mit Wechsel zwischen den
+   Elementen im Popover; Leuchten der Legende im Fokus
 2. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
 3. Serien-Klick für Marks und Farben
 4. Toolbar-Trigger für Container und Hintergrund
@@ -783,6 +795,10 @@ Mögliche Erweiterungen:
 - Multi Select
 - Layers Panel
 - weitere Container-Overrides: Rahmenfarbe, Shadow, Z-Order
+- Direct Manipulation von Chart-Elementen über ihre Regionen: auswählen,
+  verschieben, Größe ändern (ähnlich Power BI), z. B. freie Position
+  der Legende statt vier Seiten; baut auf `element + rect` der
+  Format-Hints auf
 
 ## 8. Later – Dashboard Objects und Interaktion
 

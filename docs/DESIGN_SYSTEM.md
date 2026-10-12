@@ -867,6 +867,10 @@ Klick daneben):
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
   ein Kind-Popover (z. B. Farbwähler im Achsen-Popover) schließt das
   Eltern-Popover nicht.
+- Positionierung: `flip` wechselt die Seite, `shift` hält das Popover
+  im Viewport, bei Platzmangel auch quer zur Platzierung. Ein Popover
+  neben einem sehr breiten Chart liegt dann notfalls über ihm, statt
+  abgeschnitten zu werden.
 
 ## 9i. EmptyState
 
@@ -1128,7 +1132,7 @@ ausgewählten Chart.
 ### Bearbeitung am Chart
 
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-Titel, X- und Y-Achse):
+Titel, X- und Y-Achse, Legende):
 
 - Hover über den Text eines Elements (Chart-Titel, Achsentitel) zeigt
   einen Stift (`IconButton`, `ghost`, `xs`: ohne Fläche und Rahmen,
@@ -1137,6 +1141,13 @@ Titel, X- und Y-Achse):
 - Platzierung: rechts neben dem Element, links davon, wenn der
   Chartrand keinen Platz lässt (z. B. rechtsbündiger Titel, Legende
   rechts); beim gedrehten Y-Achsentitel darüber.
+- Flächen statt Text (aktuell die Legende) zeigen beim Hover eine
+  Region: dezente Fläche (`--color-surface-hover`) mit feinem Rand,
+  ringsum `--chart-region-frame` größer als das Element, oben ein
+  Streifen (`--chart-region-band`) mit dem Stift in der rechten Ecke.
+  Die Region liegt unter dem ECharts-Canvas und lässt Klicks durch.
+- Stift und Region sind ausgeblendet, solange ein Popover des Charts
+  offen ist.
 - Klick auf den Text bleibt Inline-Editing, Klick auf den Stift öffnet
   das Popover.
 - Das Popover steht neben dem Chart (`right-start`, weicht nach links

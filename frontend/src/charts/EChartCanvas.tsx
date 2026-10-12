@@ -10,6 +10,7 @@ import {
 } from './createChartQuery'
 
 import { createEChartOption } from './echarts/createEChartOption'
+import { createLegendRectFromEvent } from './echarts/createLegendRectFromEvent'
 import { syncBrush } from './echarts/createBrushOption'
 import { syncFormatFocus } from './echarts/syncFormatFocus'
 import {
@@ -29,7 +30,11 @@ import { isSameSelection } from '../workspace/dataSelection'
 import { useChartQuery } from './useChartQuery'
 import { usePointsQuery } from './usePointsQuery'
 
-import type { AxisTitleEdit, ChartFormatElement } from './types'
+import type {
+  AxisTitleEdit,
+  ChartElementRect,
+  ChartFormatElement,
+} from './types'
 import type { ChartInstance } from './types'
 import type { DataRow, Dataset } from '../datasets/types'
 import type { ChartTheme } from './echarts/chartTheme'
@@ -47,6 +52,7 @@ type EChartCanvasProps = {
   formattedElement: ChartFormatElement | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
+  onHoverLegend: (rect: ChartElementRect) => void
   selection: DataSelection | null
 }
 
@@ -86,17 +92,15 @@ function readChartTheme(): ChartTheme {
   }
 }
 
-function offsetAxisTitleEdit(
-  edit: AxisTitleEdit,
+/** Moves a rect from canvas into chart item coordinates. */
+function offsetRect(
+  rect: ChartElementRect,
   container: HTMLElement,
-): AxisTitleEdit {
+): ChartElementRect {
   return {
-    ...edit,
-    rect: {
-      ...edit.rect,
-      x: edit.rect.x + container.offsetLeft,
-      y: edit.rect.y + container.offsetTop,
-    },
+    ...rect,
+    x: rect.x + container.offsetLeft,
+    y: rect.y + container.offsetTop,
   }
 }
 
@@ -109,6 +113,7 @@ function EChartCanvas({
   formattedElement,
   onEditAxisTitle,
   onHoverAxisTitle,
+  onHoverLegend,
   selection,
 }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -132,7 +137,9 @@ function EChartCanvas({
   function getAxisTitleEdit(event: ECElementEvent): AxisTitleEdit | null {
     const edit = createAxisTitleEditFromEvent(event)
     const container = containerRef.current
-    return edit && container ? offsetAxisTitleEdit(edit, container) : null
+    return edit && container
+      ? { ...edit, rect: offsetRect(edit.rect, container) }
+      : null
   }
 
   // Effect events always see the latest props, so ECharts listeners are
@@ -167,6 +174,11 @@ function EChartCanvas({
     const axisTitleEdit = getAxisTitleEdit(event)
     if (axisTitleEdit) {
       onHoverAxisTitle(axisTitleEdit)
+    }
+    const legendRect = createLegendRectFromEvent(event)
+    const container = containerRef.current
+    if (legendRect && container) {
+      onHoverLegend(offsetRect(legendRect, container))
     }
   })
 

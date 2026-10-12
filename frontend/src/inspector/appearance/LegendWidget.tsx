@@ -7,12 +7,13 @@ import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import Slider from '../../shared/ui/Slider'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import InspectorWidget from '../InspectorWidget'
-
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 import type { LegendAppearance } from '../../charts/types'
 
 type LegendWidgetProps = {
   value: LegendAppearance
   onChange: (value: LegendAppearance) => void
+  variant?: InspectorWidgetVariant
 }
 
 const positionOptions = [
@@ -32,7 +33,8 @@ const positionIcons = {
   right: ArrowRight,
 }
 
-function LegendWidget({ value, onChange }: LegendWidgetProps) {
+/** Edits position, alignment and text style of the chart legend. */
+function LegendWidget({ value, onChange, variant }: LegendWidgetProps) {
   return (
     <InspectorWidget
       title="Legend"
@@ -43,6 +45,7 @@ function LegendWidget({ value, onChange }: LegendWidgetProps) {
           onChange({ ...value, visible })
         },
       }}
+      variant={variant}
     >
       <ControlRow label="Position">
         <SegmentedControl

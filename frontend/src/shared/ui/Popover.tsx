@@ -76,6 +76,7 @@ function PopoverNode({
         padding: 12,
       }),
       shift({
+        crossAxis: true,
         padding: 12,
       }),
       matchTriggerWidth

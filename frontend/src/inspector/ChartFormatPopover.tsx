@@ -1,5 +1,6 @@
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
+import LegendWidget from './appearance/LegendWidget'
 import Popover from '../shared/ui/Popover'
 import {
   getDefaultAxisTitle,
@@ -18,6 +19,7 @@ type ChartFormatPopoverProps = ChartInspectorProps & {
 
 // ===== CONSTANTS =============================================================
 const elementTitles: Record<ChartFormatElement, string> = {
+  legend: 'Legend',
   title: 'Title',
   xAxis: 'X Axis',
   yAxis: 'Y Axis',
@@ -30,6 +32,14 @@ function renderFormatWidget(
 ): ReactNode {
   const { appearance } = chart.spec
   switch (element) {
+    case 'legend':
+      return (
+        <LegendWidget
+          value={appearance.legend}
+          variant="bare"
+          onChange={(value) => actions.setAppearance('legend', value)}
+        />
+      )
     case 'title':
       return (
         <ChartTitleWidget

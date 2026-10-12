@@ -9,6 +9,10 @@
     var(--chart-canvas-inset),
     calc(var(--chart-radius, 0px) / 2)
   );
+  --chart-region-frame: var(--space-1);
+  --chart-region-band: calc(
+    var(--control-height-xs) + 2 * var(--chart-region-frame)
+  );
   color: var(--color-text-secondary);
   border-radius: var(--chart-radius, var(--radius-lg));
   overflow: hidden;
@@ -139,6 +143,25 @@
 .chart-format-button.is-before {
   margin-left: calc(-1 * var(--space-1));
   transform: translate(-100%, -50%);
+}
+
+.chart-format-button.is-corner {
+  margin-top: calc(var(--chart-region-frame) - var(--chart-region-band));
+  transform: translateX(-100%);
+}
+
+/* Lies under the ECharts canvas, so legend clicks still reach ECharts. */
+.chart-format-region {
+  position: absolute;
+  box-sizing: content-box;
+  margin: calc(-1 * var(--chart-region-band))
+    calc(-1 * var(--chart-region-frame)) calc(-1 * var(--chart-region-frame));
+  padding: var(--chart-region-band) var(--chart-region-frame)
+    var(--chart-region-frame);
+  background: var(--color-surface-hover);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  pointer-events: none;
 }
 
 .chart-axis-title-hover {

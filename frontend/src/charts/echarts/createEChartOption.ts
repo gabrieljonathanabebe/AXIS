@@ -6,6 +6,7 @@ import { getValueLabel } from '../getEffectiveAggregation'
 import { createChartContent } from './content/createChartContent'
 import type { ChartContentContext } from './content/chartContentTypes'
 import { createDataZoomOption } from './createDataZoomOption'
+import { createGridOption } from './createGridOption'
 import { createLegendOption } from './createLegendOption'
 import { createTooltipOption } from './createTooltipOption'
 import { isRadialChartType } from '../chartDefinitions'
@@ -31,6 +32,11 @@ export function createEChartOption(
   const isRadialChart = isRadialChartType(chartType)
   const isSelectionSource = selection?.sourceChartId === chartId
   const content = createChartContent(context)
+  const legend = createLegendOption({
+    appearance: appearance.legend,
+    colorEncodingMode,
+    interaction: interaction.legend,
+  })
 
   // ===== RETURN ==============================================================
   return {
@@ -49,18 +55,12 @@ export function createEChartOption(
       : createDataZoomOption(interaction.zoom),
     grid: isRadialChart
       ? undefined
-      : {
-          bottom: 72,
-          containLabel: false,
-          left: 72,
-          right: 56,
-          top: 40,
-        },
-    legend: createLegendOption({
-      appearance: appearance.legend,
-      colorEncodingMode,
-      interaction: interaction.legend,
-    }),
+      : createGridOption({
+          legend: appearance.legend,
+          series: content.series,
+          showsLegend: legend.show === true,
+        }),
+    legend,
     series: content.series,
     tooltip: createTooltipOption({
       chartType,
