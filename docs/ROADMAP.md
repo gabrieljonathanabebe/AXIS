@@ -775,16 +775,66 @@ Als Nächstes:
 3. Toolbar-Trigger für Container und Hintergrund
 4. X für Encodings im Build Panel
 
-Offen: wo die Widgets liegen, wenn der Inspector wegfällt; die
-generischen Props für Shared Controls werden dabei mit angegangen
-(siehe `TODO.md`). Ebenfalls offen: ob der Pinsel ohne ausgewählten
-Chart die Dashboard-Einstellungen öffnet, statt deaktiviert zu sein.
+Neue Widgets entstehen nicht mehr in `inspector/` (siehe
+Dashboard-Objekte). Offen: wann die bestehenden Widgets aus
+`inspector/` umziehen; die generischen Props für Shared Controls werden
+dabei mit angegangen (siehe `TODO.md`). Ebenfalls offen: ob der Pinsel
+ohne ausgewählten Chart die Dashboard-Einstellungen öffnet, statt
+deaktiviert zu sein.
+
+Der Slice pausiert, als Nächstes kommen die Dashboard-Objekte. Die
+Punkte unter „Als Nächstes“ folgen danach.
+
+### Dashboard-Objekte (geplant, als Nächstes)
+
+KPI Cards, Tables und Slicer als Objekte auf der Canvas neben Charts.
+Sie werden wie Charts aus dem Build Panel hinzugefügt und nur am Objekt
+formatiert (Pinsel und Format-Popover), nicht im Inspector. Beschlossen:
+
+- ein gemeinsames Objektmodell statt paralleler Listen:
+  `DashboardObject` als Union über `kind` (Chart, KPI, Table, Slicer)
+  mit gemeinsamer Basis (`id`, `layout`, `container`) und Inhalt pro
+  Typ (`spec`)
+- Frame und Content getrennt: ein generischer Frame (Auswahl, Handles,
+  Tastatur, Aktionsleiste, Format-Regionen) und ein Content pro Typ
+- eine Objekt-Registry nach dem Vorbild von `chartDefinitions`; der
+  Picker im Build Panel ist gruppiert (Charts | Cards & Table | Filter)
+- ein Objekttyp `slicer`; das Steuerelement (Dropdown, Liste, Range,
+  Datum) folgt aus der Semantic Role und ist umschaltbar
+- drei getrennte Filterebenen: Slicer (Dashboard), Selection
+  (Cross-Highlight), Table-View-Filter (lokal, unverändert)
+- die wirksamen Filter eines Objekts berechnet eine reine Funktion in
+  der Workspace-Domäne; die Basis-Query trägt die Slicer-Filter, die
+  Highlight-Query zusätzlich die Selection
+- Slicer untereinander UND, Werte eines Slicers ODER; ein leerer Slicer
+  filtert nicht, ein Slicer filtert sich nicht selbst
+- der Slicer-Wert ist nicht undo-fähig (wie `selection`) und soll mit
+  dem Projekt gespeichert werden; im MVP gilt ein Slicer für das ganze
+  Dashboard
+- Backend: ein gemeinsames Filtervokabular inklusive `date_range` für
+  alle Queries, Filter auch für die Points Query, eine eigene
+  `kpi-query`; die Table nutzt die bestehende `table-query`
+- Daten ohne Inspector: Feld per Drop auf das Objekt, Aggregation im
+  Format-Popover; neue Widgets entstehen nicht mehr in `inspector/`,
+  sondern die Popover-Hülle in `format/` und die Widgets im jeweiligen
+  Domain-Ordner
+
+Reihenfolge:
+
+1. Objekt-Fundament (Refactor ohne sichtbare Änderung):
+   `DashboardObject`, `objects`, `selectedObjectId`, generische
+   `object/*`-Actions, Frame und Content getrennt, generischer
+   `formatTarget` (`objectId`, `data-object-id`), Objekt-Registry und
+   Picker
+2. KPI Card: erstes HTML-Objekt, `kpi-query`, Formatierung am Objekt
+3. Slicer und Filterebene: Filter-State, wirksame Filter, gemeinsames
+   Filtervokabular, Filter für die Points Query; gemeinsame
+   Filter-Controls mit der Table prüfen (`DataTableFilterForm`)
+4. Table-Objekt auf Basis von `DataTable`
 
 ## 6. Later – Visualization Completion
 
 - Inspector-Polish für Scatter, Line, Bar, Pie und Donut
-- Canvas-/Objektarchitektur als Grundlage für weitere Objekte wie Text,
-  KPI und Table
 - Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
   `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,
   dafür Positionierung am Grid und Bild-Export selbst lösen)
@@ -811,14 +861,16 @@ Mögliche Erweiterungen:
 
 ## 8. Later – Dashboard Objects und Interaktion
 
-- KPI Card
+KPI Card, Table und Slicer sind als Dashboard-Objekte geplant (siehe
+Abschnitt 5, Dashboard-Objekte).
+
 - Text
 - grundlegende Dashboard Controls
-- Filterebenen (Idee, getrennt von den Table Filtern):
-  - Slicer als Dashboard-Objekte (Slider, Dropdown, Date Range), mit
-    denen Betrachter das Dashboard filtern
+- weitere Filterebenen (Idee):
   - Dashboard-weite Filter als eigene Ebene, die für alle Charts
     gelten (ähnlich dem Filterbereich in Power BI)
+  - Scope pro Slicer (welche Objekte er filtert)
+  - kaskadierende Slicer-Optionen (Werte abhängig von anderen Slicern)
   - Cross Filtering über Selection (siehe unten)
 - Linked Visualizations
 - Selection und Selection Propagation (Klick-Selection implementiert,
@@ -833,9 +885,6 @@ Mögliche Erweiterungen:
 
 Später innerhalb dieses Bereichs:
 
-- Date Range
-- Numeric Range
-- Slicer
 - Image
 - Comparison Card
 - Progress
