@@ -709,10 +709,12 @@ Inspector. Langfristig ersetzt die Bearbeitung am Objekt den Inspector
 
 - Auswahl wie in Figma: erst den Chart auswählen, dann ein Element
   darin
-- am ausgewählten Chart zeigt ein Element beim Hover ein Stift-Symbol;
-  ein Klick darauf öffnet ein Popover mit dem passenden Widget
-- ein Klick auf den Text selbst (Chart-Titel, Achsentitel) bleibt
-  Inline-Editing
+- Einstieg über den Pinsel in der Canvas-Toolbar, der das
+  Format-Popover des ausgewählten Charts öffnet (Format-Modus); im
+  Format-Modus zeigt ein Element beim Hover eine Region, ein Klick
+  darauf wählt es im Popover; der Stift am Element ist entfallen
+- außerhalb des Format-Modus bleibt ein Klick auf den Text
+  (Chart-Titel, Achsentitel) Inline-Editing
 - Popover und Inspector ändern denselben Wert über dieselbe Action,
   damit ist das Popover undo-fähig
 - Marks und Farben über einen Klick auf eine Serie
@@ -724,20 +726,29 @@ Inspector. Langfristig ersetzt die Bearbeitung am Objekt den Inspector
 
 Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
 
-- Stift neben dem gehoverten Element (Chart-Titel, Achsentitel) am
-  ausgewählten Chart; ein gemeinsamer `formatHint`, ein Stift
-  (`ghost`), rechts oder bei fehlendem Platz links vom Element; er
-  bleibt, bis der Pointer den Chart verlässt
+- Pinsel in der Canvas-Toolbar (Command `chart.format`): öffnet das
+  Popover beim Titel des ausgewählten Charts bzw. schließt es, ist
+  gedrückt, solange es offen ist (`isActive`), und ohne ausgewählten
+  Chart deaktiviert; Anker über `data-chart-id`
 - Popover neben dem Chart (`right-start`, weicht nach links aus) mit
-  Header, Schließen-Button und dem `AxisWidget` in der Variante `bare`
+  Header „Format“, Schließen-Button, Zeile „Element“
+  (`SelectControl`) und dem Widget des Elements in der Variante
+  `bare`; die Elemente kommen aus `getFormatElements` (Titel immer,
+  Achsen nur kartesisch, Legende wie `isLegendRelevant`)
+- Format-Modus: Hover über Titel, Achsentitel oder Legende zeigt eine
+  Region (Akzent-Rahmen) über dem Element, ein Klick wählt es im
+  Popover; ohne offenes Popover keine Regionen; ein gemeinsamer
+  `formatHint` (Element und Rechteck)
 - `Popover`: optionaler `anchor` statt Trigger-Button, optionaler
   `title` mit Header und X, verschachtelte Popovers über einen
-  `FloatingTree`
+  `FloatingTree`, `keepOpenOn` für Bereiche, die nicht als „Klick
+  daneben“ zählen (Canvas-Toolbar und formatierter Chart)
 - erhöhte Ebene für das Popover: `--glass-fill-elevated`, tiefer
   Schatten, Akzent-Rahmen und -Schein
-- Fokus während der Bearbeitung: Serien und nicht bearbeitete Achsen
-  auf 25 % Deckkraft, das bearbeitete Element leuchtet
-  (`syncFormatFocus`, beim Titel per CSS)
+- Fokus während der Bearbeitung: Serien, Legende, Titel und nicht
+  bearbeitete Achsen auf 25 % Deckkraft, das bearbeitete Element
+  leuchtet (`syncFormatFocus` für Achsen und Legende, beim HTML-Titel
+  per CSS-Klasse)
 - automatische Titel als Platzhalter: `getDefaultAxisTitle` für
   Achsen (Popover, Inspector, Inline-Editing), `getDefaultChartTitle`
   im Inspector
@@ -746,30 +757,28 @@ Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
   `inspectorActions` wie der Inspector; `ChartItem` meldet nur noch
   Element und Anker und importiert nichts mehr aus `inspector/`
 - Legende: Hover über ECharts (`triggerEvent`), gemessen wird die ganze
-  Legende (`createLegendRectFromEvent`); als Fläche zeigt sie eine
-  Region mit dem Stift in ihrer rechten oberen Ecke; Klicks auf
-  Legendeneinträge gehen weiter an ECharts
-- Stift und Region sind ausgeblendet, solange ein Popover des Charts
-  offen ist
+  Legende (`createLegendRectFromEvent`); im Format-Modus fängt die
+  Region den Klick ab, sonst gehen Klicks auf Legendeneinträge an
+  ECharts
 - das Plot-Grid weicht der Legende aus (`createGridOption`), auf allen
   vier Seiten; die Ränder der Legende stehen an einer Stelle
   (`LEGEND_EDGE_OFFSETS`)
 - `Popover` bleibt im Viewport: `shift` schiebt bei Platzmangel auch
   horizontal
-- verifiziert: `tsc`, `npm run lint`, Prettier; Verhalten im Browser
+- verifiziert: `npm run build`, `npm run lint`, Prettier; Verhalten im
+  Browser
 
 Als Nächstes:
 
-1. Format-Einstieg in der Canvas-Toolbar mit Wechsel zwischen den
-   Elementen im Popover; Leuchten der Legende im Fokus
-2. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
-3. Serien-Klick für Marks und Farben
-4. Toolbar-Trigger für Container und Hintergrund
-5. X für Encodings im Build Panel
+1. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
+2. Serien-Klick für Marks und Farben
+3. Toolbar-Trigger für Container und Hintergrund
+4. X für Encodings im Build Panel
 
 Offen: wo die Widgets liegen, wenn der Inspector wegfällt; die
 generischen Props für Shared Controls werden dabei mit angegangen
-(siehe `TODO.md`).
+(siehe `TODO.md`). Ebenfalls offen: ob der Pinsel ohne ausgewählten
+Chart die Dashboard-Einstellungen öffnet, statt deaktiviert zu sein.
 
 ## 6. Later – Visualization Completion
 

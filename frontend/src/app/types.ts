@@ -11,6 +11,7 @@ export type CommandShortcut = {
 export type WorkspaceCommandId =
   | 'chart.delete'
   | 'chart.duplicate'
+  | 'chart.format'
   | 'history.redo'
   | 'history.undo'
   | 'layout.toggleBuildPanel'
@@ -19,6 +20,8 @@ export type WorkspaceCommandId =
 export type WorkspaceCommand = {
   icon: LucideIcon
   id: WorkspaceCommandId
+  /** Pressed state of a toggle command, e.g. while its popover is open. */
+  isActive?: boolean
   isEnabled: boolean
   label: string
   run: () => void

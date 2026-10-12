@@ -68,6 +68,16 @@ function App() {
   const activeFormatTarget =
     formatTarget?.chartId === selectedChartId ? formatTarget : null
 
+  /** Opens the format popover of a chart at its title, next to the chart. */
+  function openChartFormat(chartId: string): void {
+    const anchor = document.querySelector<HTMLElement>(
+      `[data-chart-id="${chartId}"]`,
+    )
+    if (anchor) {
+      setFormatTarget({ anchor, chartId, element: 'title' })
+    }
+  }
+
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
     dataset,
@@ -87,8 +97,11 @@ function App() {
   const commands = useWorkspaceCommands({
     canRedo,
     canUndo,
+    isFormatOpen: activeFormatTarget !== null,
     selectedChartId,
+    onCloseFormat: () => setFormatTarget(null),
     onDuplicateChart: duplicateChart,
+    onFormatChart: openChartFormat,
     onRedo: redo,
     onRemoveChart: removeChart,
     onToggleBuildPanel: toggleBuildPanel,
@@ -162,6 +175,9 @@ function App() {
                 fields={dataset.fields}
                 target={activeFormatTarget}
                 onClose={() => setFormatTarget(null)}
+                onElementChange={(element) =>
+                  setFormatTarget({ ...activeFormatTarget, element })
+                }
               />
             ) : null}
           </main>

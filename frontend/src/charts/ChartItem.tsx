@@ -1,4 +1,4 @@
-import { GripHorizontal, Pencil } from 'lucide-react'
+import { GripHorizontal } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
 import { useEffect, useRef, useState } from 'react'
 
@@ -19,7 +19,6 @@ import CommandButton from '../app/CommandButton'
 import EChartCanvas from './EChartCanvas'
 import EditableText from '../shared/ui/EditableText'
 import EncodingDropSlots from './EncodingDropSlots'
-import IconButton from '../shared/ui/IconButton'
 import InlineTextInput from '../shared/ui/InlineTextInput'
 import { getChartDefinition } from './chartDefinitions'
 import {
@@ -35,12 +34,10 @@ import type { ChartContainerBackground, ChartInstance } from './types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { GridDelta } from '../workspace/chartLayout'
 
-type FormatButtonPlacement = 'above' | 'after' | 'before' | 'corner'
-
+/** The element under the pointer; in format mode it shows its region. */
 type FormatHint = {
   element: ChartFormatElement
   rect: ChartElementRect
-  placement: FormatButtonPlacement
 }
 
 type ChartItemStyle = CSSProperties & {
@@ -80,13 +77,7 @@ const layoutHandleLabels: Record<ChartLayoutMode, string> = {
   w: 'Resize chart from left edge',
 }
 
-/** Elements that are areas rather than text; they show their bounds. */
-const REGION_ELEMENTS: ReadonlySet<ChartFormatElement> = new Set(['legend'])
-
-/** Room the pencil needs next to an element, including its gap. */
-const FORMAT_BUTTON_SPACE = 32
-
-const formatButtonLabels: Record<ChartFormatElement, string> = {
+const formatRegionLabels: Record<ChartFormatElement, string> = {
   legend: 'Format legend',
   title: 'Format title',
   xAxis: 'Format X axis',
@@ -141,44 +132,6 @@ function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
   }
 }
 
-/**
- * Places the format pencil next to an element where the chart has room.
- * @param element Element whose pencil is placed.
- * @param rect Bounds of the element inside the chart item.
- * @param itemWidth Width of the chart item.
- * @returns Above, after or before the element.
- */
-function getFormatButtonPlacement(
-  element: ChartFormatElement,
-  rect: ChartElementRect,
-  itemWidth: number,
-): FormatButtonPlacement {
-  if (REGION_ELEMENTS.has(element)) {
-    return 'corner'
-  }
-  if (element === 'yAxis') {
-    return 'above'
-  }
-  return rect.x + rect.width + FORMAT_BUTTON_SPACE <= itemWidth
-    ? 'after'
-    : 'before'
-}
-
-/** Positions the pencil at the edge of the element for its placement. */
-function getFormatButtonStyle({ placement, rect }: FormatHint): CSSProperties {
-  const middle = rect.y + rect.height / 2
-  switch (placement) {
-    case 'above':
-      return { left: rect.x + rect.width / 2, top: rect.y }
-    case 'after':
-      return { left: rect.x + rect.width, top: middle }
-    case 'before':
-      return { left: rect.x, top: middle }
-    case 'corner':
-      return { left: rect.x + rect.width, top: rect.y }
-  }
-}
-
 /** Measures an element relative to the chart item, like the ECharts rects. */
 function getRectInItem(target: Element, item: HTMLElement): ChartElementRect {
   const targetRect = target.getBoundingClientRect()
@@ -206,6 +159,20 @@ function getRectStyle({
   }
 }
 
+/**
+ * Mirrors the format focus on the HTML title, which ECharts does not draw.
+ * @param formattedElement Element in the popover, or null when it is closed.
+ * @returns Glow while the title is formatted, dimmed for other elements.
+ */
+function getTitleFocusClassName(
+  formattedElement: ChartFormatElement | null,
+): string {
+  if (!formattedElement) {
+    return ''
+  }
+  return formattedElement === 'title' ? 'is-formatted' : 'is-dimmed'
+}
+
 function ChartItem({
   actions,
   chart,
@@ -229,7 +196,8 @@ function ChartItem({
   const { background } = container
   const title = chart.spec.appearance.title
   const backgroundClassName = backgroundClassNames[background.kind]
-  const canShowFormatHint = isSelected && !axisTitleEdit && !formattedElement
+  const isFormatMode = formattedElement !== null
+  const titleFocusClassName = getTitleFocusClassName(formattedElement)
   const itemStyle: ChartItemStyle = {
     ...style,
     '--chart-canvas-inset': `${container.padding}px`,
@@ -283,7 +251,7 @@ function ChartItem({
     setAxisTitleEdit(edit)
   }
 
-  /** Highlights the hovered axis title and offers its format pencil. */
+  /** Highlights the hovered axis title and remembers it as format hint. */
   function handleHoverAxisTitle(edit: AxisTitleEdit | null): void {
     setHoveredAxisTitle(edit)
     if (edit) {
@@ -291,7 +259,7 @@ function ChartItem({
     }
   }
 
-  /** Offers the format pencil for the chart title. */
+  /** Remembers the chart title as format hint. */
   function showTitleHint(target: HTMLElement): void {
     const item = itemRef.current
     if (item) {
@@ -299,17 +267,12 @@ function ChartItem({
     }
   }
 
-  /** Shows the format pencil of an element where the chart has room. */
+  /** Remembers the hovered element; format mode shows its region. */
   function showFormatHint(
     element: ChartFormatElement,
     rect: ChartElementRect,
   ): void {
-    const itemWidth = itemRef.current?.clientWidth ?? 0
-    setFormatHint({
-      element,
-      placement: getFormatButtonPlacement(element, rect, itemWidth),
-      rect,
-    })
+    setFormatHint({ element, rect })
   }
 
   function openFormat(element: ChartFormatElement): void {
@@ -333,6 +296,7 @@ function ChartItem({
       className={`chart-item ${backgroundClassName} ${
         isSelected ? 'is-selected' : ''
       }`}
+      data-chart-id={chart.id}
       ref={itemRef}
       role="group"
       style={itemStyle}
@@ -350,18 +314,10 @@ function ChartItem({
           field={draggedField}
         />
       ) : null}
-      {hoveredAxisTitle && !axisTitleEdit ? (
+      {hoveredAxisTitle && !axisTitleEdit && !isFormatMode ? (
         <span
           className={`editable-text-highlight chart-axis-title-hover is-${hoveredAxisTitle.axis}-axis`}
           style={getRectStyle(hoveredAxisTitle.rect)}
-        />
-      ) : null}
-      {canShowFormatHint &&
-      formatHint &&
-      REGION_ELEMENTS.has(formatHint.element) ? (
-        <span
-          className="chart-format-region"
-          style={getRectStyle(formatHint.rect)}
         />
       ) : null}
 
@@ -379,9 +335,7 @@ function ChartItem({
       />
       {title.enabled ? (
         <div
-          className={`chart-item-header ${
-            formattedElement === 'title' ? 'is-formatted' : ''
-          }`}
+          className={`chart-item-header ${titleFocusClassName}`}
           style={{ textAlign: title.alignment }}
         >
           <EditableText
@@ -417,17 +371,15 @@ function ChartItem({
           onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
         />
       ) : null}
-      {canShowFormatHint && formatHint ? (
-        <IconButton
-          className={`chart-format-button is-${formatHint.placement}`}
-          label={formatButtonLabels[formatHint.element]}
-          size="xs"
-          style={getFormatButtonStyle(formatHint)}
-          variant="ghost"
+      {isFormatMode && formatHint ? (
+        <button
+          aria-label={formatRegionLabels[formatHint.element]}
+          className="chart-format-region"
+          style={getRectStyle(formatHint.rect)}
+          type="button"
           onClick={() => openFormat(formatHint.element)}
-        >
-          <Pencil size={14} />
-        </IconButton>
+          onPointerLeave={() => setFormatHint(null)}
+        />
       ) : null}
       {isSelected ? (
         <div className="chart-item-actions">

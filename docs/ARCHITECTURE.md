@@ -351,23 +351,27 @@ ECharts click/mouseover (axisName)
 → chart/updateAppearance
 ```
 
-Das Formatieren eines Elements direkt am Chart beginnt mit einem
-Hover: Achsentitel und Legende melden ihn über Adapter-Events
-(`createAxisTitleEditFromEvent`, `createLegendRectFromEvent`), der
-HTML-Titel über `EditableText` (`onPointerEnter`). Alle liefern ein
-`ChartElementRect` in Koordinaten des Charts. `ChartItem` hält genau
-einen `formatHint` mit getrennter Identität (`element`), Geometrie
-(`rect`) und Auslöser (`placement` des Stifts) und zeigt dafür am
-ausgewählten Chart einen Stift. Ein Klick meldet nur Element und Anker
-nach oben (`onFormatElement`); `ChartItem` kennt keine
-Inspector-Widgets.
+Das Formatieren am Chart startet über den Command `chart.format`
+(Pinsel in der Canvas-Toolbar). Er öffnet das Popover beim Titel des
+ausgewählten Charts oder schließt es; den Chart als Anker findet `App`
+über `data-chart-id` am `ChartItem`. Solange das Popover für einen
+Chart offen ist, ist er im Format-Modus: Achsentitel und Legende
+melden ihren Hover über Adapter-Events (`createAxisTitleEditFromEvent`,
+`createLegendRectFromEvent`), der HTML-Titel über `EditableText`
+(`onPointerEnter`). Alle liefern ein `ChartElementRect` in Koordinaten
+des Charts. `ChartItem` hält genau einen `formatHint` (`element`,
+`rect`) und zeigt im Format-Modus dafür eine Region. Ein Klick darauf
+meldet nur Element und Anker nach oben (`onFormatElement`);
+`ChartItem` kennt keine Inspector-Widgets.
 
 ```text
-Stift in ChartItem
-→ onFormatElement(element, anchor)
-→ ChartGrid ergänzt chartId → ChartFormatTarget
+Pinsel (chart.format)
+→ App.openChartFormat: Anker per data-chart-id, Element title
+Region im Format-Modus (ChartItem)
+→ onFormatElement(element, anchor) → ChartGrid ergänzt chartId
+beide
 → App: formatTarget (React State, nicht im Reducer)
-→ ChartFormatPopover (inspector/) mit dem Widget in Variante bare
+→ ChartFormatPopover (inspector/): Element-Auswahl + Widget (bare)
 → inspectorActions.setAppearance → chart/updateAppearance
 ```
 
@@ -375,20 +379,35 @@ Stift in ChartItem
   Elemente als Schlüssel von `ChartAppearanceSpec`, aktuell
   `legend | title | xAxis | yAxis`. `ChartFormatPopover` ordnet sie in
   `renderFormatWidget` per `switch` ihrem Widget zu.
+- `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
+  Elemente ein Chart hat: Titel immer, Achsen nur kartesisch, Legende
+  wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
+  `formatTarget.element`.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
   für den ausgewählten Chart und schließt, sobald sich die Auswahl
-  ändert.
+  ändert. Pinsel, Region und Element-Auswahl schreiben denselben
+  Zustand; der Format-Modus hat keinen eigenen State, er folgt aus
+  `formattedElement !== null`.
+- Floating UI schließt das Popover bei einem Druck außerhalb schon auf
+  `pointerdown`, also vor dem Klick. Damit der Pinsel als Toggle und
+  die Regionen ihren Klick erhalten, zählen die Canvas-Toolbar und der
+  formatierte Chart nicht als außerhalb (`Popover`-Prop `keepOpenOn`).
 - `ChartFormatPopover` nutzt dieselben `inspectorActions` und denselben
   ausgewählten Chart wie das `InspectorPanel`; es ist eine zweite
   Darstellung derselben Bearbeitung.
 - Solange das Popover offen ist, legt `syncFormatFocus`
   (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern
-  Editor-Zustand in die ECharts-Instanz: Serien und nicht bearbeitete
-  Achsen gedimmt, eine bearbeitete Achse leuchtet; bei Pie und Donut
-  werden keine Achsen gesetzt. Analog zu `syncAxisTitleEdit` und
+  Editor-Zustand in die ECharts-Instanz: Serien, Legende und nicht
+  bearbeitete Achsen gedimmt, eine bearbeitete Achse oder Legende
+  leuchtet; bei Pie und Donut werden keine Achsen gesetzt.
+  Legenden-Icons erben die Deckkraft der Serien und werden beim Fokus
+  auf die Legende zurückgesetzt. Analog zu `syncAxisTitleEdit` und
   `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und
   verschwindet mit dem nächsten vollständigen `setOption`.
+- Der Chart-Titel ist HTML und liegt außerhalb von ECharts.
+  `ChartItem` spiegelt den Fokus dort über eine CSS-Klasse
+  (`is-formatted` leuchtet, `is-dimmed` tritt zurück).
 
 Das Plot-Grid kartesischer Charts (`createGridOption`) weicht einer
 sichtbaren Legende aus: Rand der Legende (`LEGEND_EDGE_OFFSETS`, auch
@@ -912,7 +931,7 @@ Regeln:
 ### Commands
 
 Workspace-Befehle sind als `WorkspaceCommand` beschrieben (Label, Icon,
-Shortcuts, `isEnabled`, `run`, Scope) und werden in
+Shortcuts, `isEnabled`, optional `isActive`, `run`, Scope) und werden in
 `useWorkspaceCommands` zentral erzeugt. Dieselbe Registry speist
 Shortcuts und Buttons:
 
@@ -922,8 +941,10 @@ useWorkspaceCommands
 └── CommandButton       → Canvas-Toolbar, Chart-Aktionsleiste
 ```
 
-- Aktuelle Commands: Undo, Redo, Duplicate, Delete, Build Panel und
-  Inspector umschalten.
+- Aktuelle Commands: Undo, Redo, Duplicate, Delete, Format, Build Panel
+  und Inspector umschalten.
+- Toggle-Commands wie Format setzen `isActive`; `CommandButton` zeigt
+  sie dann als gedrückten Button.
 - Scope `global` greift überall, Scope `chart` nur, wenn der Chart
   selbst fokussiert ist.
 - In Textfeldern und `contenteditable` greift kein Shortcut; dort bleibt

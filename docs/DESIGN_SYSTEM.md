@@ -204,8 +204,10 @@ Alle drei Bereiche nutzen `Panel`.
   durch eigenen Inhalt im selben `h2`; `title` bleibt ein String für
   die Labels „Hide …“ und „Show …“.
 - Ohne Titel, `actions` und Collapse-Button rendert `Panel` keinen
-  Header (Canvas, siehe unten). Objektbezogene Aktionen gehören nicht in
-  eine Toolbar, sondern an das Objekt (siehe Chart-Aktionsleiste).
+  Header (Canvas, siehe unten). Objektbezogene Aktionen wie Duplicate
+  und Delete gehören nicht in eine Toolbar, sondern an das Objekt (siehe
+  Chart-Aktionsleiste). Ausnahme ist das Formatieren: Es ist ein
+  Editor-Modus und startet über den Pinsel in der Canvas-Toolbar.
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
 - Inhaltshöhe: `isScrollable` lässt das Panel seinen Inhalt selbst
@@ -239,11 +241,11 @@ Werkzeug). Entscheidungsfrage für jedes neue Element:
 
 > Würde man es in der Präsentation oder im Export sehen?
 
-| Ja → Dashboard                     | Nein → Editor                            |
-| ---------------------------------- | ---------------------------------------- |
-| Dashboard-Titel, später Untertitel | Undo, Redo, später Zoom, Present, Export |
-| Charts, später KPI, Text, Slicer   | Ask Cevyn Bar                            |
-| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Inspector, Build    |
+| Ja → Dashboard                     | Nein → Editor                                    |
+| ---------------------------------- | ------------------------------------------------ |
+| Dashboard-Titel, später Untertitel | Undo, Redo, Format, später Zoom, Present, Export |
+| Charts, später KPI, Text, Slicer   | Ask Cevyn Bar                                    |
+| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Inspector, Build            |
 
 ```text
 Canvas Panel (--canvas-background, ohne Panel-Header)
@@ -648,7 +650,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
-| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`, Achsen-Popover am Chart)          |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`, Format-Popover am Chart)          |
 | Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                      |
 | Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                      |
 | Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (automatische Achsentitel, Tick Count Auto/Custom) |
@@ -780,7 +782,9 @@ eigene Optik.
 
 `CommandButton` rendert einen `WorkspaceCommand` als `IconButton`:
 Label, Icon und Aktion kommen aus dem Command, `disabled` aus
-`isEnabled`. `size` (`sm | md`) und `variant` (`default | ghost`)
+`isEnabled`. Toggle-Commands (z. B. Format) setzen `isActive`; der
+Button erscheint dann gedrückt (`is-active`) und trägt `aria-pressed`.
+`size` (`sm | md`) und `variant` (`default | ghost`)
 werden an `IconButton` durchgereicht; das Icon ist 16 bzw. 18 px groß.
 
 Buttons für Workspace-Befehle werden immer über `CommandButton` aus der
@@ -865,8 +869,12 @@ Klick daneben):
   Schließen-Button (`IconButton`, `ghost`, `xs`). Ohne `title` bleibt
   das Popover kopflos (Dropdowns, Farbwähler).
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
-  ein Kind-Popover (z. B. Farbwähler im Achsen-Popover) schließt das
+  ein Kind-Popover (z. B. Farbwähler im Format-Popover) schließt das
   Eltern-Popover nicht.
+- `keepOpenOn` (CSS-Selektor) nimmt Bereiche außerhalb vom Schließen
+  per Klick aus, z. B. einen Toggle-Button, der das Popover selbst
+  schließt. Floating UI schließt sonst schon bei `pointerdown`, und der
+  folgende Klick würde es wieder öffnen.
 - Positionierung: `flip` wechselt die Seite, `shift` hält das Popover
   im Viewport, bei Platzmangel auch quer zur Platzierung. Ein Popover
   neben einem sehr breiten Chart liegt dann notfalls über ihm, statt
@@ -1134,32 +1142,36 @@ ausgewählten Chart.
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
 Titel, X- und Y-Achse, Legende):
 
-- Hover über den Text eines Elements (Chart-Titel, Achsentitel) zeigt
-  einen Stift (`IconButton`, `ghost`, `xs`: ohne Fläche und Rahmen,
-  beim Hover in Akzentfarbe). Er bleibt, bis der Pointer den Chart
-  verlässt; es ist immer nur ein Stift sichtbar.
-- Platzierung: rechts neben dem Element, links davon, wenn der
-  Chartrand keinen Platz lässt (z. B. rechtsbündiger Titel, Legende
-  rechts); beim gedrehten Y-Achsentitel darüber.
-- Flächen statt Text (aktuell die Legende) zeigen beim Hover eine
-  Region: dezente Fläche (`--color-surface-hover`) mit feinem Rand,
-  ringsum `--chart-region-frame` größer als das Element, oben ein
-  Streifen (`--chart-region-band`) mit dem Stift in der rechten Ecke.
-  Die Region liegt unter dem ECharts-Canvas und lässt Klicks durch.
-- Stift und Region sind ausgeblendet, solange ein Popover des Charts
-  offen ist.
-- Klick auf den Text bleibt Inline-Editing, Klick auf den Stift öffnet
-  das Popover.
+- Einstieg ist der Pinsel (`Paintbrush`) in der Canvas-Toolbar. Er
+  öffnet das Popover beim Titel des ausgewählten Charts, ist gedrückt,
+  solange es offen ist, und schließt es beim nächsten Klick. Ohne
+  ausgewählten Chart ist er deaktiviert.
 - Das Popover steht neben dem Chart (`right-start`, weicht nach links
   aus), nie auf ihm, damit Änderungen live sichtbar bleiben. Es trägt
-  einen Header mit Titel und X, `--glass-fill-elevated`,
-  `--shadow-lg` plus `--shadow-accent` und einen Rahmen in
-  `--color-border-accent`.
+  einen Header „Format“ mit X, darunter die Zeile „Element“
+  (`SelectControl`) und das Widget des Elements in der Variante
+  `bare`; dazu `--glass-fill-elevated`, `--shadow-lg` plus
+  `--shadow-accent` und einen Rahmen in `--color-border-accent`.
+- Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel
+  oder Legende zeigt eine Region, einen Rahmen in
+  `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
+  größer als das Element. Die Region liegt über dem Canvas; ein Klick
+  wählt das Element im Popover, statt Text zu bearbeiten oder
+  Legendeneinträge umzuschalten. Sie verschwindet, sobald der Pointer
+  sie verlässt. Ohne offenes Popover gibt es keine Regionen.
+- Blauer Rahmen heißt „auswählen“, graue Fläche
+  (`--color-surface-hover`) heißt „Text bearbeiten“: Außerhalb des
+  Format-Modus bleibt ein Klick auf Chart- oder Achsentitel
+  Inline-Editing.
+- Ein Druck in der Canvas-Toolbar (Undo, Redo, Pinsel) oder auf den
+  formatierten Chart schließt das Popover nicht; ein Klick auf die
+  Canvas oder einen anderen Chart, X und Escape schon.
 - Fokus statt Farbe: Während das Popover offen ist, treten Serien,
-  Labels und nicht bearbeitete Achsen auf 25 % Deckkraft zurück. Das
-  bearbeitete Element leuchtet im Akzent-Ton (Achse: Linie,
-  Tick-Labels, Titel; Chart-Titel per `text-shadow`); die Textfarben
-  bleiben erhalten, weil das Popover sie bearbeitet.
+  Labels, Legende, Chart-Titel und nicht bearbeitete Achsen auf 25 %
+  Deckkraft zurück. Das bearbeitete Element leuchtet im Akzent-Ton
+  (Achse: Linie, Tick-Labels, Titel; Legende: Text, Icons in voller
+  Farbe; Chart-Titel per `text-shadow`); die Textfarben bleiben
+  erhalten, weil das Popover sie bearbeitet.
 
 ### Tastaturbedienung
 

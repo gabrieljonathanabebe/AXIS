@@ -27,7 +27,7 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 
 ## Weitere Actions in der Canvas-Toolbar
 
-- die schwebende Canvas-Toolbar zeigt aktuell nur Undo und Redo
+- die schwebende Canvas-Toolbar zeigt aktuell Undo, Redo und Format
 - weitere canvasbezogene Actions ergänzen, z. B. Zoom, Save, Export
 - als Commands über die Command-Registry und `CommandButton`
 
@@ -111,8 +111,8 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 
 ## Chart-Palette vom UI-Akzent trennen
 
-- das Akzent-Blau der Oberfläche (Auswahl-Ring, Popover-Rahmen, Stift,
-  Achsen-Markierung) ist zugleich die erste Datenfarbe der Charts
+- das Akzent-Blau der Oberfläche (Auswahl-Ring, Popover-Rahmen,
+  Format-Region, Achsen-Markierung) ist zugleich die erste Datenfarbe der Charts
 - auf blauen Charts gehen Auswahl- und Bearbeitungs-Markierungen
   dadurch unter
 - prüfen, ob die Standard-Palette (`appearance.color`,

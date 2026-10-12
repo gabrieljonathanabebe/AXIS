@@ -1,4 +1,12 @@
-import { Copy, PanelLeft, PanelRight, Redo2, Trash2, Undo2 } from 'lucide-react'
+import {
+  Copy,
+  Paintbrush,
+  PanelLeft,
+  PanelRight,
+  Redo2,
+  Trash2,
+  Undo2,
+} from 'lucide-react'
 
 import { useCommandShortcuts } from './useCommandShortcuts'
 
@@ -8,8 +16,11 @@ import type { WorkspaceCommands } from './types'
 type UseWorkspaceCommandsParams = {
   canRedo: boolean
   canUndo: boolean
+  isFormatOpen: boolean
   selectedChartId: string | null
+  onCloseFormat: () => void
   onDuplicateChart: (chartId: string) => void
+  onFormatChart: (chartId: string) => void
   onRedo: () => void
   onRemoveChart: (chartId: string) => void
   onToggleBuildPanel: () => void
@@ -18,11 +29,15 @@ type UseWorkspaceCommandsParams = {
 }
 
 // ===== FUNCTION ==============================================================
+/** Defines the workspace commands and binds their keyboard shortcuts. */
 export function useWorkspaceCommands({
   canRedo,
   canUndo,
+  isFormatOpen,
   selectedChartId,
+  onCloseFormat,
   onDuplicateChart,
+  onFormatChart,
   onRedo,
   onRemoveChart,
   onToggleBuildPanel,
@@ -55,6 +70,22 @@ export function useWorkspaceCommands({
       },
       scope: 'chart',
       shortcuts: [{ key: 'd', mod: true }],
+    },
+    'chart.format': {
+      icon: Paintbrush,
+      id: 'chart.format',
+      isActive: isFormatOpen,
+      isEnabled: selectedChartId !== null,
+      label: 'Format chart',
+      run: () => {
+        if (isFormatOpen) {
+          onCloseFormat()
+        } else if (selectedChartId) {
+          onFormatChart(selectedChartId)
+        }
+      },
+      scope: 'chart',
+      shortcuts: [],
     },
     'history.redo': {
       icon: Redo2,

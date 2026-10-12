@@ -10,9 +10,6 @@
     calc(var(--chart-radius, 0px) / 2)
   );
   --chart-region-frame: var(--space-1);
-  --chart-region-band: calc(
-    var(--control-height-xs) + 2 * var(--chart-region-frame)
-  );
   color: var(--color-text-secondary);
   border-radius: var(--chart-radius, var(--radius-lg));
   overflow: hidden;
@@ -96,6 +93,11 @@
   text-shadow: 0 0 15px var(--color-accent);
 }
 
+/* Same opacity as FOCUS_DIMMED_OPACITY in syncFormatFocus. */
+.chart-item-header.is-dimmed .chart-item-title {
+  opacity: 0.25;
+}
+
 .chart-item-actions {
   position: absolute;
   top: var(--chart-header-top);
@@ -125,43 +127,18 @@
   transform: translateY(-50%);
 }
 
-.chart-format-button {
-  position: absolute;
-  z-index: 4;
-}
-
-.chart-format-button.is-above {
-  margin-top: calc(-1 * var(--space-1));
-  transform: translate(-50%, -100%);
-}
-
-.chart-format-button.is-after {
-  margin-left: var(--space-1);
-  transform: translateY(-50%);
-}
-
-.chart-format-button.is-before {
-  margin-left: calc(-1 * var(--space-1));
-  transform: translate(-100%, -50%);
-}
-
-.chart-format-button.is-corner {
-  margin-top: calc(var(--chart-region-frame) - var(--chart-region-band));
-  transform: translateX(-100%);
-}
-
-/* Lies under the ECharts canvas, so legend clicks still reach ECharts. */
+/* Lies over the canvas in format mode and takes the click, so it selects
+   the element instead of editing its text or toggling legend items. */
 .chart-format-region {
   position: absolute;
+  z-index: 3;
   box-sizing: content-box;
-  margin: calc(-1 * var(--chart-region-band))
-    calc(-1 * var(--chart-region-frame)) calc(-1 * var(--chart-region-frame));
-  padding: var(--chart-region-band) var(--chart-region-frame)
-    var(--chart-region-frame);
-  background: var(--color-surface-hover);
-  border: var(--border-width-thin) solid var(--color-border-subtle);
+  margin: calc(-1 * var(--chart-region-frame));
+  padding: var(--chart-region-frame);
+  background: transparent;
+  border: var(--border-width-thin) solid var(--color-border-accent);
   border-radius: var(--radius-md);
-  pointer-events: none;
+  cursor: pointer;
 }
 
 .chart-axis-title-hover {

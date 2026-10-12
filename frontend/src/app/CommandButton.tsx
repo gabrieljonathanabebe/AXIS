@@ -9,16 +9,18 @@ type CommandButtonProps = {
   variant?: IconButtonVariant
 }
 
+/** Shows a command as an icon button, pressed while the command is active. */
 function CommandButton({
   command,
   size = 'md',
   variant = 'default',
 }: CommandButtonProps) {
   const Icon = command.icon
-
   return (
     <IconButton
+      aria-pressed={command.isActive}
       disabled={!command.isEnabled}
+      isActive={command.isActive}
       label={command.label}
       size={size}
       variant={variant}

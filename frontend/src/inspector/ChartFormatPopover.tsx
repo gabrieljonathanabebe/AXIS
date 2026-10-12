@@ -1,11 +1,14 @@
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
+import ControlRow from '../shared/ui/ControlRow'
 import LegendWidget from './appearance/LegendWidget'
 import Popover from '../shared/ui/Popover'
+import SelectControl from '../shared/ui/SelectControl'
 import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
 } from '../charts/getChartTitle'
+import { getFormatElements } from '../charts/getFormatElements'
 
 import type { ReactNode } from 'react'
 import type { ChartFormatElement } from '../charts/types'
@@ -15,6 +18,7 @@ import type { ChartFormatTarget, ChartInspectorProps } from './types'
 type ChartFormatPopoverProps = ChartInspectorProps & {
   target: ChartFormatTarget
   onClose: () => void
+  onElementChange: (element: ChartFormatElement) => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -26,6 +30,15 @@ const elementTitles: Record<ChartFormatElement, string> = {
 }
 
 // ===== HELPERS ===============================================================
+/**
+ * Selects where presses keep the popover open: the canvas toolbar (undo,
+ * redo, the format toggle) and the formatted chart, whose regions switch
+ * the element.
+ */
+function getKeepOpenSelector(chartId: string): string {
+  return `.canvas-toolbar, [data-chart-id="${chartId}"]`
+}
+
 function renderFormatWidget(
   element: ChartFormatElement,
   { actions, chart, fields }: ChartInspectorProps,
@@ -66,28 +79,47 @@ function renderFormatWidget(
 }
 
 // ===== FUNCTION ==============================================================
-/** Shows the inspector widget of one chart element next to the chart. */
+/**
+ * Shows the format widget of one chart element next to the chart.
+ * The element select switches between the elements of the same chart.
+ */
 function ChartFormatPopover({
   target,
   onClose,
+  onElementChange,
   ...inspectorProps
 }: ChartFormatPopoverProps) {
-  const title = elementTitles[target.element]
+  const { chart, fields } = inspectorProps
+  const elementOptions = getFormatElements(chart, fields).map((element) => ({
+    label: elementTitles[element],
+    value: element,
+  }))
   return (
     <Popover
       anchor={target.anchor}
       className="chart-format-popover glass glass-thick"
-      label={`${title} format`}
+      keepOpenOn={getKeepOpenSelector(target.chartId)}
+      label="Chart format"
       open
       placement="right-start"
-      title={title}
+      title="Format"
       onOpenChange={(open) => {
         if (!open) {
           onClose()
         }
       }}
     >
-      {renderFormatWidget(target.element, inspectorProps)}
+      <div className="stack">
+        <ControlRow label="Element">
+          <SelectControl
+            label="Format element"
+            options={elementOptions}
+            value={target.element}
+            onChange={onElementChange}
+          />
+        </ControlRow>
+        {renderFormatWidget(target.element, inspectorProps)}
+      </div>
     </Popover>
   )
 }

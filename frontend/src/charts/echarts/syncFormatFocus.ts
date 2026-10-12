@@ -7,9 +7,15 @@ const FOCUS_DIMMED_OPACITY = 0.25
 const FOCUS_GLOW_BLUR = 15
 
 // ===== FUNCTION ==============================================================
-// Dims the chart content while a format popover is open and lets a
-// formatted axis glow. ECharts draws both, so they follow layout changes.
-// The glow keeps the text colors, which the popover edits.
+/**
+ * Dims the chart content while a format popover is open and lets the
+ * formatted axis or legend glow. ECharts draws both, so they follow layout
+ * changes. The glow keeps the text colors, which the popover edits; legend
+ * icons inherit the dimmed series opacity, so a formatted legend resets it.
+ * @param instance ECharts instance of the chart.
+ * @param formattedElement Element in the popover, or null when it is closed.
+ * @param color Accent color of the glow.
+ */
 export function syncFormatFocus(
   instance: ECharts,
   formattedElement: ChartFormatElement | null,
@@ -37,6 +43,14 @@ export function syncFormatFocus(
     axisTick: { lineStyle: dimmedStyle },
     nameTextStyle: dimmedStyle,
   }
+  const legend =
+    formattedElement === 'legend'
+      ? {
+          itemStyle: { opacity: 1 },
+          lineStyle: { opacity: 1 },
+          textStyle: textGlow,
+        }
+      : { textStyle: dimmedStyle }
   const { series = [], xAxis = [] } = instance.getOption() as {
     series?: { areaStyle?: object }[]
     xAxis?: object[]
@@ -51,6 +65,7 @@ export function syncFormatFocus(
       : {}
   instance.setOption({
     ...axes,
+    legend,
     series: series.map(({ areaStyle }) => ({
       areaStyle: areaStyle ? dimmedStyle : undefined,
       itemStyle: dimmedStyle,

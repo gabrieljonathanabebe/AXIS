@@ -37,6 +37,8 @@ type PopoverProps = {
   open: boolean
   children: ReactNode
   className?: string
+  /** Selector of elements outside the popover that do not close it. */
+  keepOpenOn?: string
   placement?: Placement
   role?: PopoverRole
   matchTriggerWidth?: boolean
@@ -45,12 +47,14 @@ type PopoverProps = {
   title?: string
 }
 
+/** Floating surface of one popover, positioned at its trigger or anchor. */
 function PopoverNode({
   anchor,
   label,
   open,
   children,
   className = '',
+  keepOpenOn,
   placement = 'bottom-end',
   role = 'dialog',
   title,
@@ -101,7 +105,15 @@ function PopoverNode({
     }
   }, [anchor, setPositionReference])
 
-  const dismiss = useDismiss(context)
+  /** Closes on presses outside, except on elements matching keepOpenOn. */
+  function isOutsidePress({ target }: MouseEvent): boolean {
+    if (!keepOpenOn || !(target instanceof Element)) {
+      return true
+    }
+    return target.closest(keepOpenOn) === null
+  }
+
+  const dismiss = useDismiss(context, { outsidePress: isOutsidePress })
   const floatingRole = useRole(context, {
     role,
   })

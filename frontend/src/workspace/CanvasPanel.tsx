@@ -60,6 +60,11 @@ function CanvasPanel({
           size="sm"
           variant="ghost"
         />
+        <CommandButton
+          command={commands['chart.format']}
+          size="sm"
+          variant="ghost"
+        />
       </div>
       <div className="dashboard-surface">
         <h2 className="dashboard-title">
