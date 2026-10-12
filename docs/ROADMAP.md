@@ -722,9 +722,11 @@ Inspector. Langfristig ersetzt die Bearbeitung am Objekt den Inspector
 - Encodings werden im Build Panel über ein X entfernt (wie in Power
   BI), nicht durch Wegziehen
 
-Bisher umgesetzt (X- und Y-Achse):
+Bisher umgesetzt (Titel, X- und Y-Achse):
 
-- Stift neben dem gehoverten Achsentitel am ausgewählten Chart; er
+- Stift neben dem gehoverten Element (Chart-Titel, Achsentitel) am
+  ausgewählten Chart; ein gemeinsamer `formatHint`, ein Stift
+  (`ghost`), rechts oder bei fehlendem Platz links vom Element; er
   bleibt, bis der Pointer den Chart verlässt
 - Popover neben dem Chart (`right-start`, weicht nach links aus) mit
   Header, Schließen-Button und dem `AxisWidget` in der Variante `bare`
@@ -733,8 +735,9 @@ Bisher umgesetzt (X- und Y-Achse):
   `FloatingTree`
 - erhöhte Ebene für das Popover: `--glass-fill-elevated`, tiefer
   Schatten, Akzent-Rahmen und -Schein
-- Fokus während der Bearbeitung: Serien und die andere Achse auf 25 %
-  Deckkraft, die bearbeitete Achse leuchtet (`syncAxisHighlight`)
+- Fokus während der Bearbeitung: Serien und nicht bearbeitete Achsen
+  auf 25 % Deckkraft, das bearbeitete Element leuchtet
+  (`syncFormatFocus`, beim Titel per CSS)
 - automatische Titel als Platzhalter: `getDefaultAxisTitle` für
   Achsen (Popover, Inspector, Inline-Editing), `getDefaultChartTitle`
   im Inspector
@@ -746,7 +749,7 @@ Bisher umgesetzt (X- und Y-Achse):
 
 Als Nächstes:
 
-1. Titel und Legende nach demselben Muster
+1. Legende nach demselben Muster
 2. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
 3. Serien-Klick für Marks und Farben
 4. Toolbar-Trigger für Container und Hintergrund

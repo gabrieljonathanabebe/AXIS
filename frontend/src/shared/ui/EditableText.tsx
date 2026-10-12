@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { PointerEvent } from 'react'
 
 import InlineTextInput from './InlineTextInput'
 
@@ -8,6 +9,7 @@ type EditableTextProps = {
   placeholder: string
   className?: string
   onCommit: (value: string) => void
+  onPointerEnter?: (event: PointerEvent<HTMLButtonElement>) => void
 }
 
 function EditableText({
@@ -16,6 +18,7 @@ function EditableText({
   placeholder,
   className = '',
   onCommit,
+  onPointerEnter,
 }: EditableTextProps) {
   const [isEditing, setIsEditing] = useState(false)
 
@@ -39,6 +42,7 @@ function EditableText({
       aria-label={`Edit ${label.toLowerCase()}`}
       title={value.trim() || placeholder}
       onClick={() => setIsEditing(true)}
+      onPointerEnter={onPointerEnter}
     >
       {value.trim() || placeholder}
     </button>

@@ -88,6 +88,10 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.chart-item-header.is-formatted .chart-item-title {
+  text-shadow: 0 0 15px var(--color-accent);
+}
+
 .chart-item-actions {
   position: absolute;
   top: var(--chart-header-top);
@@ -117,19 +121,24 @@
   transform: translateY(-50%);
 }
 
-.chart-axis-format-button {
+.chart-format-button {
   position: absolute;
   z-index: 4;
 }
 
-.chart-axis-format-button.is-x-axis {
+.chart-format-button.is-above {
+  margin-top: calc(-1 * var(--space-1));
+  transform: translate(-50%, -100%);
+}
+
+.chart-format-button.is-after {
   margin-left: var(--space-1);
   transform: translateY(-50%);
 }
 
-.chart-axis-format-button.is-y-axis {
-  margin-top: calc(-1 * var(--space-1));
-  transform: translate(-50%, -100%);
+.chart-format-button.is-before {
+  margin-left: calc(-1 * var(--space-1));
+  transform: translate(-100%, -50%);
 }
 
 .chart-axis-title-hover {

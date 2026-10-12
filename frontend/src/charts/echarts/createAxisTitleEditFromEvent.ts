@@ -8,9 +8,6 @@ const axisByComponentType: Partial<Record<string, AxisTitleEdit['axis']>> = {
   yAxis: 'y',
 }
 
-const FOCUS_DIMMED_OPACITY = 0.25
-const FOCUS_GLOW_BLUR = 15
-
 // ===== FUNCTIONS =============================================================
 export function isAxisTitleEvent(event: ECElementEvent): boolean {
   return (
@@ -54,49 +51,4 @@ export function syncAxisTitleEdit(
   instance.setOption(
     editingAxis === 'x' ? { xAxis: hiddenName } : { yAxis: hiddenName },
   )
-}
-
-// Lets the axis whose format popover is open glow and dims series and
-// the other axis. ECharts draws both, so they follow layout changes.
-// The glow keeps the text colors, which the popover edits.
-export function syncAxisHighlight(
-  instance: ECharts,
-  highlightedAxis: AxisTitleEdit['axis'] | null,
-  color: string,
-): void {
-  if (!highlightedAxis) {
-    return
-  }
-  const dimmedStyle = { opacity: FOCUS_DIMMED_OPACITY }
-  const textGlow = { textShadowBlur: FOCUS_GLOW_BLUR, textShadowColor: color }
-  const highlight = {
-    axisLabel: textGlow,
-    axisLine: {
-      lineStyle: {
-        shadowBlur: FOCUS_GLOW_BLUR,
-        shadowColor: color,
-        width: 2,
-      },
-    },
-    nameTextStyle: textGlow,
-  }
-  const dimmed = {
-    axisLabel: dimmedStyle,
-    axisLine: { lineStyle: dimmedStyle },
-    axisTick: { lineStyle: dimmedStyle },
-    nameTextStyle: dimmedStyle,
-  }
-  const { series = [] } = instance.getOption() as {
-    series?: { areaStyle?: object }[]
-  }
-  instance.setOption({
-    series: series.map(({ areaStyle }) => ({
-      areaStyle: areaStyle ? dimmedStyle : undefined,
-      itemStyle: dimmedStyle,
-      label: dimmedStyle,
-      lineStyle: dimmedStyle,
-    })),
-    xAxis: highlightedAxis === 'x' ? highlight : dimmed,
-    yAxis: highlightedAxis === 'y' ? highlight : dimmed,
-  })
 }

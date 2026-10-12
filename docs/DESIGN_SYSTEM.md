@@ -1128,10 +1128,15 @@ ausgewählten Chart.
 ### Bearbeitung am Chart
 
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-X- und Y-Achse):
+Titel, X- und Y-Achse):
 
-- Hover über den Achsentitel zeigt einen Stift (`IconButton`, `xs`);
-  er bleibt, bis der Pointer den Chart verlässt.
+- Hover über den Text eines Elements (Chart-Titel, Achsentitel) zeigt
+  einen Stift (`IconButton`, `ghost`, `xs`: ohne Fläche und Rahmen,
+  beim Hover in Akzentfarbe). Er bleibt, bis der Pointer den Chart
+  verlässt; es ist immer nur ein Stift sichtbar.
+- Platzierung: rechts neben dem Element, links davon, wenn der
+  Chartrand keinen Platz lässt (z. B. rechtsbündiger Titel, Legende
+  rechts); beim gedrehten Y-Achsentitel darüber.
 - Klick auf den Text bleibt Inline-Editing, Klick auf den Stift öffnet
   das Popover.
 - Das Popover steht neben dem Chart (`right-start`, weicht nach links
@@ -1140,10 +1145,10 @@ X- und Y-Achse):
   `--shadow-lg` plus `--shadow-accent` und einen Rahmen in
   `--color-border-accent`.
 - Fokus statt Farbe: Während das Popover offen ist, treten Serien,
-  Labels und die andere Achse auf 25 % Deckkraft zurück. Die
-  bearbeitete Achse (Linie, Tick-Labels, Titel) leuchtet im
-  Akzent-Ton; die Textfarben bleiben erhalten, weil das Popover sie
-  bearbeitet.
+  Labels und nicht bearbeitete Achsen auf 25 % Deckkraft zurück. Das
+  bearbeitete Element leuchtet im Akzent-Ton (Achse: Linie,
+  Tick-Labels, Titel; Chart-Titel per `text-shadow`); die Textfarben
+  bleiben erhalten, weil das Popover sie bearbeitet.
 
 ### Tastaturbedienung
 

@@ -11,10 +11,10 @@ import {
 
 import { createEChartOption } from './echarts/createEChartOption'
 import { syncBrush } from './echarts/createBrushOption'
+import { syncFormatFocus } from './echarts/syncFormatFocus'
 import {
   createAxisTitleEditFromEvent,
   isAxisTitleEvent,
-  syncAxisHighlight,
   syncAxisTitleEdit,
 } from './echarts/createAxisTitleEditFromEvent'
 
@@ -29,7 +29,7 @@ import { isSameSelection } from '../workspace/dataSelection'
 import { useChartQuery } from './useChartQuery'
 import { usePointsQuery } from './usePointsQuery'
 
-import type { AxisTitleEdit } from './types'
+import type { AxisTitleEdit, ChartFormatElement } from './types'
 import type { ChartInstance } from './types'
 import type { DataRow, Dataset } from '../datasets/types'
 import type { ChartTheme } from './echarts/chartTheme'
@@ -44,7 +44,7 @@ type EChartCanvasProps = {
   dataset: Dataset
   datasetId: string | null
   editingAxisTitle: AxisTitleEdit['axis'] | null
-  highlightedAxis: AxisTitleEdit['axis'] | null
+  formattedElement: ChartFormatElement | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
   selection: DataSelection | null
@@ -106,7 +106,7 @@ function EChartCanvas({
   dataset,
   datasetId,
   editingAxisTitle,
-  highlightedAxis,
+  formattedElement,
   onEditAxisTitle,
   onHoverAxisTitle,
   selection,
@@ -230,13 +230,13 @@ function EChartCanvas({
       true,
     )
     syncBrush(instance, chart, selection)
-    syncAxisHighlight(instance, highlightedAxis, theme.accent)
+    syncFormatFocus(instance, formattedElement, theme.accent)
     syncAxisTitleEdit(instance, editingAxisTitle)
   }, [
     chart,
     dataset,
     editingAxisTitle,
-    highlightedAxis,
+    formattedElement,
     highlightResult,
     points,
     result,

@@ -351,10 +351,12 @@ ECharts click/mouseover (axisName)
 → chart/updateAppearance
 ```
 
-Das Formatieren eines Elements direkt am Chart nutzt dasselbe
-Hover-Event: `ChartItem` merkt sich die zuletzt gehoverte Achse und
-zeigt am ausgewählten Chart einen Stift. Ein Klick meldet nur Element
-und Anker nach oben (`onFormatElement`); `ChartItem` kennt keine
+Das Formatieren eines Elements direkt am Chart beginnt mit einem
+Hover: Achsentitel melden ihn über das Adapter-Event, der HTML-Titel
+über `EditableText` (`onPointerEnter`). `ChartItem` hält genau einen
+`formatHint` (Element, Rechteck, Platzierung) und zeigt dafür am
+ausgewählten Chart einen Stift. Ein Klick meldet nur Element und Anker
+nach oben (`onFormatElement`); `ChartItem` kennt keine
 Inspector-Widgets.
 
 ```text
@@ -368,7 +370,8 @@ Stift in ChartItem
 
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
   Elemente als Schlüssel von `ChartAppearanceSpec`, aktuell
-  `xAxis | yAxis`.
+  `title | xAxis | yAxis`. `ChartFormatPopover` ordnet sie in
+  `renderFormatWidget` per `switch` ihrem Widget zu.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
   für den ausgewählten Chart und schließt, sobald sich die Auswahl
@@ -376,9 +379,11 @@ Stift in ChartItem
 - `ChartFormatPopover` nutzt dieselben `inspectorActions` und denselben
   ausgewählten Chart wie das `InspectorPanel`; es ist eine zweite
   Darstellung derselben Bearbeitung.
-- Solange das Popover offen ist, legt `syncAxisHighlight` nach dem
-  Rendern Editor-Zustand in die ECharts-Instanz (bearbeitete Achse
-  leuchtet, Rest gedimmt), analog zu `syncAxisTitleEdit` und
+- Solange das Popover offen ist, legt `syncFormatFocus`
+  (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern
+  Editor-Zustand in die ECharts-Instanz: Serien und nicht bearbeitete
+  Achsen gedimmt, eine bearbeitete Achse leuchtet; bei Pie und Donut
+  werden keine Achsen gesetzt. Analog zu `syncAxisTitleEdit` und
   `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und
   verschwindet mit dem nächsten vollständigen `setOption`.
 

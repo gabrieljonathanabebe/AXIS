@@ -456,10 +456,37 @@ sie nur in der API-Doku, bei den Action-Modellen in `app/ai/models.py`
 sind sie die Beschreibungen, die Claude im Ask-Cevyn-Tool liest; dort nur
 bewusst als Prompt-Änderung anpassen.
 
-TypeScript: exportierte Funktionen, Hooks und Komponenten erhalten einen
-einzeiligen JSDoc-Kommentar (`/** … */`). `@param` und `@returns` nur,
-wenn sie über die Types hinaus etwas aussagen. Kommentare innerhalb von
-Funktionen nur für nicht offensichtliche Entscheidungen.
+TypeScript: jede Funktion erhält einen JSDoc-Kommentar (`/** … */`)
+statt loser `//`-Kommentare, auch nicht exportierte Helper, Hooks,
+Komponenten und Handler innerhalb von Komponenten:
+
+- kleine Funktionen: nur ein Satz;
+- größere bzw. wichtige Funktionen: Zusammenfassung, bei Bedarf ein
+  Satz zur Entscheidung, dazu `@param` je Parameter und `@returns` mit
+  je einem kurzen Satz, analog zu `Args` und `Returns` in Python (im
+  Editor per `/**` + Enter vorbefüllt);
+- Konstanten und Types, die eine Erklärung brauchen, ebenfalls mit
+  JSDoc statt `//`;
+- Begründungen gehören in den JSDoc der Funktion; `//` innerhalb einer
+  Funktion nur ausnahmsweise, wenn eine einzelne Zeile sonst
+  missverständlich wäre.
+
+```ts
+/** Measures an element relative to the chart item. */
+function getRectInItem(target: Element, item: HTMLElement): Rect {
+
+/**
+ * Places the format pencil next to an element where the chart has room.
+ * @param element Element whose pencil is placed.
+ * @param rect Bounds of the element inside the chart item.
+ * @param itemWidth Width of the chart item.
+ * @returns Above, after or before the element.
+ */
+function getFormatButtonPlacement(
+```
+
+Gilt für neuen und geänderten Code; bestehende Funktionen werden beim
+Anfassen nachgezogen.
 
 Properties in Options- und Konfigurationsobjekten alphabetisch sortieren,
 wenn ihre Reihenfolge keine Semantik besitzt. Das gilt auch für neu

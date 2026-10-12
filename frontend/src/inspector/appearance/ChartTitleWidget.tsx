@@ -6,17 +6,20 @@ import TextInput from '../../shared/ui/TextInput'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartTitleAppearance } from '../../charts/types'
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 
 type ChartTitleWidgetProps = {
   defaultTitle?: string
   value: ChartTitleAppearance
   onChange: (value: ChartTitleAppearance) => void
+  variant?: InspectorWidgetVariant
 }
 
 function ChartTitleWidget({
   defaultTitle,
   value,
   onChange,
+  variant,
 }: ChartTitleWidgetProps) {
   return (
     <InspectorWidget
@@ -28,6 +31,7 @@ function ChartTitleWidget({
           onChange({ ...value, enabled })
         },
       }}
+      variant={variant}
     >
       <ControlRow label="Text">
         <TextInput

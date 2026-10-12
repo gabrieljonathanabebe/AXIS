@@ -98,7 +98,7 @@ export type ChartEncoding = {
 /** Chart elements that can be formatted directly on the chart. */
 export type ChartFormatElement = keyof Pick<
   ChartAppearanceSpec,
-  'xAxis' | 'yAxis'
+  'title' | 'xAxis' | 'yAxis'
 >
 
 export type ChartInstance = {
