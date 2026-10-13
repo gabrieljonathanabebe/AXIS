@@ -2,10 +2,9 @@ import {
   createChartInstance,
   createDefaultChartSpec,
 } from '../charts/createChartInstance'
-import {
-  DEFAULT_CHART_SIZE,
-  findFreeChartLayout,
-} from '../workspace/chartLayout'
+import { findChart } from '../objects/findChart'
+import { objectDefinitions } from '../objects/objectDefinitions'
+import { findFreeLayout } from '../workspace/chartLayout'
 import { workspaceReducer } from '../workspace/workspaceReducer'
 import { validateCevynAction } from './validateCevynAction'
 import type { CevynAction, CevynActionError, CevynActionResult } from './types'
@@ -13,18 +12,19 @@ import type { Dataset } from '../datasets/types'
 import type { WorkspaceAction, WorkspaceState } from '../workspace/types'
 
 // ===== HELPERS ===============================================================
+/** Adds a chart with defaults, overridden by the values of the action. */
 function createChart(
   action: Extract<CevynAction, { type: 'chart/create' }>,
   state: WorkspaceState,
 ): WorkspaceAction {
   const chart = createChartInstance({
-    layout: findFreeChartLayout(state.charts, DEFAULT_CHART_SIZE),
+    layout: findFreeLayout(state.objects, objectDefinitions.chart.defaultSize),
     type: action.chartType,
   })
   const { data } = chart.spec
   return {
-    type: 'chart/add',
-    chart: {
+    type: 'object/add',
+    object: {
       ...chart,
       spec: {
         ...chart.spec,
@@ -38,6 +38,7 @@ function createChart(
   }
 }
 
+/** Turns one Cevyn action into the workspace action it stands for. */
 function translateCevynAction(
   action: CevynAction,
   state: WorkspaceState,
@@ -46,10 +47,10 @@ function translateCevynAction(
     case 'chart/create':
       return createChart(action, state)
     case 'chart/remove':
-      return { type: 'chart/remove', chartId: action.chartId }
+      return { type: 'object/remove', objectId: action.chartId }
     case 'chart/setTitle': {
       // Existence is checked by validateCevynAction before translation.
-      const chart = state.charts.find(({ id }) => id === action.chartId)!
+      const chart = findChart(state.objects, action.chartId)!
       const { title } = chart.spec.appearance
       return {
         type: 'chart/updateAppearance',

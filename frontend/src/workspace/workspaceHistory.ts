@@ -20,21 +20,27 @@ export const initialWorkspaceHistory: WorkspaceHistoryState = {
 }
 
 // ===== HELPERS ===============================================================
+/** Chart, dashboard and object changes are undoable, selecting is not. */
 function isUndoableAction(action: WorkspaceAction): boolean {
   return (
-    action.type !== 'chart/select' &&
-    (action.type.startsWith('chart/') || action.type.startsWith('dashboard/'))
+    action.type !== 'object/select' &&
+    (action.type.startsWith('chart/') ||
+      action.type.startsWith('dashboard/') ||
+      action.type.startsWith('object/'))
   )
 }
 
+/**
+ * Groups quick edits of the same value into one undo step.
+ * @param action Action that was just applied.
+ * @returns Type, target and patch keys, or null for actions never grouped.
+ */
 function getCoalesceKey(action: WorkspaceAction): string | null {
   switch (action.type) {
     case 'chart/updateAggregation':
     case 'chart/updateAppearance':
-    case 'chart/updateContainer':
     case 'chart/updateEncoding':
     case 'chart/updateInteraction':
-    case 'chart/updateLayout':
       return [
         action.type,
         action.chartId,
@@ -50,31 +56,45 @@ function getCoalesceKey(action: WorkspaceAction): string | null {
     case 'dashboard/update':
     case 'dashboard/updateLayout':
       return [action.type, ...Object.keys(action.patch).sort()].join(':')
+    case 'object/updateContainer':
+    case 'object/updateLayout':
+      return [
+        action.type,
+        action.objectId,
+        ...Object.keys(action.patch).sort(),
+      ].join(':')
     default:
       return null
   }
 }
 
+/** Keeps the undoable part of the workspace. */
 function createSnapshot(state: WorkspaceState): WorkspaceSnapshot {
   return {
-    charts: state.charts,
     dashboard: state.dashboard,
-    selectedChartId: state.selectedChartId,
+    objects: state.objects,
+    selectedObjectId: state.selectedObjectId,
   }
 }
 
+/**
+ * Restores a snapshot; the data selection stays while its source exists.
+ * @param state Current workspace.
+ * @param snapshot Undoable part to restore.
+ * @returns The workspace with the snapshot applied.
+ */
 function restoreSnapshot(
   state: WorkspaceState,
   snapshot: WorkspaceSnapshot,
 ): WorkspaceState {
-  const selectionSourceExists = snapshot.charts.some((chart) => {
-    return chart.id === state.selection?.sourceChartId
+  const selectionSourceExists = snapshot.objects.some((object) => {
+    return object.id === state.selection?.sourceChartId
   })
   return {
     ...state,
-    charts: snapshot.charts,
     dashboard: snapshot.dashboard,
-    selectedChartId: snapshot.selectedChartId,
+    objects: snapshot.objects,
+    selectedObjectId: snapshot.selectedObjectId,
     selection: selectionSourceExists ? state.selection : null,
   }
 }

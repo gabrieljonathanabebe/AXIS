@@ -1,9 +1,11 @@
-import type { ChartInstance, ChartLayout } from '../charts/types'
+import type {
+  DashboardObject,
+  ObjectLayout,
+  ObjectSize,
+} from '../objects/types'
 
 // ===== TYPES =================================================================
-type ChartSize = Pick<ChartLayout, 'height' | 'width'>
-
-export type GridDelta = Pick<ChartLayout, 'x' | 'y'>
+export type GridDelta = Pick<ObjectLayout, 'x' | 'y'>
 
 export type ResizeEdges = {
   bottom: boolean
@@ -18,18 +20,13 @@ export const CHART_GRID = {
   rowHeight: 16,
 }
 
-export const DEFAULT_CHART_SIZE: ChartSize = {
-  height: 14,
-  width: 12,
-}
-
-export const MIN_CHART_SIZE: ChartSize = {
+export const MIN_OBJECT_SIZE: ObjectSize = {
   height: 10,
   width: 6,
 }
 
 // ===== HELPERS ===============================================================
-function isOverlapping(first: ChartLayout, second: ChartLayout): boolean {
+function isOverlapping(first: ObjectLayout, second: ObjectLayout): boolean {
   return (
     first.x < second.x + second.width &&
     second.x < first.x + first.width &&
@@ -42,24 +39,31 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
 
+/** Sorts objects top to bottom, then left to right. */
 function compareReadingOrder(
-  first: ChartInstance,
-  second: ChartInstance,
+  first: DashboardObject,
+  second: DashboardObject,
 ): number {
   return first.layout.y - second.layout.y || first.layout.x - second.layout.x
 }
 
 // ===== FUNCTIONS =============================================================
-export function findFreeChartLayout(
-  charts: ChartInstance[],
-  size: ChartSize,
-): ChartLayout {
+/**
+ * Finds the first free spot for an object, row by row from the top left.
+ * @param objects Objects already on the canvas.
+ * @param size Size of the new object.
+ * @returns A layout that overlaps no object.
+ */
+export function findFreeLayout(
+  objects: DashboardObject[],
+  size: ObjectSize,
+): ObjectLayout {
   const width = Math.min(size.width, CHART_GRID.columns)
   for (let y = 0; ; y += 1) {
     for (let x = 0; x + width <= CHART_GRID.columns; x += 1) {
       const layout = { height: size.height, width, x, y }
-      const isFree = charts.every((chart) => {
-        return !isOverlapping(chart.layout, layout)
+      const isFree = objects.every((object) => {
+        return !isOverlapping(object.layout, layout)
       })
       if (isFree) {
         return layout
@@ -68,22 +72,29 @@ export function findFreeChartLayout(
   }
 }
 
-export function findNeighborChartId(
-  charts: ChartInstance[],
-  chartId: string,
+/**
+ * Finds the object to select when another one is removed.
+ * @param objects Objects before the removal.
+ * @param objectId Object that is removed.
+ * @returns The next object in reading order, else the previous one, or null.
+ */
+export function findNeighborObjectId(
+  objects: DashboardObject[],
+  objectId: string,
 ): string | null {
-  const orderedCharts = [...charts].sort(compareReadingOrder)
-  const index = orderedCharts.findIndex((chart) => chart.id === chartId)
+  const ordered = [...objects].sort(compareReadingOrder)
+  const index = ordered.findIndex((object) => object.id === objectId)
   if (index === -1) {
     return null
   }
-  return orderedCharts[index + 1]?.id ?? orderedCharts[index - 1]?.id ?? null
+  return ordered[index + 1]?.id ?? ordered[index - 1]?.id ?? null
 }
 
-export function moveChartLayout(
-  layout: ChartLayout,
+/** Moves a layout by grid cells without leaving the grid. */
+export function moveLayout(
+  layout: ObjectLayout,
   delta: GridDelta,
-): ChartLayout {
+): ObjectLayout {
   return {
     ...layout,
     x: clamp(layout.x + delta.x, 0, CHART_GRID.columns - layout.width),
@@ -91,28 +102,35 @@ export function moveChartLayout(
   }
 }
 
-export function resizeChartLayout(
-  layout: ChartLayout,
+/**
+ * Resizes a layout by moving the given edges, down to the minimum size.
+ * @param layout Current layout.
+ * @param delta Change in grid cells.
+ * @param edges Edges that follow the change.
+ * @returns The resized layout, without leaving the grid.
+ */
+export function resizeLayout(
+  layout: ObjectLayout,
   delta: GridDelta,
   edges: ResizeEdges,
-): ChartLayout {
+): ObjectLayout {
   const right = layout.x + layout.width
   const bottom = layout.y + layout.height
   const x = edges.left
-    ? clamp(layout.x + delta.x, 0, right - MIN_CHART_SIZE.width)
+    ? clamp(layout.x + delta.x, 0, right - MIN_OBJECT_SIZE.width)
     : layout.x
   const y = edges.top
-    ? clamp(layout.y + delta.y, 0, bottom - MIN_CHART_SIZE.height)
+    ? clamp(layout.y + delta.y, 0, bottom - MIN_OBJECT_SIZE.height)
     : layout.y
   const width = edges.right
     ? clamp(
         layout.width + delta.x,
-        MIN_CHART_SIZE.width,
+        MIN_OBJECT_SIZE.width,
         CHART_GRID.columns - layout.x,
       )
     : right - x
   const height = edges.bottom
-    ? Math.max(layout.height + delta.y, MIN_CHART_SIZE.height)
+    ? Math.max(layout.height + delta.y, MIN_OBJECT_SIZE.height)
     : bottom - y
   return { height, width, x, y }
 }

@@ -17,12 +17,12 @@ type UseWorkspaceCommandsParams = {
   canRedo: boolean
   canUndo: boolean
   isFormatOpen: boolean
-  selectedChartId: string | null
+  selectedObjectId: string | null
   onCloseFormat: () => void
-  onDuplicateChart: (chartId: string) => void
-  onFormatChart: (chartId: string) => void
+  onDuplicateObject: (objectId: string) => void
+  onFormatObject: (objectId: string) => void
   onRedo: () => void
-  onRemoveChart: (chartId: string) => void
+  onRemoveObject: (objectId: string) => void
   onToggleBuildPanel: () => void
   onToggleInspector: () => void
   onUndo: () => void
@@ -34,59 +34,17 @@ export function useWorkspaceCommands({
   canRedo,
   canUndo,
   isFormatOpen,
-  selectedChartId,
+  selectedObjectId,
   onCloseFormat,
-  onDuplicateChart,
-  onFormatChart,
+  onDuplicateObject,
+  onFormatObject,
   onRedo,
-  onRemoveChart,
+  onRemoveObject,
   onToggleBuildPanel,
   onToggleInspector,
   onUndo,
 }: UseWorkspaceCommandsParams): WorkspaceCommands {
   const commands: WorkspaceCommands = {
-    'chart.delete': {
-      icon: Trash2,
-      id: 'chart.delete',
-      isEnabled: selectedChartId !== null,
-      label: 'Delete chart',
-      run: () => {
-        if (selectedChartId) {
-          onRemoveChart(selectedChartId)
-        }
-      },
-      scope: 'chart',
-      shortcuts: [{ key: 'backspace' }, { key: 'delete' }],
-    },
-    'chart.duplicate': {
-      icon: Copy,
-      id: 'chart.duplicate',
-      isEnabled: selectedChartId !== null,
-      label: 'Duplicate chart',
-      run: () => {
-        if (selectedChartId) {
-          onDuplicateChart(selectedChartId)
-        }
-      },
-      scope: 'chart',
-      shortcuts: [{ key: 'd', mod: true }],
-    },
-    'chart.format': {
-      icon: Paintbrush,
-      id: 'chart.format',
-      isActive: isFormatOpen,
-      isEnabled: selectedChartId !== null,
-      label: 'Format chart',
-      run: () => {
-        if (isFormatOpen) {
-          onCloseFormat()
-        } else if (selectedChartId) {
-          onFormatChart(selectedChartId)
-        }
-      },
-      scope: 'chart',
-      shortcuts: [],
-    },
     'history.redo': {
       icon: Redo2,
       id: 'history.redo',
@@ -125,6 +83,48 @@ export function useWorkspaceCommands({
       run: onToggleInspector,
       scope: 'global',
       shortcuts: [{ key: 'i', mod: true }],
+    },
+    'object.delete': {
+      icon: Trash2,
+      id: 'object.delete',
+      isEnabled: selectedObjectId !== null,
+      label: 'Delete chart',
+      run: () => {
+        if (selectedObjectId) {
+          onRemoveObject(selectedObjectId)
+        }
+      },
+      scope: 'object',
+      shortcuts: [{ key: 'backspace' }, { key: 'delete' }],
+    },
+    'object.duplicate': {
+      icon: Copy,
+      id: 'object.duplicate',
+      isEnabled: selectedObjectId !== null,
+      label: 'Duplicate chart',
+      run: () => {
+        if (selectedObjectId) {
+          onDuplicateObject(selectedObjectId)
+        }
+      },
+      scope: 'object',
+      shortcuts: [{ key: 'd', mod: true }],
+    },
+    'object.format': {
+      icon: Paintbrush,
+      id: 'object.format',
+      isActive: isFormatOpen,
+      isEnabled: selectedObjectId !== null,
+      label: 'Format chart',
+      run: () => {
+        if (isFormatOpen) {
+          onCloseFormat()
+        } else if (selectedObjectId) {
+          onFormatObject(selectedObjectId)
+        }
+      },
+      scope: 'object',
+      shortcuts: [],
     },
   }
 

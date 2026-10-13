@@ -6,57 +6,73 @@ import type {
   ChartType,
 } from '../charts/types'
 
-import { findFreeChartLayout, findNeighborChartId } from './chartLayout'
+import type { DashboardObject } from '../objects/types'
+import { findFreeLayout, findNeighborObjectId } from './chartLayout'
 import type { WorkspaceAction, WorkspaceState } from './types'
 
 // ===== TYPES =================================================================
 type ChartUpdater = (chart: ChartInstance) => ChartInstance
 
+type ObjectUpdater = (object: DashboardObject) => DashboardObject
+
 // ===== CONSTANTS =============================================================
 export const initialWorkspaceState: WorkspaceState = {
-  charts: [],
   dashboard: {
     layout: {
       gap: 8,
     },
     name: 'Untitled dashboard',
   },
-  selectedChartId: null,
+  objects: [],
+  selectedObjectId: null,
   selection: null,
 }
 
 // ===== HELPERS ===============================================================
+/** Replaces one object; all other objects stay as they are. */
+function updateObject(
+  state: WorkspaceState,
+  objectId: string,
+  updater: ObjectUpdater,
+): WorkspaceState {
+  return {
+    ...state,
+    objects: state.objects.map((object) => {
+      return object.id === objectId ? updater(object) : object
+    }),
+  }
+}
+
+/** Replaces one chart; IDs of other kinds of objects are ignored. */
 function updateChart(
   state: WorkspaceState,
   chartId: string,
   updater: ChartUpdater,
 ): WorkspaceState {
-  return {
-    ...state,
-    charts: state.charts.map((chart) => {
-      return chart.id === chartId ? updater(chart) : chart
-    }),
-  }
+  return updateObject(state, chartId, (object) => {
+    return object.kind === 'chart' ? updater(object) : object
+  })
 }
 
-function duplicateChart(
+/** Copies an object into the first free spot and selects the copy. */
+function duplicateObject(
   state: WorkspaceState,
-  chartId: string,
-  newChartId: string,
+  objectId: string,
+  newObjectId: string,
 ): WorkspaceState {
-  const sourceChart = state.charts.find((chart) => chart.id === chartId)
-  if (!sourceChart) {
+  const source = state.objects.find((object) => object.id === objectId)
+  if (!source) {
     return state
   }
-  const duplicate: ChartInstance = {
-    ...sourceChart,
-    id: newChartId,
-    layout: findFreeChartLayout(state.charts, sourceChart.layout),
+  const duplicate: DashboardObject = {
+    ...source,
+    id: newObjectId,
+    layout: findFreeLayout(state.objects, source.layout),
   }
   return {
     ...state,
-    charts: [...state.charts, duplicate],
-    selectedChartId: newChartId,
+    objects: [...state.objects, duplicate],
+    selectedObjectId: newObjectId,
   }
 }
 
@@ -130,33 +146,6 @@ export function workspaceReducer(
   action: WorkspaceAction,
 ): WorkspaceState {
   switch (action.type) {
-    case 'chart/add':
-      return {
-        ...state,
-        charts: [...state.charts, action.chart],
-        selectedChartId: action.chart.id,
-      }
-    case 'chart/duplicate':
-      return duplicateChart(state, action.chartId, action.newChartId)
-    case 'chart/remove':
-      return {
-        ...state,
-        charts: state.charts.filter((chart) => chart.id !== action.chartId),
-        selectedChartId:
-          state.selectedChartId === action.chartId
-            ? findNeighborChartId(state.charts, action.chartId)
-            : state.selectedChartId,
-        selection:
-          state.selection?.sourceChartId === action.chartId
-            ? null
-            : state.selection,
-      }
-    case 'chart/select': {
-      const chartExists =
-        action.chartId === null ||
-        state.charts.some((chart) => chart.id === action.chartId)
-      return chartExists ? { ...state, selectedChartId: action.chartId } : state
-    }
     case 'chart/setType':
       return updateChart(state, action.chartId, (chart) => {
         return setChartType(chart, action.chartType, action.defaultSpec)
@@ -177,11 +166,6 @@ export function workspaceReducer(
           appearance: { ...chart.spec.appearance, ...action.patch },
         },
       }))
-    case 'chart/updateContainer':
-      return updateChart(state, action.chartId, (chart) => ({
-        ...chart,
-        container: { ...chart.container, ...action.patch },
-      }))
     case 'chart/updateEncoding':
       return updateChart(state, action.chartId, (chart) => ({
         ...chart,
@@ -200,11 +184,6 @@ export function workspaceReducer(
           ...chart.spec,
           interaction: { ...chart.spec.interaction, ...action.patch },
         },
-      }))
-    case 'chart/updateLayout':
-      return updateChart(state, action.chartId, (chart) => ({
-        ...chart,
-        layout: { ...chart.layout, ...action.patch },
       }))
     case 'chart/updateMarkAppearance':
       return updateChart(state, action.chartId, (chart) => ({
@@ -233,11 +212,52 @@ export function workspaceReducer(
           layout: { ...state.dashboard.layout, ...action.patch },
         },
       }
+    case 'object/add':
+      return {
+        ...state,
+        objects: [...state.objects, action.object],
+        selectedObjectId: action.object.id,
+      }
+    case 'object/duplicate':
+      return duplicateObject(state, action.objectId, action.newObjectId)
+    case 'object/remove':
+      return {
+        ...state,
+        objects: state.objects.filter((object) => {
+          return object.id !== action.objectId
+        }),
+        selectedObjectId:
+          state.selectedObjectId === action.objectId
+            ? findNeighborObjectId(state.objects, action.objectId)
+            : state.selectedObjectId,
+        selection:
+          state.selection?.sourceChartId === action.objectId
+            ? null
+            : state.selection,
+      }
+    case 'object/select': {
+      const objectExists =
+        action.objectId === null ||
+        state.objects.some((object) => object.id === action.objectId)
+      return objectExists
+        ? { ...state, selectedObjectId: action.objectId }
+        : state
+    }
+    case 'object/updateContainer':
+      return updateObject(state, action.objectId, (object) => ({
+        ...object,
+        container: { ...object.container, ...action.patch },
+      }))
+    case 'object/updateLayout':
+      return updateObject(state, action.objectId, (object) => ({
+        ...object,
+        layout: { ...object.layout, ...action.patch },
+      }))
     case 'selection/clear':
       return { ...state, selection: null }
     case 'selection/set': {
-      const sourceExists = state.charts.some((chart) => {
-        return chart.id === action.selection.sourceChartId
+      const sourceExists = state.objects.some((object) => {
+        return object.id === action.selection.sourceChartId
       })
       return sourceExists ? { ...state, selection: action.selection } : state
     }

@@ -9,13 +9,13 @@ import InspectorWidget from '../InspectorWidget'
 import type { ColorPreset } from '../../shared/ui/ColorControl'
 import type { SetContainer } from '../types'
 import type {
-  ChartContainerAppearance,
-  ChartContainerBackground,
-  ChartContainerBackgroundPreset,
-} from '../../charts/types'
+  ObjectContainer,
+  ObjectBackground,
+  ObjectBackgroundPreset,
+} from '../../objects/types'
 
 type ContainerWidgetProps = {
-  value: ChartContainerAppearance
+  value: ObjectContainer
   onChange: SetContainer
 }
 
@@ -24,19 +24,17 @@ const backgroundPresets = [
   { label: 'Glass', value: 'glass', fill: 'var(--glass-fill-liquid)' },
   { label: 'Blue', value: 'blue', fill: 'var(--chart-fill-blue)' },
   { label: 'Violet', value: 'violet', fill: 'var(--chart-fill-violet)' },
-] satisfies (ColorPreset & { value: ChartContainerBackgroundPreset })[]
+] satisfies (ColorPreset & { value: ObjectBackgroundPreset })[]
 
-function isBackgroundPreset(
-  value: string,
-): value is ChartContainerBackgroundPreset {
+function isBackgroundPreset(value: string): value is ObjectBackgroundPreset {
   return backgroundPresets.some((preset) => preset.value === value)
 }
 
-function toColorValue(background: ChartContainerBackground): string {
+function toColorValue(background: ObjectBackground): string {
   return background.kind === 'color' ? background.color : background.kind
 }
 
-function toBackground(value: string): ChartContainerBackground {
+function toBackground(value: string): ObjectBackground {
   return isBackgroundPreset(value)
     ? { kind: value }
     : { kind: 'color', color: value }

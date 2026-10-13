@@ -1,3 +1,5 @@
+import type { DashboardObjectBase, ElementRect } from '../objects/types'
+
 // ===== AGGREGATION ===========================================================
 export type Aggregation =
   'none' | 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count'
@@ -28,7 +30,7 @@ export type AxisLabelsAppearance = {
 
 export type AxisTitleEdit = {
   axis: 'x' | 'y'
-  rect: ChartElementRect
+  rect: ElementRect
 }
 
 export type AxisTitleStyle = {
@@ -63,30 +65,10 @@ export type ChartAppearanceSpec = {
   bar: BarAppearance
 }
 
-export type ChartContainerAppearance = {
-  background: ChartContainerBackground
-  padding: number
-  borderRadius: number
-}
-
-export type ChartContainerBackground =
-  { kind: ChartContainerBackgroundPreset } | { kind: 'color'; color: string }
-
-export type ChartContainerBackgroundPreset =
-  'surface' | 'glass' | 'blue' | 'violet'
-
 export type ChartDataSpec = {
   encoding: ChartEncoding
   aggregation: Aggregation
   colorAggregation: GroupAggregation
-}
-
-/** Bounds of a chart element inside the chart item, in pixels. */
-export type ChartElementRect = {
-  height: number
-  width: number
-  x: number
-  y: number
 }
 
 // Field names; roles and types are resolved from the dataset when read.
@@ -104,12 +86,11 @@ export type ChartFormatElement = keyof Pick<
   'legend' | 'title' | 'xAxis' | 'yAxis'
 >
 
-export type ChartInstance = {
-  id: string
+/** A chart on the canvas: the shared object fields plus its content. */
+export type ChartInstance = DashboardObjectBase & {
+  kind: 'chart'
   type: ChartType
   spec: ChartSpec
-  layout: ChartLayout
-  container: ChartContainerAppearance
 }
 
 export type ChartInteractionSpec = {
@@ -134,13 +115,6 @@ export type ChartInteractionSpec = {
     duration: number
     easing: AnimationEasing
   }
-}
-
-export type ChartLayout = {
-  x: number
-  y: number
-  width: number
-  height: number
 }
 
 export type ChartMarkKey = keyof Pick<

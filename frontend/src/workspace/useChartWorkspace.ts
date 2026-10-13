@@ -3,7 +3,9 @@ import { useEffect, useReducer } from 'react'
 import { parseCevynActions } from '../actions/parseCevynActions'
 import { translateCevynActions } from '../actions/translateCevynActions'
 import { createChartInstance } from '../charts/createChartInstance'
-import { DEFAULT_CHART_SIZE, findFreeChartLayout } from './chartLayout'
+import { findChart } from '../objects/findChart'
+import { findFreeLayout } from './chartLayout'
+import { objectDefinitions } from '../objects/objectDefinitions'
 import { useWorkspaceDnd } from './useWorkspaceDnd'
 import {
   initialWorkspaceHistory,
@@ -11,12 +13,9 @@ import {
 } from './workspaceHistory'
 
 import type { CevynActionResult } from '../actions/types'
-import type {
-  ChartAppearanceSpec,
-  ChartLayout,
-  ChartType,
-} from '../charts/types'
+import type { ChartAppearanceSpec, ChartType } from '../charts/types'
 import type { Dataset } from '../datasets/types'
+import type { ObjectLayout } from '../objects/types'
 import type { CanvasActions, DataSelection, WorkspaceAction } from './types'
 
 type UseChartWorkspaceParams = {
@@ -27,6 +26,7 @@ type UseChartWorkspaceParams = {
 const EMPTY_DATASET: Dataset = { fields: [] }
 
 // ===== FUNCTION ==============================================================
+/** Holds the workspace with its undo history and offers its changes. */
 export function useChartWorkspace({
   dataset: externalDataset,
 }: UseChartWorkspaceParams = {}) {
@@ -36,11 +36,11 @@ export function useChartWorkspace({
     workspaceHistoryReducer,
     initialWorkspaceHistory,
   )
-  const { charts, dashboard, selectedChartId, selection } = history.present
+  const { dashboard, objects, selectedObjectId, selection } = history.present
   const canRedo = history.future.length > 0
   const canUndo = history.past.length > 0
-  const selectedChart =
-    charts.find((chart) => chart.id === selectedChartId) ?? null
+  const charts = objects.filter((object) => object.kind === 'chart')
+  const selectedChart = findChart(objects, selectedObjectId)
   const dnd = useWorkspaceDnd(dispatch, addChart)
 
   function dispatch(action: WorkspaceAction): void {
@@ -82,30 +82,34 @@ export function useChartWorkspace({
     }
   })
 
+  /** Adds a chart of a type in the first free spot. */
   function addChart(type: ChartType): void {
     dispatch({
-      type: 'chart/add',
-      chart: createChartInstance({
+      type: 'object/add',
+      object: createChartInstance({
         type,
-        layout: findFreeChartLayout(charts, DEFAULT_CHART_SIZE),
+        layout: findFreeLayout(objects, objectDefinitions.chart.defaultSize),
       }),
     })
   }
 
-  function duplicateChart(chartId: string): void {
+  /** Copies an object; the copy gets a new ID and is selected. */
+  function duplicateObject(objectId: string): void {
     dispatch({
-      type: 'chart/duplicate',
-      chartId,
-      newChartId: crypto.randomUUID(),
+      type: 'object/duplicate',
+      objectId,
+      newObjectId: crypto.randomUUID(),
     })
   }
 
-  function removeChart(chartId: string): void {
-    dispatch({ type: 'chart/remove', chartId })
+  /** Removes an object from the canvas. */
+  function removeObject(objectId: string): void {
+    dispatch({ type: 'object/remove', objectId })
   }
 
-  function selectChart(chartId: string | null): void {
-    dispatch({ type: 'chart/select', chartId })
+  /** Selects an object, or the dashboard with null. */
+  function selectObject(objectId: string | null): void {
+    dispatch({ type: 'object/select', objectId })
   }
 
   function selectData(selection: DataSelection): void {
@@ -128,8 +132,9 @@ export function useChartWorkspace({
     })
   }
 
-  function updateChartLayout(chartId: string, layout: ChartLayout): void {
-    dispatch({ type: 'chart/updateLayout', chartId, patch: layout })
+  /** Moves or resizes an object. */
+  function updateObjectLayout(objectId: string, layout: ObjectLayout): void {
+    dispatch({ type: 'object/updateLayout', objectId, patch: layout })
   }
 
   function renameDashboard(name: string): void {
@@ -138,10 +143,10 @@ export function useChartWorkspace({
 
   const canvasActions: CanvasActions = {
     clearSelection,
-    selectChart,
     selectData,
+    selectObject,
     updateChartAppearance,
-    updateChartLayout,
+    updateObjectLayout,
   }
 
   return {
@@ -154,13 +159,14 @@ export function useChartWorkspace({
     dashboard,
     dataset,
     dispatch,
-    duplicateChart,
+    duplicateObject,
+    objects,
     redo,
-    removeChart,
+    removeObject,
     renameDashboard,
     runActions,
     selectedChart,
-    selectedChartId,
+    selectedObjectId,
     selection,
     undo,
   }

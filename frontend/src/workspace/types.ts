@@ -1,45 +1,30 @@
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
-  ChartContainerAppearance,
   ChartDataSpec,
   ChartEncoding,
-  ChartInstance,
   ChartInteractionSpec,
-  ChartLayout,
   ChartMarkKey,
   ChartSpec,
   ChartType,
 } from '../charts/types'
+import type {
+  DashboardObject,
+  ObjectContainer,
+  ObjectLayout,
+} from '../objects/types'
 import type { DataField, DataValue } from '../datasets/types'
 
 // ===== STATE =================================================================
 export type WorkspaceState = {
-  charts: ChartInstance[]
   dashboard: DashboardSpec
-  selectedChartId: string | null
+  objects: DashboardObject[]
+  selectedObjectId: string | null
   selection: DataSelection | null
 }
 
 // ===== ACTIONS ===============================================================
 export type WorkspaceAction =
-  | {
-      type: 'chart/add'
-      chart: ChartInstance
-    }
-  | {
-      type: 'chart/duplicate'
-      chartId: string
-      newChartId: string
-    }
-  | {
-      type: 'chart/remove'
-      chartId: string
-    }
-  | {
-      type: 'chart/select'
-      chartId: string | null
-    }
   | {
       type: 'chart/setType'
       chartId: string
@@ -57,11 +42,6 @@ export type WorkspaceAction =
       patch: Partial<ChartAppearanceSpec>
     }
   | {
-      type: 'chart/updateContainer'
-      chartId: string
-      patch: Partial<ChartContainerAppearance>
-    }
-  | {
       type: 'chart/updateEncoding'
       chartId: string
       patch: Partial<ChartEncoding>
@@ -70,11 +50,6 @@ export type WorkspaceAction =
       type: 'chart/updateInteraction'
       chartId: string
       patch: Partial<ChartInteractionSpec>
-    }
-  | {
-      type: 'chart/updateLayout'
-      chartId: string
-      patch: Partial<ChartLayout>
     }
   | {
       type: 'chart/updateMarkAppearance'
@@ -91,6 +66,33 @@ export type WorkspaceAction =
       patch: Partial<DashboardSpec['layout']>
     }
   | {
+      type: 'object/add'
+      object: DashboardObject
+    }
+  | {
+      type: 'object/duplicate'
+      objectId: string
+      newObjectId: string
+    }
+  | {
+      type: 'object/remove'
+      objectId: string
+    }
+  | {
+      type: 'object/select'
+      objectId: string | null
+    }
+  | {
+      type: 'object/updateContainer'
+      objectId: string
+      patch: Partial<ObjectContainer>
+    }
+  | {
+      type: 'object/updateLayout'
+      objectId: string
+      patch: Partial<ObjectLayout>
+    }
+  | {
       type: 'selection/clear'
     }
   | {
@@ -98,23 +100,23 @@ export type WorkspaceAction =
       selection: DataSelection
     }
 
-/** Everything the canvas changes on charts and the data selection. */
+/** Everything the canvas changes on objects, charts and the data selection. */
 export type CanvasActions = {
   clearSelection: () => void
-  selectChart: (chartId: string | null) => void
   selectData: (selection: DataSelection) => void
+  selectObject: (objectId: string | null) => void
   updateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
     chartId: string,
     key: TKey,
     value: ChartAppearanceSpec[TKey],
   ) => void
-  updateChartLayout: (chartId: string, layout: ChartLayout) => void
+  updateObjectLayout: (objectId: string, layout: ObjectLayout) => void
 }
 
 // ===== HISTORY ===============================================================
 export type WorkspaceSnapshot = Pick<
   WorkspaceState,
-  'charts' | 'dashboard' | 'selectedChartId'
+  'dashboard' | 'objects' | 'selectedObjectId'
 >
 
 export type WorkspaceHistoryState = {
@@ -172,9 +174,9 @@ export type DashboardSpec = {
   name: string
 }
 
-export type ChartLayoutMode = 'move' | ChartResizeDirection
+export type ObjectLayoutMode = 'move' | ObjectResizeDirection
 
-export type ChartResizeDirection =
+export type ObjectResizeDirection =
   'e' | 'n' | 'ne' | 'nw' | 's' | 'se' | 'sw' | 'w'
 
 // ===== DRAG AND DROP =========================================================
@@ -188,9 +190,9 @@ export type DragPayload =
       chartType: ChartType
     }
   | {
-      kind: 'chart-layout'
-      chartId: string
-      mode: ChartLayoutMode
+      kind: 'object-layout'
+      mode: ObjectLayoutMode
+      objectId: string
     }
 
 export type ActiveDrag = DragPayload | null

@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 
-export type CommandScope = 'chart' | 'global'
+export type CommandScope = 'global' | 'object'
 
 export type CommandShortcut = {
   key: string
@@ -9,13 +9,13 @@ export type CommandShortcut = {
 }
 
 export type WorkspaceCommandId =
-  | 'chart.delete'
-  | 'chart.duplicate'
-  | 'chart.format'
   | 'history.redo'
   | 'history.undo'
   | 'layout.toggleBuildPanel'
   | 'layout.toggleInspector'
+  | 'object.delete'
+  | 'object.duplicate'
+  | 'object.format'
 
 export type WorkspaceCommand = {
   icon: LucideIcon

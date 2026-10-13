@@ -30,11 +30,8 @@ import { isSameSelection } from '../workspace/dataSelection'
 import { useChartQuery } from './useChartQuery'
 import { usePointsQuery } from './usePointsQuery'
 
-import type {
-  AxisTitleEdit,
-  ChartElementRect,
-  ChartFormatElement,
-} from './types'
+import type { AxisTitleEdit, ChartFormatElement } from './types'
+import type { ElementRect } from '../objects/types'
 import type { ChartInstance } from './types'
 import type { DataRow, Dataset } from '../datasets/types'
 import type { ChartTheme } from './echarts/chartTheme'
@@ -52,7 +49,7 @@ type EChartCanvasProps = {
   formattedElement: ChartFormatElement | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
-  onHoverLegend: (rect: ChartElementRect) => void
+  onHoverLegend: (rect: ElementRect) => void
   selection: DataSelection | null
 }
 
@@ -93,10 +90,7 @@ function readChartTheme(): ChartTheme {
 }
 
 /** Moves a rect from canvas into chart item coordinates. */
-function offsetRect(
-  rect: ChartElementRect,
-  container: HTMLElement,
-): ChartElementRect {
+function offsetRect(rect: ElementRect, container: HTMLElement): ElementRect {
   return {
     ...rect,
     x: rect.x + container.offsetLeft,

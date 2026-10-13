@@ -43,6 +43,7 @@ export function useWorkspaceDnd(
     setActiveDrag(getDragPayload(event))
   }
 
+  /** Adds a dropped chart type or puts a dropped field on an encoding. */
   function handleDragEnd(event: DragEndEvent): void {
     const payload = getDragPayload(event)
     const target = getDropTarget(event)
@@ -52,7 +53,7 @@ export function useWorkspaceDnd(
       return
     }
     if (payload?.kind === 'field' && target?.kind === 'encoding') {
-      dispatch({ type: 'chart/select', chartId: target.chartId })
+      dispatch({ type: 'object/select', objectId: target.chartId })
       dispatch({
         type: 'chart/updateEncoding',
         chartId: target.chartId,

@@ -56,8 +56,8 @@ export function createInspectorActions({
     },
     setContainer: (key, value) => {
       dispatchForChart((chartId) => ({
-        type: 'chart/updateContainer',
-        chartId,
+        type: 'object/updateContainer',
+        objectId: chartId,
         patch: { [key]: value },
       }))
     },

@@ -5,15 +5,11 @@ import { useEffect, useRef, useState } from 'react'
 import type { WorkspaceCommands } from '../app/types'
 import type {
   CanvasActions,
-  ChartLayoutMode,
+  ObjectLayoutMode,
   DataSelection,
   DragPayload,
 } from '../workspace/types'
-import type {
-  AxisTitleEdit,
-  ChartElementRect,
-  ChartFormatElement,
-} from './types'
+import type { AxisTitleEdit, ChartFormatElement } from './types'
 
 import CommandButton from '../app/CommandButton'
 import EChartCanvas from './EChartCanvas'
@@ -26,10 +22,11 @@ import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
 } from './getChartTitle'
-import { moveChartLayout, resizeChartLayout } from '../workspace/chartLayout'
+import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 
 import type { CSSProperties, KeyboardEvent } from 'react'
-import type { ChartContainerBackground, ChartInstance } from './types'
+import type { ChartInstance } from './types'
+import type { ElementRect, ObjectBackground } from '../objects/types'
 
 import type { DataField, Dataset } from '../datasets/types'
 import type { GridDelta } from '../workspace/chartLayout'
@@ -37,7 +34,7 @@ import type { GridDelta } from '../workspace/chartLayout'
 /** The element under the pointer; in format mode it shows its region. */
 type FormatHint = {
   element: ChartFormatElement
-  rect: ChartElementRect
+  rect: ElementRect
 }
 
 type ChartItemStyle = CSSProperties & {
@@ -62,10 +59,10 @@ type ChartItemProps = {
 
 type ChartLayoutHandleProps = {
   chartId: string
-  mode: ChartLayoutMode
+  mode: ObjectLayoutMode
 }
 
-const layoutHandleLabels: Record<ChartLayoutMode, string> = {
+const layoutHandleLabels: Record<ObjectLayoutMode, string> = {
   e: 'Resize chart from right edge',
   move: 'Move chart',
   n: 'Resize chart from top edge',
@@ -84,7 +81,7 @@ const formatRegionLabels: Record<ChartFormatElement, string> = {
   yAxis: 'Format Y axis',
 }
 
-const backgroundClassNames: Record<ChartContainerBackground['kind'], string> = {
+const backgroundClassNames: Record<ObjectBackground['kind'], string> = {
   blue: 'glass is-background-blue',
   color: 'glass is-background-color',
   glass: 'glass glass-liquid',
@@ -92,13 +89,13 @@ const backgroundClassNames: Record<ChartContainerBackground['kind'], string> = {
   violet: 'glass is-background-violet',
 }
 
-const layoutHandleModes = Object.keys(layoutHandleLabels) as ChartLayoutMode[]
+const layoutHandleModes = Object.keys(layoutHandleLabels) as ObjectLayoutMode[]
 
 function ChartLayoutHandle({ chartId, mode }: ChartLayoutHandleProps) {
   const payload: DragPayload = {
-    chartId,
-    kind: 'chart-layout',
+    kind: 'object-layout',
     mode,
+    objectId: chartId,
   }
   const { attributes, listeners, setNodeRef } = useDraggable({
     data: { payload },
@@ -133,7 +130,7 @@ function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
 }
 
 /** Measures an element relative to the chart item, like the ECharts rects. */
-function getRectInItem(target: Element, item: HTMLElement): ChartElementRect {
+function getRectInItem(target: Element, item: HTMLElement): ElementRect {
   const targetRect = target.getBoundingClientRect()
   const itemRect = item.getBoundingClientRect()
   return {
@@ -145,12 +142,7 @@ function getRectInItem(target: Element, item: HTMLElement): ChartElementRect {
 }
 
 /** Positions an overlay exactly over a rect. */
-function getRectStyle({
-  height,
-  width,
-  x,
-  y,
-}: ChartElementRect): CSSProperties {
+function getRectStyle({ height, width, x, y }: ElementRect): CSSProperties {
   return {
     height,
     left: x,
@@ -225,14 +217,14 @@ function ChartItem({
     if (delta) {
       event.preventDefault()
       const layout = event.shiftKey
-        ? resizeChartLayout(chart.layout, delta, {
+        ? resizeLayout(chart.layout, delta, {
             bottom: true,
             left: false,
             right: true,
             top: false,
           })
-        : moveChartLayout(chart.layout, delta)
-      actions.updateChartLayout(chart.id, layout)
+        : moveLayout(chart.layout, delta)
+      actions.updateObjectLayout(chart.id, layout)
       return
     }
 
@@ -241,7 +233,7 @@ function ChartItem({
         actions.clearSelection()
         return
       }
-      actions.selectChart(null)
+      actions.selectObject(null)
       event.currentTarget.blur()
     }
   }
@@ -270,7 +262,7 @@ function ChartItem({
   /** Remembers the hovered element; format mode shows its region. */
   function showFormatHint(
     element: ChartFormatElement,
-    rect: ChartElementRect,
+    rect: ElementRect,
   ): void {
     setFormatHint({ element, rect })
   }
@@ -296,14 +288,14 @@ function ChartItem({
       className={`chart-item ${backgroundClassName} ${
         isSelected ? 'is-selected' : ''
       }`}
-      data-chart-id={chart.id}
+      data-object-id={chart.id}
       ref={itemRef}
       role="group"
       style={itemStyle}
       tabIndex={0}
-      onFocus={() => actions.selectChart(chart.id)}
+      onFocus={() => actions.selectObject(chart.id)}
       onKeyDown={handleKeyDown}
-      onPointerDown={() => actions.selectChart(chart.id)}
+      onPointerDown={() => actions.selectObject(chart.id)}
       onPointerLeave={() => setFormatHint(null)}
     >
       {draggedField ? (
@@ -383,8 +375,8 @@ function ChartItem({
       ) : null}
       {isSelected ? (
         <div className="chart-item-actions">
-          <CommandButton command={commands['chart.duplicate']} size="sm" />
-          <CommandButton command={commands['chart.delete']} size="sm" />
+          <CommandButton command={commands['object.duplicate']} size="sm" />
+          <CommandButton command={commands['object.delete']} size="sm" />
         </div>
       ) : null}
       {layoutHandleModes.map((mode) => (

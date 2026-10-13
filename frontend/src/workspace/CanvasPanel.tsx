@@ -7,41 +7,40 @@ import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import type { AskCevynState } from '../ai/useAskCevyn'
-import type { ChartInstance } from '../charts/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { CanvasActions, DashboardSpec, DataSelection } from './types'
-import type { ChartFormatTarget } from '../inspector/types'
+import type { DashboardObject, FormatTarget } from '../objects/types'
 import type { WorkspaceCommands } from '../app/types'
 
 type CanvasPanelProps = {
   actions: CanvasActions
   askCevynState: AskCevynState
-  charts: ChartInstance[]
   commands: WorkspaceCommands
   dashboard: DashboardSpec
   dataset: Dataset
   datasetId: string | null
   draggedField: DataField | null
-  formatTarget: ChartFormatTarget | null
+  formatTarget: FormatTarget | null
+  objects: DashboardObject[]
   recoverFocus?: boolean
-  selectedChartId: string | null
+  selectedObjectId: string | null
   selection: DataSelection | null
   onAskCevyn: (prompt: string) => void
-  onFormatElement: (target: ChartFormatTarget) => void
+  onFormatElement: (target: FormatTarget) => void
   onRenameDashboard: (name: string) => void
 }
 
 function CanvasPanel({
   actions,
   askCevynState,
-  charts,
   commands,
   dashboard,
   dataset,
   datasetId,
   draggedField,
   formatTarget,
-  selectedChartId,
+  objects,
+  selectedObjectId,
   selection,
   onAskCevyn,
   onFormatElement,
@@ -61,7 +60,7 @@ function CanvasPanel({
           variant="ghost"
         />
         <CommandButton
-          command={commands['chart.format']}
+          command={commands['object.format']}
           size="sm"
           variant="ghost"
         />
@@ -78,18 +77,18 @@ function CanvasPanel({
         </h2>
         <ChartGrid
           actions={actions}
-          charts={charts}
           commands={commands}
           dataset={dataset}
           datasetId={datasetId}
           gap={dashboard.layout.gap}
           draggedField={draggedField}
           formatTarget={formatTarget}
-          selectedChartId={selectedChartId}
+          objects={objects}
+          selectedObjectId={selectedObjectId}
           selection={selection}
           onFormatElement={onFormatElement}
         >
-          {charts.length === 0 ? (
+          {objects.length === 0 ? (
             <EmptyState
               title="Drop chart type here"
               description="Choose a visual from the Build panel to start."

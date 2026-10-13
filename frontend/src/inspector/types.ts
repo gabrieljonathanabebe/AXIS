@@ -1,15 +1,14 @@
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
-  ChartContainerAppearance,
   ChartDataSpec,
   ChartEncoding,
-  ChartFormatElement,
   ChartInstance,
   ChartInteractionSpec,
   ChartMarkKey,
   ChartType,
 } from '../charts/types'
+import type { ObjectContainer } from '../objects/types'
 import type { DataField } from '../datasets/types'
 
 import type { DashboardLayout, DashboardSpec } from '../workspace/types'
@@ -40,9 +39,9 @@ export type SetChartAppearance = <
 
 export type SetChartType = (type: ChartType) => void
 
-export type SetContainer = <TKey extends keyof ChartContainerAppearance>(
+export type SetContainer = <TKey extends keyof ObjectContainer>(
   key: TKey,
-  value: ChartContainerAppearance[TKey],
+  value: ObjectContainer[TKey],
 ) => void
 
 export type SetEncodingField = (
@@ -65,13 +64,6 @@ export type InspectorActions = {
   setDashboardLayout: SetDashboardLayout
   setEncodingField: SetEncodingField
   setInteraction: SetInteraction
-}
-
-/** The chart element whose format popover is open, anchored to its chart. */
-export type ChartFormatTarget = {
-  anchor: HTMLElement
-  chartId: string
-  element: ChartFormatElement
 }
 
 export type ChartInspectorProps = {

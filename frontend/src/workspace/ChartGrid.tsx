@@ -5,19 +5,22 @@ import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 
 import {
   CHART_GRID,
-  DEFAULT_CHART_SIZE,
-  findFreeChartLayout,
-  moveChartLayout,
-  resizeChartLayout,
+  findFreeLayout,
+  moveLayout,
+  resizeLayout,
 } from './chartLayout'
+import { objectDefinitions } from '../objects/objectDefinitions'
 
-import type { ChartFormatTarget } from '../inspector/types'
-import type { ChartInstance, ChartLayout } from '../charts/types'
+import type {
+  DashboardObject,
+  FormatTarget,
+  ObjectLayout,
+} from '../objects/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
 import type {
   CanvasActions,
-  ChartLayoutMode,
+  ObjectLayoutMode,
   DataSelection,
   DragPayload,
   DropTarget,
@@ -29,22 +32,22 @@ import ChartItem from '../charts/ChartItem'
 // ===== TYPES =================================================================
 type ChartGridProps = {
   actions: CanvasActions
-  charts: ChartInstance[]
   children?: ReactNode
   commands: WorkspaceCommands
   dataset: Dataset
   datasetId: string | null
   gap: number
   draggedField: DataField | null
-  formatTarget: ChartFormatTarget | null
-  selectedChartId: string | null
+  formatTarget: FormatTarget | null
+  objects: DashboardObject[]
+  selectedObjectId: string | null
   selection: DataSelection | null
-  onFormatElement: (target: ChartFormatTarget) => void
+  onFormatElement: (target: FormatTarget) => void
 }
 
 type LayoutPreview = {
-  chartId: string
-  layout: ChartLayout
+  layout: ObjectLayout
+  objectId: string
 }
 
 // ===== CONSTANTS =============================================================
@@ -58,7 +61,7 @@ const canvasTarget: DropTarget = {
 }
 
 // ===== HELPERS ===============================================================
-function getGridArea(layout: ChartLayout): CSSProperties {
+function getGridArea(layout: ObjectLayout): CSSProperties {
   return {
     gridColumn: `${layout.x + 1} / span ${layout.width}`,
     gridRow: `${layout.y + 1} / span ${layout.height}`,
@@ -78,12 +81,13 @@ function getGridStep(grid: HTMLElement): GridDelta {
   }
 }
 
+/** Compares two previews, so an unchanged drag step does not re-render. */
 function isSamePreview(
   first: LayoutPreview | null,
   second: LayoutPreview | null,
 ): boolean {
   return (
-    first?.chartId === second?.chartId &&
+    first?.objectId === second?.objectId &&
     first?.layout.x === second?.layout.x &&
     first?.layout.y === second?.layout.y &&
     first?.layout.width === second?.layout.width &&
@@ -92,14 +96,14 @@ function isSamePreview(
 }
 
 function getDraggedLayout(
-  layout: ChartLayout,
-  mode: ChartLayoutMode,
+  layout: ObjectLayout,
+  mode: ObjectLayoutMode,
   delta: GridDelta,
-): ChartLayout {
+): ObjectLayout {
   if (mode === 'move') {
-    return moveChartLayout(layout, delta)
+    return moveLayout(layout, delta)
   }
-  return resizeChartLayout(layout, delta, {
+  return resizeLayout(layout, delta, {
     bottom: mode.includes('s'),
     left: mode.includes('w'),
     right: mode.includes('e'),
@@ -110,7 +114,6 @@ function getDraggedLayout(
 // ===== COMPONENT =============================================================
 function ChartGrid({
   actions,
-  charts,
   children,
   commands,
   dataset,
@@ -118,7 +121,8 @@ function ChartGrid({
   gap,
   draggedField,
   formatTarget,
-  selectedChartId,
+  objects,
+  selectedObjectId,
   selection,
   onFormatElement,
 }: ChartGridProps) {
@@ -132,14 +136,19 @@ function ChartGrid({
     id: 'chart-grid',
   })
 
+  /**
+   * Turns a handle drag into the layout the object would get on release.
+   * @param event Drag event with the pointer offset in pixels.
+   * @returns The object and its new layout, or null for other drags.
+   */
   function getLayoutPreview(
     event: DragMoveEvent | DragEndEvent,
   ): LayoutPreview | null {
     const payload: DragPayload | undefined = event.active.data.current?.payload
-    const chart = charts.find((chart) => {
-      return payload?.kind === 'chart-layout' && chart.id === payload.chartId
+    const object = objects.find((object) => {
+      return payload?.kind === 'object-layout' && object.id === payload.objectId
     })
-    if (payload?.kind !== 'chart-layout' || !chart || !node.current) {
+    if (payload?.kind !== 'object-layout' || !object || !node.current) {
       return null
     }
     const step = getGridStep(node.current)
@@ -148,8 +157,8 @@ function ChartGrid({
       y: Math.round(event.delta.y / step.y),
     }
     return {
-      chartId: chart.id,
-      layout: getDraggedLayout(chart.layout, payload.mode, delta),
+      layout: getDraggedLayout(object.layout, payload.mode, delta),
+      objectId: object.id,
     }
   }
 
@@ -161,7 +170,7 @@ function ChartGrid({
       const preview = getLayoutPreview(event)
       setLayoutPreview(null)
       if (preview) {
-        actions.updateChartLayout(preview.chartId, preview.layout)
+        actions.updateObjectLayout(preview.objectId, preview.layout)
       }
     },
     onDragMove(event) {
@@ -172,9 +181,10 @@ function ChartGrid({
     },
   })
 
+  /** Selects the dashboard when the empty grid is pressed. */
   function handlePointerDown(event: PointerEvent<HTMLDivElement>): void {
     if (event.target === event.currentTarget) {
-      actions.selectChart(null)
+      actions.selectObject(null)
     }
   }
 
@@ -185,28 +195,28 @@ function ChartGrid({
       style={{ ...gridStyle, gap }}
       onPointerDown={handlePointerDown}
     >
-      {charts.map((chart) => {
+      {objects.map((object) => {
         const layout =
-          chart.id === layoutPreview?.chartId
+          object.id === layoutPreview?.objectId
             ? layoutPreview.layout
-            : chart.layout
+            : object.layout
         return (
           <ChartItem
             actions={actions}
-            chart={chart}
+            chart={object}
             commands={commands}
             dataset={dataset}
             datasetId={datasetId}
             draggedField={draggedField}
             formattedElement={
-              formatTarget?.chartId === chart.id ? formatTarget.element : null
+              formatTarget?.objectId === object.id ? formatTarget.element : null
             }
-            isSelected={chart.id === selectedChartId}
-            key={chart.id}
+            isSelected={object.id === selectedObjectId}
+            key={object.id}
             selection={selection}
             style={getGridArea(layout)}
             onFormatElement={(element, anchor) =>
-              onFormatElement({ anchor, chartId: chart.id, element })
+              onFormatElement({ anchor, element, objectId: object.id })
             }
           />
         )
@@ -214,7 +224,9 @@ function ChartGrid({
       {isOver ? (
         <div
           className="chart-drop-preview"
-          style={getGridArea(findFreeChartLayout(charts, DEFAULT_CHART_SIZE))}
+          style={getGridArea(
+            findFreeLayout(objects, objectDefinitions.chart.defaultSize),
+          )}
         />
       ) : null}
       {children}

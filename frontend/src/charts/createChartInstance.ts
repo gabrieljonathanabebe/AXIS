@@ -1,11 +1,6 @@
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
-import type {
-  ChartContainerAppearance,
-  ChartInstance,
-  ChartLayout,
-  ChartSpec,
-  ChartType,
-} from './types'
+import type { ChartInstance, ChartSpec, ChartType } from './types'
+import type { ObjectContainer, ObjectLayout } from '../objects/types'
 import {
   getChartDefinition,
   isPointsChartType,
@@ -14,11 +9,11 @@ import {
 
 type CreateChartInstanceParams = {
   type: ChartType
-  layout: ChartLayout
+  layout: ObjectLayout
   id?: string
 }
 
-export function createDefaultChartContainer(): ChartContainerAppearance {
+export function createDefaultChartContainer(): ObjectContainer {
   return {
     background: { kind: 'surface' },
     padding: 4,
@@ -169,6 +164,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
   }
 }
 
+/** Creates a chart object with the default spec and container of its type. */
 export function createChartInstance({
   type,
   layout,
@@ -176,6 +172,7 @@ export function createChartInstance({
 }: CreateChartInstanceParams): ChartInstance {
   return {
     id,
+    kind: 'chart',
     type,
     spec: createDefaultChartSpec(type),
     layout,

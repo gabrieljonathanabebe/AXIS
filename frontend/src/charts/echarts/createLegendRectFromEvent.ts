@@ -1,6 +1,6 @@
 import type { ECElementEvent } from 'echarts'
 
-import type { ChartElementRect } from '../types'
+import type { ElementRect } from '../../objects/types'
 
 // ===== FUNCTION ==============================================================
 /**
@@ -10,7 +10,7 @@ import type { ChartElementRect } from '../types'
  */
 export function createLegendRectFromEvent(
   event: ECElementEvent,
-): ChartElementRect | null {
+): ElementRect | null {
   let element = event.event?.target
   if (event.componentType !== 'legend' || !element) {
     return null

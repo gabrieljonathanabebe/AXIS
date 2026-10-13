@@ -17,7 +17,7 @@ function isInCommandScope(
   if (command.scope === 'global') {
     return true
   }
-  return target instanceof HTMLElement && target.matches('.chart-item')
+  return target instanceof HTMLElement && target.matches('[data-object-id]')
 }
 
 function matchesShortcut(

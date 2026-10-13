@@ -4,6 +4,7 @@ import {
   getSemanticCompatibility,
   type EncodingKey,
 } from '../charts/chartDefinitions'
+import { findChart } from '../objects/findChart'
 import type { CevynAction } from './types'
 import type { Aggregation, ChartEncoding, ChartType } from '../charts/types'
 import type { Dataset } from '../datasets/types'
@@ -58,6 +59,13 @@ function validateAggregation(
 }
 
 // ===== FUNCTION ==============================================================
+/**
+ * Checks a Cevyn action against the chart registry and the draft workspace.
+ * @param action Parsed action to check.
+ * @param state Draft workspace, including earlier actions of the batch.
+ * @param dataset Fields the action may use.
+ * @returns Error messages, empty when the action is valid.
+ */
 export function validateCevynAction(
   action: CevynAction,
   state: WorkspaceState,
@@ -76,7 +84,7 @@ export function validateCevynAction(
     ]
   }
 
-  const chart = state.charts.find(({ id }) => id === action.chartId)
+  const chart = findChart(state.objects, action.chartId)
   if (!chart) {
     return [`Unknown chart "${action.chartId}".`]
   }

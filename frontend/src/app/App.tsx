@@ -16,7 +16,7 @@ import { useDatasets } from '../datasets/useDatasets'
 import { useWorkspaceCommands } from './useWorkspaceCommands'
 import { useWorkspaceLayout } from './useWorkspaceLayout'
 
-import type { ChartFormatTarget } from '../inspector/types'
+import type { FormatTarget } from '../objects/types'
 
 function App() {
   const {
@@ -42,15 +42,16 @@ function App() {
     dashboard,
     dataset,
     dispatch,
-    duplicateChart,
+    duplicateObject,
     handleDragEnd,
     handleDragStart,
+    objects,
     redo,
-    removeChart,
+    removeObject,
     renameDashboard,
     runActions,
     selectedChart,
-    selectedChartId,
+    selectedObjectId,
     selection,
     sensors,
     undo,
@@ -58,23 +59,20 @@ function App() {
 
   const inspectorActions = createInspectorActions({
     dispatch,
-    selectedChartId,
+    selectedChartId: selectedChart?.id ?? null,
   })
-
-  // Format popovers belong to the selected chart and close when it changes.
-  const [formatTarget, setFormatTarget] = useState<ChartFormatTarget | null>(
-    null,
-  )
+  // Format popovers belong to the selected object and close when it changes.
+  const [formatTarget, setFormatTarget] = useState<FormatTarget | null>(null)
   const activeFormatTarget =
-    formatTarget?.chartId === selectedChartId ? formatTarget : null
+    formatTarget?.objectId === selectedObjectId ? formatTarget : null
 
-  /** Opens the format popover of a chart at its title, next to the chart. */
-  function openChartFormat(chartId: string): void {
+  /** Opens the format popover of an object at its title, next to it. */
+  function openObjectFormat(objectId: string): void {
     const anchor = document.querySelector<HTMLElement>(
-      `[data-chart-id="${chartId}"]`,
+      `[data-object-id="${objectId}"]`,
     )
     if (anchor) {
-      setFormatTarget({ anchor, chartId, element: 'title' })
+      setFormatTarget({ anchor, element: 'title', objectId })
     }
   }
 
@@ -98,12 +96,12 @@ function App() {
     canRedo,
     canUndo,
     isFormatOpen: activeFormatTarget !== null,
-    selectedChartId,
+    selectedObjectId,
     onCloseFormat: () => setFormatTarget(null),
-    onDuplicateChart: duplicateChart,
-    onFormatChart: openChartFormat,
+    onDuplicateObject: duplicateObject,
+    onFormatObject: openObjectFormat,
     onRedo: redo,
-    onRemoveChart: removeChart,
+    onRemoveObject: removeObject,
     onToggleBuildPanel: toggleBuildPanel,
     onToggleInspector: toggleInspector,
     onUndo: undo,
@@ -144,7 +142,6 @@ function App() {
             <CanvasPanel
               actions={canvasActions}
               askCevynState={askCevynState}
-              charts={charts}
               commands={commands}
               dashboard={dashboard}
               dataset={dataset}
@@ -153,7 +150,8 @@ function App() {
                 activeDrag?.kind === 'field' ? activeDrag.field : null
               }
               formatTarget={activeFormatTarget}
-              selectedChartId={selectedChartId}
+              objects={objects}
+              selectedObjectId={selectedObjectId}
               selection={selection}
               onAskCevyn={askCevyn}
               onFormatElement={setFormatTarget}

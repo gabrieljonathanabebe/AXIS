@@ -12,11 +12,12 @@ import { getFormatElements } from '../charts/getFormatElements'
 
 import type { ReactNode } from 'react'
 import type { ChartFormatElement } from '../charts/types'
-import type { ChartFormatTarget, ChartInspectorProps } from './types'
+import type { ChartInspectorProps } from './types'
+import type { FormatTarget } from '../objects/types'
 
 // ===== TYPES =================================================================
 type ChartFormatPopoverProps = ChartInspectorProps & {
-  target: ChartFormatTarget
+  target: FormatTarget
   onClose: () => void
   onElementChange: (element: ChartFormatElement) => void
 }
@@ -32,11 +33,11 @@ const elementTitles: Record<ChartFormatElement, string> = {
 // ===== HELPERS ===============================================================
 /**
  * Selects where presses keep the popover open: the canvas toolbar (undo,
- * redo, the format toggle) and the formatted chart, whose regions switch
+ * redo, the format toggle) and the formatted object, whose regions switch
  * the element.
  */
-function getKeepOpenSelector(chartId: string): string {
-  return `.canvas-toolbar, [data-chart-id="${chartId}"]`
+function getKeepOpenSelector(objectId: string): string {
+  return `.canvas-toolbar, [data-object-id="${objectId}"]`
 }
 
 function renderFormatWidget(
@@ -98,7 +99,7 @@ function ChartFormatPopover({
     <Popover
       anchor={target.anchor}
       className="chart-format-popover glass glass-thick"
-      keepOpenOn={getKeepOpenSelector(target.chartId)}
+      keepOpenOn={getKeepOpenSelector(target.objectId)}
       label="Chart format"
       open
       placement="right-start"
