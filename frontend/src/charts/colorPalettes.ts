@@ -3,17 +3,22 @@ export type CategoricalColorPalette = {
   colors: string[]
 }
 
+/**
+ * Default series colors, led by teal so data never looks like the blue
+ * accent of selection, brush and format focus. Checked for color blindness
+ * on the dark surface.
+ */
 export const DEFAULT_CATEGORICAL_PALETTE = [
-  '#1E90FF',
-  '#8B5CF6',
-  '#34D399',
-  '#FB7185',
-  '#F59E0B',
+  '#199E8A',
+  '#D95926',
+  '#8F80EC',
+  '#C98500',
+  '#D55181',
 ]
 
 export const categoricalColorPalettes = [
   {
-    label: 'Electric',
+    label: 'Default',
     colors: DEFAULT_CATEGORICAL_PALETTE,
   },
   {

@@ -33,7 +33,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       colorAggregation: 'mean',
     },
     appearance: {
-      color: '#1E90FF',
+      color: '#199E8A',
       colorScale: {
         categorical: {
           palette: [...DEFAULT_CATEGORICAL_PALETTE],
@@ -130,7 +130,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         smooth: false,
         showSymbol: true,
         areaFill: false,
-        areaColor: '#1E90FF',
+        areaColor: '#199E8A',
         areaOpacity: 0.25,
       },
       bar: {

@@ -104,6 +104,15 @@ bright core
 
 Nicht jedes blaue Element benötigt einen Glow.
 
+Electric Blue ist keine Datenfarbe. Blau bedeutet in Cevyn Zustand
+(ausgewählt, gezogen, fokussiert), damit Auswahl, Brush und Format-Fokus
+auf jedem Chart lesbar bleiben. Die Standardfarben der Daten beginnen
+deshalb mit Teal (`#199E8A`, `appearance.color`, `line.areaColor`) und
+folgen der Palette `DEFAULT_CATEGORICAL_PALETTE` (`charts/colorPalettes.ts`,
+Preset „Default“): Teal, Orange, Violett, Amber, Magenta. Die Palette ist
+für Farbsehschwächen auf der dunklen Fläche geprüft; im Light Mode liegt
+Amber knapp unter 3:1. Blau bleibt als Preset im `ColorControl` wählbar.
+
 ### Danger
 
 Fehler verwenden eigene Tokens statt Electric Blue:
