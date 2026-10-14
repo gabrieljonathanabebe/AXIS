@@ -182,7 +182,8 @@ app/         App Shell, Commands, Workspace-Layout
 shared/      API-Client, UI-Controls, Formatierung, generische Hooks
 datasets/    Dataset laden, Profil, Semantic Roles, Data Panel
 table/       Table View, Table Query, Table Filter
-charts/      Chart Registry, ChartItem, Queries, echarts/ (Adapter)
+charts/      Chart Registry, ChartItem (Content), Queries, echarts/ (Adapter)
+objects/     Dashboard-Objekte: Modell, Registry, ObjectFrame, ObjectPicker
 workspace/   Workspace State, Reducer, History, Canvas, Drag and Drop
 inspector/   Inspector mit data/, appearance/, interaction/
 ai/          Ask Cevyn
@@ -315,13 +316,27 @@ denselben Wert gleich an:
 
 ### Container vs. Content
 
-Ein Chart auf der Canvas besteht aus zwei Verantwortungsbereichen:
+Jedes Objekt auf der Canvas besteht aus einem generischen Frame und
+einem Content pro Objekttyp:
 
-- `ChartItem` (React/CSS) besitzt den Container: Background, Rahmen,
-  Radius, Padding, Position und Größe, Titel-Header, Auswahl- und
-  Hover-Ring sowie die Layout-Handles.
-- ECharts besitzt nur den Inhalt: Grid, Achsen, Series, Labels, Legend,
-  Tooltip, Visual Map, Zoom und Brush.
+- `ObjectFrame` (`objects/`) besitzt den Container für jedes Objekt:
+  Background, Rahmen, Radius, Padding, Position und Größe, Auswahl- und
+  Hover-Ring, Fokus und Tastatur, Layout-Handles, Aktionsleiste und die
+  Format-Region. Am Frame hängt `data-object-id`.
+- `ChartItem` (`charts/`) ist der Content eines Charts: ECharts-Canvas,
+  Titel-Header, Inline-Editing der Achsentitel und Drop-Slots für
+  Felder. Es rendert ein Fragment direkt in den Frame, damit Rechtecke
+  aus ECharts (`offsetLeft`/`offsetTop`) relativ zum Frame bleiben.
+- ECharts besitzt nur den Inhalt des Plots: Grid, Achsen, Series,
+  Labels, Legend, Tooltip, Visual Map, Zoom und Brush.
+
+`ChartGrid` setzt beides zusammen: Der Frame erhält Objekt, Layout,
+Auswahl und `label` (bei Charts `getChartTitle`), der Content kommt über
+`children` als Funktion, die `showFormatHint` des Frames erhält. Ein
+neuer Objekttyp liefert nur seinen Content; Auswahl, Verschieben,
+Löschen und Format-Regionen kommen vom Frame. Die CSS-Klassen
+(`chart-item*`, `--chart-*`) sind noch nicht in Frame und Content
+getrennt; das folgt mit dem zweiten Objekttyp.
 
 Container-Eigenschaften erreichen ECharts nicht. Die Option setzt
 `backgroundColor: 'transparent'`, damit die Container-Fläche
@@ -351,32 +366,37 @@ ECharts click/mouseover (axisName)
 → chart/updateAppearance
 ```
 
-Das Formatieren am Chart startet über den Command `chart.format`
+Das Formatieren am Objekt startet über den Command `object.format`
 (Pinsel in der Canvas-Toolbar). Er öffnet das Popover beim Titel des
-ausgewählten Charts oder schließt es; den Chart als Anker findet `App`
-über `data-chart-id` am `ChartItem`. Solange das Popover für einen
-Chart offen ist, ist er im Format-Modus: Achsentitel und Legende
+ausgewählten Objekts oder schließt es; das Objekt als Anker findet
+`App` über `data-object-id` am `ObjectFrame`. Solange das Popover für
+ein Objekt offen ist, ist es im Format-Modus: Achsentitel und Legende
 melden ihren Hover über Adapter-Events (`createAxisTitleEditFromEvent`,
 `createLegendRectFromEvent`), der HTML-Titel über `EditableText`
-(`onPointerEnter`). Alle liefern ein `ChartElementRect` in Koordinaten
-des Charts. `ChartItem` hält genau einen `formatHint` (`element`,
-`rect`) und zeigt im Format-Modus dafür eine Region. Ein Klick darauf
-meldet nur Element und Anker nach oben (`onFormatElement`);
-`ChartItem` kennt keine Inspector-Widgets.
+(`onPointerEnter`) und misst sich mit `getRectInFrame`
+(`objects/elementRect.ts`). Alle liefern ein `ElementRect` in
+Koordinaten des Frames an `showFormatHint`. Der Frame hält genau einen
+`formatHint` (`element`, `rect`) und zeigt im Format-Modus dafür eine
+Region. Ein Klick darauf meldet nur Element und Frame als Anker nach
+oben (`onFormatElement`); Frame und Content kennen keine
+Inspector-Widgets.
 
 ```text
-Pinsel (chart.format)
-→ App.openChartFormat: Anker per data-chart-id, Element title
-Region im Format-Modus (ChartItem)
-→ onFormatElement(element, anchor) → ChartGrid ergänzt chartId
+Pinsel (object.format)
+→ App.openObjectFormat: Anker per data-object-id, Element title
+Region im Format-Modus (ObjectFrame)
+→ onFormatElement(element, anchor) → ChartGrid ergänzt objectId
 beide
 → App: formatTarget (React State, nicht im Reducer)
 → ChartFormatPopover (inspector/): Element-Auswahl + Widget (bare)
 → inspectorActions.setAppearance → chart/updateAppearance
 ```
 
+- `FormatTarget` (`objects/types.ts`) ist `anchor`, `element` und
+  `objectId`. `ObjectFormatElement` ist die Union der formatierbaren
+  Elemente aller Objekttypen, aktuell gleich `ChartFormatElement`.
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
-  Elemente als Schlüssel von `ChartAppearanceSpec`, aktuell
+  Elemente eines Charts als Schlüssel von `ChartAppearanceSpec`, aktuell
   `legend | title | xAxis | yAxis`. `ChartFormatPopover` ordnet sie in
   `renderFormatWidget` per `switch` ihrem Widget zu.
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
@@ -385,14 +405,14 @@ beide
   `formatTarget.element`.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
-  für den ausgewählten Chart und schließt, sobald sich die Auswahl
+  für das ausgewählte Objekt und schließt, sobald sich die Auswahl
   ändert. Pinsel, Region und Element-Auswahl schreiben denselben
   Zustand; der Format-Modus hat keinen eigenen State, er folgt aus
   `formattedElement !== null`.
 - Floating UI schließt das Popover bei einem Druck außerhalb schon auf
   `pointerdown`, also vor dem Klick. Damit der Pinsel als Toggle und
-  die Regionen ihren Klick erhalten, zählen die Canvas-Toolbar und der
-  formatierte Chart nicht als außerhalb (`Popover`-Prop `keepOpenOn`).
+  die Regionen ihren Klick erhalten, zählen die Canvas-Toolbar und das
+  formatierte Objekt nicht als außerhalb (`Popover`-Prop `keepOpenOn`).
 - `ChartFormatPopover` nutzt dieselben `inspectorActions` und denselben
   ausgewählten Chart wie das `InspectorPanel`; es ist eine zweite
   Darstellung derselben Bearbeitung.
@@ -591,55 +611,86 @@ werden beim Lesen aus `dataset.fields` nachgeschlagen. Der Spec kopiert
 keine Field-Metadaten, bleibt serialisierbar und kann nach einem Role
 Override nicht veralten.
 
-## 8. Chart Instances und Workspace State
+## 8. Dashboard-Objekte und Workspace State
 
-Für Multi-Chart-Dashboards bleiben Visualisierung, Layout und Container
-getrennt:
+Alles auf der Canvas ist ein `DashboardObject` (`objects/types.ts`):
+eine Union über `kind` mit gemeinsamer Basis. Inhalt, Layout und
+Container bleiben getrennt:
 
 ```ts
-type ChartLayout = {
+type ObjectLayout = {
   x: number
   y: number
   width: number
   height: number
 }
 
-type ChartContainerAppearance = {
-  background: ChartContainerBackground
+type ObjectContainer = {
+  background: ObjectBackground
   padding: number
   borderRadius: number
 }
 
-type ChartContainerBackground =
+type ObjectBackground =
   | { kind: 'surface' | 'glass' | 'blue' | 'violet' }
   | { kind: 'color'; color: string }
 
-type ChartInstance = {
+type DashboardObjectBase = {
   id: string
+  layout: ObjectLayout
+  container: ObjectContainer
+}
+
+// charts/types.ts
+type ChartInstance = DashboardObjectBase & {
+  kind: 'chart'
   type: ChartType
   spec: ChartSpec
-  layout: ChartLayout
-  container: ChartContainerAppearance
 }
+
+type DashboardObject = ChartInstance // später | KpiInstance | …
 ```
 
-`container` beschreibt die Formatierung des Chart-Containers und ist
-bewusst nicht Teil der `ChartSpec` (siehe Abschnitt 6, Container vs.
-Content). Die Background-Presets verweisen auf Design-Tokens; nur
-`color` trägt einen freien Farbwert. Weitere Overrides wie Rahmenfarbe
-oder Shadow sollen später als zusätzliche optionale Felder ergänzt
-werden, ohne die Presets zu ersetzen.
+- Jede Domäne definiert ihre Variante aus der Basis (`ChartInstance` in
+  `charts/`), `objects/types.ts` sammelt sie zur Union.
+  `DashboardObjectKind` leitet sich aus der Union ab.
+- `container` beschreibt die Formatierung des Containers und ist bewusst
+  nicht Teil des Inhalts (siehe Abschnitt 6, Container vs. Content). Die
+  Background-Presets verweisen auf Design-Tokens; nur `color` trägt
+  einen freien Farbwert. Weitere Overrides wie Rahmenfarbe oder Shadow
+  sollen später als zusätzliche optionale Felder ergänzt werden, ohne
+  die Presets zu ersetzen.
+- `findChart(objects, id)` (`objects/findChart.ts`) liefert ein Objekt
+  nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Inspector,
+  Ask-Cevyn-Validierung, `chart/setTitle`), sucht darüber.
 
-Der Workspace hält alle Chart-Instanzen, das Dashboard, die
-Editor-Auswahl und die Datenauswahl:
+Die Objekt-Registry `objectDefinitions` (`objects/objectDefinitions.ts`)
+beschreibt pro `kind`, was die Canvas braucht, nach dem Vorbild von
+`chartDefinitions`:
+
+- `defaultSize` für Hinzufügen, Ask Cevyn und die Drop-Vorschau;
+- `options` für den Picker im Build Panel; bei Charts aus
+  `chartDefinitionList` abgeleitet. Eine Option trägt Icon, Label,
+  `addLabel` und ein `ObjectTemplate` (`{ kind, chartType }`).
+
+`objectPickerOptions` ist die flache Liste für den `ObjectPicker`.
+`createObject(template, objects)` erzeugt daraus das Objekt mit Defaults
+und freiem Layout; ein `switch` über `kind` erzwingt einen Fall pro
+Objekttyp.
+
+Der Workspace hält alle Objekte, das Dashboard, die Editor-Auswahl und
+die Datenauswahl:
 
 ```text
 WorkspaceState
-├── charts: ChartInstance[]
 ├── dashboard: DashboardSpec
-├── selectedChartId: string | null
+├── objects: DashboardObject[]
+├── selectedObjectId: string | null
 └── selection: DataSelection | null
 ```
+
+`useChartWorkspace` leitet daraus `charts` (für Ask Cevyn) und
+`selectedChart` (für Inspector und Format-Popover) ab.
 
 ```ts
 type DashboardLayout = {
@@ -655,7 +706,7 @@ type DashboardSpec = {
 `DashboardSpec` beschreibt Einstellungen, die für das ganze Dashboard
 gelten (`src/workspace/types.ts`). `layout.gap` ist der Abstand in Pixeln
 zwischen den Grid-Zellen. Spaltenzahl und Zeilenhöhe bleiben Konstanten
-(siehe Canvas Layout), damit bestehende `ChartLayout`s ihre Bedeutung
+(siehe Canvas Layout), damit bestehende `ObjectLayout`s ihre Bedeutung
 behalten. Aktuell gibt es genau ein Dashboard, daher tragen
 Dashboard-Actions keine ID.
 
@@ -672,13 +723,13 @@ type DataSelection = {
 
 Der Inspector arbeitet auf dem selektierten Objekt: Ist ein Chart
 ausgewählt, bearbeitet er den Chart, sonst das Dashboard. Dafür gibt es
-keinen eigenen Auswahl-State; `selectedChartId === null` bedeutet
+keinen eigenen Auswahl-State; `selectedObjectId === null` bedeutet
 Dashboard-Kontext.
 
-`selectedChartId` und `selection` sind getrennte Konzepte:
+`selectedObjectId` und `selection` sind getrennte Konzepte:
 
-- `selectedChartId` ist die Editor-Auswahl und bestimmt, welchen Chart
-  der Inspector bearbeitet.
+- `selectedObjectId` ist die Editor-Auswahl und bestimmt, welches
+  Objekt Inspector, Aktionsleiste und Pinsel bearbeiten.
 - `selection` ist die Datenauswahl für Dashboard-Interaktion. Sie ist
   feldbasiert, an keine Achse gebunden und gilt für alle Charts
   (siehe Abschnitt 6, Selection und Cross-Highlighting).
@@ -699,21 +750,23 @@ UI Event
 
 Aktuelle Actions:
 
-- `chart/add`, `chart/duplicate`, `chart/remove`, `chart/select`;
-- `chart/setType`;
-- `chart/updateAggregation`, `chart/updateEncoding`;
-- `chart/updateAppearance`, `chart/updateMarkAppearance`;
-- `chart/updateContainer`;
-- `chart/updateInteraction`;
-- `chart/updateLayout`;
+- Struktur jedes Objekts: `object/add`, `object/duplicate`,
+  `object/remove`, `object/select`, `object/updateContainer`,
+  `object/updateLayout` (adressiert über `objectId`);
+- Inhalt eines Charts: `chart/setType`, `chart/updateAggregation`,
+  `chart/updateEncoding`, `chart/updateAppearance`,
+  `chart/updateMarkAppearance`, `chart/updateInteraction` (adressiert
+  über `chartId`);
 - `dashboard/update` (Name), `dashboard/updateLayout`;
 - `selection/set`, `selection/clear`.
 
-`selection/set` wird ignoriert, wenn das Quell-Chart nicht existiert.
-`chart/remove` verwirft die Selection, wenn ihr Quell-Chart entfernt
-wird. War der entfernte Chart selektiert, wählt `chart/remove` den
-nächsten Chart in Lesereihenfolge (nach `y`, dann `x`) bzw. den
-vorherigen aus (`findNeighborChartId`).
+`chart/*`-Actions ändern nur Objekte mit `kind === 'chart'`
+(`updateChart` auf Basis von `updateObject`); die ID eines anderen
+Objekttyps bleibt ohne Wirkung. `selection/set` wird ignoriert, wenn
+das Quell-Objekt nicht existiert. `object/remove` verwirft die
+Selection, wenn ihr Quell-Chart entfernt wird. War das entfernte Objekt
+selektiert, wählt `object/remove` das nächste Objekt in Lesereihenfolge
+(nach `y`, dann `x`) bzw. das vorherige aus (`findNeighborObjectId`).
 
 Inspector und Inline-Editing auf der Canvas verwenden dieselben
 Actions. Charttitel und Achsentitel werden z. B. im Inspector und direkt
@@ -722,7 +775,8 @@ Inspector und im Canvas-Header über `dashboard/update`.
 
 Regeln:
 
-- Jede Chart-Action adressiert ihren Chart explizit über `chartId`.
+- Jede Objekt-Action adressiert ihr Objekt explizit über `objectId`,
+  jede Chart-Action ihren Chart über `chartId`.
 - `update*`-Actions tragen einen `patch` statt einzelner Key/Value-Paare.
 - Der Reducer bleibt deterministisch. Nicht-deterministische oder
   dataset-abhängige Werte wie neue IDs, Default Specs und freie
@@ -745,15 +799,17 @@ Komponenten-Ebenen gereicht werden, werden zu einem typisierten
 übergeben. Einzelne Callbacks oder solche, die nur eine Ebene tief
 gehen, bleiben `on…`-Props.
 
-| Objekt             | Type                 | erzeugt in               | Weg                                                        |
-| ------------------ | -------------------- | ------------------------ | ---------------------------------------------------------- |
-| `InspectorActions` | `inspector/types.ts` | `createInspectorActions` | `InspectorPanel` → Tabs → Widgets                          |
-| `CanvasActions`    | `workspace/types.ts` | `useChartWorkspace`      | `CanvasPanel` → `ChartGrid` → `ChartItem` → `EChartCanvas` |
+| Objekt             | Type                 | erzeugt in               | Weg                                                                        |
+| ------------------ | -------------------- | ------------------------ | -------------------------------------------------------------------------- |
+| `InspectorActions` | `inspector/types.ts` | `createInspectorActions` | `InspectorPanel` → Tabs → Widgets                                          |
+| `CanvasActions`    | `workspace/types.ts` | `useChartWorkspace`      | `CanvasPanel` → `ChartGrid` → `ObjectFrame` / `ChartItem` → `EChartCanvas` |
 
 - `InspectorActions` bearbeiten den ausgewählten Chart bzw. das
-  Dashboard und brauchen deshalb keine `chartId`.
-- `CanvasActions` adressieren den Chart explizit (Selection, Layout,
-  Titel und Achsentitel direkt im Chart).
+  Dashboard und brauchen deshalb keine `chartId`. Den Container
+  ändern sie über `object/updateContainer`.
+- `CanvasActions` adressieren ihr Ziel explizit: `selectObject` und
+  `updateObjectLayout` das Objekt (aus dem Frame), `updateChartAppearance`
+  sowie Daten-Selection den Chart (aus dem Content).
 - Bewusst einzeln bleiben z. B. `onAskCevyn`, `onRenameDashboard` sowie
   `onEditAxisTitle` und `onHoverAxisTitle` (lokaler State in
   `ChartItem`).
@@ -794,13 +850,14 @@ unknown (JSON)
   gesammelt zurückgegeben.
 - Geprüft wird gegen den Draft-State, nicht gegen den gespeicherten
   State: Eine Action sieht den Effekt aller vorherigen Actions im
-  Batch. Chart-Actions schlagen fehl, wenn der Chart dort nicht
-  existiert; Encoding und Aggregation werden gegen den Charttyp des
+  Batch. Chart-Actions schlagen fehl, wenn `findChart` dort keinen Chart
+  findet (auch bei der ID eines anderen Objekttyps); Encoding und
+  Aggregation werden gegen den Charttyp des
   Draft-Charts geprüft (z. B. nach `chart/setType` im selben Batch).
 - `translateCevynActions` übersetzt jede `CevynAction` in genau eine
   bestehende `WorkspaceAction` und ergänzt dabei, was der Reducer
   braucht: IDs, freie Layouts und Defaults über `createChartInstance`
-  und `findFreeChartLayout`, Default Specs über
+  und `findFreeLayout` (Größe aus `objectDefinitions`), Default Specs über
   `createDefaultChartSpec`, bestehende Titel-Einstellungen aus dem
   Draft. Angegebene Werte überschreiben die Defaults. Jede übersetzte
   Action wird auf den Draft-State angewendet.
@@ -813,7 +870,7 @@ unknown (JSON)
   verfügbar.
 - Aktuelle Actions:
   - `chart/create` (Charttyp, optional Encoding und Aggregation)
-    → `chart/add`;
+    → `object/add`;
   - `chart/setType` → `chart/setType`; wie im Inspector bleiben
     passende Encodings erhalten (`carryOverEncoding`), die Aggregation
     kommt aus dem Default des neuen Typs;
@@ -822,7 +879,11 @@ unknown (JSON)
     → `chart/updateAggregation`;
   - `chart/setTitle` (Text) → `chart/updateAppearance`; schaltet den
     Titel ein;
-  - `chart/remove` → `chart/remove`.
+  - `chart/remove` → `object/remove`.
+- Das Cevyn-Vokabular bleibt bewusst chart-bezogen (`chart/*`,
+  `chartId`), ebenso das Backend-Schema in `app/ai/models.py`; nur die
+  Übersetzung führt Struktur-Actions auf `object/*` zurück. Actions für
+  weitere Objekttypen sind noch nicht geplant.
 - Charts, die im selben Batch erst erstellt werden, können noch nicht
   adressiert werden, da ihre ID erst bei der Übersetzung entsteht.
 - Die Strukturprüfung bleibt im Frontend, weil dort ausgeführt wird und
@@ -913,16 +974,16 @@ selbst kennt keine History.
 
 Regeln:
 
-- Undo-fähig sind alle `chart/*`- und `dashboard/*`-Actions außer
-  `chart/select`. `chart/select` und `selection/*` ändern nur
-  `present`.
+- Undo-fähig sind alle `chart/*`-, `dashboard/*`- und `object/*`-Actions
+  außer `object/select` (Positivliste der Präfixe). `object/select` und
+  `selection/*` ändern nur `present`.
 - Eine Action, die den State nicht verändert, erzeugt keinen Schritt.
-- Ein Snapshot enthält `charts`, `dashboard` und `selectedChartId`.
-  Undo stellt damit auch die Chart-Auswahl wieder her, z. B. nach einem
+- Ein Snapshot enthält `objects`, `dashboard` und `selectedObjectId`.
+  Undo stellt damit auch die Auswahl wieder her, z. B. nach einem
   Delete.
   Die Datenauswahl bleibt erhalten, solange ihr Quell-Chart existiert.
-- `update*`-Actions mit gleichem Coalesce-Key (Action-Typ, ggf.
-  `chartId` und Mark, Patch-Keys) innerhalb von 500 ms werden zu einem
+- `update*`-Actions mit gleichem Coalesce-Key (Action-Typ, `objectId`
+  bzw. `chartId`, ggf. Mark, Patch-Keys) innerhalb von 500 ms werden zu einem
   Schritt zusammengefasst. Dadurch ergeben Scrubbing, Slider,
   Farbpicker, Pfeil-Nudges und Tippen in Textfeldern einen Schritt, ohne
   dass die Controls Gesten melden.
@@ -938,44 +999,52 @@ Shortcuts und Buttons:
 ```text
 useWorkspaceCommands
 ├── useCommandShortcuts → globaler Keydown-Listener
-└── CommandButton       → Canvas-Toolbar, Chart-Aktionsleiste
+└── CommandButton       → Canvas-Toolbar, Aktionsleiste im ObjectFrame
 ```
 
-- Aktuelle Commands: Undo, Redo, Duplicate, Delete, Format, Build Panel
-  und Inspector umschalten.
+- Aktuelle Commands: `history.undo`, `history.redo`, `object.duplicate`,
+  `object.delete`, `object.format`, Build Panel und Inspector
+  umschalten. Die Objekt-Commands wirken auf `selectedObjectId`; ihre
+  Labels lauten vorerst noch „… chart“.
 - Toggle-Commands wie Format setzen `isActive`; `CommandButton` zeigt
   sie dann als gedrückten Button.
-- Scope `global` greift überall, Scope `chart` nur, wenn der Chart
-  selbst fokussiert ist.
+- Scope `global` greift überall, Scope `object` nur, wenn der Frame
+  selbst fokussiert ist (`[data-object-id]`).
 - In Textfeldern und `contenteditable` greift kein Shortcut; dort bleibt
   z. B. das native Text-Undo erhalten.
 - Control-lokale Tastaturbedienung (Slider, `ScrubbableNumber`,
   `RotationDial`, `InlineTextInput`, `InspectorTabs`) sowie Pfeiltasten
-  und Escape auf dem fokussierten Chart bleiben in den Komponenten.
+  und Escape auf dem fokussierten Objekt bleiben in den Komponenten
+  (`ObjectFrame`).
 
 ### Canvas Layout
 
-`ChartLayout` wird in Grid-Zellen angegeben, nicht in Pixeln. Die Canvas
-verwendet ein 24-spaltiges Grid mit fester Zeilenhöhe
+`ObjectLayout` wird in Grid-Zellen angegeben, nicht in Pixeln. Die
+Canvas verwendet ein 24-spaltiges Grid mit fester Zeilenhöhe
 (`src/workspace/chartLayout.ts`).
 
-- Neue und duplizierte Charts werden auf der ersten freien Fläche
-  platziert.
+- Neue und duplizierte Objekte werden auf der ersten freien Fläche
+  platziert (`findFreeLayout`, Standardgröße aus `objectDefinitions`).
 - Move und Resize sind reine Layout-Funktionen mit Grenzen für
   Grid-Rand und Mindestgröße. Maus-Drag und Tastaturbedienung verwenden
   dieselben Funktionen.
 - Während eines Drags wird nur eine lokale Vorschau gerendert. Beim
-  Loslassen entsteht genau eine `chart/updateLayout`-Action.
-- Überlappende Charts werden aktuell nicht automatisch aufgelöst.
+  Loslassen entsteht genau eine `object/updateLayout`-Action.
+- Überlappende Objekte werden aktuell nicht automatisch aufgelöst.
 
 ### Drag and Drop
 
 Drag Sources und Drop Targets beschreiben ihre Bedeutung über typisierte
 Daten statt über ID-Strings:
 
-- `DragPayload`: `field`, `chart-type` oder `chart-layout`;
+- `DragPayload`: `field`, `object-option` (Option aus dem
+  `ObjectPicker` mit ihrem `ObjectTemplate`) oder `object-layout`
+  (Griff am `ObjectFrame` mit `objectId` und Modus);
 - `DropTarget`: `canvas` oder `encoding` mit `chartId` und
   `encodingKey`.
+
+Ein Drop einer Option auf die Canvas ruft `addObject(template)` auf;
+die Drop-Vorschau nutzt die Standardgröße des gezogenen Typs.
 
 Das gezogene Feld (`draggedField`) wird von `App` bis `ChartItem`
 gereicht. `EncodingDropSlots` bewertet jeden Slot über
@@ -1488,7 +1557,7 @@ Project
 ├── LightTransformation[]
 ├── CalculatedField[]
 ├── Metric[]
-├── ChartInstance[]
+├── DashboardObject[]
 ├── Dashboard[]
 ├── SharedFilter[]
 └── SelectionState
@@ -1497,7 +1566,7 @@ Project
 Vom `SelectionState` existiert aktuell eine erste Form als `selection`
 im `WorkspaceState` (Abschnitt 8). Von `Dashboard` existiert eine erste
 Form als einzelne `DashboardSpec` im `WorkspaceState`; mehrere
-Dashboards und die Zuordnung von Charts zu Dashboards sind noch nicht
+Dashboards und die Zuordnung von Objekten zu Dashboards sind noch nicht
 umgesetzt.
 
 Ein Wert soll möglichst einmal definiert und anschließend

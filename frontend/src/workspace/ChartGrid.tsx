@@ -9,7 +9,7 @@ import {
   moveLayout,
   resizeLayout,
 } from './chartLayout'
-import { objectDefinitions } from '../objects/objectDefinitions'
+import { getObjectDefinition } from '../objects/objectDefinitions'
 
 import type {
   DashboardObject,
@@ -28,6 +28,8 @@ import type {
 import type { GridDelta } from './chartLayout'
 
 import ChartItem from '../charts/ChartItem'
+import ObjectFrame from '../objects/ObjectFrame'
+import { getChartTitle } from '../charts/getChartTitle'
 
 // ===== TYPES =================================================================
 type ChartGridProps = {
@@ -128,11 +130,12 @@ function ChartGrid({
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
   const { active } = useDndContext()
-  const isDraggingChartType =
-    active?.data.current?.payload?.kind === 'chart-type'
+  const activePayload: DragPayload | undefined = active?.data.current?.payload
+  const draggedOption =
+    activePayload?.kind === 'object-option' ? activePayload.option : null
   const { isOver, node, setNodeRef } = useDroppable({
     data: { target: canvasTarget },
-    disabled: !isDraggingChartType,
+    disabled: !draggedOption,
     id: 'chart-grid',
   })
 
@@ -200,32 +203,46 @@ function ChartGrid({
           object.id === layoutPreview?.objectId
             ? layoutPreview.layout
             : object.layout
+        const formattedElement =
+          formatTarget?.objectId === object.id ? formatTarget.element : null
         return (
-          <ChartItem
+          <ObjectFrame
             actions={actions}
-            chart={object}
             commands={commands}
-            dataset={dataset}
-            datasetId={datasetId}
-            draggedField={draggedField}
-            formattedElement={
-              formatTarget?.objectId === object.id ? formatTarget.element : null
-            }
+            formattedElement={formattedElement}
             isSelected={object.id === selectedObjectId}
             key={object.id}
+            label={getChartTitle(object, dataset.fields)}
+            object={object}
             selection={selection}
             style={getGridArea(layout)}
             onFormatElement={(element, anchor) =>
               onFormatElement({ anchor, element, objectId: object.id })
             }
-          />
+          >
+            {(showFormatHint) => (
+              <ChartItem
+                actions={actions}
+                chart={object}
+                dataset={dataset}
+                datasetId={datasetId}
+                draggedField={draggedField}
+                formattedElement={formattedElement}
+                selection={selection}
+                onFormatHint={showFormatHint}
+              />
+            )}
+          </ObjectFrame>
         )
       })}
-      {isOver ? (
+      {isOver && draggedOption ? (
         <div
           className="chart-drop-preview"
           style={getGridArea(
-            findFreeLayout(objects, objectDefinitions.chart.defaultSize),
+            findFreeLayout(
+              objects,
+              getObjectDefinition(draggedOption.template.kind).defaultSize,
+            ),
           )}
         />
       ) : null}

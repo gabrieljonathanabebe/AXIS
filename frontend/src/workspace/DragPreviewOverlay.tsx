@@ -1,6 +1,6 @@
 import { DragOverlay } from '@dnd-kit/core'
 
-import { ChartTypeOptionContent } from '../charts/ChartPicker'
+import { ObjectOptionContent } from '../objects/ObjectPicker'
 
 import type { ActiveDrag } from './types'
 
@@ -15,9 +15,9 @@ function DragPreviewOverlay({ activeDrag }: DragPreviewOverlayProps) {
         <div className="chip field-chip cluster full-width drag-overlay-chip">
           <span className="field-chip-label">{activeDrag.field.name}</span>
         </div>
-      ) : activeDrag?.kind === 'chart-type' ? (
+      ) : activeDrag?.kind === 'object-option' ? (
         <div className="widget chart-type-option stack center chart-type-drag-overlay">
-          <ChartTypeOptionContent type={activeDrag.chartType} />
+          <ObjectOptionContent option={activeDrag.option} />
         </div>
       ) : null}
     </DragOverlay>

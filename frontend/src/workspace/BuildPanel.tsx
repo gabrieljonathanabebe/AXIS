@@ -1,13 +1,12 @@
 import { Blocks, ChartColumn, Columns3, FolderOpen, Plus } from 'lucide-react'
 
 import Button from '../shared/ui/Button'
-import ChartPicker from '../charts/ChartPicker'
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
 import DatasetCard from '../datasets/DatasetCard'
 import { DEMO_DATASET_ID } from '../datasets/datasetsApi'
 import FieldList from '../datasets/FieldList'
+import ObjectPicker from '../objects/ObjectPicker'
 import Panel from '../shared/ui/Panel'
-import type { ChartType } from '../charts/types'
 import type {
   Dataset,
   DatasetProfile,
@@ -15,6 +14,7 @@ import type {
 } from '../datasets/types'
 
 import type { DatasetSummary } from '../datasets/datasetsApi'
+import type { ObjectTemplate } from '../objects/types'
 
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
@@ -23,7 +23,7 @@ type BuildPanelProps = {
   isCollapsed: boolean
   datasetError: string | null
   isLoading: boolean
-  onSelectChartType: (type: ChartType) => void
+  onAddObject: (template: ObjectTemplate) => void
   onToggleCollapse: () => void
   onUploadFile: (file: File) => Promise<void>
   profile: DatasetProfile | null
@@ -37,7 +37,7 @@ function BuildPanel({
   datasetName,
   isCollapsed,
   isLoading,
-  onSelectChartType,
+  onAddObject,
   onToggleCollapse,
   onUploadFile,
   profile,
@@ -60,7 +60,7 @@ function BuildPanel({
           icon={<ChartColumn size={14} />}
           variant="plain"
         >
-          <ChartPicker onSelectChartType={onSelectChartType} />
+          <ObjectPicker onAddObject={onAddObject} />
         </CollapsibleSection>
 
         <CollapsibleSection

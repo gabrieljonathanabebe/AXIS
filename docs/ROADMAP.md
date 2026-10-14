@@ -726,10 +726,10 @@ Inspector. Langfristig ersetzt die Bearbeitung am Objekt den Inspector
 
 Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
 
-- Pinsel in der Canvas-Toolbar (Command `chart.format`): öffnet das
+- Pinsel in der Canvas-Toolbar (Command `object.format`): öffnet das
   Popover beim Titel des ausgewählten Charts bzw. schließt es, ist
   gedrückt, solange es offen ist (`isActive`), und ohne ausgewählten
-  Chart deaktiviert; Anker über `data-chart-id`
+  Chart deaktiviert; Anker über `data-object-id`
 - Popover neben dem Chart (`right-start`, weicht nach links aus) mit
   Header „Format“, Schließen-Button, Zeile „Element“
   (`SelectControl`) und dem Widget des Elements in der Variante
@@ -754,8 +754,9 @@ Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
   im Inspector
 - Editor-Host: `formatTarget` („Chart + Element + Anker“) in `App`,
   `ChartFormatPopover` in `inspector/` zeigt das Widget mit denselben
-  `inspectorActions` wie der Inspector; `ChartItem` meldet nur noch
-  Element und Anker und importiert nichts mehr aus `inspector/`
+  `inspectorActions` wie der Inspector; der Frame (heute
+  `ObjectFrame`) meldet nur Element und Anker, weder Frame noch
+  `ChartItem` importieren aus `inspector/`
 - Legende: Hover über ECharts (`triggerEvent`), gemessen wird die ganze
   Legende (`createLegendRectFromEvent`); im Format-Modus fängt die
   Region den Klick ab, sonst gehen Klicks auf Legendeneinträge an
@@ -785,7 +786,7 @@ deaktiviert zu sein.
 Der Slice pausiert, als Nächstes kommen die Dashboard-Objekte. Die
 Punkte unter „Als Nächstes“ folgen danach.
 
-### Dashboard-Objekte (geplant, als Nächstes)
+### Dashboard-Objekte (in Arbeit)
 
 KPI Cards, Tables und Slicer als Objekte auf der Canvas neben Charts.
 Sie werden wie Charts aus dem Build Panel hinzugefügt und nur am Objekt
@@ -798,7 +799,11 @@ formatiert (Pinsel und Format-Popover), nicht im Inspector. Beschlossen:
 - Frame und Content getrennt: ein generischer Frame (Auswahl, Handles,
   Tastatur, Aktionsleiste, Format-Regionen) und ein Content pro Typ
 - eine Objekt-Registry nach dem Vorbild von `chartDefinitions`; der
-  Picker im Build Panel ist gruppiert (Charts | Cards & Table | Filter)
+  Picker im Build Panel ist gruppiert (Charts | Cards & Table | Filter),
+  jede Gruppe als eigene `CollapsibleSection` wie Dataset und Fields;
+  die Gruppe ist ein Feld des Objekttyps (`group` in
+  `objectDefinitions`), nicht der einzelnen Option. Die Gruppierung
+  kommt mit dem zweiten Objekttyp
 - ein Objekttyp `slicer`; das Steuerelement (Dropdown, Liste, Range,
   Datum) folgt aus der Semantic Role und ist umschaltbar
 - drei getrennte Filterebenen: Slicer (Dashboard), Selection
@@ -821,11 +826,35 @@ formatiert (Pinsel und Format-Popover), nicht im Inspector. Beschlossen:
 
 Reihenfolge:
 
-1. Objekt-Fundament (Refactor ohne sichtbare Änderung):
-   `DashboardObject`, `objects`, `selectedObjectId`, generische
-   `object/*`-Actions, Frame und Content getrennt, generischer
-   `formatTarget` (`objectId`, `data-object-id`), Objekt-Registry und
-   Picker
+1. Objekt-Fundament (implementiert, Refactor ohne sichtbare Änderung):
+   - `objects/` als neue Domäne: `DashboardObject` als Union über
+     `kind` mit `DashboardObjectBase` (`id`, `layout`, `container`);
+     `ChartInstance` ist die erste Variante; `ObjectLayout`,
+     `ObjectContainer`, `ElementRect` und `FormatTarget` liegen dort
+   - `WorkspaceState` mit `objects` und `selectedObjectId`;
+     `object/add|duplicate|remove|select|updateContainer|updateLayout`
+     mit `objectId`, `chart/*` nur noch für Chart-Inhalt und nur für
+     `kind === 'chart'`; `findChart` für Chart-Zugriffe
+   - Undo: Snapshot mit `objects`, `object/select` nicht undo-fähig,
+     Coalesce-Keys mit `objectId`
+   - Layout-Helfer auf Objekten (`findFreeLayout`,
+     `findNeighborObjectId`, `moveLayout`, `resizeLayout`)
+   - Commands `object.delete|duplicate|format` mit Scope `object`
+     (`[data-object-id]`); Labels vorerst unverändert
+   - `ObjectFrame` (Container, Auswahl, Tastatur, Griffe, Aktionsleiste,
+     Format-Region) und `ChartItem` als Content; der Content meldet
+     Format-Hints über `showFormatHint`
+   - Objekt-Registry `objectDefinitions` (`defaultSize`, Picker-Optionen
+     mit `ObjectTemplate`), `createObject`, `ObjectPicker` statt
+     `ChartPicker`, Drag-Payload `object-option`
+   - Ask Cevyn: Schema und Cevyn-Actions unverändert, die Übersetzung
+     führt `chart/create` und `chart/remove` auf `object/add` bzw.
+     `object/remove` zurück
+   - bewusst offen für Slice 2: CSS-Trennung von Frame und Content
+     (`chart-item*`, `--chart-*`), generische Command-Labels,
+     Mindestgröße pro Objekttyp, Inspector bei anderen Objekttypen
+   - verifiziert: `npm run build`, `npm run lint`, Prettier; Verhalten
+     im Browser unverändert
 2. KPI Card: erstes HTML-Objekt, `kpi-query`, Formatierung am Objekt
 3. Slicer und Filterebene: Filter-State, wirksame Filter, gemeinsames
    Filtervokabular, Filter für die Points Query; gemeinsame
@@ -834,6 +863,13 @@ Reihenfolge:
 
 ## 6. Later – Visualization Completion
 
+- Picker für viele Charttypen: die Section „Charts“ zeigt eine
+  Schnellauswahl der häufigsten Typen, „More“ öffnet ein Popover mit
+  Suchfeld und Kategorien nach Zweck (Vergleich, Verlauf, Anteil,
+  Verteilung, Beziehung); Ziehen aus dem Popover wie aus der Section.
+  Dafür bekommen die Charttypen `category` und ein Flag für die
+  Schnellauswahl in `chartDefinitions`. Idee: Empfehlungen passend zu
+  den gewählten Feldern über `getSemanticCompatibility`
 - Inspector-Polish für Scatter, Line, Bar, Pie und Donut
 - Idee zur Neubewertung: Achsentitel wie den Charttitel als HTML im
   `ChartItem` rendern statt über ECharts (einfacheres Inline-Editing,

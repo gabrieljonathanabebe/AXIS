@@ -2,10 +2,8 @@ import { useEffect, useReducer } from 'react'
 
 import { parseCevynActions } from '../actions/parseCevynActions'
 import { translateCevynActions } from '../actions/translateCevynActions'
-import { createChartInstance } from '../charts/createChartInstance'
+import { createObject } from '../objects/createObject'
 import { findChart } from '../objects/findChart'
-import { findFreeLayout } from './chartLayout'
-import { objectDefinitions } from '../objects/objectDefinitions'
 import { useWorkspaceDnd } from './useWorkspaceDnd'
 import {
   initialWorkspaceHistory,
@@ -13,9 +11,9 @@ import {
 } from './workspaceHistory'
 
 import type { CevynActionResult } from '../actions/types'
-import type { ChartAppearanceSpec, ChartType } from '../charts/types'
+import type { ChartAppearanceSpec } from '../charts/types'
 import type { Dataset } from '../datasets/types'
-import type { ObjectLayout } from '../objects/types'
+import type { ObjectLayout, ObjectTemplate } from '../objects/types'
 import type { CanvasActions, DataSelection, WorkspaceAction } from './types'
 
 type UseChartWorkspaceParams = {
@@ -41,7 +39,7 @@ export function useChartWorkspace({
   const canUndo = history.past.length > 0
   const charts = objects.filter((object) => object.kind === 'chart')
   const selectedChart = findChart(objects, selectedObjectId)
-  const dnd = useWorkspaceDnd(dispatch, addChart)
+  const dnd = useWorkspaceDnd(dispatch, addObject)
 
   function dispatch(action: WorkspaceAction): void {
     dispatchHistory({ type: 'history/apply', action, timestamp: Date.now() })
@@ -82,15 +80,9 @@ export function useChartWorkspace({
     }
   })
 
-  /** Adds a chart of a type in the first free spot. */
-  function addChart(type: ChartType): void {
-    dispatch({
-      type: 'object/add',
-      object: createChartInstance({
-        type,
-        layout: findFreeLayout(objects, objectDefinitions.chart.defaultSize),
-      }),
-    })
+  /** Adds the object of a picker option in the first free spot. */
+  function addObject(template: ObjectTemplate): void {
+    dispatch({ type: 'object/add', object: createObject(template, objects) })
   }
 
   /** Copies an object; the copy gets a new ID and is selected. */
@@ -151,7 +143,7 @@ export function useChartWorkspace({
 
   return {
     ...dnd,
-    addChart,
+    addObject,
     canRedo,
     canUndo,
     canvasActions,

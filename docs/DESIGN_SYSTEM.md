@@ -406,12 +406,14 @@ FIELDS
 
 ### Visuals
 
-- Icon-Raster aus `chartDefinitionList`; Icon in Akzentfarbe, kleines
-  Label.
+- `ObjectPicker`: Icon-Raster aus `objectPickerOptions` der
+  Objekt-Registry (Charts aus `chartDefinitionList`); Icon in
+  Akzentfarbe, kleines Label.
 - Kachel und Drag-Overlay rendern denselben Inhalt
-  (`ChartTypeOptionContent`).
+  (`ObjectOptionContent`).
 - „More“ ist ein deaktivierter Platzhalter für weitere Charttypen und
-  kein Eintrag der Chart Registry.
+  kein Eintrag der Registry. Geplant: Gruppen als eigene Sections und
+  „More“ als Popover mit Suche (siehe `ROADMAP.md`).
 
 ### Dataset
 
@@ -1112,7 +1114,7 @@ Alle Backgrounds bauen auf `.glass` auf (Lichtkante, Schatten) und
 Standardfüllung, Blue und Violet nutzen `--chart-fill-blue` bzw.
 `--chart-fill-violet` (pro Theme), eigene Farben `--chart-background`.
 Glass nutzt `glass-liquid`. Die Zuordnung Background → Klassen steht
-als `Record` in `ChartItem`.
+als `Record` in `ObjectFrame` und gilt damit für jedes Dashboard-Objekt.
 
 Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand
 ist mindestens halb so groß wie der Radius, damit Start- und
@@ -1187,7 +1189,7 @@ Auf dem fokussierten Chart:
 
 Shortcuts greifen nur, wenn der Chart selbst fokussiert ist, nicht ein
 Element darin. Delete und Duplicate kommen aus der Command-Registry,
-Pfeiltasten und Escape aus `ChartItem`. Nach dem Löschen erhält der nächste Chart in
+Pfeiltasten und Escape aus `ObjectFrame`. Nach dem Löschen erhält der nächste Chart in
 Lesereihenfolge den Fokus; gibt es keinen Chart mehr, die leere Canvas.
 
 Global, außer in Textfeldern:
@@ -1222,12 +1224,13 @@ kommuniziert:
 
 Drop Targets tragen ihre Bedeutung als typisiertes `DropTarget`.
 
-Charttypen werden auf das `ChartGrid` gezogen, auch wenn die Canvas
-leer ist; der `EmptyState` liegt dann nur als Hinweis darüber und ist
-kein Drop Target. Während des Drags zeigt ein gestrichelter Platzhalter
-(`chart-drop-preview`) Größe und Position des neuen Charts. Er nutzt
-dieselbe Berechnung wie das Einfügen (`findFreeChartLayout` mit
-`DEFAULT_CHART_SIZE`).
+Optionen aus dem `ObjectPicker` werden auf das `ChartGrid` gezogen,
+auch wenn die Canvas leer ist; der `EmptyState` liegt dann nur als
+Hinweis darüber und ist kein Drop Target. Während des Drags zeigt ein
+gestrichelter Platzhalter (`chart-drop-preview`) Größe und Position des
+neuen Objekts. Er nutzt dieselbe Berechnung wie das Einfügen
+(`findFreeLayout` mit der `defaultSize` des Objekttyps aus
+`objectDefinitions`).
 
 Felder werden auf `EncodingDropSlots` gezogen. Während des ganzen
 Feld-Drags liegt über jedem Chart ein Overlay mit einem Slot pro

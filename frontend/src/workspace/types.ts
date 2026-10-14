@@ -14,6 +14,7 @@ import type {
   ObjectLayout,
 } from '../objects/types'
 import type { DataField, DataValue } from '../datasets/types'
+import type { ObjectPickerOption } from '../objects/objectDefinitions'
 
 // ===== STATE =================================================================
 export type WorkspaceState = {
@@ -186,13 +187,13 @@ export type DragPayload =
       field: DataField
     }
   | {
-      kind: 'chart-type'
-      chartType: ChartType
-    }
-  | {
       kind: 'object-layout'
       mode: ObjectLayoutMode
       objectId: string
+    }
+  | {
+      kind: 'object-option'
+      option: ObjectPickerOption
     }
 
 export type ActiveDrag = DragPayload | null

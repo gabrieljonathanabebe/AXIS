@@ -34,7 +34,7 @@ function App() {
 
   const {
     activeDrag,
-    addChart,
+    addObject,
     canRedo,
     canUndo,
     canvasActions,
@@ -131,7 +131,7 @@ function App() {
               isCollapsed={isBuildPanelCollapsed}
               datasetError={datasetError}
               isLoading={isLoading}
-              onSelectChartType={addChart}
+              onAddObject={addObject}
               onToggleCollapse={toggleBuildPanel}
               onUploadFile={async (file) => {
                 await uploadFile(file)

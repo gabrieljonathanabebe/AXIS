@@ -1,4 +1,8 @@
-import type { ChartFormatElement, ChartInstance } from '../charts/types'
+import type {
+  ChartFormatElement,
+  ChartInstance,
+  ChartType,
+} from '../charts/types'
 
 // ===== OBJECT ================================================================
 /** Fields every dashboard object has, whatever its content. */
@@ -12,6 +16,12 @@ export type DashboardObjectBase = {
 export type DashboardObject = ChartInstance
 
 export type DashboardObjectKind = DashboardObject['kind']
+
+/** What a picker option adds; the new object gets the defaults of its kind. */
+export type ObjectTemplate = {
+  chartType: ChartType
+  kind: 'chart'
+}
 
 // ===== LAYOUT ================================================================
 /** Position and size of an object on the canvas grid, in grid cells. */

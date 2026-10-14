@@ -2,7 +2,7 @@ import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useState } from 'react'
 
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import type { ChartType } from '../charts/types'
+import type { ObjectTemplate } from '../objects/types'
 import type {
   ActiveDrag,
   DragPayload,
@@ -23,12 +23,12 @@ function getDropTarget(event: DragEndEvent): DropTarget | null {
 
 // ===== HOOK ==================================================================
 /**
- * Drops chart types onto the canvas and fields onto chart encodings; moving
- * and resizing charts is handled by ChartGrid.
+ * Drops picker options onto the canvas and fields onto chart encodings;
+ * moving and resizing objects is handled by ChartGrid.
  */
 export function useWorkspaceDnd(
   dispatch: (action: WorkspaceAction) => void,
-  addChart: (type: ChartType) => void,
+  addObject: (template: ObjectTemplate) => void,
 ) {
   const [activeDrag, setActiveDrag] = useState<ActiveDrag>(null)
   const sensors = useSensors(
@@ -43,13 +43,13 @@ export function useWorkspaceDnd(
     setActiveDrag(getDragPayload(event))
   }
 
-  /** Adds a dropped chart type or puts a dropped field on an encoding. */
+  /** Adds a dropped picker option or puts a dropped field on an encoding. */
   function handleDragEnd(event: DragEndEvent): void {
     const payload = getDragPayload(event)
     const target = getDropTarget(event)
     setActiveDrag(null)
-    if (payload?.kind === 'chart-type' && target?.kind === 'canvas') {
-      addChart(payload.chartType)
+    if (payload?.kind === 'object-option' && target?.kind === 'canvas') {
+      addObject(payload.option.template)
       return
     }
     if (payload?.kind === 'field' && target?.kind === 'encoding') {
