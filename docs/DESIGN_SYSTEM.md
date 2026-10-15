@@ -415,14 +415,16 @@ FIELDS
 
 ### Visuals
 
-- `ObjectPicker`: Icon-Raster aus `objectPickerOptions` der
-  Objekt-Registry (Charts aus `chartDefinitionList`); Icon in
+- Pro Gruppe der Objekt-Registry (`objectGroups`) eine plain Section:
+  „Charts“ (`ChartColumn`) und „Cards & Table“ (`LayoutPanelTop`).
+- `ObjectPicker`: Icon-Raster aus `getGroupPickerOptions(group)` (Charts
+  aus `chartDefinitionList`, Card mit `RectangleHorizontal`); Icon in
   Akzentfarbe, kleines Label.
 - Kachel und Drag-Overlay rendern denselben Inhalt
   (`ObjectOptionContent`).
-- „More“ ist ein deaktivierter Platzhalter für weitere Charttypen und
-  kein Eintrag der Registry. Geplant: Gruppen als eigene Sections und
-  „More“ als Popover mit Suche (siehe `ROADMAP.md`).
+- „More“ (`showMore`) ist ein deaktivierter Platzhalter für weitere
+  Charttypen, nur in der Section Charts, und kein Eintrag der Registry.
+  Geplant: „More“ als Popover mit Suche (siehe `ROADMAP.md`).
 
 ### Dataset
 
@@ -482,9 +484,11 @@ Abhängige Unteroptionen (`.inspector-widget-subproperties`) sind um
 `--indent-nested` eingerückt.
 
 `InspectorWidget` hat eine `variant` (`section` als Default, `bare`).
-`bare` rendert nur die Controls ohne Section-Rahmen, z. B. im Popover
-am Chart. Widgets wie `AxisWidget` reichen `variant` durch; Ein- und
-Ausblenden bleibt im Inspector.
+`bare` rendert nur die Controls ohne Section-Rahmen, z. B. im
+Format-Popover am Objekt. Widgets wie `AxisWidget` reichen `variant`
+durch. Hat das Widget eine Sichtbarkeit, zeigt `bare` sie als erste
+Zeile „Visible“ mit `Toggle`, da es keinen Header für die Eye-Aktion
+gibt.
 
 Inspector-Widgets sind unabhängig vom Chart-Zustand auf- und
 zuklappbar. Eine optionale Eye-Aktion im Header (`IconButton` mit
@@ -1241,7 +1245,10 @@ neuen Objekts. Er nutzt dieselbe Berechnung wie das Einfügen
 (`findFreeLayout` mit der `defaultSize` des Objekttyps aus
 `objectDefinitions`).
 
-Felder werden auf `EncodingDropSlots` gezogen. Während des ganzen
+Felder werden auf Drop-Slots gezogen. `DropSlot` (`workspace/`) ist der
+gemeinsame Slot (Label, Hinweis, Text, `useDroppable`); Charts zeigen
+ihn über `EncodingDropSlots` einmal pro Encoding, Cards einmal als
+„Value“ (einspaltig, `.encoding-drop-slots.is-single`). Während des ganzen
 Feld-Drags liegt über jedem Chart ein Overlay mit einem Slot pro
 Encoding aus `definition.encodings`, auch im Empty State und bei Charts
 ohne Achsen. Der Chart dahinter tritt per Opacity zurück, ohne Blur.

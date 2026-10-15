@@ -1,12 +1,11 @@
 import { Ban } from 'lucide-react'
-import { useDroppable } from '@dnd-kit/core'
 
+import DropSlot from '../workspace/DropSlot'
 import { getSemanticCompatibility } from './chartDefinitions'
 
 import type { ChartDefinition, EncodingDefinition } from './chartDefinitions'
 import type { ChartEncoding } from './types'
 import type { DataField } from '../datasets/types'
-import type { DropTarget } from '../workspace/types'
 
 type EncodingDropSlotsProps = {
   chartId: string
@@ -41,36 +40,18 @@ function EncodingDropSlot({
     : currentFieldName
       ? `Replaces ${currentFieldName}`
       : 'Drop here'
-  const target: DropTarget = {
-    chartId,
-    encodingKey: encoding.key,
-    kind: 'encoding',
-  }
-  const { isOver, setNodeRef } = useDroppable({
-    data: { target },
-    disabled: isInvalid,
-    id: `chart:${chartId}:encoding:${encoding.key}`,
-  })
   return (
-    <div
-      aria-disabled={isInvalid}
-      aria-label={`Drop ${field.name} to set ${encoding.label}`}
-      className={`encoding-drop-slot is-${compatibility} ${
-        currentFieldName ? 'is-filled' : ''
-      } ${isOver ? 'is-over' : ''}`}
-      ref={setNodeRef}
-    >
-      <span className="encoding-drop-slot-header">
-        <span className="encoding-drop-slot-label">{encoding.label}</span>
-        {compatibility === 'recommended' ? (
-          <span className="encoding-drop-slot-hint">Recommended</span>
-        ) : null}
-      </span>
-      <span className="encoding-drop-slot-value">
-        {isInvalid ? <Ban size={14} /> : null}
-        {valueText}
-      </span>
-    </div>
+    <DropSlot
+      ariaLabel={`Drop ${field.name} to set ${encoding.label}`}
+      className={`is-${compatibility} ${currentFieldName ? 'is-filled' : ''}`}
+      hint={compatibility === 'recommended' ? 'Recommended' : undefined}
+      icon={isInvalid ? <Ban size={14} /> : null}
+      id={`chart:${chartId}:encoding:${encoding.key}`}
+      isDisabled={isInvalid}
+      label={encoding.label}
+      target={{ chartId, encodingKey: encoding.key, kind: 'encoding' }}
+      valueText={valueText}
+    />
   )
 }
 

@@ -2,13 +2,15 @@ import { Ellipsis } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
 
 import WidgetButton from '../shared/ui/WidgetButton'
-import { objectPickerOptions } from './objectDefinitions'
+import { getGroupPickerOptions } from './objectDefinitions'
 
 import type { DragPayload } from '../workspace/types'
-import type { ObjectPickerOption } from './objectDefinitions'
+import type { ObjectGroup, ObjectPickerOption } from './objectDefinitions'
 import type { ObjectTemplate } from './types'
 
 type ObjectPickerProps = {
+  group: ObjectGroup
+  showMore?: boolean
   onAddObject: (template: ObjectTemplate) => void
 }
 
@@ -58,26 +60,32 @@ function DraggableObjectOption({
   )
 }
 
-/** Lists everything that can be added to the canvas, from the registry. */
-function ObjectPicker({ onAddObject }: ObjectPickerProps) {
+/** Lists the objects of one picker section, from the registry. */
+function ObjectPicker({
+  group,
+  showMore = false,
+  onAddObject,
+}: ObjectPickerProps) {
   return (
     <div className="chart-type-picker auto-grid">
-      {objectPickerOptions.map((option) => (
+      {getGroupPickerOptions(group).map((option) => (
         <DraggableObjectOption
           key={option.label}
           option={option}
           onAddObject={onAddObject}
         />
       ))}
-      <WidgetButton
-        aria-label="More visuals"
-        title="More visuals coming soon"
-        className="chart-type-option chart-type-more stack center"
-        disabled
-      >
-        <Ellipsis size={20} />
-        <span className="chart-type-option-label">More</span>
-      </WidgetButton>
+      {showMore ? (
+        <WidgetButton
+          aria-label="More visuals"
+          title="More visuals coming soon"
+          className="chart-type-option chart-type-more stack center"
+          disabled
+        >
+          <Ellipsis size={20} />
+          <span className="chart-type-option-label">More</span>
+        </WidgetButton>
+      ) : null}
     </div>
   )
 }

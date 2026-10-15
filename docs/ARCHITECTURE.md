@@ -200,6 +200,29 @@ actions/     Action Layer (Cevyn Actions)
   beschlossen.
 - Styles liegen aktuell noch zentral unter `src/styles/<bereich>/`.
 
+Abhängigkeitsrichtung im Frontend (beschlossen): Imports zeigen nur
+nach unten, Objekt-Domänen importieren nie voneinander.
+
+| Schicht | Ordner                                                | Inhalt                                                                            |
+| ------- | ----------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1       | `shared/`                                             | domänenfrei: UI-Controls, API-Client, Werteformatierung, generische Hooks         |
+| 2       | `datasets/`, `queries/` (geplant)                     | Daten-Vokabular: Fields, Semantic Roles, Aggregation, Filter                      |
+| 3       | `objects/`                                            | was alle Dashboard-Objekte teilen: Frame, Layout, Container, Format-Popover-Hülle |
+| 4       | `charts/`, `cards/`, `table/`, später `slicers/`      | was nur ein Objekttyp braucht                                                     |
+| 5       | `workspace/`, `inspector/`, `app/`, `actions/`, `ai/` | Orchestrierung; darf aus allen Schichten importieren                              |
+
+- Faustregel: Braucht es nur ein Objekttyp, liegt es in dessen Ordner.
+  Brauchen es mehrere, liegt es in der untersten Schicht, deren
+  Bedeutung passt (domänenfrei → `shared/`, Daten oder Abfrage →
+  `queries/`, Objekt → `objects/`).
+- Ausnahme: Die Verteiler nach `kind` in `objects/` kennen alle
+  Objekttypen (Union in `types.ts`, `objectDefinitions`,
+  `createObject`, `getObjectLabel`). Sie bleiben klein und erhalten pro
+  neuem Typ einen Fall.
+- `queries/` spiegelt `backend/app/queries/`: gemeinsames Vokabular
+  aller Queries (Aggregation, Filter), das Chart, Card, Table und Slicer
+  teilen.
+
 Laden von Backend-Daten: `shared/useQuery` kapselt das gemeinsame
 Ladeverhalten. Der Hook lädt neu, sobald sich der Inhalt des Requests
 ändert, verwirft veraltete Antworten und lädt bei `request === null`
@@ -648,12 +671,27 @@ type ChartInstance = DashboardObjectBase & {
   spec: ChartSpec
 }
 
-type DashboardObject = ChartInstance // später | KpiInstance | …
+// cards/types.ts
+type CardInstance = DashboardObjectBase & {
+  kind: 'card'
+  spec: CardSpec // data: field + aggregation, appearance: title + value
+}
+
+type DashboardObject = ChartInstance | CardInstance // später | Table | …
 ```
 
 - Jede Domäne definiert ihre Variante aus der Basis (`ChartInstance` in
-  `charts/`), `objects/types.ts` sammelt sie zur Union.
-  `DashboardObjectKind` leitet sich aus der Union ab.
+  `charts/`, `CardInstance` in `cards/`), `objects/types.ts` sammelt sie
+  zur Union. `DashboardObjectKind` leitet sich aus der Union ab.
+- Eine Card zeigt einen auf einen Wert reduzierten Wert. Ob Zahl oder
+  später Text, folgt aus der Reduktion des Felds, nicht aus einer
+  Variante. `CardAppearanceSpec` hat einen Eintrag pro Element (`title`,
+  `value`); `CardFormatElement` leitet sich daraus ab, ein späterer
+  Trend oder ein Histogramm kommt als weiteres Element dazu.
+- Ohne Feld zählt die Card die Zeilen („Count of rows“). Beim Drop
+  eines Felds setzt `createCardData` die Aggregation aus der Semantic
+  Role (Measure → `sum`, sonst `count`); `getCardAggregations` begrenzt
+  die Auswahl im Popover entsprechend.
 - `container` beschreibt die Formatierung des Containers und ist bewusst
   nicht Teil des Inhalts (siehe Abschnitt 6, Container vs. Content). Die
   Background-Presets verweisen auf Design-Tokens; nur `color` trägt
@@ -668,12 +706,18 @@ Die Objekt-Registry `objectDefinitions` (`objects/objectDefinitions.ts`)
 beschreibt pro `kind`, was die Canvas braucht, nach dem Vorbild von
 `chartDefinitions`:
 
-- `defaultSize` für Hinzufügen, Ask Cevyn und die Drop-Vorschau;
+- `defaultSize` für Hinzufügen, Ask Cevyn und die Drop-Vorschau,
+  `minSize` für das Verkleinern;
+- `label` als Name in Command- und Griff-Labels („Delete card“);
+- `group` als Section des Pickers (`objectGroups`: Charts,
+  Cards & Table);
 - `options` für den Picker im Build Panel; bei Charts aus
   `chartDefinitionList` abgeleitet. Eine Option trägt Icon, Label,
-  `addLabel` und ein `ObjectTemplate` (`{ kind, chartType }`).
+  `addLabel` und ein `ObjectTemplate` (`{ kind: 'chart', chartType }`
+  oder `{ kind: 'card' }`).
 
-`objectPickerOptions` ist die flache Liste für den `ObjectPicker`.
+`getGroupPickerOptions(group)` liefert die Optionen einer Section für
+den `ObjectPicker`.
 `createObject(template, objects)` erzeugt daraus das Objekt mit Defaults
 und freiem Layout; ein `switch` über `kind` erzwingt einen Fall pro
 Objekttyp.
@@ -690,7 +734,15 @@ WorkspaceState
 ```
 
 `useChartWorkspace` leitet daraus `charts` (für Ask Cevyn) und
-`selectedChart` (für Inspector und Format-Popover) ab.
+`selectedChart` (für Inspector und Format-Popover) ab; `App` leitet
+`selectedCard` für das Card-Format-Popover ab.
+
+Format-Popover: Die Hülle `ObjectFormatPopover` (`objects/`) übernimmt
+Position, Offenhalten und Element-Auswahl für jedes Objekt; der Inhalt
+pro Typ kommt als `children`. `ChartFormatPopover` und
+`CardFormatPopover` liegen in `inspector/`, weil sie Inspector-Widgets
+zusammensetzen. `isChartFormatElement` und `isCardFormatElement` grenzen
+`FormatTarget.element` auf den Elementtyp des Objekts ein.
 
 ```ts
 type DashboardLayout = {
@@ -1314,6 +1366,16 @@ Der Request wird in der Chart-Domäne aus der `ChartInstance` abgeleitet
 aktiver Selection leitet `createHighlightQuery` daraus eine zweite
 Query ab, die die Selection als Filter trägt. Die Basis-Query bleibt
 dabei unverändert und wird nicht erneut geladen.
+
+### Card Query
+
+Cards nutzen `POST /datasets/{id}/card-query` (`queries/card_query.py`):
+Feld (optional), Aggregation und Filter rein, `{ value }` raus. Ohne
+Feld liefert die Query die Zeilenzahl nach den Filtern. Die Aggregation
+nutzt `build_aggregation_expression` der Chart Query. Das Ergebnis ist
+bewusst ein Objekt, damit spätere Teile (z. B. ein Trend) dazukommen
+können. Filter trägt der Request schon; gefüllt werden sie mit der
+Filterebene (Slicer).
 
 ### Points Query
 

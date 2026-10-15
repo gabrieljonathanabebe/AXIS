@@ -20,11 +20,6 @@ export const CHART_GRID = {
   rowHeight: 16,
 }
 
-export const MIN_OBJECT_SIZE: ObjectSize = {
-  height: 10,
-  width: 6,
-}
-
 // ===== HELPERS ===============================================================
 function isOverlapping(first: ObjectLayout, second: ObjectLayout): boolean {
   return (
@@ -107,30 +102,32 @@ export function moveLayout(
  * @param layout Current layout.
  * @param delta Change in grid cells.
  * @param edges Edges that follow the change.
+ * @param minSize Smallest size the object may get.
  * @returns The resized layout, without leaving the grid.
  */
 export function resizeLayout(
   layout: ObjectLayout,
   delta: GridDelta,
   edges: ResizeEdges,
+  minSize: ObjectSize,
 ): ObjectLayout {
   const right = layout.x + layout.width
   const bottom = layout.y + layout.height
   const x = edges.left
-    ? clamp(layout.x + delta.x, 0, right - MIN_OBJECT_SIZE.width)
+    ? clamp(layout.x + delta.x, 0, right - minSize.width)
     : layout.x
   const y = edges.top
-    ? clamp(layout.y + delta.y, 0, bottom - MIN_OBJECT_SIZE.height)
+    ? clamp(layout.y + delta.y, 0, bottom - minSize.height)
     : layout.y
   const width = edges.right
     ? clamp(
         layout.width + delta.x,
-        MIN_OBJECT_SIZE.width,
+        minSize.width,
         CHART_GRID.columns - layout.x,
       )
     : right - x
   const height = edges.bottom
-    ? Math.max(layout.height + delta.y, MIN_OBJECT_SIZE.height)
+    ? Math.max(layout.height + delta.y, minSize.height)
     : bottom - y
   return { height, width, x, y }
 }

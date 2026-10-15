@@ -18,6 +18,7 @@ type UseWorkspaceCommandsParams = {
   canUndo: boolean
   isFormatOpen: boolean
   selectedObjectId: string | null
+  selectedObjectLabel: string
   onCloseFormat: () => void
   onDuplicateObject: (objectId: string) => void
   onFormatObject: (objectId: string) => void
@@ -35,6 +36,7 @@ export function useWorkspaceCommands({
   canUndo,
   isFormatOpen,
   selectedObjectId,
+  selectedObjectLabel,
   onCloseFormat,
   onDuplicateObject,
   onFormatObject,
@@ -88,7 +90,7 @@ export function useWorkspaceCommands({
       icon: Trash2,
       id: 'object.delete',
       isEnabled: selectedObjectId !== null,
-      label: 'Delete chart',
+      label: `Delete ${selectedObjectLabel}`,
       run: () => {
         if (selectedObjectId) {
           onRemoveObject(selectedObjectId)
@@ -101,7 +103,7 @@ export function useWorkspaceCommands({
       icon: Copy,
       id: 'object.duplicate',
       isEnabled: selectedObjectId !== null,
-      label: 'Duplicate chart',
+      label: `Duplicate ${selectedObjectLabel}`,
       run: () => {
         if (selectedObjectId) {
           onDuplicateObject(selectedObjectId)
@@ -115,7 +117,7 @@ export function useWorkspaceCommands({
       id: 'object.format',
       isActive: isFormatOpen,
       isEnabled: selectedObjectId !== null,
-      label: 'Format chart',
+      label: `Format ${selectedObjectLabel}`,
       run: () => {
         if (isFormatOpen) {
           onCloseFormat()

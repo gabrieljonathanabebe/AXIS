@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException
 
 from app.datasets.dependencies import StoredDatasetDep
-from app.queries import chart_query, table_query
+from app.queries import card_query, chart_query, table_query
 from app.queries.models import (
+    CardQueryRequest,
+    CardQueryResult,
     ChartQueryRequest,
     ChartQueryResult,
     FieldValues,
@@ -58,3 +60,13 @@ def query_points(
     """Return single rows for a scatter chart, sampled if large."""
     chart_query.validate_points_query(stored.summary, query)
     return chart_query.build_points_query_result(stored.frame, query)
+
+
+@router.post("/card-query")
+def query_card(
+    stored: StoredDatasetDep,
+    query: CardQueryRequest,
+) -> CardQueryResult:
+    """Return the aggregated value of a card."""
+    card_query.validate_card_query(stored.summary, query)
+    return card_query.build_card_query_result(stored.frame, query)

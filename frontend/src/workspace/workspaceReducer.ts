@@ -1,4 +1,5 @@
 import { getChartDefinition } from '../charts/chartDefinitions'
+import type { CardInstance } from '../cards/types'
 import type {
   ChartEncoding,
   ChartInstance,
@@ -11,6 +12,8 @@ import { findFreeLayout, findNeighborObjectId } from './chartLayout'
 import type { WorkspaceAction, WorkspaceState } from './types'
 
 // ===== TYPES =================================================================
+type CardUpdater = (card: CardInstance) => CardInstance
+
 type ChartUpdater = (chart: ChartInstance) => ChartInstance
 
 type ObjectUpdater = (object: DashboardObject) => DashboardObject
@@ -41,6 +44,17 @@ function updateObject(
       return object.id === objectId ? updater(object) : object
     }),
   }
+}
+
+/** Replaces one card; IDs of other kinds of objects are ignored. */
+function updateCard(
+  state: WorkspaceState,
+  cardId: string,
+  updater: CardUpdater,
+): WorkspaceState {
+  return updateObject(state, cardId, (object) => {
+    return object.kind === 'card' ? updater(object) : object
+  })
 }
 
 /** Replaces one chart; IDs of other kinds of objects are ignored. */
@@ -146,6 +160,22 @@ export function workspaceReducer(
   action: WorkspaceAction,
 ): WorkspaceState {
   switch (action.type) {
+    case 'card/updateAppearance':
+      return updateCard(state, action.cardId, (card) => ({
+        ...card,
+        spec: {
+          ...card.spec,
+          appearance: { ...card.spec.appearance, ...action.patch },
+        },
+      }))
+    case 'card/updateData':
+      return updateCard(state, action.cardId, (card) => ({
+        ...card,
+        spec: {
+          ...card.spec,
+          data: { ...card.spec.data, ...action.patch },
+        },
+      }))
     case 'chart/setType':
       return updateChart(state, action.chartId, (chart) => {
         return setChartType(chart, action.chartType, action.defaultSpec)

@@ -14,8 +14,10 @@ import { getObjectDefinition } from '../objects/objectDefinitions'
 import type {
   DashboardObject,
   FormatTarget,
+  ObjectFormatElement,
   ObjectLayout,
 } from '../objects/types'
+import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type { DataField, Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
 import type {
@@ -28,8 +30,10 @@ import type {
 import type { GridDelta } from './chartLayout'
 
 import ChartItem from '../charts/ChartItem'
+import CardItem from '../cards/CardItem'
 import ObjectFrame from '../objects/ObjectFrame'
-import { getChartTitle } from '../charts/getChartTitle'
+import { getObjectLabel } from '../objects/getObjectLabel'
+import { isChartFormatElement } from '../charts/getFormatElements'
 
 // ===== TYPES =================================================================
 type ChartGridProps = {
@@ -97,20 +101,32 @@ function isSamePreview(
   )
 }
 
+/**
+ * Applies a handle drag to an object's layout.
+ * @param object Dragged object; its kind sets the minimum size.
+ * @param mode Whether the object moves or which edges it resizes.
+ * @param delta Drag distance in grid cells.
+ * @returns The layout the object would get on release.
+ */
 function getDraggedLayout(
-  layout: ObjectLayout,
+  object: DashboardObject,
   mode: ObjectLayoutMode,
   delta: GridDelta,
 ): ObjectLayout {
   if (mode === 'move') {
-    return moveLayout(layout, delta)
+    return moveLayout(object.layout, delta)
   }
-  return resizeLayout(layout, delta, {
-    bottom: mode.includes('s'),
-    left: mode.includes('w'),
-    right: mode.includes('e'),
-    top: mode.includes('n'),
-  })
+  return resizeLayout(
+    object.layout,
+    delta,
+    {
+      bottom: mode.includes('s'),
+      left: mode.includes('w'),
+      right: mode.includes('e'),
+      top: mode.includes('n'),
+    },
+    getObjectDefinition(object.kind).minSize,
+  )
 }
 
 // ===== COMPONENT =============================================================
@@ -160,7 +176,7 @@ function ChartGrid({
       y: Math.round(event.delta.y / step.y),
     }
     return {
-      layout: getDraggedLayout(object.layout, payload.mode, delta),
+      layout: getDraggedLayout(object, payload.mode, delta),
       objectId: object.id,
     }
   }
@@ -183,6 +199,47 @@ function ChartGrid({
       })
     },
   })
+  /**
+   * Renders the content of an object inside its frame, by kind.
+   * @param object Object whose content is rendered.
+   * @param formattedElement Element in the popover, or null when it is closed.
+   * @param showFormatHint Reports the element under the pointer to the frame.
+   * @returns The chart or card.
+   */
+  function renderContent(
+    object: DashboardObject,
+    formattedElement: ObjectFormatElement | null,
+    showFormatHint: ShowFormatHint,
+  ): ReactNode {
+    switch (object.kind) {
+      case 'chart':
+        return (
+          <ChartItem
+            actions={actions}
+            chart={object}
+            dataset={dataset}
+            datasetId={datasetId}
+            draggedField={draggedField}
+            formattedElement={
+              isChartFormatElement(formattedElement) ? formattedElement : null
+            }
+            selection={selection}
+            onFormatHint={showFormatHint}
+          />
+        )
+      case 'card':
+        return (
+          <CardItem
+            actions={actions}
+            datasetId={datasetId}
+            draggedField={draggedField}
+            formattedElement={formattedElement}
+            card={object}
+            onFormatHint={showFormatHint}
+          />
+        )
+    }
+  }
 
   /** Selects the dashboard when the empty grid is pressed. */
   function handlePointerDown(event: PointerEvent<HTMLDivElement>): void {
@@ -212,7 +269,7 @@ function ChartGrid({
             formattedElement={formattedElement}
             isSelected={object.id === selectedObjectId}
             key={object.id}
-            label={getChartTitle(object, dataset.fields)}
+            label={getObjectLabel(object, dataset.fields)}
             object={object}
             selection={selection}
             style={getGridArea(layout)}
@@ -220,18 +277,9 @@ function ChartGrid({
               onFormatElement({ anchor, element, objectId: object.id })
             }
           >
-            {(showFormatHint) => (
-              <ChartItem
-                actions={actions}
-                chart={object}
-                dataset={dataset}
-                datasetId={datasetId}
-                draggedField={draggedField}
-                formattedElement={formattedElement}
-                selection={selection}
-                onFormatHint={showFormatHint}
-              />
-            )}
+            {(showFormatHint) =>
+              renderContent(object, formattedElement, showFormatHint)
+            }
           </ObjectFrame>
         )
       })}

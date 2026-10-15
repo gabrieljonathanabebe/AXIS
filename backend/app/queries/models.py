@@ -94,6 +94,21 @@ class PointsQueryResult(BaseModel):
     total_count: int
 
 
+# ===== CARD QUERY ============================================================
+class CardQueryRequest(BaseModel):
+    """Field, aggregation and filters of a card; no field counts rows."""
+
+    field: str | None = None
+    aggregation: GroupAggregation
+    filters: list[ChartFilter] = []
+
+
+class CardQueryResult(BaseModel):
+    """Aggregated value of a card; None if no row has a value."""
+
+    value: float | None
+
+
 # ===== TABLE QUERY ===========================================================
 class TableSort(BaseModel):
     """Sort field and direction of the table."""

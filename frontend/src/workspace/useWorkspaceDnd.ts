@@ -1,6 +1,8 @@
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useState } from 'react'
 
+import { createCardData } from '../cards/createCardInstance'
+
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import type { ObjectTemplate } from '../objects/types'
 import type {
@@ -23,8 +25,8 @@ function getDropTarget(event: DragEndEvent): DropTarget | null {
 
 // ===== HOOK ==================================================================
 /**
- * Drops picker options onto the canvas and fields onto chart encodings;
- * moving and resizing objects is handled by ChartGrid.
+ * Drops picker options onto the canvas and fields onto chart encodings
+ * and cards; moving and resizing objects is handled by ChartGrid.
  */
 export function useWorkspaceDnd(
   dispatch: (action: WorkspaceAction) => void,
@@ -43,7 +45,7 @@ export function useWorkspaceDnd(
     setActiveDrag(getDragPayload(event))
   }
 
-  /** Adds a dropped picker option or puts a dropped field on an encoding. */
+  /** Adds a dropped picker option or puts a dropped field on its target. */
   function handleDragEnd(event: DragEndEvent): void {
     const payload = getDragPayload(event)
     const target = getDropTarget(event)
@@ -58,6 +60,14 @@ export function useWorkspaceDnd(
         type: 'chart/updateEncoding',
         chartId: target.chartId,
         patch: { [target.encodingKey]: payload.field.name },
+      })
+    }
+    if (payload?.kind === 'field' && target?.kind === 'card') {
+      dispatch({ type: 'object/select', objectId: target.cardId })
+      dispatch({
+        type: 'card/updateData',
+        cardId: target.cardId,
+        patch: createCardData(payload.field),
       })
     }
   }

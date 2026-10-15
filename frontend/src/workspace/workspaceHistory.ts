@@ -20,13 +20,10 @@ export const initialWorkspaceHistory: WorkspaceHistoryState = {
 }
 
 // ===== HELPERS ===============================================================
-/** Chart, dashboard and object changes are undoable, selecting is not. */
+/** Everything that changes the dashboard is undoable; selecting is not. */
 function isUndoableAction(action: WorkspaceAction): boolean {
   return (
-    action.type !== 'object/select' &&
-    (action.type.startsWith('chart/') ||
-      action.type.startsWith('dashboard/') ||
-      action.type.startsWith('object/'))
+    action.type !== 'object/select' && !action.type.startsWith('selection/')
   )
 }
 
@@ -37,6 +34,13 @@ function isUndoableAction(action: WorkspaceAction): boolean {
  */
 function getCoalesceKey(action: WorkspaceAction): string | null {
   switch (action.type) {
+    case 'card/updateAppearance':
+    case 'card/updateData':
+      return [
+        action.type,
+        action.cardId,
+        ...Object.keys(action.patch).sort(),
+      ].join(':')
     case 'chart/updateAggregation':
     case 'chart/updateAppearance':
     case 'chart/updateEncoding':

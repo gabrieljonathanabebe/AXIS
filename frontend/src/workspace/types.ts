@@ -1,3 +1,4 @@
+import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
@@ -26,6 +27,16 @@ export type WorkspaceState = {
 
 // ===== ACTIONS ===============================================================
 export type WorkspaceAction =
+  | {
+      type: 'card/updateAppearance'
+      cardId: string
+      patch: Partial<CardAppearanceSpec>
+    }
+  | {
+      type: 'card/updateData'
+      cardId: string
+      patch: Partial<CardDataSpec>
+    }
   | {
       type: 'chart/setType'
       chartId: string
@@ -101,11 +112,17 @@ export type WorkspaceAction =
       selection: DataSelection
     }
 
-/** Everything the canvas changes on objects, charts and the data selection. */
+/** What the canvas changes on objects, their content and the selection. */
 export type CanvasActions = {
   clearSelection: () => void
   selectData: (selection: DataSelection) => void
   selectObject: (objectId: string | null) => void
+  updateCardAppearance: <TKey extends keyof CardAppearanceSpec>(
+    cardId: string,
+    key: TKey,
+    value: CardAppearanceSpec[TKey],
+  ) => void
+  updateCardData: (cardId: string, patch: Partial<CardDataSpec>) => void
   updateChartAppearance: <TKey extends keyof ChartAppearanceSpec>(
     chartId: string,
     key: TKey,
@@ -201,6 +218,10 @@ export type ActiveDrag = DragPayload | null
 export type DropTarget =
   | {
       kind: 'canvas'
+    }
+  | {
+      kind: 'card'
+      cardId: string
     }
   | {
       kind: 'encoding'

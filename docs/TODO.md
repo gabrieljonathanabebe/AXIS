@@ -118,3 +118,16 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - prüfen, ob die Standard-Palette (`appearance.color`,
   `colorScale.categorical.palette`) mit einer Farbe beginnt, die sich
   klar vom UI-Akzent abhebt, wie bei Tableau
+
+## Cards mit Text-Werten
+
+- Cards sollen auch kategorische Werte zeigen, z. B. Spieler- oder
+  Vereinsname in einem Fußball-Dashboard
+- kein eigener Objekttyp und kein `variant`: Zahl oder Text folgt aus
+  der Reduktion des Felds, Standard und Auswahl aus der Semantic Role
+- eigene `CardReduction` neben `GroupAggregation`, damit
+  Text-Reduktionen nicht in die Chart-Typen gelangen: `single` (einziger
+  Wert, sonst „Multiple“), `mode` (häufigster Wert), `top` (bester Wert
+  nach einem Measure, mit `rankBy`)
+- `card-query` liefert dann `value: number | string | null`;
+  Zahlenformate gelten nur für Zahlen

@@ -1,4 +1,5 @@
 import type { DashboardObjectBase, ElementRect } from '../objects/types'
+import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
 
 // ===== AGGREGATION ===========================================================
 export type Aggregation =
@@ -152,11 +153,6 @@ export type ColorScaleAppearance = {
     labels: boolean
   }
 }
-
-// ===== FORMAT ================================================================
-export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'JPY'
-
-export type ValueFormat = 'auto' | 'number' | 'percent' | 'currency'
 
 // ===== GRID ================================================================
 export type GridAppearance = {

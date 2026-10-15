@@ -5,6 +5,10 @@ import {
   hasAggregatedColor,
 } from '../../charts/chartDefinitions'
 import {
+  getAggregationOptions,
+  GROUP_AGGREGATIONS,
+} from '../../charts/aggregations'
+import {
   getEffectiveAggregation,
   isCountOnly,
 } from '../../charts/getEffectiveAggregation'
@@ -13,7 +17,6 @@ import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
 import InspectorWidget from '../InspectorWidget'
 
-import type { Aggregation, GroupAggregation } from '../../charts/types'
 import type { ChartInspectorProps } from '../types'
 
 // ===== PROPS =================================================================
@@ -23,19 +26,12 @@ type AggregationWidgetProps = Pick<
 >
 
 // ===== GLOBAL CONSTANTS ======================================================
-const groupAggregationOptions = [
-  { label: 'Sum', value: 'sum' },
-  { label: 'Mean', value: 'mean' },
-  { label: 'Median', value: 'median' },
-  { label: 'Min', value: 'min' },
-  { label: 'Max', value: 'max' },
-  { label: 'Count', value: 'count' },
-] satisfies { label: string; value: GroupAggregation }[]
+const groupAggregationOptions = getAggregationOptions(GROUP_AGGREGATIONS)
 
-const aggregationOptions = [
-  { label: 'None', value: 'none' },
-  ...groupAggregationOptions,
-] satisfies { label: string; value: Aggregation }[]
+const aggregationOptions = getAggregationOptions([
+  'none',
+  ...GROUP_AGGREGATIONS,
+])
 
 // ===== COMPONENT =============================================================
 function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {

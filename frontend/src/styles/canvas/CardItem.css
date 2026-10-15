@@ -1,0 +1,40 @@
+.card-item {
+  position: absolute;
+  inset: var(--chart-header-top) var(--chart-header-inline);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-item-title {
+  flex-shrink: 0;
+  height: var(--chart-header-height);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--chart-header-height);
+}
+
+.card-item-body {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-height: 0;
+}
+
+.card-item-value {
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-item .is-formatted {
+  text-shadow: 0 0 15px var(--color-accent);
+}
+
+/* Same opacity as FOCUS_DIMMED_OPACITY in syncFormatFocus. */
+.card-item .is-dimmed {
+  opacity: 0.25;
+}

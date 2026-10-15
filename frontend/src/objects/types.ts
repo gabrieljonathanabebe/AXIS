@@ -3,6 +3,7 @@ import type {
   ChartInstance,
   ChartType,
 } from '../charts/types'
+import type { CardFormatElement, CardInstance } from '../cards/types'
 
 // ===== OBJECT ================================================================
 /** Fields every dashboard object has, whatever its content. */
@@ -13,15 +14,13 @@ export type DashboardObjectBase = {
 }
 
 /** Everything placed on the dashboard canvas, told apart by `kind`. */
-export type DashboardObject = ChartInstance
+export type DashboardObject = ChartInstance | CardInstance
 
 export type DashboardObjectKind = DashboardObject['kind']
 
 /** What a picker option adds; the new object gets the defaults of its kind. */
-export type ObjectTemplate = {
-  chartType: ChartType
-  kind: 'chart'
-}
+export type ObjectTemplate =
+  { chartType: ChartType; kind: 'chart' } | { kind: 'card' }
 
 // ===== LAYOUT ================================================================
 /** Position and size of an object on the canvas grid, in grid cells. */
@@ -59,7 +58,7 @@ export type ElementRect = {
 
 // ===== FORMAT ================================================================
 /** Elements that can be formatted on an object; grows with each kind. */
-export type ObjectFormatElement = ChartFormatElement
+export type ObjectFormatElement = ChartFormatElement | CardFormatElement
 
 /** The element whose format popover is open, anchored to its object. */
 export type FormatTarget = {

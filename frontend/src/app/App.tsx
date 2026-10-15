@@ -3,10 +3,14 @@ import { useState } from 'react'
 
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
+import CardFormatPopover from '../inspector/CardFormatPopover'
 import ChartFormatPopover from '../inspector/ChartFormatPopover'
 import { createInspectorActions } from '../inspector/createInspectorActions'
 import DataPanel from '../datasets/DataPanel'
 import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
+import { getObjectDefinition } from '../objects/objectDefinitions'
+import { isCardFormatElement } from '../cards/isCardFormatElement'
+import { isChartFormatElement } from '../charts/getFormatElements'
 import InspectorPanel from '../inspector/InspectorPanel'
 import NavigationRail from './NavigationRail'
 import TopBar from './TopBar'
@@ -65,6 +69,8 @@ function App() {
   const [formatTarget, setFormatTarget] = useState<FormatTarget | null>(null)
   const activeFormatTarget =
     formatTarget?.objectId === selectedObjectId ? formatTarget : null
+  const selectedObject = objects.find(({ id }) => id === selectedObjectId)
+  const selectedCard = selectedObject?.kind === 'card' ? selectedObject : null
 
   /** Opens the format popover of an object at its title, next to it. */
   function openObjectFormat(objectId: string): void {
@@ -97,6 +103,9 @@ function App() {
     canUndo,
     isFormatOpen: activeFormatTarget !== null,
     selectedObjectId,
+    selectedObjectLabel: selectedObject
+      ? getObjectDefinition(selectedObject.kind).label
+      : 'object',
     onCloseFormat: () => setFormatTarget(null),
     onDuplicateObject: duplicateObject,
     onFormatObject: openObjectFormat,
@@ -166,10 +175,28 @@ function App() {
               onRenameDashboard={renameDashboard}
               onToggleCollapse={toggleInspector}
             />
-            {selectedChart && activeFormatTarget ? (
+            {selectedChart &&
+            activeFormatTarget &&
+            isChartFormatElement(activeFormatTarget.element) ? (
               <ChartFormatPopover
                 actions={inspectorActions}
                 chart={selectedChart}
+                element={activeFormatTarget.element}
+                fields={dataset.fields}
+                target={activeFormatTarget}
+                onClose={() => setFormatTarget(null)}
+                onElementChange={(element) =>
+                  setFormatTarget({ ...activeFormatTarget, element })
+                }
+              />
+            ) : null}
+            {selectedCard &&
+            activeFormatTarget &&
+            isCardFormatElement(activeFormatTarget.element) ? (
+              <CardFormatPopover
+                actions={canvasActions}
+                card={selectedCard}
+                element={activeFormatTarget.element}
                 fields={dataset.fields}
                 target={activeFormatTarget}
                 onClose={() => setFormatTarget(null)}

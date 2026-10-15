@@ -1,9 +1,7 @@
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
-import ControlRow from '../shared/ui/ControlRow'
 import LegendWidget from './appearance/LegendWidget'
-import Popover from '../shared/ui/Popover'
-import SelectControl from '../shared/ui/SelectControl'
+import ObjectFormatPopover from '../objects/ObjectFormatPopover'
 import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
@@ -17,6 +15,7 @@ import type { FormatTarget } from '../objects/types'
 
 // ===== TYPES =================================================================
 type ChartFormatPopoverProps = ChartInspectorProps & {
+  element: ChartFormatElement
   target: FormatTarget
   onClose: () => void
   onElementChange: (element: ChartFormatElement) => void
@@ -31,15 +30,6 @@ const elementTitles: Record<ChartFormatElement, string> = {
 }
 
 // ===== HELPERS ===============================================================
-/**
- * Selects where presses keep the popover open: the canvas toolbar (undo,
- * redo, the format toggle) and the formatted object, whose regions switch
- * the element.
- */
-function getKeepOpenSelector(objectId: string): string {
-  return `.canvas-toolbar, [data-object-id="${objectId}"]`
-}
-
 function renderFormatWidget(
   element: ChartFormatElement,
   { actions, chart, fields }: ChartInspectorProps,
@@ -85,6 +75,7 @@ function renderFormatWidget(
  * The element select switches between the elements of the same chart.
  */
 function ChartFormatPopover({
+  element,
   target,
   onClose,
   onElementChange,
@@ -96,32 +87,16 @@ function ChartFormatPopover({
     value: element,
   }))
   return (
-    <Popover
-      anchor={target.anchor}
-      className="chart-format-popover glass glass-thick"
-      keepOpenOn={getKeepOpenSelector(target.objectId)}
+    <ObjectFormatPopover
+      element={element}
+      elementOptions={elementOptions}
       label="Chart format"
-      open
-      placement="right-start"
-      title="Format"
-      onOpenChange={(open) => {
-        if (!open) {
-          onClose()
-        }
-      }}
+      target={target}
+      onClose={onClose}
+      onElementChange={onElementChange}
     >
-      <div className="stack">
-        <ControlRow label="Element">
-          <SelectControl
-            label="Format element"
-            options={elementOptions}
-            value={target.element}
-            onChange={onElementChange}
-          />
-        </ControlRow>
-        {renderFormatWidget(target.element, inspectorProps)}
-      </div>
-    </Popover>
+      {renderFormatWidget(element, inspectorProps)}
+    </ObjectFormatPopover>
   )
 }
 

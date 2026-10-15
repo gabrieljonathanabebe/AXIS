@@ -2,7 +2,9 @@ import { Eye, EyeOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
+import ControlRow from '../shared/ui/ControlRow'
 import IconButton from '../shared/ui/IconButton'
+import Toggle from '../shared/ui/Toggle'
 
 export type InspectorWidgetVariant = 'bare' | 'section'
 
@@ -29,9 +31,23 @@ function InspectorWidget({
   const content = (
     <div className="stack inspector-widget-content">{children}</div>
   )
-  // Bare renders only the controls, e.g. in a popover on the chart.
+  // Bare renders only the controls, e.g. in a format popover; visibility
+  // becomes a row, since there is no header for the eye button.
   if (variant === 'bare') {
-    return content
+    return (
+      <div className="stack inspector-widget-content">
+        {visibility ? (
+          <ControlRow label="Visible">
+            <Toggle
+              checked={visibility.visible}
+              label={`Show ${title.toLowerCase()}`}
+              onCheckedChange={visibility.onChange}
+            />
+          </ControlRow>
+        ) : null}
+        {children}
+      </div>
+    )
   }
   return (
     <CollapsibleSection

@@ -10,6 +10,7 @@ import {
   workspaceHistoryReducer,
 } from './workspaceHistory'
 
+import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type { CevynActionResult } from '../actions/types'
 import type { ChartAppearanceSpec } from '../charts/types'
 import type { Dataset } from '../datasets/types'
@@ -112,6 +113,24 @@ export function useChartWorkspace({
     dispatch({ type: 'selection/clear' })
   }
 
+  /** Changes one formatting entry of a card, e.g. its title. */
+  function updateCardAppearance<TKey extends keyof CardAppearanceSpec>(
+    cardId: string,
+    key: TKey,
+    value: CardAppearanceSpec[TKey],
+  ): void {
+    dispatch({
+      type: 'card/updateAppearance',
+      cardId,
+      patch: { [key]: value },
+    })
+  }
+
+  /** Changes what a card aggregates, e.g. its aggregation. */
+  function updateCardData(cardId: string, patch: Partial<CardDataSpec>): void {
+    dispatch({ type: 'card/updateData', cardId, patch })
+  }
+
   function updateChartAppearance<TKey extends keyof ChartAppearanceSpec>(
     chartId: string,
     key: TKey,
@@ -137,6 +156,8 @@ export function useChartWorkspace({
     clearSelection,
     selectData,
     selectObject,
+    updateCardAppearance,
+    updateCardData,
     updateChartAppearance,
     updateObjectLayout,
   }

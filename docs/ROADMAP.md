@@ -788,12 +788,12 @@ Punkte unter „Als Nächstes“ folgen danach.
 
 ### Dashboard-Objekte (in Arbeit)
 
-KPI Cards, Tables und Slicer als Objekte auf der Canvas neben Charts.
+Cards, Tables und Slicer als Objekte auf der Canvas neben Charts.
 Sie werden wie Charts aus dem Build Panel hinzugefügt und nur am Objekt
 formatiert (Pinsel und Format-Popover), nicht im Inspector. Beschlossen:
 
 - ein gemeinsames Objektmodell statt paralleler Listen:
-  `DashboardObject` als Union über `kind` (Chart, KPI, Table, Slicer)
+  `DashboardObject` als Union über `kind` (Chart, Card, Table, Slicer)
   mit gemeinsamer Basis (`id`, `layout`, `container`) und Inhalt pro
   Typ (`spec`)
 - Frame und Content getrennt: ein generischer Frame (Auswahl, Handles,
@@ -821,7 +821,7 @@ formatiert (Pinsel und Format-Popover), nicht im Inspector. Beschlossen:
   `kpi-query`; die Table nutzt die bestehende `table-query`
 - Daten ohne Inspector: Feld per Drop auf das Objekt, Aggregation im
   Format-Popover; neue Widgets entstehen nicht mehr in `inspector/`,
-  sondern die Popover-Hülle in `format/` und die Widgets im jeweiligen
+  sondern die Popover-Hülle in `objects/` und die Widgets im jeweiligen
   Domain-Ordner
 
 Reihenfolge:
@@ -855,7 +855,32 @@ Reihenfolge:
      Mindestgröße pro Objekttyp, Inspector bei anderen Objekttypen
    - verifiziert: `npm run build`, `npm run lint`, Prettier; Verhalten
      im Browser unverändert
-2. KPI Card: erstes HTML-Objekt, `kpi-query`, Formatierung am Objekt
+2. Card (in Arbeit; zuerst als „KPI Card“ geplant, umbenannt, weil
+   Cards später auch Text-Werte zeigen sollen, siehe `TODO.md`):
+   - implementiert: `CardInstance` in der Union, Registry-Eintrag mit
+     `label`, `minSize` und `group`; Picker-Sections Charts und
+     Cards & Table; `CardItem` als Content mit optionalem Titel
+     (Standard „Sum of …“ / „Count of …“, direkt editierbar) und Wert
+   - `card-query` im Backend; ohne Feld zählt die Card die Zeilen
+   - Feld per Drop auf die Card (`DropSlot`, gemeinsam mit den
+     Chart-Encodings), Aggregation aus der Semantic Role
+   - `card/updateData` und `card/updateAppearance`, undo-fähig;
+     undo-fähig ist jetzt alles außer Auswahl und Selection
+   - Format-Popover am Objekt: Hülle `ObjectFormatPopover` in
+     `objects/`, `CardFormatPopover` mit Title und Value (Aggregation,
+     Zahlenformat, Währung, Farbe, Größe, Gewicht); im Popover zeigen
+     Widgets ihre Sichtbarkeit als Zeile „Visible“, auch bei Charts
+   - Standardtitel aller Objekte nennen die Aggregation („Sum of profit
+     by country“); Labels und Optionen aus `charts/aggregations.ts`,
+     Zahlenformate aus `shared/format/valueFormats.ts`
+   - verifiziert: `npm run build`, `npm run lint`, Prettier;
+     `card-query` gegen das Demo-Dataset; Drop, Undo und Titel im
+     Browser (Popover noch nicht im Browser geprüft)
+   - offen: Aufräumen nach der Abhängigkeitsregel (`queries/` für
+     Aggregation und Filter, keine Imports von `cards/` aus `charts/`),
+     CSS-Trennung von Frame und Content (`chart-item*`, `--chart-*`,
+     `encoding-drop-slot*`, `chart-format-popover`), Inspector bei
+     ausgewählter Card (zeigt aktuell das Dashboard)
 3. Slicer und Filterebene: Filter-State, wirksame Filter, gemeinsames
    Filtervokabular, Filter für die Points Query; gemeinsame
    Filter-Controls mit der Table prüfen (`DataTableFilterForm`)
@@ -897,7 +922,7 @@ Mögliche Erweiterungen:
 
 ## 8. Later – Dashboard Objects und Interaktion
 
-KPI Card, Table und Slicer sind als Dashboard-Objekte geplant (siehe
+Card, Table und Slicer sind als Dashboard-Objekte geplant (siehe
 Abschnitt 5, Dashboard-Objekte).
 
 - Text

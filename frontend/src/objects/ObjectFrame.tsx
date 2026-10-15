@@ -3,6 +3,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
+import { getObjectDefinition } from './objectDefinitions'
 import { getRectStyle } from './elementRect'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 
@@ -57,26 +58,30 @@ type ObjectFrameProps = {
 type LayoutHandleProps = {
   mode: ObjectLayoutMode
   objectId: string
+  objectLabel: string
 }
 
 // ===== CONSTANTS =============================================================
-const layoutHandleLabels: Record<ObjectLayoutMode, string> = {
-  e: 'Resize chart from right edge',
-  move: 'Move chart',
-  n: 'Resize chart from top edge',
-  ne: 'Resize chart from top right corner',
-  nw: 'Resize chart from top left corner',
-  s: 'Resize chart from bottom edge',
-  se: 'Resize chart from bottom right corner',
-  sw: 'Resize chart from bottom left corner',
-  w: 'Resize chart from left edge',
+const resizeEdgeLabels: Record<Exclude<ObjectLayoutMode, 'move'>, string> = {
+  e: 'right edge',
+  n: 'top edge',
+  ne: 'top right corner',
+  nw: 'top left corner',
+  s: 'bottom edge',
+  se: 'bottom right corner',
+  sw: 'bottom left corner',
+  w: 'left edge',
 }
 
-const layoutHandleModes = Object.keys(layoutHandleLabels) as ObjectLayoutMode[]
+const layoutHandleModes: ObjectLayoutMode[] = [
+  'move',
+  ...(Object.keys(resizeEdgeLabels) as ObjectLayoutMode[]),
+]
 
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
   legend: 'Format legend',
   title: 'Format title',
+  value: 'Format value',
   xAxis: 'Format X axis',
   yAxis: 'Format Y axis',
 }
@@ -96,9 +101,25 @@ const arrowKeyDeltas: Partial<Record<string, GridDelta>> = {
   ArrowUp: { x: 0, y: -1 },
 }
 
+// ===== HELPERS ===============================================================
+/**
+ * Names a layout handle for screen readers.
+ * @param mode Whether the handle moves the object or which edge it resizes.
+ * @param objectLabel Name of the kind of object, e.g. "chart".
+ * @returns A label like "Resize chart from right edge".
+ */
+function getLayoutHandleLabel(
+  mode: ObjectLayoutMode,
+  objectLabel: string,
+): string {
+  return mode === 'move'
+    ? `Move ${objectLabel}`
+    : `Resize ${objectLabel} from ${resizeEdgeLabels[mode]}`
+}
+
 // ===== LAYOUT HANDLE =========================================================
 /** Moves or resizes the object when its edge or grip is dragged. */
-function LayoutHandle({ mode, objectId }: LayoutHandleProps) {
+function LayoutHandle({ mode, objectId, objectLabel }: LayoutHandleProps) {
   const payload: DragPayload = {
     kind: 'object-layout',
     mode,
@@ -112,7 +133,7 @@ function LayoutHandle({ mode, objectId }: LayoutHandleProps) {
     <div
       {...listeners}
       {...attributes}
-      aria-label={layoutHandleLabels[mode]}
+      aria-label={getLayoutHandleLabel(mode, objectLabel)}
       className={`chart-layout-handle chart-${mode}-handle`}
       ref={setNodeRef}
       tabIndex={-1}
@@ -142,6 +163,7 @@ function ObjectFrame({
   const frameRef = useRef<HTMLDivElement | null>(null)
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
   const { container } = object
+  const definition = getObjectDefinition(object.kind)
   const { background } = container
   const isFormatMode = formattedElement !== null
   const frameStyle: ObjectFrameStyle = {
@@ -172,12 +194,12 @@ function ObjectFrame({
     if (delta) {
       event.preventDefault()
       const layout = event.shiftKey
-        ? resizeLayout(object.layout, delta, {
-            bottom: true,
-            left: false,
-            right: true,
-            top: false,
-          })
+        ? resizeLayout(
+            object.layout,
+            delta,
+            { bottom: true, left: false, right: true, top: false },
+            definition.minSize,
+          )
         : moveLayout(object.layout, delta)
       actions.updateObjectLayout(object.id, layout)
       return
@@ -243,7 +265,12 @@ function ObjectFrame({
         </div>
       ) : null}
       {layoutHandleModes.map((mode) => (
-        <LayoutHandle key={mode} mode={mode} objectId={object.id} />
+        <LayoutHandle
+          key={mode}
+          mode={mode}
+          objectId={object.id}
+          objectLabel={definition.label}
+        />
       ))}
     </div>
   )

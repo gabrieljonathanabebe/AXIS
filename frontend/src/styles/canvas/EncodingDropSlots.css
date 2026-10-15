@@ -10,6 +10,11 @@
   border-radius: inherit;
 }
 
+/* One slot over a card; there is nothing to place next to it. */
+.encoding-drop-slots.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* Pushes the chart behind the slots; relies on the slots being first child. */
 .encoding-drop-slots ~ * {
   opacity: 0.2;

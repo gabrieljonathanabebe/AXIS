@@ -9,6 +9,7 @@ import EncodingDropSlots from './EncodingDropSlots'
 import InlineTextInput from '../shared/ui/InlineTextInput'
 import { getChartDefinition } from './chartDefinitions'
 import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
+import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
 import { getRectInFrame, getRectStyle } from '../objects/elementRect'
 
 import type { CSSProperties } from 'react'
@@ -36,20 +37,6 @@ function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
 }
 
 /**
- * Mirrors the format focus on the HTML title, which ECharts does not draw.
- * @param formattedElement Element in the popover, or null when it is closed.
- * @returns Glow while the title is formatted, dimmed for other elements.
- */
-function getTitleFocusClassName(
-  formattedElement: ChartFormatElement | null,
-): string {
-  if (!formattedElement) {
-    return ''
-  }
-  return formattedElement === 'title' ? 'is-formatted' : 'is-dimmed'
-}
-
-/**
  * Shows a chart inside its object frame: ECharts canvas, HTML title, inline
  * editing of the axis titles and the drop slots for fields.
  */
@@ -69,7 +56,7 @@ function ChartItem({
   const definition = getChartDefinition(chart.type)
   const title = chart.spec.appearance.title
   const isFormatMode = formattedElement !== null
-  const titleFocusClassName = getTitleFocusClassName(formattedElement)
+  const titleFocusClassName = getFormatFocusClassName('title', formattedElement)
 
   /** Opens the inline input for an axis title. */
   function handleEditAxisTitle(edit: AxisTitleEdit): void {

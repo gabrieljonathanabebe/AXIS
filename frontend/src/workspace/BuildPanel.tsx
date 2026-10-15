@@ -1,4 +1,4 @@
-import { Blocks, ChartColumn, Columns3, FolderOpen, Plus } from 'lucide-react'
+import { Blocks, Columns3, FolderOpen, Plus } from 'lucide-react'
 
 import Button from '../shared/ui/Button'
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
@@ -6,6 +6,7 @@ import DatasetCard from '../datasets/DatasetCard'
 import { DEMO_DATASET_ID } from '../datasets/datasetsApi'
 import FieldList from '../datasets/FieldList'
 import ObjectPicker from '../objects/ObjectPicker'
+import { objectGroups } from '../objects/objectDefinitions'
 import Panel from '../shared/ui/Panel'
 import type {
   Dataset,
@@ -55,13 +56,20 @@ function BuildPanel({
       onToggleCollapse={onToggleCollapse}
     >
       <div className="build-panel-content">
-        <CollapsibleSection
-          title="Visuals"
-          icon={<ChartColumn size={14} />}
-          variant="plain"
-        >
-          <ObjectPicker onAddObject={onAddObject} />
-        </CollapsibleSection>
+        {objectGroups.map(({ group, icon: Icon, title }) => (
+          <CollapsibleSection
+            key={group}
+            title={title}
+            icon={<Icon size={14} />}
+            variant="plain"
+          >
+            <ObjectPicker
+              group={group}
+              showMore={group === 'charts'}
+              onAddObject={onAddObject}
+            />
+          </CollapsibleSection>
+        ))}
 
         <CollapsibleSection
           title="Dataset"

@@ -9,12 +9,12 @@ import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import SelectControl from '../../shared/ui/SelectControl'
 import TextInput from '../../shared/ui/TextInput'
+import {
+  CURRENCY_OPTIONS,
+  VALUE_FORMAT_OPTIONS,
+} from '../../shared/format/valueFormats'
 
-import type {
-  AxisAppearance,
-  AxisFormat,
-  CurrencyCode,
-} from '../../charts/types'
+import type { AxisAppearance, AxisFormat } from '../../charts/types'
 import type { InspectorWidgetVariant } from '../InspectorWidget'
 
 // ===== TYPES =================================================================
@@ -32,19 +32,9 @@ type TickMode = 'auto' | 'custom'
 
 // ===== CONSTANTS =============================================================
 const formatOptions = [
-  { label: 'Auto', value: 'auto' },
-  { label: 'Number', value: 'number' },
-  { label: 'Percent', value: 'percent' },
-  { label: 'Currency', value: 'currency' },
+  ...VALUE_FORMAT_OPTIONS,
   { label: 'Date', value: 'date' },
 ] satisfies { label: string; value: AxisFormat }[]
-
-const currencyOptions = [
-  { label: 'EUR', value: 'EUR' },
-  { label: 'USD', value: 'USD' },
-  { label: 'GBP', value: 'GBP' },
-  { label: 'JPY', value: 'JPY' },
-] satisfies { label: string; value: CurrencyCode }[]
 
 const tickModeOptions = [
   { label: 'Auto', value: 'auto' },
@@ -147,7 +137,7 @@ function AxisWidget({
           <ControlRow label="Currency">
             <SelectControl
               label={`${title} currency`}
-              options={currencyOptions}
+              options={CURRENCY_OPTIONS}
               value={value.currency}
               onChange={(currency) => {
                 onChange({

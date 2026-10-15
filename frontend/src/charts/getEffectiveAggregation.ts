@@ -1,3 +1,5 @@
+import { AGGREGATION_LABELS } from './aggregations'
+
 import type { Aggregation, ChartDataSpec } from './types'
 import type { DataField } from '../datasets/types'
 
@@ -26,6 +28,21 @@ export function getEffectiveAggregation(
   return isCountOnly(data, fields) ? 'count' : data.aggregation
 }
 
+/**
+ * Names an aggregated value after its aggregation and field.
+ * @param field Field the value comes from.
+ * @param aggregation Aggregation that is actually applied.
+ * @returns E.g. "Sum of profit"; unaggregated values keep the field name.
+ */
+export function getAggregatedLabel(
+  field: string,
+  aggregation: Aggregation,
+): string {
+  return aggregation === 'none'
+    ? field
+    : `${AGGREGATION_LABELS[aggregation]} of ${field}`
+}
+
 // Names the value axis after what is drawn, e.g. "Count of country".
 export function getValueLabel(
   data: ChartDataSpec,
@@ -35,7 +52,5 @@ export function getValueLabel(
   if (!valueField) {
     return undefined
   }
-  return getEffectiveAggregation(data, fields) === 'count'
-    ? `Count of ${valueField}`
-    : valueField
+  return getAggregatedLabel(valueField, getEffectiveAggregation(data, fields))
 }

@@ -1,4 +1,5 @@
 import { createChartInstance } from '../charts/createChartInstance'
+import { createCardInstance } from '../cards/createCardInstance'
 import { findFreeLayout } from '../workspace/chartLayout'
 import { getObjectDefinition } from './objectDefinitions'
 
@@ -19,5 +20,7 @@ export function createObject(
   switch (template.kind) {
     case 'chart':
       return createChartInstance({ layout, type: template.chartType })
+    case 'card':
+      return createCardInstance({ layout })
   }
 }
