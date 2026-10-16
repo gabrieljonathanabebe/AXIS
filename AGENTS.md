@@ -250,3 +250,10 @@ fremde Änderungen nicht automatisch mitstagen.
 
 Keine Git-Checkpoints mitten in einer noch unvollständigen Änderung
 vorschlagen.
+
+## Python dependencies (backend)
+
+- The backend uses uv. Never use `pip install` or edit `requirements.txt`.
+- Add packages with `uv add <package>` from the `backend/` directory.
+- Run commands with `uv run <command>`, e.g. `uv run uvicorn app.main:app --reload --port 8000`.
+- `polars` is pinned to `<2` on purpose. Do not upgrade it without asking.
