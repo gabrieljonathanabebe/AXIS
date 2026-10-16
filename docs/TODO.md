@@ -131,3 +131,19 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   nach einem Measure, mit `rankBy`)
 - `card-query` liefert dann `value: number | string | null`;
   Zahlenformate gelten nur für Zahlen
+
+## Tests für Backend und Frontend
+
+- steht zeitnah an
+- Backend: Tests mit pytest, ausgeführt über `uv run pytest`
+- Frontend: passende Tests für die Frontend-Logik, Test-Framework
+  noch zu entscheiden
+- aktuell gibt es weder im Backend noch im Frontend Tests
+
+## CI-Pipeline mit GitHub Actions und Docker-Images
+
+- GitHub-Actions-Pipeline, die Checks und Tests für Backend und
+  Frontend ausführt
+- je ein Docker-Image für Frontend und Backend
+- möglichst zusammen mit den Tests umsetzen; offen, ob das noch in
+  denselben Slice passt
