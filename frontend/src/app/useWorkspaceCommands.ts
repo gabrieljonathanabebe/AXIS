@@ -126,7 +126,7 @@ export function useWorkspaceCommands({
         }
       },
       scope: 'object',
-      shortcuts: [],
+      shortcuts: [{ key: 'enter' }],
     },
   }
 
