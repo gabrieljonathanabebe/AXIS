@@ -801,6 +801,9 @@ Label, Icon und Aktion kommen aus dem Command, `disabled` aus
 Button erscheint dann gedrückt (`is-active`) und trägt `aria-pressed`.
 `size` (`sm | md`) und `variant` (`default | ghost`)
 werden an `IconButton` durchgereicht; das Icon ist 16 bzw. 18 px groß.
+Der Hover-Titel nennt das erste Tastenkürzel des Commands, z. B.
+„Undo (⌘Z)“ auf dem Mac bzw. „Undo (Ctrl+Z)“ sonst
+(`formatShortcut`); Commands ohne Kürzel zeigen nur das Label.
 
 Buttons für Workspace-Befehle werden immer über `CommandButton` aus der
 Registry gebaut, nicht als eigener `IconButton` mit eigenem Handler.

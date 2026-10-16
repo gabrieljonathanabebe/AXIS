@@ -656,6 +656,17 @@ Kleiner Layout-Slice nach dem Refactoring:
   eigene Farbe; Glass als neue Stufe `glass-liquid`
 - verifiziert: `tsc`, `npm run lint`, Prettier; Optik im Browser
 
+### Tastenkürzel an Command-Buttons (implementiert)
+
+- `CommandButton` zeigt das erste Tastenkürzel des Commands im
+  Hover-Titel, mit Mac-Symbolen (⌘, ⇧, ↵) bzw. `Ctrl+…` sonst
+  (`formatShortcut`)
+- Enter auf dem ausgewählten, fokussierten Chart öffnet das
+  Format-Popover (`object.format`); Escape schließt es, der Fokus
+  kehrt zum Chart zurück
+- verifiziert: `npm run build`, `npm run lint`, Prettier; Tooltips und
+  Enter/Escape im Browser
+
 ### TODO-Abarbeitung (in Arbeit)
 
 Slice zum Abarbeiten von `docs/TODO.md`, erst Bugs, dann Struktur und
