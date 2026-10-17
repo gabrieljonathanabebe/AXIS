@@ -55,6 +55,23 @@ function formatCardValue(
     : createNumberFormatter(format, currency)(value)
 }
 
+/**
+ * Names the selection below the card value, e.g. "United States". A
+ * brushed range only says "Filtered"; its full text would be long and
+ * restless.
+ * @param selection Current selection, or null.
+ * @returns The hint, empty without a selection.
+ */
+function getSelectionHint(selection: DataSelection | null): string {
+  if (!selection) {
+    return ''
+  }
+  if (selection.filters.some(({ kind }) => kind === 'range')) {
+    return 'Filtered'
+  }
+  return formatSelectionLabel(selection)
+}
+
 // ===== COMPONENT =============================================================
 /**
  * Shows a card inside its object frame: optional title and the
@@ -140,11 +157,9 @@ function CardItem({
               ? '…'
               : formatCardValue(cardValue, value)}
           </span>
-          {selection ? (
-            <span className="card-item-selection">
-              {formatSelectionLabel(selection)}
-            </span>
-          ) : null}
+          <span className="card-item-selection">
+            {getSelectionHint(selection)}
+          </span>
         </div>
       </div>
     </>

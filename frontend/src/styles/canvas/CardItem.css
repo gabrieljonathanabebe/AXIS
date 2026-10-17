@@ -31,9 +31,11 @@
   white-space: nowrap;
 }
 
-/* Names the selection the value is filtered by, e.g. "USA". */
+/* Names the selection the value is filtered by, e.g. "USA". The line is
+   always reserved, so the value does not move when it appears. */
 .card-item-selection {
   overflow: hidden;
+  min-height: 1lh;
   margin-top: var(--space-1);
   color: var(--color-accent);
   font-size: var(--font-size-sm);
