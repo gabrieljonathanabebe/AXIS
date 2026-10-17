@@ -235,6 +235,7 @@ function ChartGrid({
             draggedField={draggedField}
             formattedElement={formattedElement}
             card={object}
+            selection={selection}
             onFormatHint={showFormatHint}
           />
         )

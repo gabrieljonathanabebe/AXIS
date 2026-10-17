@@ -1,8 +1,26 @@
 import { formatNumber } from '../shared/format/formatNumber'
+import type { ChartFilter } from '../charts/chartsApi'
 import type { DataRow } from '../datasets/types'
 import type { DataSelection, SelectionFilter } from './types'
 
 // ===== FUNCTIONS =============================================================
+function toQueryFilter(filter: SelectionFilter): ChartFilter {
+  if (filter.kind === 'range') {
+    return filter
+  }
+  return {
+    ...filter,
+    values: filter.values.map((value) => String(value)),
+  }
+}
+
+/** Filters of a selection as chart and card queries expect them. */
+export function getSelectionQueryFilters(
+  selection: DataSelection | null,
+): ChartFilter[] {
+  return selection ? selection.filters.map(toQueryFilter) : []
+}
+
 export function isSameSelection(
   first: DataSelection | null,
   second: DataSelection | null,

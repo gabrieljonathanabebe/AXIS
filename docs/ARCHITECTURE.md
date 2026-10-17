@@ -530,10 +530,14 @@ Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
   gezeigt. Die Farben hängen am Kategorienamen der Basis-Query.
 - Scatter: Punkte des Samples, die nicht zur Selection passen, werden im
   Frontend abgeblendet, ohne zusätzliche Query.
+- Card: Die `card-query` trägt die Selection als Filter; die Card zeigt
+  den gefilterten Wert und darunter die Selection als Label in
+  Akzentfarbe (z. B. „United States“). Ohne Selection kein Label.
 
 Die Bedeutung einer Selection (Zeilenzugehörigkeit, Vergleich,
-Beschriftung) liegt in `src/workspace/dataSelection.ts` und wird von
-Scatter, Tooltip und Canvas gemeinsam genutzt.
+Beschriftung, Query-Filter über `getSelectionQueryFilters`) liegt in
+`src/workspace/dataSelection.ts` und wird von Charts, Cards, Tooltip und
+Canvas gemeinsam genutzt.
 
 Der Tooltip benennt Highlight-Werte mit der ausgewählten Kategorie bzw.
 dem ausgewählten Bereich. Im
