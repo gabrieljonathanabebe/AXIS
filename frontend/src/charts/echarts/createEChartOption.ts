@@ -5,6 +5,7 @@ import { getColorEncodingMode } from '../getColorEncodingMode'
 import { getValueLabel } from '../getEffectiveAggregation'
 import { createChartContent } from './content/createChartContent'
 import type { ChartContentContext } from './content/chartContentTypes'
+import type { ChartTheme } from './chartTheme'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createGridOption } from './createGridOption'
 import { createLegendOption } from './createLegendOption'
@@ -14,6 +15,7 @@ import { isRadialChartType } from '../chartDefinitions'
 // ===== TYPES =================================================================
 type EChartOptionContext = ChartContentContext & {
   chartId: string
+  theme: ChartTheme
 }
 
 // ===== FUNCTION ==============================================================

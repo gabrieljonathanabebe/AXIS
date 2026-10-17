@@ -1,13 +1,11 @@
-import ColorControl from '../shared/ui/ColorControl'
 import ControlRow from '../shared/ui/ControlRow'
-import FontWeightControl from '../shared/ui/FontWeightControl'
-import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
-import SelectControl from '../shared/ui/SelectControl'
-import { getAggregationOptions } from '../charts/aggregations'
 import {
   CURRENCY_OPTIONS,
   VALUE_FORMAT_OPTIONS,
 } from '../shared/format/valueFormats'
+import { getAggregationOptions } from '../charts/aggregations'
+import SelectControl from '../shared/ui/SelectControl'
+import TextStyleControls from '../shared/ui/TextStyleControls'
 
 import type { CardValueAppearance } from './types'
 import type { GroupAggregation } from '../charts/types'
@@ -62,30 +60,13 @@ function CardValueWidget({
           />
         </ControlRow>
       ) : null}
-      <ControlRow label="Color">
-        <ColorControl
-          label="Value color"
-          value={value.color}
-          onChange={(color) => onChange({ ...value, color })}
-        />
-      </ControlRow>
-      <ControlRow label="Font size">
-        <ScrubbableNumber
-          label="Value font size"
-          max={96}
-          min={16}
-          step={1}
-          value={value.fontSize}
-          onValueChange={(fontSize) => onChange({ ...value, fontSize })}
-        />
-      </ControlRow>
-      <ControlRow label="Weight">
-        <FontWeightControl
-          label="Value font weight"
-          value={value.fontWeight}
-          onValueChange={(fontWeight) => onChange({ ...value, fontWeight })}
-        />
-      </ControlRow>
+      <TextStyleControls
+        label="Value"
+        maxFontSize={96}
+        minFontSize={16}
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
     </>
   )
 }

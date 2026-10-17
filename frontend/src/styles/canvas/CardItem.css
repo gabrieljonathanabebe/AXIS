@@ -9,9 +9,6 @@
 .card-item-title {
   flex-shrink: 0;
   height: var(--chart-header-height);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
   line-height: var(--chart-header-height);
 }
 
@@ -37,9 +34,6 @@
   overflow: hidden;
   min-height: 1lh;
   margin-top: var(--space-1);
-  color: var(--color-accent);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

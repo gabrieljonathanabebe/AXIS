@@ -83,12 +83,6 @@
   line-height: var(--chart-header-height);
 }
 
-.chart-item-title {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-}
-
 .chart-item-header.is-formatted .chart-item-title {
   text-shadow: 0 0 15px var(--color-accent);
 }

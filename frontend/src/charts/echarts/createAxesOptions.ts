@@ -1,14 +1,8 @@
-import { FONT_WEIGHT_VALUES } from '../fontWeights'
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 
-import type {
-  AxisTitleStyle,
-  ChartAppearanceSpec,
-  ChartEncoding,
-  ChartType,
-} from '../types'
-import type { ChartTheme } from './chartTheme'
+import type { ChartAppearanceSpec, ChartEncoding, ChartType } from '../types'
 import { createAxisLabelFormatter } from './createAxisLabelFormatter'
+import { createTextStyleOption } from './createTextStyleOption'
 
 // ===== TYPES =================================================================
 type CreateAxesOptionsParams = {
@@ -16,7 +10,6 @@ type CreateAxesOptionsParams = {
   categories: string[]
   chartType: ChartType
   encoding: ChartEncoding
-  theme: ChartTheme
   valueLabel: string | undefined
 }
 
@@ -25,17 +18,7 @@ type AxesOptions = {
   yAxis: YAxisComponentOption
 }
 
-type AxisNameTextStyle = XAxisComponentOption['nameTextStyle']
-
 // ===== HELPERS ===============================================================
-function createAxisNameTextStyle(style: AxisTitleStyle): AxisNameTextStyle {
-  return {
-    color: style.color,
-    fontSize: style.fontSize,
-    fontWeight: FONT_WEIGHT_VALUES[style.fontWeight],
-  }
-}
-
 function getCategoryLabelInterval(
   tickCount: number | null,
   categoryCount: number,
@@ -52,14 +35,13 @@ export function createAxesOptions({
   categories,
   chartType,
   encoding,
-  theme,
   valueLabel,
 }: CreateAxesOptionsParams): AxesOptions {
   const isCategoryXAxis = chartType !== 'scatter'
   return {
     xAxis: {
       axisLabel: {
-        color: theme.text,
+        ...createTextStyleOption(appearance.xAxis.labels.textStyle),
         formatter: createAxisLabelFormatter(appearance.xAxis),
         interval: isCategoryXAxis
           ? getCategoryLabelInterval(
@@ -68,13 +50,13 @@ export function createAxesOptions({
             )
           : undefined,
         rotate: appearance.xAxis.labels.rotation,
-        show: appearance.xAxis.enabled,
+        show: appearance.xAxis.visible,
       },
       axisLine: {
-        show: appearance.xAxis.enabled,
+        show: appearance.xAxis.visible,
       },
       axisTick: {
-        show: appearance.xAxis.enabled,
+        show: appearance.xAxis.visible,
       },
       data: isCategoryXAxis ? categories : undefined,
       max: appearance.xAxis.max ?? undefined,
@@ -82,8 +64,8 @@ export function createAxesOptions({
       name: appearance.xAxis.title.trim() || encoding.x || '',
       nameGap: 32,
       nameLocation: 'middle',
-      nameTextStyle: createAxisNameTextStyle(appearance.xAxis.titleStyle),
-      show: appearance.xAxis.enabled,
+      nameTextStyle: createTextStyleOption(appearance.xAxis.titleStyle),
+      show: appearance.xAxis.visible,
       splitLine: {
         lineStyle: {
           color: appearance.grid.color,
@@ -91,7 +73,7 @@ export function createAxesOptions({
           type: appearance.grid.lineStyle,
           width: 1,
         },
-        show: appearance.xAxis.enabled && appearance.grid.enabled,
+        show: appearance.xAxis.visible && appearance.grid.visible,
       },
       splitNumber: isCategoryXAxis
         ? undefined
@@ -101,24 +83,24 @@ export function createAxesOptions({
     },
     yAxis: {
       axisLabel: {
-        color: theme.text,
+        ...createTextStyleOption(appearance.yAxis.labels.textStyle),
         formatter: createAxisLabelFormatter(appearance.yAxis),
         rotate: appearance.yAxis.labels.rotation,
-        show: appearance.yAxis.enabled,
+        show: appearance.yAxis.visible,
       },
       axisLine: {
-        show: appearance.yAxis.enabled,
+        show: appearance.yAxis.visible,
       },
       axisTick: {
-        show: appearance.yAxis.enabled,
+        show: appearance.yAxis.visible,
       },
       max: appearance.yAxis.max ?? undefined,
       min: appearance.yAxis.min ?? undefined,
       name: appearance.yAxis.title.trim() || valueLabel || '',
       nameGap: 48,
       nameLocation: 'middle',
-      nameTextStyle: createAxisNameTextStyle(appearance.yAxis.titleStyle),
-      show: appearance.yAxis.enabled,
+      nameTextStyle: createTextStyleOption(appearance.yAxis.titleStyle),
+      show: appearance.yAxis.visible,
       splitLine: {
         lineStyle: {
           color: appearance.grid.color,
@@ -126,7 +108,7 @@ export function createAxesOptions({
           type: appearance.grid.lineStyle,
           width: 1,
         },
-        show: appearance.yAxis.enabled && appearance.grid.enabled,
+        show: appearance.yAxis.visible && appearance.grid.visible,
       },
       splitNumber: appearance.yAxis.labels.tickCount ?? undefined,
       triggerEvent: true,

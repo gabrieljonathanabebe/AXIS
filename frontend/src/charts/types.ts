@@ -1,5 +1,10 @@
-import type { DashboardObjectBase, ElementRect } from '../objects/types'
+import type {
+  DashboardObjectBase,
+  ElementRect,
+  ObjectTitleAppearance,
+} from '../objects/types'
 import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
+import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 
 // ===== AGGREGATION ===========================================================
 export type Aggregation =
@@ -7,37 +12,29 @@ export type Aggregation =
 
 export type GroupAggregation = Exclude<Aggregation, 'none'>
 
-// ===== ALIGNMENT =============================================================
-export type HorizontalAlignment = 'start' | 'center' | 'end'
-
 // ===== AXIS ==================================================================
 export type AxisAppearance = {
-  enabled: boolean
+  visible: boolean
   title: string
   min: number | null
   max: number | null
   format: AxisFormat
   currency: CurrencyCode
   labels: AxisLabelsAppearance
-  titleStyle: AxisTitleStyle
+  titleStyle: TextStyle
 }
 
 export type AxisFormat = 'auto' | 'number' | 'percent' | 'currency' | 'date'
 
 export type AxisLabelsAppearance = {
   rotation: number
+  textStyle: TextStyle
   tickCount: number | null
 }
 
 export type AxisTitleEdit = {
   axis: 'x' | 'y'
   rect: ElementRect
-}
-
-export type AxisTitleStyle = {
-  color: string
-  fontSize: number
-  fontWeight: LabelFontWeight
 }
 
 // ===== BAR ===================================================================
@@ -55,7 +52,7 @@ export type ChartAggregationKey = keyof Pick<
 export type ChartAppearanceSpec = {
   color: string
   colorScale: ColorScaleAppearance
-  title: ChartTitleAppearance
+  title: ObjectTitleAppearance
   grid: GridAppearance
   xAxis: AxisAppearance
   yAxis: AxisAppearance
@@ -129,12 +126,6 @@ export type ChartSpec = {
   interaction: ChartInteractionSpec
 }
 
-export type ChartTitleAppearance = {
-  alignment: HorizontalAlignment
-  enabled: boolean
-  text: string
-}
-
 export type ChartType = 'scatter' | 'line' | 'bar' | 'pie' | 'donut'
 
 // ===== COLOR =================================================================
@@ -156,7 +147,7 @@ export type ColorScaleAppearance = {
 
 // ===== GRID ================================================================
 export type GridAppearance = {
-  enabled: boolean
+  visible: boolean
   color: string
   opacity: number
   lineStyle: LineStyle
@@ -170,14 +161,10 @@ export type AnimationEasing = 'linear' | 'cubicOut' | 'cubicInOut'
 // ===== LABEL =================================================================
 export type LabelPosition = 'top' | 'right' | 'inside'
 
-export type LabelFontWeight = 'light' | 'medium' | 'bold'
-
 export type LabelsAppearance = {
-  enabled: boolean
+  visible: boolean
   position: LabelPosition
-  color: string
-  fontSize: number
-  fontWeight: LabelFontWeight
+  textStyle: TextStyle
 }
 
 // ===== LEGEND ================================================================
@@ -186,8 +173,7 @@ export type LegendAppearance = {
   visible: boolean
   position: 'top' | 'bottom' | 'left' | 'right'
   symbol: 'auto' | 'circle' | 'rect' | 'line'
-  textColor: string
-  fontSize: number
+  textStyle: TextStyle
   gap: number
   layout: 'auto' | 'plain' | 'scroll'
   itemWidth: number

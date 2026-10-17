@@ -72,17 +72,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   (z. B. `charts/ChartItem.css`); globale Tokens, Themes und Basis
   bleiben in `src/styles/`
 
-## Generische Props für Shared Controls
-
-- `AlignmentControl` und `FontWeightControl` in `shared/ui` importieren
-  Chart-Types (`HorizontalAlignment`, `LabelFontWeight`)
-- Ziel: `shared/` kennt keine Domäne; Werte und Optionen kommen
-  generisch über Props
-- `EmptyState` ist bereits entkoppelt (keine Drop-Logik mehr)
-- zurückgestellt: zusammen mit der Bearbeitung direkt am Chart
-  angehen, weil dann ohnehin feststeht, wo die Appearance-Widgets und
-  ihre Optionen künftig liegen
-
 ## Cevyn-Action-Schema aus OpenAPI generieren
 
 - das Schema der Cevyn Actions existiert doppelt: Pydantic-Modelle in

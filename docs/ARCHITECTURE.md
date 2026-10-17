@@ -179,7 +179,7 @@ Frontend (`frontend/src/`):
 
 ```text
 app/         App Shell, Commands, Workspace-Layout
-shared/      API-Client, UI-Controls, Formatierung, generische Hooks
+shared/      API-Client, UI-Controls, Formatierung, Text-Stil, Hooks
 datasets/    Dataset laden, Profil, Semantic Roles, Data Panel
 table/       Table View, Table Query, Table Filter
 charts/      Chart Registry, ChartItem (Content), Queries, echarts/ (Adapter)
@@ -336,6 +336,24 @@ denselben Wert gleich an:
   folgt der Y-Achse;
 - die Enden der Colorbar nutzen `formatCompactNumber`;
 - Datumsachsen nutzen `formatDate` wie Table und Filter.
+
+### Text-Formatierung
+
+Alle Texte auf der Canvas nutzen denselben Typ `TextStyle` aus
+`src/shared/textStyle.ts` (`color`, `fontSize`, `fontStyle`,
+`fontWeight`). Jedes Text-Element trägt ihn als `textStyle`, die Achse
+zusätzlich als `titleStyle`; Extras wie Ausrichtung, Rotation, Position
+oder Zahlenformat bleiben Felder des Elements.
+
+- ECharts-Texte (Achsen, Legende, Data Labels) übersetzt
+  `createTextStyleOption` im Adapter; HTML-Texte (Titel, Card-Wert,
+  Selection-Label) setzt `getTextStyleCss` als Inline-Style
+- `FONT_WEIGHT_VALUES` bildet `light | medium | bold` auf 200/500/800 ab,
+  für CSS, ECharts und die Canvas-Messung der Legende
+- der Titel ist `ObjectTitleAppearance` in `objects/types.ts`, weil
+  alle Objekttypen ihn teilen
+- Sichtbarkeit eines dargestellten Elements heißt `visible`; `enabled`
+  steht nur für Interaktion (Tooltip, Zoom, Animation, Legend-Auswahl)
 
 ### Container vs. Content
 

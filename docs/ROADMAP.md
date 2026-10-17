@@ -707,9 +707,8 @@ Features. Bisher umgesetzt:
   Optik und Verhalten im Browser
 
 Offen in diesem Slice: Canvas-Toolbar, Chart-Zusammenfassung,
-Dashboard-Einstellungen. Generische Props für Shared Controls sind
-zurückgestellt und werden mit der Bearbeitung direkt am Chart
-angegangen (siehe `TODO.md`).
+Dashboard-Einstellungen. Shared Controls importieren seit der
+einheitlichen Text-Formatierung keine Chart-Types mehr.
 Der Slice pausiert, als Nächstes kommt die Bearbeitung am Chart.
 
 ### Bearbeitung am Chart (in Arbeit)
@@ -789,8 +788,7 @@ Als Nächstes:
 
 Neue Widgets entstehen nicht mehr in `inspector/` (siehe
 Dashboard-Objekte). Offen: wann die bestehenden Widgets aus
-`inspector/` umziehen; die generischen Props für Shared Controls werden
-dabei mit angegangen (siehe `TODO.md`). Ebenfalls offen: ob der Pinsel
+`inspector/` umziehen. Ebenfalls offen: ob der Pinsel
 ohne ausgewählten Chart die Dashboard-Einstellungen öffnet, statt
 deaktiviert zu sein.
 
@@ -903,6 +901,70 @@ Reihenfolge:
    Filtervokabular, Filter für die Points Query; gemeinsame
    Filter-Controls mit der Table prüfen (`DataTableFilterForm`)
 4. Table-Objekt auf Basis von `DataTable`
+
+### Einheitliche Text-Formatierung (implementiert)
+
+Alle Texte auf der Canvas werden nach demselben Muster formatiert:
+Chart-Titel, Achsentitel, Achsen-Labels, Legendentext, Data Labels,
+Card-Titel, Card-Wert und Card-Selection-Label. Vorher hatte jedes
+Element eigene Felder (`titleStyle`, `textColor`, flache
+`color`/`fontSize`/`fontWeight`), Chart-Titel und Achsen-Labels waren
+nicht formatierbar.
+
+- `shared/textStyle.ts`: `TextStyle` (`color`, `fontSize`,
+  `fontStyle`, `fontWeight`), `FontWeight`, `FontStyle`,
+  `HorizontalAlignment`, `FONT_WEIGHT_VALUES` und `getTextStyleCss`
+  für HTML-Texte; `charts/fontWeights.ts` und `LabelFontWeight`
+  entfallen
+- jedes Text-Element trägt `textStyle: TextStyle`, die Achse
+  zusätzlich `titleStyle`; Extras (Ausrichtung, Rotation, Position,
+  Zahlenformat) bleiben am Element
+- `ObjectTitleAppearance` in `objects/types.ts` ersetzt
+  `ChartTitleAppearance`; Chart und Card teilen den Titeltyp
+- Sichtbarkeit heißt in der Darstellung überall `visible` (Titel,
+  Achsen, Grid, Labels); `enabled` bleibt für Interaktion (Tooltip,
+  Zoom, Animation, Legend-Auswahl); Ask Cevyn (`chart/setTitle`)
+  übersetzt auf `visible`, das Backend ist unverändert
+- ECharts-Texte laufen über `createTextStyleOption` im Adapter; die
+  Achsen-Labels lesen ihre Farbe aus dem Spec statt aus `theme`, der
+  Chart-Content bekommt kein `theme` mehr; die Legendenmessung in
+  `createGridOption` berücksichtigt Gewicht und Kursiv
+- `TextStyleControls` in `shared/ui`: Zeilen für Farbe, Größe,
+  Gewicht und Stil (Normal/Italic), zusammengesetzt von
+  `AxisWidget` (Titel und Labels über `rowLabelPrefix`),
+  `LegendWidget`, `LabelsWidget`, `ChartTitleWidget` (11–20 px wegen
+  der festen Header-Höhe) und `CardValueWidget` (16–96 px)
+- Card-Selection-Label als Format-Element `selectionLabel` mit
+  Sichtbarkeit und Text-Stil
+- `shared/ui` importiert keine Chart-Types mehr (`AlignmentControl`,
+  `FontWeightControl`)
+- kursive Inter über `@fontsource-variable/inter/wght-italic.css`,
+  weil `font-synthesis: none` keine künstliche Kursive erlaubt
+- sichtbar geändert: Titel `medium` statt `semibold`, Achsen-Labels und
+  Legende `medium` statt ECharts' 400
+- verifiziert: `tsc`, `npm run lint`, Prettier, `npm run build`;
+  Formatierung aller Texte, Kursiv und Undo im Browser
+
+Bekannte Grenzen:
+
+- große Schrift bei Achsen-Labels kann über den festen Plot-Rand
+  (`BASE_GRID`) hinausragen; der HTML-Titel ist auf die feste
+  Header-Höhe begrenzt
+- ECharts zeichnet mit `sans-serif`, nicht mit Inter
+- Farben im Spec sind Hex-Werte und folgen keinem Theme-Wechsel
+- im Format-Popover scrollt bei vielen Zeilen der Inhalt, die
+  Glass-Kante (`.glass::before`, `position: absolute; inset: 0`)
+  scrollt mit und endet mitten im Inhalt
+
+Idee für einen nächsten Schritt: Achsen-Labels (Ticks) als eigenes
+Format-Element mit eigener Region, getrennt vom Achsentitel; würde
+„Abschnitte im Popover per Segmented Control“ unter „Bearbeitung am
+Chart“ ersetzen.
+
+Danach als eigener Slice: Marks im Format-Modus anklickbar (Punkt im
+Scatter, Segment im Pie, Balken, Linie), wie die übrigen
+Format-Regionen nur im Format-Modus; die Widgets nach dem neuen Muster
+(siehe „Bearbeitung am Chart“, Punkt 2).
 
 ## 6. Later – Visualization Completion
 
@@ -1200,8 +1262,6 @@ waren:
   den Container nicht und muss beides selbst zusammensetzen.
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
-- `AlignmentControl` und `FontWeightControl` in `shared/ui`
-  importieren Domain-Types aus `charts` (siehe `TODO.md`).
 - Das Schema der Cevyn Actions existiert doppelt: als Pydantic-Modelle
   im Backend und als `actionShapes` im Frontend; der Abgleich ist
   manuell (siehe `TODO.md`).

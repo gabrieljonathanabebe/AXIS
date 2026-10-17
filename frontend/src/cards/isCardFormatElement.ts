@@ -2,6 +2,7 @@ import type { CardFormatElement } from './types'
 import type { ObjectFormatElement } from '../objects/types'
 
 const cardFormatElements: readonly ObjectFormatElement[] = [
+  'selectionLabel',
   'title',
   'value',
 ] satisfies CardFormatElement[]
@@ -9,7 +10,7 @@ const cardFormatElements: readonly ObjectFormatElement[] = [
 /**
  * Tells whether a format element belongs to cards.
  * @param element Element of a format target, or null when none is open.
- * @returns True for title and value.
+ * @returns True for title, value and selection label.
  */
 export function isCardFormatElement(
   element: ObjectFormatElement | null,

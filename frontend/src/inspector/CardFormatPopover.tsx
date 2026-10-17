@@ -2,6 +2,7 @@ import CardValueWidget from '../cards/CardValueWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
 import InspectorWidget from './InspectorWidget'
 import ObjectFormatPopover from '../objects/ObjectFormatPopover'
+import TextStyleControls from '../shared/ui/TextStyleControls'
 import { getCardAggregations } from '../cards/getCardAggregations'
 import { getDefaultCardTitle } from '../cards/getCardTitle'
 
@@ -27,6 +28,7 @@ type CardFormatPopoverProps = {
 const elementOptions: FormatElementOption<CardFormatElement>[] = [
   { label: 'Title', value: 'title' },
   { label: 'Value', value: 'value' },
+  { label: 'Selection', value: 'selectionLabel' },
 ]
 
 // ===== HELPERS ===============================================================
@@ -42,6 +44,32 @@ function renderFormatWidget(
 ): ReactNode {
   const { appearance, data } = card.spec
   switch (element) {
+    case 'selectionLabel':
+      return (
+        <InspectorWidget
+          title="Selection"
+          variant="bare"
+          visibility={{
+            visible: appearance.selectionLabel.visible,
+            onChange: (visible) =>
+              actions.updateCardAppearance(card.id, 'selectionLabel', {
+                ...appearance.selectionLabel,
+                visible,
+              }),
+          }}
+        >
+          <TextStyleControls
+            label="Selection"
+            value={appearance.selectionLabel.textStyle}
+            onChange={(textStyle) =>
+              actions.updateCardAppearance(card.id, 'selectionLabel', {
+                ...appearance.selectionLabel,
+                textStyle,
+              })
+            }
+          />
+        </InspectorWidget>
+      )
     case 'title':
       return (
         <ChartTitleWidget

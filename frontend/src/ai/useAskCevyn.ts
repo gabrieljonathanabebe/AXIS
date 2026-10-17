@@ -32,7 +32,7 @@ function toChartContext(chart: ChartInstance): AiChartContext {
     aggregation: chart.spec.data.aggregation,
     encoding: chart.spec.data.encoding,
     id: chart.id,
-    title: title.enabled ? title.text : undefined,
+    title: title.visible ? title.text : undefined,
     type: chart.type,
   }
 }

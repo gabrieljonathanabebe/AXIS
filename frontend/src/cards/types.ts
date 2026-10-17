@@ -1,10 +1,10 @@
+import type { GroupAggregation } from '../charts/types'
 import type {
-  ChartTitleAppearance,
-  GroupAggregation,
-  LabelFontWeight,
-} from '../charts/types'
-import type { DashboardObjectBase } from '../objects/types'
+  DashboardObjectBase,
+  ObjectTitleAppearance,
+} from '../objects/types'
 import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
+import type { TextStyle } from '../shared/textStyle'
 
 // ===== OBJECT ================================================================
 export type CardInstance = DashboardObjectBase & {
@@ -27,16 +27,21 @@ export type CardDataSpec = {
 // ===== APPEARANCE ============================================================
 /** Formatting per card element; a trend or histogram adds its own entry. */
 export type CardAppearanceSpec = {
-  title: ChartTitleAppearance
+  selectionLabel: CardSelectionLabelAppearance
+  title: ObjectTitleAppearance
   value: CardValueAppearance
 }
 
+/** Label below the value that names the selection it is filtered by. */
+export type CardSelectionLabelAppearance = {
+  textStyle: TextStyle
+  visible: boolean
+}
+
 export type CardValueAppearance = {
-  color: string
   currency: CurrencyCode
-  fontSize: number
-  fontWeight: LabelFontWeight
   format: ValueFormat
+  textStyle: TextStyle
 }
 
 // ===== FORMAT ================================================================

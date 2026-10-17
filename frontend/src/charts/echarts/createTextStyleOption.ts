@@ -1,0 +1,27 @@
+import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
+
+import type { FontStyle, TextStyle } from '../../shared/textStyle'
+
+// ===== TYPES =================================================================
+/** Text fields that axis names and labels, legend and series labels share. */
+type TextStyleOption = {
+  color: string
+  fontSize: number
+  fontStyle: FontStyle
+  fontWeight: number
+}
+
+// ===== FUNCTION ==============================================================
+/**
+ * Translates a text style of the spec into ECharts text fields.
+ * @param style Text style of one chart element.
+ * @returns Color, size, slant and numeric weight for ECharts.
+ */
+export function createTextStyleOption(style: TextStyle): TextStyleOption {
+  return {
+    color: style.color,
+    fontSize: style.fontSize,
+    fontStyle: style.fontStyle,
+    fontWeight: FONT_WEIGHT_VALUES[style.fontWeight],
+  }
+}

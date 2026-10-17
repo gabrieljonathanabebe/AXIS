@@ -17,17 +17,35 @@ export function createDefaultCardSpec(): CardSpec {
       aggregation: 'count',
     },
     appearance: {
+      selectionLabel: {
+        textStyle: {
+          color: '#178bff',
+          fontSize: 13,
+          fontStyle: 'normal',
+          fontWeight: 'medium',
+        },
+        visible: true,
+      },
       title: {
-        enabled: true,
+        visible: true,
         text: '',
         alignment: 'start',
+        textStyle: {
+          color: '#eef4ff',
+          fontSize: 14,
+          fontStyle: 'normal',
+          fontWeight: 'medium',
+        },
       },
       value: {
-        color: '#eef4ff',
         currency: 'EUR',
-        fontSize: 40,
-        fontWeight: 'bold',
         format: 'auto',
+        textStyle: {
+          color: '#eef4ff',
+          fontSize: 40,
+          fontStyle: 'normal',
+          fontWeight: 'bold',
+        },
       },
     },
   }

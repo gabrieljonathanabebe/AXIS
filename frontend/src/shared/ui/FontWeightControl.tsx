@@ -1,19 +1,19 @@
-import { FONT_WEIGHT_VALUES } from '../../charts/fontWeights'
 import SegmentedControl from './SegmentedControl'
+import { FONT_WEIGHT_VALUES } from '../textStyle'
 
-import type { LabelFontWeight } from '../../charts/types'
+import type { FontWeight } from '../textStyle'
 
 type FontWeightControlProps = {
   label: string
-  value: LabelFontWeight
-  onValueChange: (value: LabelFontWeight) => void
+  value: FontWeight
+  onValueChange: (value: FontWeight) => void
 }
 
 const fontWeightOptions = [
   { label: 'Light', value: 'light' },
   { label: 'Medium', value: 'medium' },
   { label: 'Bold', value: 'bold' },
-] satisfies { label: string; value: LabelFontWeight }[]
+] satisfies { label: string; value: FontWeight }[]
 
 function FontWeightControl({
   label,

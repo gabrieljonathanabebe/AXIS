@@ -1,6 +1,6 @@
 import DropSlot from '../workspace/DropSlot'
 import EditableText from '../shared/ui/EditableText'
-import { FONT_WEIGHT_VALUES } from '../charts/fontWeights'
+import { getTextStyleCss } from '../shared/textStyle'
 import { getRectInFrame } from '../objects/elementRect'
 import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
 import { getDefaultCardTitle } from './getCardTitle'
@@ -14,7 +14,6 @@ import {
   getSelectionQueryFilters,
 } from '../workspace/dataSelection'
 
-import type { CSSProperties } from 'react'
 import type { CanvasActions, DataSelection } from '../workspace/types'
 import type {
   CardFormatElement,
@@ -88,18 +87,13 @@ function CardItem({
   selection,
   onFormatHint,
 }: CardItemProps) {
-  const { title, value } = card.spec.appearance
+  const { selectionLabel, title, value } = card.spec.appearance
   const query = useCardQuery(
     datasetId,
     card.spec.data,
     getSelectionQueryFilters(selection),
   )
   const cardValue = query.result?.value ?? null
-  const valueStyle: CSSProperties = {
-    color: value.color,
-    fontSize: value.fontSize,
-    fontWeight: FONT_WEIGHT_VALUES[value.fontWeight],
-  }
 
   /** Remembers the element under the pointer as format hint. */
   function showHint(element: CardFormatElement, target: HTMLElement): void {
@@ -128,10 +122,13 @@ function CardItem({
         </div>
       ) : null}
       <div className="card-item">
-        {title.enabled ? (
+        {title.visible ? (
           <div
             className={`card-item-title ${getFormatFocusClassName('title', formattedElement)}`}
-            style={{ textAlign: title.alignment }}
+            style={{
+              ...getTextStyleCss(title.textStyle),
+              textAlign: title.alignment,
+            }}
           >
             <EditableText
               label="Card title"
@@ -150,16 +147,24 @@ function CardItem({
         <div className="card-item-body">
           <span
             className={`card-item-value ${getFormatFocusClassName('value', formattedElement)}`}
-            style={valueStyle}
+            style={getTextStyleCss(value.textStyle)}
             onPointerEnter={(event) => showHint('value', event.currentTarget)}
           >
             {query.isLoading && !query.result
               ? '…'
               : formatCardValue(cardValue, value)}
           </span>
-          <span className="card-item-selection">
-            {getSelectionHint(selection)}
-          </span>
+          {selectionLabel.visible ? (
+            <span
+              className={`card-item-selection ${getFormatFocusClassName('selectionLabel', formattedElement)}`}
+              style={getTextStyleCss(selectionLabel.textStyle)}
+              onPointerEnter={(event) =>
+                showHint('selectionLabel', event.currentTarget)
+              }
+            >
+              {getSelectionHint(selection)}
+            </span>
+          ) : null}
         </div>
       </div>
     </>

@@ -3,6 +3,7 @@ import type {
   ChartInstance,
   ChartType,
 } from '../charts/types'
+import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 import type { CardFormatElement, CardInstance } from '../cards/types'
 
 // ===== OBJECT ================================================================
@@ -46,6 +47,15 @@ export type ObjectBackground =
   { kind: ObjectBackgroundPreset } | { kind: 'color'; color: string }
 
 export type ObjectBackgroundPreset = 'surface' | 'glass' | 'blue' | 'violet'
+
+// ===== TITLE =================================================================
+/** Title above the content of an object; charts and cards share it. */
+export type ObjectTitleAppearance = {
+  alignment: HorizontalAlignment
+  text: string
+  textStyle: TextStyle
+  visible: boolean
+}
 
 // ===== ELEMENTS ==============================================================
 /** Bounds of an element inside its object, in pixels. */

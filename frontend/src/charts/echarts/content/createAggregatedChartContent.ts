@@ -39,15 +39,8 @@ function createSeriesData(
 export function createAggregatedChartContent(
   context: ChartContentContext,
 ): ChartContent {
-  const {
-    chartType,
-    dataset,
-    highlightResult,
-    queryResult,
-    selection,
-    spec,
-    theme,
-  } = context
+  const { chartType, dataset, highlightResult, queryResult, selection, spec } =
+    context
 
   if (chartType !== 'bar' && chartType !== 'line') {
     throw new Error(`Unsupported aggregated chart type: ${chartType}`)
@@ -131,7 +124,6 @@ export function createAggregatedChartContent(
     categories,
     chartType,
     encoding,
-    theme,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

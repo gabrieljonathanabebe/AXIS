@@ -68,7 +68,7 @@ export function createScatterChartContent(
   context: ChartContentContext,
 ): ChartContent {
   // ===== CONSTANTS ===========================================================
-  const { chartType, dataset, points, selection, spec, theme } = context
+  const { chartType, dataset, points, selection, spec } = context
   const { appearance } = spec
   const { encoding } = spec.data
   const colorFieldName = encoding.color
@@ -138,7 +138,6 @@ export function createScatterChartContent(
     categories: [],
     chartType,
     encoding,
-    theme,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

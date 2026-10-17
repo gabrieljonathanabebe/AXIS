@@ -48,7 +48,7 @@ export function createAggregatedSeriesOption({
       appearance.labels,
       createAxisNumberFormatter(appearance.yAxis),
     ),
-    show: opacity === undefined && appearance.labels.enabled,
+    show: opacity === undefined && appearance.labels.visible,
   }
   const id = isHighlight ? `${HIGHLIGHT_SERIES_PREFIX}${name ?? ''}` : undefined
 

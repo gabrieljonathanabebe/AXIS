@@ -55,7 +55,7 @@ function translateCevynAction(
       return {
         type: 'chart/updateAppearance',
         chartId: action.chartId,
-        patch: { title: { ...title, enabled: true, text: action.title } },
+        patch: { title: { ...title, text: action.title, visible: true } },
       }
     }
     case 'chart/setType':

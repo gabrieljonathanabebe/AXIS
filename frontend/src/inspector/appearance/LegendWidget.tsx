@@ -1,11 +1,10 @@
 import AlignmentControl from '../../shared/ui/AlignmentControl'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, List } from 'lucide-react'
 
-import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
-import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import Slider from '../../shared/ui/Slider'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
+import TextStyleControls from '../../shared/ui/TextStyleControls'
 import InspectorWidget from '../InspectorWidget'
 import type { InspectorWidgetVariant } from '../InspectorWidget'
 import type { LegendAppearance } from '../../charts/types'
@@ -71,27 +70,12 @@ function LegendWidget({ value, onChange, variant }: LegendWidgetProps) {
           }}
         />
       </ControlRow>
-      <ControlRow label="Text color">
-        <ColorControl
-          label="Legend text color"
-          value={value.textColor}
-          onChange={(textColor) => {
-            onChange({ ...value, textColor })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Font size">
-        <ScrubbableNumber
-          label="Legend font size"
-          min={9}
-          max={28}
-          step={1}
-          value={value.fontSize}
-          onValueChange={(fontSize) => {
-            onChange({ ...value, fontSize })
-          }}
-        />
-      </ControlRow>
+      <TextStyleControls
+        label="Legend text"
+        rowLabelPrefix="Text"
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
       <ControlRow label="Gap">
         <Slider
           label="Legend item gap"

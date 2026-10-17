@@ -127,7 +127,7 @@ function setChartType(
         ...chart.spec.appearance,
         labels: {
           ...chart.spec.appearance.labels,
-          enabled: appearance.labels.enabled,
+          visible: appearance.labels.visible,
           position: defaultSpec.appearance.labels.position,
         },
         legend: {

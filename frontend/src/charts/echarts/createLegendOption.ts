@@ -3,6 +3,7 @@ import type { LegendComponentOption } from 'echarts'
 import type { ChartInteractionSpec, LegendAppearance } from '../types'
 
 import type { ColorEncodingMode } from '../getColorEncodingMode'
+import { createTextStyleOption } from './createTextStyleOption'
 
 // ===== TYPES =================================================================
 type CreateLegendOptionParams = {
@@ -64,15 +65,12 @@ export function createLegendOption({
       appearance.position === 'left' || appearance.position === 'right'
         ? 'vertical'
         : 'horizontal',
-    pageIconColor: appearance.textColor,
+    pageIconColor: appearance.textStyle.color,
     pageIconInactiveColor: appearance.inactiveColor,
-    pageTextStyle: { color: appearance.textColor },
+    pageTextStyle: { color: appearance.textStyle.color },
     selectedMode: interaction.enabled ? interaction.selectionMode : false,
     show: appearance.visible && colorEncodingMode === 'categorical',
-    textStyle: {
-      color: appearance.textColor,
-      fontSize: appearance.fontSize,
-    },
+    textStyle: createTextStyleOption(appearance.textStyle),
     triggerEvent: true,
     // Scrolls instead of overflowing when items exceed the chart width.
     type: appearance.layout === 'plain' ? 'plain' : 'scroll',

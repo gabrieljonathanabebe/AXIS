@@ -1,7 +1,9 @@
 import type { GridComponentOption, SeriesOption } from 'echarts'
 
 import { LEGEND_EDGE_OFFSETS } from './createLegendOption'
+import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
 import type { LegendAppearance } from '../types'
+import type { TextStyle } from '../../shared/textStyle'
 
 // ===== TYPES =================================================================
 type CreateGridOptionParams = {
@@ -28,13 +30,20 @@ const LEGEND_TEXT_GAP = 5
 let measureContext: CanvasRenderingContext2D | null | undefined
 
 // ===== HELPERS ===============================================================
-/** Measures text like ECharts draws it, in its default sans-serif font. */
-function measureTextWidth(text: string, fontSize: number): number {
+/**
+ * Measures text like ECharts draws it, in its default sans-serif font.
+ * @param text Text to measure.
+ * @param style Size, weight and slant the text is drawn in.
+ * @returns Width in pixels; estimated when no canvas is available.
+ */
+function measureTextWidth(text: string, style: TextStyle): number {
+  const { fontSize, fontStyle, fontWeight } = style
   measureContext ??= document.createElement('canvas').getContext('2d')
   if (!measureContext) {
     return text.length * fontSize * 0.6
   }
-  measureContext.font = `${fontSize}px sans-serif`
+  const weight = FONT_WEIGHT_VALUES[fontWeight]
+  measureContext.font = `${fontStyle} ${weight} ${fontSize}px sans-serif`
   return measureContext.measureText(text).width
 }
 
@@ -47,11 +56,11 @@ function measureTextWidth(text: string, fontSize: number): number {
 function getLegendExtent(legend: LegendAppearance, names: string[]): number {
   const padding = 2 * LEGEND_PADDING
   if (legend.position === 'top' || legend.position === 'bottom') {
-    return Math.max(legend.itemHeight, legend.fontSize) + padding
+    return Math.max(legend.itemHeight, legend.textStyle.fontSize) + padding
   }
   const textWidth = Math.max(
     0,
-    ...names.map((name) => measureTextWidth(name, legend.fontSize)),
+    ...names.map((name) => measureTextWidth(name, legend.textStyle)),
   )
   return LEGEND_ICON_WIDTH + LEGEND_TEXT_GAP + textWidth + padding
 }

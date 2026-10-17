@@ -25,9 +25,9 @@ function GridWidget({ value, onChange }: GridWidgetProps) {
       title="Grid"
       icon={<Grid2X2 size={16} />}
       visibility={{
-        visible: value.enabled,
-        onChange: (enabled) => {
-          onChange({ ...value, enabled })
+        visible: value.visible,
+        onChange: (visible) => {
+          onChange({ ...value, visible })
         },
       }}
     >

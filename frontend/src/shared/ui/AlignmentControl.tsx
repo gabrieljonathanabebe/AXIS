@@ -2,7 +2,7 @@ import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react'
 
 import SegmentedControl from './SegmentedControl'
 
-import type { HorizontalAlignment } from '../../charts/types'
+import type { HorizontalAlignment } from '../textStyle'
 
 type AlignmentControlProps = {
   label: string

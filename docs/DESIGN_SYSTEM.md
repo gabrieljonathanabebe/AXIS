@@ -756,8 +756,9 @@ Kante, damit dunkle oder transparente Flächen sichtbar bleiben.
 ## 9a. AlignmentControl
 
 `AlignmentControl` ist ein `SegmentedControl` für
-`HorizontalAlignment` (`start | center | end`) mit Ausrichtungs-Icons.
-Es wird für Titel- und Legend-Ausrichtung verwendet. Ausrichtungen im
+`HorizontalAlignment` (`start | center | end`, aus
+`shared/textStyle.ts`) mit Ausrichtungs-Icons. Es wird für Titel- und
+Legend-Ausrichtung verwendet. Ausrichtungen im
 Domain Model verwenden immer `start | center | end`, nicht
 `left | right`.
 
@@ -921,6 +922,27 @@ Props, nicht über Sonderkomponenten:
 - Im Chart liegt der Zustand über dem Canvas (`.chart-state`); das
   ECharts-Canvas ist dann per `visibility` ausgeblendet, damit leere
   Achsen oder der Pie-Ring den Hinweis nicht überdecken.
+
+## 9j. TextStyleControls
+
+`TextStyleControls` ist der eine Baustein für das Aussehen eines
+Textes (`TextStyle`). Er gibt Zeilen zurück, keinen Rahmen; das Widget
+setzt seine eigenen Zeilen (Ausrichtung, Rotation, Position, Format)
+davor oder dahinter:
+
+- Color (`ColorControl`), Size (`ScrubbableNumber`), Weight
+  (`FontWeightControl`), Style (`SegmentedControl` Normal/Italic mit
+  „A“-Vorschau)
+- `label` benennt die Controls für Screenreader, z. B. „Legend text“
+  → „Legend text color“
+- `rowLabelPrefix` trennt zwei Texte in einem Widget, z. B. „Title
+  color“ und „Label color“ an der Achse; ohne Präfix heißen die Zeilen
+  „Color“, „Size“, „Weight“, „Style“
+- `minFontSize`/`maxFontSize` begrenzen die Größe (Standard 9–28), z. B.
+  11–20 für Titel im festen Header, 16–96 für den Card-Wert
+
+Keine Varianten über Flags: Was ein Element zusätzlich braucht, ist eine
+eigene Zeile im Widget.
 
 ## 10. Legend
 

@@ -3,15 +3,16 @@ import { Type } from 'lucide-react'
 import AlignmentControl from '../../shared/ui/AlignmentControl'
 import ControlRow from '../../shared/ui/ControlRow'
 import TextInput from '../../shared/ui/TextInput'
+import TextStyleControls from '../../shared/ui/TextStyleControls'
 import InspectorWidget from '../InspectorWidget'
 
-import type { ChartTitleAppearance } from '../../charts/types'
 import type { InspectorWidgetVariant } from '../InspectorWidget'
+import type { ObjectTitleAppearance } from '../../objects/types'
 
 type ChartTitleWidgetProps = {
   defaultTitle?: string
-  value: ChartTitleAppearance
-  onChange: (value: ChartTitleAppearance) => void
+  value: ObjectTitleAppearance
+  onChange: (value: ObjectTitleAppearance) => void
   variant?: InspectorWidgetVariant
 }
 
@@ -26,9 +27,9 @@ function ChartTitleWidget({
       title="Title"
       icon={<Type size={16} />}
       visibility={{
-        visible: value.enabled,
-        onChange: (enabled) => {
-          onChange({ ...value, enabled })
+        visible: value.visible,
+        onChange: (visible) => {
+          onChange({ ...value, visible })
         },
       }}
       variant={variant}
@@ -55,6 +56,13 @@ function ChartTitleWidget({
           }}
         />
       </ControlRow>
+      <TextStyleControls
+        label="Title"
+        maxFontSize={20}
+        minFontSize={11}
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
     </InspectorWidget>
   )
 }

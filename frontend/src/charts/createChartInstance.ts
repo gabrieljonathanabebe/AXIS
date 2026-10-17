@@ -1,11 +1,20 @@
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
 import type { ChartInstance, ChartSpec, ChartType } from './types'
 import type { ObjectContainer, ObjectLayout } from '../objects/types'
+import type { TextStyle } from '../shared/textStyle'
 import {
   getChartDefinition,
   isPointsChartType,
   isRadialChartType,
 } from './chartDefinitions'
+
+/** Default look of the texts drawn by ECharts: axes, legend, labels. */
+const CHART_TEXT_STYLE: TextStyle = {
+  color: '#eef4ff',
+  fontSize: 12,
+  fontStyle: 'normal',
+  fontWeight: 'medium',
+}
 
 type CreateChartInstanceParams = {
   type: ChartType
@@ -50,18 +59,24 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         },
       },
       grid: {
-        enabled: true,
+        visible: true,
         color: '#334155',
         opacity: 0.08,
         lineStyle: 'solid',
       },
       title: {
-        enabled: true,
+        visible: true,
         text: '',
         alignment: 'start',
+        textStyle: {
+          color: '#eef4ff',
+          fontSize: 14,
+          fontStyle: 'normal',
+          fontWeight: 'medium',
+        },
       },
       xAxis: {
-        enabled: true,
+        visible: true,
         title: '',
         min: null,
         max: null,
@@ -69,16 +84,13 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         currency: 'EUR',
         labels: {
           rotation: 0,
+          textStyle: CHART_TEXT_STYLE,
           tickCount: null,
         },
-        titleStyle: {
-          color: '#eef4ff',
-          fontSize: 12,
-          fontWeight: 'medium',
-        },
+        titleStyle: CHART_TEXT_STYLE,
       },
       yAxis: {
-        enabled: true,
+        visible: true,
         title: '',
         min: null,
         max: null,
@@ -86,21 +98,17 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         currency: 'EUR',
         labels: {
           rotation: 0,
+          textStyle: CHART_TEXT_STYLE,
           tickCount: null,
         },
-        titleStyle: {
-          color: '#eef4ff',
-          fontSize: 12,
-          fontWeight: 'medium',
-        },
+        titleStyle: CHART_TEXT_STYLE,
       },
       legend: {
         visible: true,
         position: isRadialChart ? 'right' : 'bottom',
         alignment: 'center',
         symbol: 'auto',
-        textColor: '#eef4ff',
-        fontSize: 12,
+        textStyle: CHART_TEXT_STYLE,
         gap: 8,
         layout: 'auto',
         itemWidth: 24,
@@ -109,11 +117,9 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         inactiveColor: '#8b95a7',
       },
       labels: {
-        enabled: isRadialChart,
+        visible: isRadialChart,
         position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
-        color: '#eef4ff',
-        fontSize: 12,
-        fontWeight: 'medium',
+        textStyle: CHART_TEXT_STYLE,
       },
       scatter: {
         pointSize: 10,

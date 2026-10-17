@@ -1,6 +1,6 @@
 import type { LineSeriesOption } from 'echarts'
 
-import { FONT_WEIGHT_VALUES } from '../fontWeights'
+import { createTextStyleOption } from './createTextStyleOption'
 import type { LabelsAppearance } from '../types'
 import type { NumberFormatter } from '../../shared/format/formatNumber'
 
@@ -24,9 +24,7 @@ export function createSeriesLabelOption(
   formatValue?: NumberFormatter,
 ): SeriesLabelOption {
   return {
-    color: appearance.color,
-    fontSize: appearance.fontSize,
-    fontWeight: FONT_WEIGHT_VALUES[appearance.fontWeight],
+    ...createTextStyleOption(appearance.textStyle),
     formatter: formatValue
       ? ({ value }: LabelParams) => {
           const labelValue = getLabelValue(value)
@@ -34,6 +32,6 @@ export function createSeriesLabelOption(
         }
       : undefined,
     position: appearance.position,
-    show: appearance.enabled,
+    show: appearance.visible,
   }
 }

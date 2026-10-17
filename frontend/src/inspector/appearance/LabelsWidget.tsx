@@ -1,10 +1,8 @@
 import { Tags } from 'lucide-react'
 
-import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
-import FontWeightControl from '../../shared/ui/FontWeightControl'
-import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SelectControl from '../../shared/ui/SelectControl'
+import TextStyleControls from '../../shared/ui/TextStyleControls'
 import InspectorWidget from '../InspectorWidget'
 
 import type { LabelPosition, LabelsAppearance } from '../../charts/types'
@@ -42,51 +40,17 @@ function LabelsWidget({
       title="Labels"
       icon={<Tags size={16} />}
       visibility={{
-        visible: value.enabled,
-        onChange: (enabled) => {
-          onChange({ ...value, enabled })
+        visible: value.visible,
+        onChange: (visible) => {
+          onChange({ ...value, visible })
         },
       }}
     >
-      <ControlRow label="Color">
-        <ColorControl
-          label="Label color"
-          value={value.color}
-          onChange={(color) => {
-            onChange({
-              ...value,
-              color,
-            })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Font size">
-        <ScrubbableNumber
-          label="Label font size"
-          min={9}
-          max={28}
-          step={1}
-          value={value.fontSize}
-          onValueChange={(fontSize) => {
-            onChange({
-              ...value,
-              fontSize,
-            })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Weight">
-        <FontWeightControl
-          label="Label font weight"
-          value={value.fontWeight}
-          onValueChange={(fontWeight) => {
-            onChange({
-              ...value,
-              fontWeight,
-            })
-          }}
-        />
-      </ControlRow>
+      <TextStyleControls
+        label="Label"
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
       <ControlRow label="Position">
         <SelectControl
           label="Label position"

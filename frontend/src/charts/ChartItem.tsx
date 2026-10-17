@@ -11,6 +11,7 @@ import { getChartDefinition } from './chartDefinitions'
 import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
 import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
 import { getRectInFrame, getRectStyle } from '../objects/elementRect'
+import { getTextStyleCss } from '../shared/textStyle'
 
 import type { CSSProperties } from 'react'
 import type { ChartInstance } from './types'
@@ -117,10 +118,13 @@ function ChartItem({
         onHoverLegend={(rect) => onFormatHint('legend', rect)}
         selection={selection}
       />
-      {title.enabled ? (
+      {title.visible ? (
         <div
           className={`chart-item-header ${titleFocusClassName}`}
-          style={{ textAlign: title.alignment }}
+          style={{
+            ...getTextStyleCss(title.textStyle),
+            textAlign: title.alignment,
+          }}
         >
           <EditableText
             className="chart-item-title"

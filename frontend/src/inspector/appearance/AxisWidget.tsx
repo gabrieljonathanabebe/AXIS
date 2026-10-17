@@ -1,14 +1,13 @@
 import { MoveHorizontal, MoveVertical } from 'lucide-react'
 
-import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
-import FontWeightControl from '../../shared/ui/FontWeightControl'
 import InspectorWidget from '../InspectorWidget'
 import RotationDial from '../../shared/ui/RotationDial'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import SelectControl from '../../shared/ui/SelectControl'
 import TextInput from '../../shared/ui/TextInput'
+import TextStyleControls from '../../shared/ui/TextStyleControls'
 import {
   CURRENCY_OPTIONS,
   VALUE_FORMAT_OPTIONS,
@@ -60,9 +59,9 @@ function AxisWidget({
       title={title}
       icon={<AxisIcon size={16} />}
       visibility={{
-        visible: value.enabled,
-        onChange: (enabled) => {
-          onChange({ ...value, enabled })
+        visible: value.visible,
+        onChange: (visible) => {
+          onChange({ ...value, visible })
         },
       }}
       variant={variant}
@@ -80,45 +79,12 @@ function AxisWidget({
           }}
         />
       </ControlRow>
-      <ControlRow label="Title color">
-        <ColorControl
-          label={`${title} title color`}
-          value={titleStyle.color}
-          onChange={(color) => {
-            onChange({
-              ...value,
-              titleStyle: { ...titleStyle, color },
-            })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Title size">
-        <ScrubbableNumber
-          label={`${title} title font size`}
-          min={9}
-          max={28}
-          step={1}
-          value={titleStyle.fontSize}
-          onValueChange={(fontSize) => {
-            onChange({
-              ...value,
-              titleStyle: { ...titleStyle, fontSize },
-            })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Title weight">
-        <FontWeightControl
-          label={`${title} title font weight`}
-          value={titleStyle.fontWeight}
-          onValueChange={(fontWeight) => {
-            onChange({
-              ...value,
-              titleStyle: { ...titleStyle, fontWeight },
-            })
-          }}
-        />
-      </ControlRow>
+      <TextStyleControls
+        label={`${title} title`}
+        rowLabelPrefix="Title"
+        value={titleStyle}
+        onChange={(style) => onChange({ ...value, titleStyle: style })}
+      />
       <ControlRow label="Format">
         <SelectControl
           label={`${title} format`}
@@ -196,6 +162,14 @@ function AxisWidget({
           }}
         />
       </ControlRow>
+      <TextStyleControls
+        label={`${title} label`}
+        rowLabelPrefix="Label"
+        value={labels.textStyle}
+        onChange={(textStyle) =>
+          onChange({ ...value, labels: { ...labels, textStyle } })
+        }
+      />
     </InspectorWidget>
   )
 }
