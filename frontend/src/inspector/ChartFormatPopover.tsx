@@ -26,10 +26,18 @@ const elementTitles: Record<ChartFormatElement, string> = {
   legend: 'Legend',
   title: 'Title',
   xAxis: 'X Axis',
+  xAxisLabels: 'X Axis Labels',
   yAxis: 'Y Axis',
+  yAxisLabels: 'Y Axis Labels',
 }
 
 // ===== HELPERS ===============================================================
+/**
+ * Picks the widget of one chart element in its bare popover variant.
+ * @param element Element selected in the popover.
+ * @param inspectorProps Actions, chart and fields of the inspector.
+ * @returns The widget, wired to the same actions as the inspector.
+ */
 function renderFormatWidget(
   element: ChartFormatElement,
   { actions, chart, fields }: ChartInspectorProps,
@@ -54,15 +62,19 @@ function renderFormatWidget(
         />
       )
     case 'xAxis':
-    case 'yAxis': {
-      const axis = element === 'xAxis' ? 'x' : 'y'
+    case 'xAxisLabels':
+    case 'yAxis':
+    case 'yAxisLabels': {
+      const axis = element.startsWith('x') ? 'x' : 'y'
+      const axisElement = `${axis}Axis` as const
       return (
         <AxisWidget
           defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
           orientation={axis}
-          value={appearance[element]}
+          part={element === axisElement ? 'title' : 'labels'}
+          value={appearance[axisElement]}
           variant="bare"
-          onChange={(value) => actions.setAppearance(element, value)}
+          onChange={(value) => actions.setAppearance(axisElement, value)}
         />
       )
     }

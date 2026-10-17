@@ -10,7 +10,7 @@ import {
 } from './createChartQuery'
 
 import { createEChartOption } from './echarts/createEChartOption'
-import { createLegendRectFromEvent } from './echarts/createLegendRectFromEvent'
+import { createFormatHintFromEvent } from './echarts/createFormatHintFromEvent'
 import { syncBrush } from './echarts/createBrushOption'
 import { syncFormatFocus } from './echarts/syncFormatFocus'
 import {
@@ -49,7 +49,7 @@ type EChartCanvasProps = {
   formattedElement: ChartFormatElement | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
-  onHoverLegend: (rect: ElementRect) => void
+  onHoverElement: (element: ChartFormatElement, rect: ElementRect) => void
   selection: DataSelection | null
 }
 
@@ -107,7 +107,7 @@ function EChartCanvas({
   formattedElement,
   onEditAxisTitle,
   onHoverAxisTitle,
-  onHoverLegend,
+  onHoverElement,
   selection,
 }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -164,15 +164,16 @@ function EChartCanvas({
     actions.clearSelection()
   })
 
+  /** Reports a hovered axis title, legend or axis labels to the chart item. */
   const handleMouseOver = useEffectEvent((event: ECElementEvent) => {
     const axisTitleEdit = getAxisTitleEdit(event)
     if (axisTitleEdit) {
       onHoverAxisTitle(axisTitleEdit)
     }
-    const legendRect = createLegendRectFromEvent(event)
+    const formatHint = createFormatHintFromEvent(event)
     const container = containerRef.current
-    if (legendRect && container) {
-      onHoverLegend(offsetRect(legendRect, container))
+    if (formatHint && container) {
+      onHoverElement(formatHint.element, offsetRect(formatHint.rect, container))
     }
   })
 

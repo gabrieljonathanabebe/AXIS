@@ -115,7 +115,7 @@ function ChartItem({
         formattedElement={formattedElement}
         onEditAxisTitle={handleEditAxisTitle}
         onHoverAxisTitle={handleHoverAxisTitle}
-        onHoverLegend={(rect) => onFormatHint('legend', rect)}
+        onHoverElement={onFormatHint}
         selection={selection}
       />
       {title.visible ? (

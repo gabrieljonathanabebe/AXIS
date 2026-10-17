@@ -84,7 +84,9 @@ const formatRegionLabels: Record<ObjectFormatElement, string> = {
   title: 'Format title',
   value: 'Format value',
   xAxis: 'Format X axis',
+  xAxisLabels: 'Format X axis labels',
   yAxis: 'Format Y axis',
+  yAxisLabels: 'Format Y axis labels',
 }
 
 const backgroundClassNames: Record<ObjectBackground['kind'], string> = {

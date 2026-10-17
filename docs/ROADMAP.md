@@ -768,7 +768,7 @@ Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
   `ObjectFrame`) meldet nur Element und Anker, weder Frame noch
   `ChartItem` importieren aus `inspector/`
 - Legende: Hover über ECharts (`triggerEvent`), gemessen wird die ganze
-  Legende (`createLegendRectFromEvent`); im Format-Modus fängt die
+  Legende (`createFormatHintFromEvent`); im Format-Modus fängt die
   Region den Klick ab, sonst gehen Klicks auf Legendeneinträge an
   ECharts
 - das Plot-Grid weicht der Legende aus (`createGridOption`), auf allen
@@ -781,7 +781,9 @@ Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
 
 Als Nächstes:
 
-1. Abschnitte im Popover per Segmented Control (z. B. Title | Ticks)
+1. ~~Abschnitte im Popover per Segmented Control~~ ersetzt durch
+   „Achsen-Labels als Format-Element“ (implementiert; eigene Regionen
+   statt Abschnitten im Popover)
 2. Serien-Klick für Marks und Farben
 3. Toolbar-Trigger für Container und Hintergrund
 4. X für Encodings im Build Panel
@@ -952,19 +954,43 @@ Bekannte Grenzen:
   Header-Höhe begrenzt
 - ECharts zeichnet mit `sans-serif`, nicht mit Inter
 - Farben im Spec sind Hex-Werte und folgen keinem Theme-Wechsel
-- im Format-Popover scrollt bei vielen Zeilen der Inhalt, die
-  Glass-Kante (`.glass::before`, `position: absolute; inset: 0`)
-  scrollt mit und endet mitten im Inhalt
 
-Idee für einen nächsten Schritt: Achsen-Labels (Ticks) als eigenes
-Format-Element mit eigener Region, getrennt vom Achsentitel; würde
-„Abschnitte im Popover per Segmented Control“ unter „Bearbeitung am
-Chart“ ersetzen.
+Achsen-Labels als eigenes Format-Element: siehe den folgenden Slice.
 
 Danach als eigener Slice: Marks im Format-Modus anklickbar (Punkt im
 Scatter, Segment im Pie, Balken, Linie), wie die übrigen
 Format-Regionen nur im Format-Modus; die Widgets nach dem neuen Muster
 (siehe „Bearbeitung am Chart“, Punkt 2).
+
+### Achsen-Labels als Format-Element (implementiert)
+
+Die Tick-Labels der X- und Y-Achse sind ein eigenes Format-Element mit
+eigener Region, getrennt vom Achsentitel. Ersetzt „Abschnitte im
+Popover per Segmented Control“ (Bearbeitung am Chart, Punkt 1).
+
+- `xAxisLabels` und `yAxisLabels` in `ChartFormatElement`; in
+  `getFormatElements` direkt nach der jeweiligen Achse, nur kartesisch;
+  im Popover „X Axis Labels“ / „Y Axis Labels“
+- Region nur im Format-Modus: `createFormatHintFromEvent` misst bei
+  Hover über ein Label die ganze Label-Gruppe der Achse (erste Gruppe
+  über dem Text, zrender liefert einen `TSpan` als Ziel), bei der
+  Legende wie bisher die ganze Legende; ersetzt
+  `createLegendRectFromEvent`. `EChartCanvas` meldet alle Hints über
+  `onHoverElement(element, rect)`
+- `getElementRect` misst Rechteck plus Transform für Achsentitel,
+  Legende und Labels an einer Stelle
+- `syncFormatFocus` pro Teil (`createAxisFocus`): bei `xAxis` leuchten
+  Titel und Linie, bei `xAxisLabels` die Labels; Ticks bleiben dort
+  normal, der jeweils andere Teil tritt zurück
+- `AxisWidget` mit `part` (`title` | `labels`): „X Axis“ zeigt Visible,
+  Title und Title-Text, „X Axis Labels“ Format, Currency, Ticks, Label
+  rotation und Label-Text; der Inspector zeigt ohne `part` alles.
+  Visible bleibt bei der Achse, weil `visible` die ganze Achse
+  ausblendet; die Labels haben kein eigenes `visible`
+- Format-Popover: Header und Glass-Kante bleiben stehen, nur der Inhalt
+  scrollt (`.chart-format-popover-body`); maximale Höhe 400 px
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Regionen und Popover-Zeilen im Browser
 
 ## 6. Later – Visualization Completion
 

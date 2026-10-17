@@ -486,7 +486,10 @@ Abhängige Unteroptionen (`.inspector-widget-subproperties`) sind um
 `InspectorWidget` hat eine `variant` (`section` als Default, `bare`).
 `bare` rendert nur die Controls ohne Section-Rahmen, z. B. im
 Format-Popover am Objekt. Widgets wie `AxisWidget` reichen `variant`
-durch. Hat das Widget eine Sichtbarkeit, zeigt `bare` sie als erste
+durch. `AxisWidget` zeigt mit `part` (`title` | `labels`) nur einen Teil
+der Zeilen, im Popover je Element; ohne `part` alle (Inspector). Die
+Sichtbarkeit gehört zu `title`, weil `visible` die ganze Achse
+ausblendet. Hat das Widget eine Sichtbarkeit, zeigt `bare` sie als erste
 Zeile „Visible“ mit `Toggle`, da es keinen Header für die Eye-Aktion
 gibt.
 
@@ -894,6 +897,10 @@ Klick daneben):
   per Klick aus, z. B. einen Toggle-Button, der das Popover selbst
   schließt. Floating UI schließt sonst schon bei `pointerdown`, und der
   folgende Klick würde es wieder öffnen.
+- Das Format-Popover scrollt nicht als Ganzes: Header und Glass-Kante
+  (`.glass::before`) bleiben stehen, nur der Inhalt scrollt in
+  `.chart-format-popover-body`. Padding und gleich großer negativer
+  Margin verhindern, dass Fokusringe am Rand abgeschnitten werden.
 - Positionierung: `flip` wechselt die Seite, `shift` hält das Popover
   im Viewport, bei Platzmangel auch quer zur Platzierung. Ein Popover
   neben einem sehr breiten Chart liegt dann notfalls über ihm, statt
@@ -1180,7 +1187,7 @@ ausgewählten Chart.
 ### Bearbeitung am Chart
 
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-Titel, X- und Y-Achse, Legende):
+Titel, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
 
 - Einstieg ist der Pinsel (`Paintbrush`) in der Canvas-Toolbar. Er
   öffnet das Popover beim Titel des ausgewählten Charts, ist gedrückt,
@@ -1192,9 +1199,9 @@ Titel, X- und Y-Achse, Legende):
   (`SelectControl`) und das Widget des Elements in der Variante
   `bare`; dazu `--glass-fill-elevated`, `--shadow-lg` plus
   `--shadow-accent` und einen Rahmen in `--color-border-accent`.
-- Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel
-  oder Legende zeigt eine Region, einen Rahmen in
-  `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
+- Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel,
+  Achsen-Labels oder Legende zeigt eine Region (bei Labels und Legende
+  um alle Einträge), einen Rahmen in `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
   größer als das Element. Die Region liegt über dem Canvas; ein Klick
   wählt das Element im Popover, statt Text zu bearbeiten oder
   Legendeneinträge umzuschalten. Sie verschwindet, sobald der Pointer
@@ -1209,8 +1216,8 @@ Titel, X- und Y-Achse, Legende):
 - Fokus statt Farbe: Während das Popover offen ist, treten Serien,
   Labels, Legende, Chart-Titel und nicht bearbeitete Achsen auf 25 %
   Deckkraft zurück. Das bearbeitete Element leuchtet im Akzent-Ton
-  (Achse: Linie, Tick-Labels, Titel; Legende: Text, Icons in voller
-  Farbe; Chart-Titel per `text-shadow`); die Textfarben bleiben
+  (Achse: Linie und Titel; Achsen-Labels: Labels; Legende: Text,
+  Icons in voller Farbe; Chart-Titel per `text-shadow`); die Textfarben bleiben
   erhalten, weil das Popover sie bearbeitet.
 
 ### Tastaturbedienung

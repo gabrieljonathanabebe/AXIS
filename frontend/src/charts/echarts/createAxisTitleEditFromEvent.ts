@@ -1,5 +1,7 @@
 import type { ECElementEvent, ECharts } from 'echarts'
 
+import { getElementRect } from './getElementRect'
+
 import type { AxisTitleEdit } from '../types'
 
 // ===== CONSTANTS =============================================================
@@ -16,6 +18,11 @@ export function isAxisTitleEvent(event: ECElementEvent): boolean {
   )
 }
 
+/**
+ * Measures the axis title under the pointer for inline editing and hints.
+ * @param event ECharts mouse event; axis titles emit it via `triggerEvent`.
+ * @returns The axis and the bounds of its title, or null for other events.
+ */
 export function createAxisTitleEditFromEvent(
   event: ECElementEvent,
 ): AxisTitleEdit | null {
@@ -24,20 +31,7 @@ export function createAxisTitleEditFromEvent(
   if (!axis || !target || !isAxisTitleEvent(event)) {
     return null
   }
-  const rect = target.getBoundingRect().clone()
-  const transform = target.getComputedTransform()
-  if (transform) {
-    rect.applyTransform(transform)
-  }
-  return {
-    axis,
-    rect: {
-      height: rect.height,
-      width: rect.width,
-      x: rect.x,
-      y: rect.y,
-    },
-  }
+  return { axis, rect: getElementRect(target) }
 }
 
 export function syncAxisTitleEdit(

@@ -411,11 +411,14 @@ Das Formatieren am Objekt startet über den Command `object.format`
 (Pinsel in der Canvas-Toolbar). Er öffnet das Popover beim Titel des
 ausgewählten Objekts oder schließt es; das Objekt als Anker findet
 `App` über `data-object-id` am `ObjectFrame`. Solange das Popover für
-ein Objekt offen ist, ist es im Format-Modus: Achsentitel und Legende
-melden ihren Hover über Adapter-Events (`createAxisTitleEditFromEvent`,
-`createLegendRectFromEvent`), der HTML-Titel über `EditableText`
-(`onPointerEnter`) und misst sich mit `getRectInFrame`
-(`objects/elementRect.ts`). Alle liefern ein `ElementRect` in
+ein Objekt offen ist, ist es im Format-Modus: Achsentitel, Achsen-Labels
+und Legende melden ihren Hover über Adapter-Events
+(`createAxisTitleEditFromEvent`, `createFormatHintFromEvent`; beide
+messen mit `getElementRect`). Gemessen wird das Element als Ganzes: die
+Legende bis zur Wurzel, die Labels einer Achse als ihre Label-Gruppe
+(erste Gruppe über dem gehoverten Text). Der HTML-Titel meldet sich
+über `EditableText` (`onPointerEnter`) und misst sich mit
+`getRectInFrame` (`objects/elementRect.ts`). Alle liefern ein `ElementRect` in
 Koordinaten des Frames an `showFormatHint`. Der Frame hält genau einen
 `formatHint` (`element`, `rect`) und zeigt im Format-Modus dafür eine
 Region. Ein Klick darauf meldet nur Element und Frame als Anker nach
@@ -435,14 +438,17 @@ beide
 
 - `FormatTarget` (`objects/types.ts`) ist `anchor`, `element` und
   `objectId`. `ObjectFormatElement` ist die Union der formatierbaren
-  Elemente aller Objekttypen, aktuell gleich `ChartFormatElement`.
+  Elemente aller Objekttypen (`ChartFormatElement | CardFormatElement`).
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
-  Elemente eines Charts als Schlüssel von `ChartAppearanceSpec`, aktuell
-  `legend | title | xAxis | yAxis`. `ChartFormatPopover` ordnet sie in
-  `renderFormatWidget` per `switch` ihrem Widget zu.
+  Elemente eines Charts: Schlüssel von `ChartAppearanceSpec`
+  (`legend | title | xAxis | yAxis`) plus `xAxisLabels | yAxisLabels`
+  für die Tick-Labels unter `xAxis.labels` bzw. `yAxis.labels`.
+  `ChartFormatPopover` ordnet sie in `renderFormatWidget` per `switch`
+  ihrem Widget zu; Achse und Labels teilen `AxisWidget` mit `part`
+  (`title` | `labels`) und dieselbe `AxisAppearance`.
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
-  Elemente ein Chart hat: Titel immer, Achsen nur kartesisch, Legende
-  wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
+  Elemente ein Chart hat: Titel immer, Achsen und ihre Labels nur
+  kartesisch, Legende wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
   `formatTarget.element`.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
@@ -460,8 +466,10 @@ beide
 - Solange das Popover offen ist, legt `syncFormatFocus`
   (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern
   Editor-Zustand in die ECharts-Instanz: Serien, Legende und nicht
-  bearbeitete Achsen gedimmt, eine bearbeitete Achse oder Legende
-  leuchtet; bei Pie und Donut werden keine Achsen gesetzt.
+  bearbeitete Achsen gedimmt, die Legende oder der bearbeitete Teil
+  einer Achse leuchtet (`xAxis`: Titel und Linie; `xAxisLabels`:
+  Labels, Ticks bleiben normal); bei Pie und Donut werden keine Achsen
+  gesetzt.
   Legenden-Icons erben die Deckkraft der Serien und werden beim Fokus
   auf die Legende zurückgesetzt. Analog zu `syncAxisTitleEdit` und
   `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und

@@ -61,7 +61,7 @@ function ObjectFormatPopover<TElement extends ObjectFormatElement>({
         }
       }}
     >
-      <div className="stack">
+      <div className="chart-format-popover-body stack">
         <ControlRow label="Element">
           <SelectControl
             label="Format element"
