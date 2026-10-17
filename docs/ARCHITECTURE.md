@@ -532,7 +532,9 @@ Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
   Frontend abgeblendet, ohne zusätzliche Query.
 - Card: Die `card-query` trägt die Selection als Filter; die Card zeigt
   den gefilterten Wert und darunter die Selection als Label in
-  Akzentfarbe (z. B. „United States“). Ohne Selection kein Label.
+  Akzentfarbe (z. B. „United States“). Ohne Selection und bei einem
+  Bereich (Brush) bleibt das Label leer; seine Zeile ist immer
+  reserviert, damit der Wert nicht springt.
 
 Die Bedeutung einer Selection (Zeilenzugehörigkeit, Vergleich,
 Beschriftung, Query-Filter über `getSelectionQueryFilters`) liegt in
