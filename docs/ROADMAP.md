@@ -889,8 +889,8 @@ Reihenfolge:
      Browser (Popover noch nicht im Browser geprüft)
    - Card folgt der Selection: `card-query` mit den Selection-Filtern,
      gefilterter Wert und darunter die Selection als Label in
-     Akzentfarbe, nur bei ausgewählten Werten, nicht bei einem Bereich
-     (Brush); die Label-Zeile ist immer reserviert, der Wert springt
+     Akzentfarbe, bei einem Bereich (Brush) nur „Filtered“; die
+     Label-Zeile ist immer reserviert, der Wert springt
      nicht; der vorige Wert bleibt beim Nachladen stehen; verifiziert:
      `npm run build`, `npm run lint`, Prettier; Balken-Klick, Brush im
      Scatter und Escape im Browser

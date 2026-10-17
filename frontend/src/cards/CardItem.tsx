@@ -56,14 +56,18 @@ function formatCardValue(
 }
 
 /**
- * Names the selected values below the card value, e.g. "United States".
- * A brushed range stays unnamed; its text would be long and restless.
+ * Names the selection below the card value, e.g. "United States". A
+ * brushed range only says "Filtered"; its full text would be long and
+ * restless.
  * @param selection Current selection, or null.
- * @returns The hint, empty without a selection of values.
+ * @returns The hint, empty without a selection.
  */
 function getSelectionHint(selection: DataSelection | null): string {
-  if (!selection || selection.filters.some(({ kind }) => kind === 'range')) {
+  if (!selection) {
     return ''
+  }
+  if (selection.filters.some(({ kind }) => kind === 'range')) {
+    return 'Filtered'
   }
   return formatSelectionLabel(selection)
 }
