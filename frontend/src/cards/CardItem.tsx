@@ -9,9 +9,13 @@ import {
   createNumberFormatter,
   formatCompactNumber,
 } from '../shared/format/formatNumber'
+import {
+  formatSelectionLabel,
+  getSelectionQueryFilters,
+} from '../workspace/dataSelection'
 
 import type { CSSProperties } from 'react'
-import type { CanvasActions } from '../workspace/types'
+import type { CanvasActions, DataSelection } from '../workspace/types'
 import type {
   CardFormatElement,
   CardInstance,
@@ -28,6 +32,7 @@ type CardItemProps = {
   datasetId: string | null
   draggedField: DataField | null
   formattedElement: ObjectFormatElement | null
+  selection: DataSelection | null
   onFormatHint: ShowFormatHint
 }
 
@@ -53,8 +58,9 @@ function formatCardValue(
 // ===== COMPONENT =============================================================
 /**
  * Shows a card inside its object frame: optional title and the
- * aggregated value. Each element reports itself as format hint; while a
- * field is dragged, a drop slot sets the value field.
+ * aggregated value. The value follows the selection, a label below
+ * names it. Each element reports itself as format hint; while a field
+ * is dragged, a drop slot sets the value field.
  */
 function CardItem({
   actions,
@@ -62,10 +68,16 @@ function CardItem({
   datasetId,
   draggedField,
   formattedElement,
+  selection,
   onFormatHint,
 }: CardItemProps) {
   const { title, value } = card.spec.appearance
-  const query = useCardQuery(datasetId, card.spec.data)
+  const query = useCardQuery(
+    datasetId,
+    card.spec.data,
+    getSelectionQueryFilters(selection),
+  )
+  const cardValue = query.result?.value ?? null
   const valueStyle: CSSProperties = {
     color: value.color,
     fontSize: value.fontSize,
@@ -124,10 +136,15 @@ function CardItem({
             style={valueStyle}
             onPointerEnter={(event) => showHint('value', event.currentTarget)}
           >
-            {query.isLoading
+            {query.isLoading && !query.result
               ? '…'
-              : formatCardValue(query.result?.value ?? null, value)}
+              : formatCardValue(cardValue, value)}
           </span>
+          {selection ? (
+            <span className="card-item-selection">
+              {formatSelectionLabel(selection)}
+            </span>
+          ) : null}
         </div>
       </div>
     </>

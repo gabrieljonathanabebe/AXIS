@@ -18,7 +18,8 @@
 .card-item-body {
   display: flex;
   flex: 1;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   min-height: 0;
 }
 
@@ -26,6 +27,17 @@
   overflow: hidden;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Names the selection the value is filtered by, e.g. "USA". */
+.card-item-selection {
+  overflow: hidden;
+  margin-top: var(--space-1);
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

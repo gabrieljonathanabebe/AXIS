@@ -887,6 +887,12 @@ Reihenfolge:
    - verifiziert: `npm run build`, `npm run lint`, Prettier;
      `card-query` gegen das Demo-Dataset; Drop, Undo und Titel im
      Browser (Popover noch nicht im Browser geprüft)
+   - Card folgt der Selection: `card-query` mit den Selection-Filtern,
+     gefilterter Wert und darunter die Selection als Label in
+     Akzentfarbe, nur bei aktiver Selection; der vorige Wert bleibt
+     beim Nachladen stehen; verifiziert: `npm run build`,
+     `npm run lint`, Prettier; Klick auf einen Balken und Escape im
+     Browser
    - offen: Aufräumen nach der Abhängigkeitsregel (`queries/` für
      Aggregation und Filter, keine Imports von `cards/` aus `charts/`),
      CSS-Trennung von Frame und Content (`chart-item*`, `--chart-*`,

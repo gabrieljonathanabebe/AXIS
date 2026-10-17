@@ -3,25 +3,12 @@ import {
   getEffectiveAggregation,
   getValueField,
 } from './getEffectiveAggregation'
+import { getSelectionQueryFilters } from '../workspace/dataSelection'
 
-import type {
-  ChartFilter,
-  ChartQueryRequest,
-  PointsQueryRequest,
-} from './chartsApi'
+import type { ChartQueryRequest, PointsQueryRequest } from './chartsApi'
 import type { ChartInstance } from './types'
 import type { DataField } from '../datasets/types'
-import type { DataSelection, SelectionFilter } from '../workspace/types'
-
-function toChartFilter(filter: SelectionFilter): ChartFilter {
-  if (filter.kind === 'range') {
-    return filter
-  }
-  return {
-    ...filter,
-    values: filter.values.map((value) => String(value)),
-  }
-}
+import type { DataSelection } from '../workspace/types'
 
 export function createChartQuery(
   chart: ChartInstance,
@@ -76,6 +63,6 @@ export function createHighlightQuery(
   }
   return {
     ...query,
-    filters: selection.filters.map(toChartFilter),
+    filters: getSelectionQueryFilters(selection),
   }
 }
