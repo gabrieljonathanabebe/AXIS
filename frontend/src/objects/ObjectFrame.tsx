@@ -80,6 +80,7 @@ const layoutHandleModes: ObjectLayoutMode[] = [
 
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
   legend: 'Format legend',
+  marks: 'Format marks',
   selectionLabel: 'Format selection label',
   title: 'Format title',
   value: 'Format value',

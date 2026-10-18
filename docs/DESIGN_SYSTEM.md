@@ -1187,7 +1187,7 @@ ausgewählten Chart.
 ### Bearbeitung am Chart
 
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-Titel, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
+Titel, Marks, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
 
 - Einstieg ist der Pinsel (`Paintbrush`) in der Canvas-Toolbar. Er
   öffnet das Popover beim Titel des ausgewählten Charts, ist gedrückt,
@@ -1200,11 +1200,13 @@ Titel, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
   `bare`; dazu `--glass-fill-elevated`, `--shadow-lg` plus
   `--shadow-accent` und einen Rahmen in `--color-border-accent`.
 - Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel,
-  Achsen-Labels oder Legende zeigt eine Region (bei Labels und Legende
-  um alle Einträge), einen Rahmen in `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
+  Achsen-Labels, Legende oder eine Mark zeigt eine Region (bei Labels
+  und Legende um alle Einträge, bei Marks um die einzelne Mark, bei
+  Linien um den ganzen Pfad), einen Rahmen in `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
   größer als das Element. Die Region liegt über dem Canvas; ein Klick
-  wählt das Element im Popover, statt Text zu bearbeiten oder
-  Legendeneinträge umzuschalten. Sie verschwindet, sobald der Pointer
+  wählt das Element im Popover, statt Text zu bearbeiten,
+  Legendeneinträge umzuschalten oder Daten zu selektieren; der Klick auf
+  eine Mark formatiert alle Marks des Charts. Sie verschwindet, sobald der Pointer
   sie verlässt. Ohne offenes Popover gibt es keine Regionen.
 - Blauer Rahmen heißt „auswählen“, graue Fläche
   (`--color-surface-hover`) heißt „Text bearbeiten“: Außerhalb des
@@ -1218,7 +1220,9 @@ Titel, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
   Deckkraft zurück. Das bearbeitete Element leuchtet im Akzent-Ton
   (Achse: Linie und Titel; Achsen-Labels: Labels; Legende: Text,
   Icons in voller Farbe; Chart-Titel per `text-shadow`); die Textfarben bleiben
-  erhalten, weil das Popover sie bearbeitet.
+  erhalten, weil das Popover sie bearbeitet. Marks behalten ihre
+  Deckkraft ohne Schein, weil das Popover ihre Farben bearbeitet; Data
+  Labels treten dabei zurück.
 
 ### Tastaturbedienung
 

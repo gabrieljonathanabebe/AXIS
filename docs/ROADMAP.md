@@ -784,7 +784,8 @@ Als Nächstes:
 1. ~~Abschnitte im Popover per Segmented Control~~ ersetzt durch
    „Achsen-Labels als Format-Element“ (implementiert; eigene Regionen
    statt Abschnitten im Popover)
-2. Serien-Klick für Marks und Farben
+2. Serien-Klick für Marks und Farben (in Arbeit, siehe „Marks als
+   Format-Element“)
 3. Toolbar-Trigger für Container und Hintergrund
 4. X für Encodings im Build Panel
 
@@ -957,10 +958,8 @@ Bekannte Grenzen:
 
 Achsen-Labels als eigenes Format-Element: siehe den folgenden Slice.
 
-Danach als eigener Slice: Marks im Format-Modus anklickbar (Punkt im
-Scatter, Segment im Pie, Balken, Linie), wie die übrigen
-Format-Regionen nur im Format-Modus; die Widgets nach dem neuen Muster
-(siehe „Bearbeitung am Chart“, Punkt 2).
+Danach als eigener Slice: Marks im Format-Modus anklickbar, siehe
+„Marks als Format-Element“.
 
 ### Achsen-Labels als Format-Element (implementiert)
 
@@ -991,6 +990,47 @@ Popover per Segmented Control“ (Bearbeitung am Chart, Punkt 1).
   scrollt (`.chart-format-popover-body`); maximale Höhe 400 px
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Regionen und Popover-Zeilen im Browser
+
+### Marks als Format-Element (in Arbeit)
+
+Punkte im Scatter, Balken, Linien und Pie-Segmente lassen sich im
+Format-Modus hovern und anklicken; der Klick wählt die Marks im
+Format-Popover (Bearbeitung am Chart, Punkt 2). Außerhalb des
+Format-Modus bleibt der Klick auf eine Mark die Cross-Highlight-
+Selection.
+
+Beschlossen:
+
+- ein generisches Format-Element `marks` für alle Charttypen (im
+  Popover „Marks“, direkt nach dem Titel); das Widget wählt seine
+  Optionen nach `chart.type`
+- Region um die einzelne Mark unter dem Pointer (Punkt, Balken,
+  Segment), bei der Linie um den ganzen Pfad; der Klick formatiert alle
+  Marks des Charts. Nur im Format-Modus, der Hover kommt über
+  `createFormatHintFromEvent` (Serien-Events)
+- Linien melden Events über `triggerEvent` (Linie und Fläche); Events ohne
+  `dataIndex` erzeugen keine Selection
+- Fokus in `syncFormatFocus`: die Marks bleiben in voller Deckkraft und
+  ohne Schein, Achsen, Legende und Data Labels treten zurück
+- Widget: `MarkSeriesWidget` mit `variant` (`bare` im Popover), mit
+  denselben Optionen wie im Inspector; bleibt vorerst in `inspector/`,
+  der Umzug geschieht später für alle Chart-Widgets gemeinsam
+- nicht Teil des Slice: die kontinuierliche Farbskala als eigenes
+  Element; der Hover über Data Labels öffnet vorerst ebenfalls Marks
+
+Umgesetzt:
+
+- `marks` in `ChartFormatElement`, in `getFormatElements` nach dem
+  Titel, im Popover „Marks“, Region „Format marks“
+- `MarkSeriesWidget` mit `variant`, im Popover `bare` mit denselben
+  `inspectorActions`
+- `createFormatHintFromEvent` misst bei Serien-Events die Form unter
+  dem Pointer; Linien mit `triggerEvent: true` (Linie und Fläche);
+  `createSelectionFromEvent` ignoriert Events ohne `dataIndex`
+- `syncFormatFocus`: bei `marks` bleiben Serien und Legenden-Icons in
+  voller Deckkraft, Data Labels, Achsen und Legendentext treten zurück
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser noch offen
 
 ## 6. Later – Visualization Completion
 

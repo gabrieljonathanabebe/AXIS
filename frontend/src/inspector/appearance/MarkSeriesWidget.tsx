@@ -11,12 +11,15 @@ import Toggle from '../../shared/ui/Toggle'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInspectorProps } from '../types'
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 import type { LineStyle, ScatterSymbol } from '../../charts/types'
 
 type MarkSeriesWidgetProps = Pick<
   ChartInspectorProps,
   'actions' | 'chart' | 'fields'
->
+> & {
+  variant?: InspectorWidgetVariant
+}
 
 const scatterSymbolOptions = [
   { label: 'Circle', value: 'circle' },
@@ -38,8 +41,16 @@ const scatterSymbolIcons = {
   diamond: Diamond,
 } satisfies Record<ScatterSymbol, typeof Circle>
 
-function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
-  // CONSTANTS
+/**
+ * Edits color or palette and the marks of the chart type: points, lines or
+ * bars. Shows the same options in the inspector and the format popover.
+ */
+function MarkSeriesWidget({
+  actions,
+  chart,
+  fields,
+  variant,
+}: MarkSeriesWidgetProps) {
   const { appearance } = chart.spec
   const hasSizeEncoding = Boolean(chart.spec.data.encoding.size)
   const colorEncodingMode = getColorEncodingMode(
@@ -47,10 +58,12 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
     chart.spec.data.encoding,
     fields,
   )
-
-  // RETURN
   return (
-    <InspectorWidget title="Mark / Series" icon={<Paintbrush size={16} />}>
+    <InspectorWidget
+      title="Mark / Series"
+      icon={<Paintbrush size={16} />}
+      variant={variant}
+    >
       {colorEncodingMode === 'constant' ? (
         <ControlRow label="Color">
           <ColorControl

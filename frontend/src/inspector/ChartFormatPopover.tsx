@@ -1,6 +1,7 @@
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
 import LegendWidget from './appearance/LegendWidget'
+import MarkSeriesWidget from './appearance/MarkSeriesWidget'
 import ObjectFormatPopover from '../objects/ObjectFormatPopover'
 import {
   getDefaultAxisTitle,
@@ -24,6 +25,7 @@ type ChartFormatPopoverProps = ChartInspectorProps & {
 // ===== CONSTANTS =============================================================
 const elementTitles: Record<ChartFormatElement, string> = {
   legend: 'Legend',
+  marks: 'Marks',
   title: 'Title',
   xAxis: 'X Axis',
   xAxisLabels: 'X Axis Labels',
@@ -50,6 +52,15 @@ function renderFormatWidget(
           value={appearance.legend}
           variant="bare"
           onChange={(value) => actions.setAppearance('legend', value)}
+        />
+      )
+    case 'marks':
+      return (
+        <MarkSeriesWidget
+          actions={actions}
+          chart={chart}
+          fields={fields}
+          variant="bare"
         />
       )
     case 'title':

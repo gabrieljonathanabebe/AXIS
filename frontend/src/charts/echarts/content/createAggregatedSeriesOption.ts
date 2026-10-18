@@ -77,6 +77,7 @@ export function createAggregatedSeriesOption({
         isHighlight ||
         (appearance.line.showSymbol && data.length <= MAX_LINE_SYMBOLS),
       smooth: appearance.line.smooth,
+      triggerEvent: true,
       type: 'line',
       xAxisIndex,
     }

@@ -51,12 +51,21 @@ function createScatterSelection(
 }
 
 // ===== FUNCTION ==============================================================
+/**
+ * Turns a click on a mark into a selection: the category of a bar, line
+ * point or pie segment, the color category of a scatter point.
+ * @param chart Chart that was clicked.
+ * @param event ECharts click event.
+ * @param fields Dataset fields, which decide the color encoding mode.
+ * @returns The selection, or null for clicks without a data point, e.g. on
+ *   the line path itself.
+ */
 export function createSelectionFromEvent(
   chart: ChartInstance,
   event: ECElementEvent,
   fields: DataField[],
 ): DataSelection | null {
-  if (event.componentType !== 'series') {
+  if (event.componentType !== 'series' || event.dataIndex === undefined) {
     return null
   }
   if (isPointsChartType(chart.type)) {

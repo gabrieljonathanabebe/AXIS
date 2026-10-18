@@ -411,12 +411,17 @@ Das Formatieren am Objekt startet über den Command `object.format`
 (Pinsel in der Canvas-Toolbar). Er öffnet das Popover beim Titel des
 ausgewählten Objekts oder schließt es; das Objekt als Anker findet
 `App` über `data-object-id` am `ObjectFrame`. Solange das Popover für
-ein Objekt offen ist, ist es im Format-Modus: Achsentitel, Achsen-Labels
-und Legende melden ihren Hover über Adapter-Events
+ein Objekt offen ist, ist es im Format-Modus: Achsentitel, Achsen-Labels,
+Legende und Marks melden ihren Hover über Adapter-Events
 (`createAxisTitleEditFromEvent`, `createFormatHintFromEvent`; beide
 messen mit `getElementRect`). Gemessen wird das Element als Ganzes: die
 Legende bis zur Wurzel, die Labels einer Achse als ihre Label-Gruppe
-(erste Gruppe über dem gehoverten Text). Der HTML-Titel meldet sich
+(erste Gruppe über dem gehoverten Text). Marks sind die Ausnahme:
+gemessen wird die Form unter dem Pointer (Punkt, Balken, Segment, bei
+Linien der ganze Pfad), der Klick wählt trotzdem alle Marks des Charts.
+Linien melden Events über `triggerEvent`; diese Events haben keinen
+`dataIndex` und erzeugen deshalb keine Selection
+(`createSelectionFromEvent`). Der HTML-Titel meldet sich
 über `EditableText` (`onPointerEnter`) und misst sich mit
 `getRectInFrame` (`objects/elementRect.ts`). Alle liefern ein `ElementRect` in
 Koordinaten des Frames an `showFormatHint`. Der Frame hält genau einen
@@ -442,12 +447,15 @@ beide
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
   Elemente eines Charts: Schlüssel von `ChartAppearanceSpec`
   (`legend | title | xAxis | yAxis`) plus `xAxisLabels | yAxisLabels`
-  für die Tick-Labels unter `xAxis.labels` bzw. `yAxis.labels`.
+  für die Tick-Labels unter `xAxis.labels` bzw. `yAxis.labels` und
+  `marks` für Farbe, Palette und die Marks des Charttyps (`color`,
+  `colorScale.categorical`, `scatter`, `line`, `bar`).
   `ChartFormatPopover` ordnet sie in `renderFormatWidget` per `switch`
   ihrem Widget zu; Achse und Labels teilen `AxisWidget` mit `part`
-  (`title` | `labels`) und dieselbe `AxisAppearance`.
+  (`title` | `labels`) und dieselbe `AxisAppearance`, `marks` nutzt
+  `MarkSeriesWidget` wie der Inspector.
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
-  Elemente ein Chart hat: Titel immer, Achsen und ihre Labels nur
+  Elemente ein Chart hat: Titel und Marks immer, Achsen und ihre Labels nur
   kartesisch, Legende wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
   `formatTarget.element`.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit

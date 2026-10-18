@@ -7,6 +7,7 @@ import type { ObjectFormatElement } from '../objects/types'
 
 const chartFormatElements: readonly ObjectFormatElement[] = [
   'legend',
+  'marks',
   'title',
   'xAxis',
   'xAxisLabels',
@@ -17,7 +18,7 @@ const chartFormatElements: readonly ObjectFormatElement[] = [
 /**
  * Tells whether a format element belongs to charts.
  * @param element Element of a format target, or null when none is open.
- * @returns True for title, axes, axis labels and legend.
+ * @returns True for title, marks, axes, axis labels and legend.
  */
 export function isChartFormatElement(
   element: ObjectFormatElement | null,
@@ -29,14 +30,14 @@ export function isChartFormatElement(
  * Lists the elements of a chart that can be formatted, in reading order.
  * @param chart Chart whose elements are listed.
  * @param fields Dataset fields, which decide whether a legend is relevant.
- * @returns The title, the axes and their labels of cartesian charts and a
- *   relevant legend.
+ * @returns The title, the marks, the axes and their labels of cartesian
+ *   charts and a relevant legend.
  */
 export function getFormatElements(
   chart: ChartInstance,
   fields: DataField[],
 ): ChartFormatElement[] {
-  const elements: ChartFormatElement[] = ['title']
+  const elements: ChartFormatElement[] = ['title', 'marks']
   if (!isRadialChartType(chart.type)) {
     elements.push('xAxis', 'xAxisLabels', 'yAxis', 'yAxisLabels')
   }

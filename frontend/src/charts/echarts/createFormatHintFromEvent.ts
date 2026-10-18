@@ -21,8 +21,10 @@ const axisLabelsByComponentType: Partial<Record<string, ChartFormatElement>> = {
 // ===== FUNCTION ==============================================================
 /**
  * Finds the format element under the pointer and measures it as a whole:
- * the legend with all its items, the labels of an axis with all ticks.
- * @param event ECharts mouse event; legend and axes emit it via `triggerEvent`.
+ * the legend with all its items, the labels of an axis with all ticks. Marks
+ * are measured one by one, a line as its whole path.
+ * @param event ECharts mouse event; legend, axes and lines emit it via
+ *   `triggerEvent`.
  * @returns Element and bounds inside the canvas, or null for other events.
  */
 export function createFormatHintFromEvent(
@@ -46,6 +48,9 @@ export function createFormatHintFromEvent(
       labels = labels.parent
     }
     return { element: axisLabels, rect: getElementRect(labels) }
+  }
+  if (event.componentType === 'series') {
+    return { element: 'marks', rect: getElementRect(target) }
   }
   return null
 }
