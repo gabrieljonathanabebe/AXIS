@@ -1,6 +1,11 @@
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 
-import type { ChartAppearanceSpec, ChartEncoding, ChartType } from '../types'
+import type {
+  AxisAppearance,
+  ChartAppearanceSpec,
+  ChartEncoding,
+  ChartType,
+} from '../types'
 import { createAxisLabelFormatter } from './createAxisLabelFormatter'
 import { createTextStyleOption } from './createTextStyleOption'
 
@@ -27,6 +32,27 @@ function getCategoryLabelInterval(
     return 'auto'
   }
   return Math.max(Math.ceil(categoryCount / tickCount) - 1, 0)
+}
+
+/**
+ * Creates the gridlines of one axis. They follow the axis: a hidden axis
+ * hides its gridlines too.
+ * @param axis Appearance of the axis.
+ * @returns Split line option of the axis.
+ */
+function createSplitLineOption(
+  axis: AxisAppearance,
+): XAxisComponentOption['splitLine'] {
+  const { gridLines } = axis
+  return {
+    lineStyle: {
+      color: gridLines.color,
+      opacity: gridLines.opacity,
+      type: gridLines.lineStyle,
+      width: 1,
+    },
+    show: axis.visible && gridLines.visible,
+  }
 }
 
 // ===== FUNCTION ==============================================================
@@ -66,15 +92,7 @@ export function createAxesOptions({
       nameLocation: 'middle',
       nameTextStyle: createTextStyleOption(appearance.xAxis.titleStyle),
       show: appearance.xAxis.visible,
-      splitLine: {
-        lineStyle: {
-          color: appearance.grid.color,
-          opacity: appearance.grid.opacity,
-          type: appearance.grid.lineStyle,
-          width: 1,
-        },
-        show: appearance.xAxis.visible && appearance.grid.visible,
-      },
+      splitLine: createSplitLineOption(appearance.xAxis),
       splitNumber: isCategoryXAxis
         ? undefined
         : (appearance.xAxis.labels.tickCount ?? undefined),
@@ -101,15 +119,7 @@ export function createAxesOptions({
       nameLocation: 'middle',
       nameTextStyle: createTextStyleOption(appearance.yAxis.titleStyle),
       show: appearance.yAxis.visible,
-      splitLine: {
-        lineStyle: {
-          color: appearance.grid.color,
-          opacity: appearance.grid.opacity,
-          type: appearance.grid.lineStyle,
-          width: 1,
-        },
-        show: appearance.yAxis.visible && appearance.grid.visible,
-      },
+      splitLine: createSplitLineOption(appearance.yAxis),
       splitNumber: appearance.yAxis.labels.tickCount ?? undefined,
       triggerEvent: true,
       type: 'value',

@@ -7,7 +7,6 @@ import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
 } from '../charts/getChartTitle'
-import GridWidget from './appearance/GridWidget'
 import { isLegendRelevant } from '../charts/isLegendRelevant'
 import { isRadialChartType } from '../charts/chartDefinitions'
 import LabelsWidget from './appearance/LabelsWidget'
@@ -70,12 +69,6 @@ function AppearanceInspectorTab({
       ) : null}
       {!isRadialChart ? (
         <>
-          <GridWidget
-            value={appearance.grid}
-            onChange={(grid) => {
-              actions.setAppearance('grid', grid)
-            }}
-          />
           <AxisWidget
             defaultTitle={getDefaultAxisTitle(chart, fields, 'x')}
             orientation="x"

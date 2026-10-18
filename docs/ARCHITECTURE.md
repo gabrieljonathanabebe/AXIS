@@ -437,7 +437,7 @@ Region im Format-Modus (ObjectFrame)
 → onFormatElement(element, anchor) → ChartGrid ergänzt objectId
 beide
 → App: formatTarget (React State, nicht im Reducer)
-→ ChartFormatPopover (inspector/): Element-Auswahl + Widget (bare)
+→ ChartFormatPopover (inspector/): Element-Auswahl + Abschnitte (bare)
 → inspectorActions.setAppearance → chart/updateAppearance
 ```
 
@@ -450,10 +450,15 @@ beide
   für die Tick-Labels unter `xAxis.labels` bzw. `yAxis.labels` und
   `marks` für Farbe, Palette und die Marks des Charttyps (`color`,
   `colorScale.categorical`, `scatter`, `line`, `bar`).
-  `ChartFormatPopover` ordnet sie in `renderFormatWidget` per `switch`
-  ihrem Widget zu; Achse und Labels teilen `AxisWidget` mit `part`
+  `ChartFormatPopover` ordnet sie in `getFormatSections` per `switch`
+  ihren Abschnitten zu (`FormatSection`: Name, optionales Icon,
+  Inhalt); Achse und Labels teilen `AxisWidget` mit `part`
   (`title` | `labels`) und dieselbe `AxisAppearance`, `marks` nutzt
-  `MarkSeriesWidget` wie der Inspector.
+  `MarkSeriesWidget` wie der Inspector. Weitere Abschnitte gehören zum
+  Element, das sie betreffen: `xAxis` und `yAxis` haben „Gridlines“
+  (`AxisAppearance.gridLines`, im Adapter `splitLine` der Achse),
+  `xAxis` zusätzlich „Zoom“ (`interaction.zoom`, wirkt auf die
+  X-Achse), `legend` „Interaction“ (`interaction.legend`).
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
   Elemente ein Chart hat: Titel und Marks immer, Achsen und ihre Labels nur
   kartesisch, Legende wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
@@ -778,8 +783,9 @@ WorkspaceState
 `selectedCard` für das Card-Format-Popover ab.
 
 Format-Popover: Die Hülle `ObjectFormatPopover` (`objects/`) übernimmt
-Position, Offenhalten und Element-Auswahl für jedes Objekt; der Inhalt
-pro Typ kommt als `children`. `ChartFormatPopover` und
+Position, Offenhalten, Element-Auswahl im Kopf und das Umschalten der
+Abschnitte für jedes Objekt; der Inhalt pro Typ kommt als `sections`.
+Der aktive Abschnitt ist lokaler UI-Zustand des Popovers. `ChartFormatPopover` und
 `CardFormatPopover` liegen in `inspector/`, weil sie Inspector-Widgets
 zusammensetzen. `isChartFormatElement` und `isCardFormatElement` grenzen
 `FormatTarget.element` auf den Elementtyp des Objekts ein.

@@ -491,7 +491,8 @@ der Zeilen, im Popover je Element; ohne `part` alle (Inspector). Die
 Sichtbarkeit gehört zu `title`, weil `visible` die ganze Achse
 ausblendet. Hat das Widget eine Sichtbarkeit, zeigt `bare` sie als erste
 Zeile „Visible“ mit `Toggle`, da es keinen Header für die Eye-Aktion
-gibt.
+gibt. Schaltet sie Verhalten statt Sichtbarkeit (Zoom, Legend
+Interaction), heißt die Zeile über `visibility.label` „Enabled“.
 
 Inspector-Widgets sind unabhängig vom Chart-Zustand auf- und
 zuklappbar. Eine optionale Eye-Aktion im Header (`IconButton` mit
@@ -888,8 +889,14 @@ Klick daneben):
   positioniert `anchor` das Popover an einem Element oder einem
   virtuellen Rechteck, ohne eigenen Button (z. B. neben einem Chart).
 - Ein optionaler `title` erzeugt einen Header mit Titel und einem
-  Schließen-Button (`IconButton`, `ghost`, `xs`). Ohne `title` bleibt
-  das Popover kopflos (Dropdowns, Farbwähler).
+  Schließen-Button (`IconButton`, `ghost`, `xs`, benannt nach `label`).
+  `title` ist ein Slot (`ReactNode`), z. B. Icon plus `SelectControl`
+  im Format-Popover. Ohne `title` bleibt das Popover kopflos
+  (Dropdowns, Farbwähler).
+- `SelectControl` hat eine `variant`: `field` (Default, Feld mit
+  Rahmen, Menü so breit wie das Feld) und `title` (liest sich als
+  Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover in
+  Akzentfarbe, Menü so breit wie nötig).
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
   ein Kind-Popover (z. B. Farbwähler im Format-Popover) schließt das
   Eltern-Popover nicht.
@@ -1194,11 +1201,23 @@ Titel, Marks, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
   solange es offen ist, und schließt es beim nächsten Klick. Ohne
   ausgewählten Chart ist er deaktiviert.
 - Das Popover steht neben dem Chart (`right-start`, weicht nach links
-  aus), nie auf ihm, damit Änderungen live sichtbar bleiben. Es trägt
-  einen Header „Format“ mit X, darunter die Zeile „Element“
-  (`SelectControl`) und das Widget des Elements in der Variante
-  `bare`; dazu `--glass-fill-elevated`, `--shadow-lg` plus
-  `--shadow-accent` und einen Rahmen in `--color-border-accent`.
+  aus), nie auf ihm, damit Änderungen live sichtbar bleiben; dazu
+  `--glass-fill-elevated`, `--shadow-lg` plus `--shadow-accent` und
+  einen Rahmen in `--color-border-accent`.
+- Der Kopf ist die Navigation: Pinsel in `--color-accent`, daneben das
+  aktuelle Element als `SelectControl` mit `variant="title"`, rechts das
+  X. Darunter stehen die Abschnitte des Elements.
+- Abschnitte: Ein Element mit mehreren Einstellungsgruppen (z. B.
+  X Axis: Axis | Gridlines | Zoom, Legend: Legend | Interaction) zeigt
+  sie als `SegmentedControl` mit Icons; der Name steht im Tooltip und
+  im `aria-label`. Sichtbar ist nur der aktive Abschnitt, keine
+  Collapsibles im Popover. Ein Element mit einem Abschnitt zeigt kein
+  Segmented Control. Jeder Abschnitt rendert sein Widget `bare`.
+  Verhalten ohne Element im Chart (z. B. Legend Selection Mode, Zoom)
+  ist ein eigener Abschnitt des Elements, das es betrifft.
+- Der aktive Abschnitt wird über seinen Namen gemerkt: Wechselt man das
+  Element und es hat einen Abschnitt gleichen Namens (Gridlines von
+  X Axis zu Y Axis), bleibt dieser aktiv, sonst der erste.
 - Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel,
   Achsen-Labels, Legende oder eine Mark zeigt eine Region (bei Labels
   und Legende um alle Einträge, bei Marks um die einzelne Mark, bei

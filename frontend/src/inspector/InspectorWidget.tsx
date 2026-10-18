@@ -14,6 +14,7 @@ type InspectorWidgetProps = {
   children: ReactNode
   defaultOpen?: boolean
   visibility?: {
+    label?: string
     visible: boolean
     onChange: (visible: boolean) => void
   }
@@ -34,13 +35,14 @@ function InspectorWidget({
   // Bare renders only the controls, e.g. in a format popover; visibility
   // becomes a row, since there is no header for the eye button.
   if (variant === 'bare') {
+    const visibilityLabel = visibility?.label ?? 'Visible'
     return (
       <div className="stack inspector-widget-content">
         {visibility ? (
-          <ControlRow label="Visible">
+          <ControlRow label={visibilityLabel}>
             <Toggle
               checked={visibility.visible}
-              label={`Show ${title.toLowerCase()}`}
+              label={`${title} ${visibilityLabel.toLowerCase()}`}
               onCheckedChange={visibility.onChange}
             />
           </ControlRow>

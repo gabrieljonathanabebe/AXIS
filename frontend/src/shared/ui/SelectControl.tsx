@@ -7,21 +7,26 @@ import Popover from './Popover'
 
 import type { OptionItem } from './OptionsMenu'
 
+type SelectControlVariant = 'field' | 'title'
+
 type SelectControlProps<TValue extends string> = {
   disabled?: boolean
   label: string
   options: OptionItem<TValue>[]
   value: TValue
   placeholder?: string
+  variant?: SelectControlVariant
   onChange: (value: TValue) => void
 }
 
+/** Picks one option from a menu; the title variant reads as a heading. */
 function SelectControl<TValue extends string>({
   disabled = false,
   label,
   options,
   value,
   placeholder,
+  variant = 'field',
   onChange,
 }: SelectControlProps<TValue>) {
   const [isOpen, setIsOpen] = useState(false)
@@ -35,14 +40,14 @@ function SelectControl<TValue extends string>({
   }
 
   return (
-    <div className="select-control">
+    <div className={`select-control ${variant === 'title' ? 'is-title' : ''}`}>
       <Popover
         label={`${label} options`}
         open={isOpen}
         className="options-menu-popover glass glass-thick"
         placement="bottom-start"
         role="listbox"
-        matchTriggerWidth
+        matchTriggerWidth={variant === 'field'}
         onOpenChange={setIsOpen}
         renderTrigger={(triggerProps) => (
           <Button

@@ -44,7 +44,7 @@ type PopoverProps = {
   matchTriggerWidth?: boolean
   onOpenChange: (open: boolean) => void
   renderTrigger?: (props: PopoverTriggerProps) => ReactNode
-  title?: string
+  title?: ReactNode
 }
 
 /** Floating surface of one popover, positioned at its trigger or anchor. */
@@ -144,7 +144,7 @@ function PopoverNode({
                   <header className="popover-header">
                     <h2 className="popover-title">{title}</h2>
                     <IconButton
-                      label={`Close ${title}`}
+                      label={`Close ${label.toLowerCase()}`}
                       size="xs"
                       variant="ghost"
                       onClick={() => onOpenChange(false)}

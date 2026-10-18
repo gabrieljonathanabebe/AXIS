@@ -1,5 +1,10 @@
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
-import type { ChartInstance, ChartSpec, ChartType } from './types'
+import type {
+  ChartInstance,
+  ChartSpec,
+  ChartType,
+  GridAppearance,
+} from './types'
 import type { ObjectContainer, ObjectLayout } from '../objects/types'
 import type { TextStyle } from '../shared/textStyle'
 import {
@@ -14,6 +19,14 @@ const CHART_TEXT_STYLE: TextStyle = {
   fontSize: 12,
   fontStyle: 'normal',
   fontWeight: 'medium',
+}
+
+/** Default gridlines; each axis draws its own. */
+const CHART_GRID_LINES: GridAppearance = {
+  color: '#334155',
+  lineStyle: 'solid',
+  opacity: 0.08,
+  visible: true,
 }
 
 type CreateChartInstanceParams = {
@@ -58,12 +71,6 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           labels: true,
         },
       },
-      grid: {
-        visible: true,
-        color: '#334155',
-        opacity: 0.08,
-        lineStyle: 'solid',
-      },
       title: {
         visible: true,
         text: '',
@@ -82,6 +89,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         max: null,
         format: 'auto',
         currency: 'EUR',
+        gridLines: CHART_GRID_LINES,
         labels: {
           rotation: 0,
           textStyle: CHART_TEXT_STYLE,
@@ -96,6 +104,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         max: null,
         format: 'auto',
         currency: 'EUR',
+        gridLines: CHART_GRID_LINES,
         labels: {
           rotation: 0,
           textStyle: CHART_TEXT_STYLE,

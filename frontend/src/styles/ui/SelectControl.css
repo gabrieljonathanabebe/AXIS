@@ -18,3 +18,25 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.select-control.is-title {
+  width: auto;
+}
+
+.select-control.is-title .select-control-button {
+  --spread-gap: var(--space-1);
+
+  width: auto;
+  height: auto;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  background: transparent;
+  border-color: transparent;
+}
+
+.select-control.is-title .select-control-button:hover {
+  color: var(--color-accent-hover);
+  background: transparent;
+  border-color: transparent;
+}

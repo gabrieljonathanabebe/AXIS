@@ -6,11 +6,13 @@ import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Slider from '../../shared/ui/Slider'
 import InspectorWidget from '../InspectorWidget'
 
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 import type { GridAppearance, LineStyle } from '../../charts/types'
 
 type GridWidgetProps = {
   value: GridAppearance
   onChange: (value: GridAppearance) => void
+  variant?: InspectorWidgetVariant
 }
 
 const lineStyleOptions = [
@@ -19,10 +21,11 @@ const lineStyleOptions = [
   { label: 'Dotted', value: 'dotted' },
 ] satisfies { label: string; value: LineStyle }[]
 
-function GridWidget({ value, onChange }: GridWidgetProps) {
+/** Edits the gridlines of one axis: color, opacity and line style. */
+function GridWidget({ value, onChange, variant }: GridWidgetProps) {
   return (
     <InspectorWidget
-      title="Grid"
+      title="Gridlines"
       icon={<Grid2X2 size={16} />}
       visibility={{
         visible: value.visible,
@@ -30,6 +33,7 @@ function GridWidget({ value, onChange }: GridWidgetProps) {
           onChange({ ...value, visible })
         },
       }}
+      variant={variant}
     >
       <ControlRow label="Color">
         <ColorControl

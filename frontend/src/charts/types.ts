@@ -20,6 +20,7 @@ export type AxisAppearance = {
   max: number | null
   format: AxisFormat
   currency: CurrencyCode
+  gridLines: GridAppearance
   labels: AxisLabelsAppearance
   titleStyle: TextStyle
 }
@@ -53,7 +54,6 @@ export type ChartAppearanceSpec = {
   color: string
   colorScale: ColorScaleAppearance
   title: ObjectTitleAppearance
-  grid: GridAppearance
   xAxis: AxisAppearance
   yAxis: AxisAppearance
   labels: LabelsAppearance

@@ -3,7 +3,6 @@ import { isLegendRelevant } from '../charts/isLegendRelevant'
 import { isRadialChartType } from '../charts/chartDefinitions'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import TooltipWidget from './interaction/TooltipWidget'
-import ZoomWidget from './interaction/ZoomWidget'
 
 import type { ChartInspectorProps } from './types'
 
@@ -32,14 +31,6 @@ function InteractionInspectorTab({
           actions.setInteraction('tooltip', tooltip)
         }}
       />
-      {!isRadialChart ? (
-        <ZoomWidget
-          value={interaction.zoom}
-          onChange={(zoom) => {
-            actions.setInteraction('zoom', zoom)
-          }}
-        />
-      ) : null}
       <AnimationWidget
         value={interaction.animation}
         onChange={(animation) => {

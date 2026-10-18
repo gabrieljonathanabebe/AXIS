@@ -741,7 +741,8 @@ Bisher umgesetzt (Titel, X- und Y-Achse, Legende):
   gedrückt, solange es offen ist (`isActive`), und ohne ausgewählten
   Chart deaktiviert; Anker über `data-object-id`
 - Popover neben dem Chart (`right-start`, weicht nach links aus) mit
-  Header „Format“, Schließen-Button, Zeile „Element“
+  Header „Format“ (inzwischen Element-Dropdown im Kopf, siehe
+  „Inspector entfernen“), Schließen-Button, Zeile „Element“
   (`SelectControl`) und dem Widget des Elements in der Variante
   `bare`; die Elemente kommen aus `getFormatElements` (Titel immer,
   Achsen nur kartesisch, Legende wie `isLegendRelevant`)
@@ -786,12 +787,13 @@ Als Nächstes:
    statt Abschnitten im Popover)
 2. Serien-Klick für Marks und Farben (in Arbeit, siehe „Marks als
    Format-Element“)
-3. Toolbar-Trigger für Container und Hintergrund
+3. ~~Toolbar-Trigger für Container und Hintergrund~~ ersetzt durch das
+   Element „Chart“ (siehe „Inspector entfernen“)
 4. X für Encodings im Build Panel
 
 Neue Widgets entstehen nicht mehr in `inspector/` (siehe
-Dashboard-Objekte). Offen: wann die bestehenden Widgets aus
-`inspector/` umziehen. Ebenfalls offen: ob der Pinsel
+Dashboard-Objekte). Die bestehenden Widgets ziehen zum Abschluss von
+„Inspector entfernen“ um. Offen: ob der Pinsel
 ohne ausgewählten Chart die Dashboard-Einstellungen öffnet, statt
 deaktiviert zu sein.
 
@@ -1031,6 +1033,78 @@ Umgesetzt:
   voller Deckkraft, Data Labels, Achsen und Legendentext treten zurück
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser noch offen
+
+### Inspector entfernen (in Arbeit)
+
+Der Inspector (rechtes Panel) entfällt. Jede Einstellung, die heute
+dort liegt, ist danach direkt am Objekt erreichbar: im Format-Popover
+eines Elements oder über die Canvas-Toolbar für Einstellungen ohne
+eigenes Element (siehe `PRODUCT_VISION.md`, „Bearbeitung am Chart“).
+
+Grundprinzip: Was ein sichtbares Element betrifft, gehört in dessen
+Popover. Verhalten ohne eigenes Element gehört zum Element „Chart“ oder
+in die Dashboard-Einstellungen.
+
+Beschlossen (Einstellung → neuer Ort, in dieser Reihenfolge):
+
+1. Legend Selection Mode → Legend-Popover, Abschnitt „Interaction“;
+   Pilot für das Muster „Abschnitte eines Elements“ (inzwischen per
+   Segmented Control, siehe unten)
+2. Gridlines → Achsen-Popover; horizontale Linien an der Y-Achse,
+   vertikale an der X-Achse (`splitLine` pro Achse); dafür wird
+   `appearance.grid` pro Achse aufgeteilt; kein eigenes Element
+3. Zoom (inside, slider) → X-Achsen-Popover, Abschnitt „Zoom“;
+   später eventuell der Slider als eigenes Element
+4. neues Element „Chart“ (generisch `container`, auch für Cards): Klick
+   auf eine freie Fläche im Format-Modus; Inhalt `ContainerWidget`
+   (Hintergrund, Padding, Radius), neu ein Rahmen; ersetzt den
+   Toolbar-Trigger für Container und Hintergrund
+5. Tooltip → eigenes Element im Dropdown (nicht anklickbar), im
+   Marks-Popover eine Zeile, die dorthin wechselt; solange das Element
+   offen ist, bleibt der echte Tooltip an einem Datenpunkt sichtbar
+   (Editor-Zustand im Adapter, analog zu `syncFormatFocus`); kein
+   Control für `valueFormat` (siehe `TODO.md`)
+6. Datenlabels → Abschnitt im Marks-Popover
+7. Color Scale → eigenes Element im Dropdown, wenn die Farbe
+   kontinuierlich ist; möglichst auch anklickbar wie die Legende
+8. Animation → nur Dashboard-Einstellung, gilt für alle Charts (und
+   Cards, wenn möglich); `ChartInteractionSpec.animation` entfällt
+9. Dashboard-Einstellungen (Layout-Gap, Animation) hinter einem
+   Trigger in der Canvas-Toolbar; der Name bleibt inline auf der Canvas
+10. Data-Tab (Charttyp, Encodings, Aggregation) → zunächst unverändert
+    ins Build Panel; die genaue Struktur folgt danach
+11. Abschluss: Widgets nach Domäne umziehen, `InspectorPanel`, Tabs,
+    `layout.toggleInspector` (Cmd+I) und das Panel-Layout entfernen;
+    vorher die Liste „Einstellung → neuer Ort“ abhaken
+
+Umgesetzt:
+
+- Legend-Popover mit Abschnitt „Interaction“ (`LegendInteractionWidget`,
+  `enabled` und Selection Mode), über dieselbe Action
+  `chart/updateInteraction`
+- Gridlines pro Achse: `AxisAppearance.gridLines` (Default
+  `CHART_GRID_LINES`, auf beiden Achsen sichtbar) ersetzt
+  `appearance.grid`; der Adapter erzeugt `splitLine` je Achse über
+  `createSplitLineOption`, eine ausgeblendete Achse blendet ihre
+  Gridlines mit aus
+- Achsen-Popover: „X Axis“ bzw. „Y Axis“ zeigt `GridWidget` als
+  Abschnitt „Gridlines“ unter dem Achsen-Widget, nicht bei den Labels;
+  im Inspector entfällt das Grid-Widget
+- X-Achsen-Popover: Abschnitt „Zoom“ (`ZoomWidget`, Mode inside,
+  slider oder beides); im Inspector entfällt das Zoom-Widget
+- Abschnitte im Popover per Segmented Control (ersetzt die
+  Collapsibles, die im Popover überlappten): `ObjectFormatPopover`
+  nimmt `sections` (Name, optionales Icon, Inhalt) statt `children`,
+  zeigt ab zwei Abschnitten ein `SegmentedControl` mit Icons und nur
+  den aktiven Abschnitt; gemerkt über den Namen
+- Kopf des Popovers: Pinsel plus Element-Dropdown
+  (`SelectControl` mit `variant="title"`) statt Header „Format“ und
+  Zeile „Element“; `Popover.title` ist ein Slot
+- Widgets im Popover durchgehend `bare` (`variant` an `GridWidget`,
+  `ZoomWidget`, `LegendInteractionWidget`); Verhalten heißt in der
+  ersten Zeile „Enabled“ (`visibility.label`)
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
 
 ## 6. Later – Visualization Completion
 

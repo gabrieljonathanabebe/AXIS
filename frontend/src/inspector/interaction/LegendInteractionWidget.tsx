@@ -4,6 +4,7 @@ import ControlRow from '../../shared/ui/ControlRow'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import InspectorWidget from '../InspectorWidget'
 
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 import type {
   ChartInteractionSpec,
   LegendSelectionMode,
@@ -12,6 +13,7 @@ import type {
 type LegendInteractionWidgetProps = {
   value: ChartInteractionSpec['legend']
   onChange: (value: ChartInteractionSpec['legend']) => void
+  variant?: InspectorWidgetVariant
 }
 
 // ===== GLOBAL CONSTANTS ======================================================
@@ -24,21 +26,24 @@ const selectionModeOptions = [
 }[]
 
 // ===== COMPONENT =============================================================
+/** Edits whether legend clicks select series, one or several at a time. */
 function LegendInteractionWidget({
   value,
   onChange,
+  variant,
 }: LegendInteractionWidgetProps) {
-  // ===== RETURN ==============================================================
   return (
     <InspectorWidget
-      title="Legend Interaction"
+      title="Interaction"
       icon={<ListChecks size={16} />}
       visibility={{
+        label: 'Enabled',
         visible: value.enabled,
         onChange: (enabled) => {
           onChange({ ...value, enabled })
         },
       }}
+      variant={variant}
     >
       <ControlRow label="Selection">
         <SegmentedControl

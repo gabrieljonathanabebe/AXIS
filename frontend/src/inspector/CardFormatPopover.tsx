@@ -114,12 +114,13 @@ function CardFormatPopover(props: CardFormatPopoverProps) {
       element={element}
       elementOptions={elementOptions}
       label="Card format"
+      sections={[
+        { content: renderFormatWidget(element, props), label: 'Format' },
+      ]}
       target={target}
       onClose={onClose}
       onElementChange={onElementChange}
-    >
-      {renderFormatWidget(element, props)}
-    </ObjectFormatPopover>
+    />
   )
 }
 
