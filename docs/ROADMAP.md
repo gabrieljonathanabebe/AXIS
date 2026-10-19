@@ -667,6 +667,21 @@ Kleiner Layout-Slice nach dem Refactoring:
 - verifiziert: `npm run build`, `npm run lint`, Prettier; Tooltips und
   Enter/Escape im Browser
 
+### Backend-Tests (implementiert)
+
+Erster Teil des To-do-Punkts „Tests für Backend und Frontend“:
+
+- pytest und httpx als Dev-Abhängigkeiten (`uv add --dev`), Konfiguration
+  in `backend/pyproject.toml`, Aufruf `uv run pytest`
+- Tests für die Query-Schicht: Filter (Werte, Bereiche, UND-Verknüpfung,
+  Validierung), Chart-Query (Sortierung, Serien, Filter vor der
+  Aggregation, Validierung), Card-Query (Zeilen zählen, Selection als
+  Filter, leeres Ergebnis, Validierung)
+- API-Tests über `TestClient`: Health, Demo-Dataset beim Start,
+  gefilterte Card-Query, 422 mit Meldung, 404 für unbekannte Datasets
+- verifiziert: 28 Tests grün, `uv sync --frozen` ohne Änderungen
+- offen: Frontend-Tests, CI-Pipeline (siehe `TODO.md`)
+
 ### TODO-Abarbeitung (in Arbeit)
 
 Slice zum Abarbeiten von `docs/TODO.md`, erst Bugs, dann Struktur und

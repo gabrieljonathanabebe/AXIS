@@ -121,13 +121,13 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - `card-query` liefert dann `value: number | string | null`;
   Zahlenformate gelten nur für Zahlen
 
-## Tests für Backend und Frontend
+## Tests für das Frontend
 
 - steht zeitnah an
-- Backend: Tests mit pytest, ausgeführt über `uv run pytest`
-- Frontend: passende Tests für die Frontend-Logik, Test-Framework
-  noch zu entscheiden
-- aktuell gibt es weder im Backend noch im Frontend Tests
+- passende Tests für die Frontend-Logik, Test-Framework noch zu
+  entscheiden
+- das Backend hat seit dem Slice „Backend-Tests“ pytest-Tests
+  (siehe `docs/ROADMAP.md`)
 
 ## CI-Pipeline mit GitHub Actions und Docker-Images
 

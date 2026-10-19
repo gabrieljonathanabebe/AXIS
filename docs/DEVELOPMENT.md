@@ -212,6 +212,17 @@ npm run build
 `npm run format` formatiert neben dem Frontend auch `docs/`, `AGENTS.md`
 und `README.md`.
 
+Nach relevanten Backend-Änderungen, im Ordner `backend/`:
+
+```bash
+uv run pytest
+```
+
+Die Tests liegen in `backend/tests/` (pytest, Dev-Abhängigkeit über
+`uv add --dev`). Fixtures in `conftest.py`: ein kleines Sales-Dataset mit
+von Hand prüfbaren Summen und ein `TestClient`, der die App ohne Server
+startet und dabei das Demo-Dataset lädt.
+
 Bei der Arbeit in Vertical Slices werden diese beiden Befehle einmalig
 am Ende des vollständigen Slices ausgeführt, nicht nach jedem einzelnen
 Implementierungsblock.
