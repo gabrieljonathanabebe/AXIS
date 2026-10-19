@@ -1,5 +1,6 @@
 import CardValueWidget from '../cards/CardValueWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
+import ContainerWidget from './appearance/ContainerWidget'
 import InspectorWidget from './InspectorWidget'
 import ObjectFormatPopover from '../objects/ObjectFormatPopover'
 import TextStyleControls from '../shared/ui/TextStyleControls'
@@ -26,6 +27,7 @@ type CardFormatPopoverProps = {
 
 // ===== CONSTANTS =============================================================
 const elementOptions: FormatElementOption<CardFormatElement>[] = [
+  { label: 'Card', value: 'container' },
   { label: 'Title', value: 'title' },
   { label: 'Value', value: 'value' },
   { label: 'Selection', value: 'selectionLabel' },
@@ -36,7 +38,7 @@ const elementOptions: FormatElementOption<CardFormatElement>[] = [
  * Picks the widget of one card element.
  * @param element Element in the popover.
  * @param props Card, its fields and the actions that change it.
- * @returns The title widget or the value widget.
+ * @returns The widget of the element.
  */
 function renderFormatWidget(
   element: CardFormatElement,
@@ -44,6 +46,16 @@ function renderFormatWidget(
 ): ReactNode {
   const { appearance, data } = card.spec
   switch (element) {
+    case 'container':
+      return (
+        <ContainerWidget
+          value={card.container}
+          variant="bare"
+          onChange={(key, value) =>
+            actions.updateObjectContainer(card.id, { [key]: value })
+          }
+        />
+      )
     case 'selectionLabel':
       return (
         <InspectorWidget

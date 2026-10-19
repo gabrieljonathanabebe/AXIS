@@ -1,10 +1,12 @@
 import type {
+  ContainerFormatElement,
   DashboardObjectBase,
   ElementRect,
   ObjectTitleAppearance,
 } from '../objects/types'
 import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
+import type { LineStyle } from '../shared/strokeStyle'
 
 // ===== AGGREGATION ===========================================================
 export type Aggregation =
@@ -81,6 +83,7 @@ export type ChartEncoding = {
 /** Chart elements that can be formatted directly on the chart. */
 export type ChartFormatElement =
   | keyof Pick<ChartAppearanceSpec, 'legend' | 'title' | 'xAxis' | 'yAxis'>
+  | ContainerFormatElement
   | 'marks'
   | 'xAxisLabels'
   | 'yAxisLabels'
@@ -195,8 +198,6 @@ export type LineAppearance = {
   areaColor: string
   areaOpacity: number
 }
-
-export type LineStyle = 'solid' | 'dashed' | 'dotted'
 
 // ===== SCATTER ===============================================================
 export type ScatterAppearance = {

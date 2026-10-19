@@ -72,13 +72,13 @@ function App() {
   const selectedObject = objects.find(({ id }) => id === selectedObjectId)
   const selectedCard = selectedObject?.kind === 'card' ? selectedObject : null
 
-  /** Opens the format popover of an object at its title, next to it. */
+  /** Opens the format popover of an object at its container, next to it. */
   function openObjectFormat(objectId: string): void {
     const anchor = document.querySelector<HTMLElement>(
       `[data-object-id="${objectId}"]`,
     )
     if (anchor) {
-      setFormatTarget({ anchor, element: 'title', objectId })
+      setFormatTarget({ anchor, element: 'container', objectId })
     }
   }
 

@@ -6,8 +6,9 @@ import CommandButton from '../app/CommandButton'
 import { getObjectDefinition } from './objectDefinitions'
 import { getRectStyle } from './elementRect'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
+import { getStrokeBorderCss } from '../shared/strokeStyle'
 
-import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
+import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import type { WorkspaceCommands } from '../app/types'
 import type { GridDelta } from '../workspace/chartLayout'
 import type {
@@ -79,6 +80,7 @@ const layoutHandleModes: ObjectLayoutMode[] = [
 ]
 
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
+  container: 'Format container',
   legend: 'Format legend',
   marks: 'Format marks',
   selectionLabel: 'Format selection label',
@@ -235,6 +237,14 @@ function ObjectFrame({
     }
   }
 
+  /** In format mode, a click on free space formats the object as a whole. */
+  function handleClick(event: MouseEvent<HTMLDivElement>): void {
+    const target = event.target as HTMLElement
+    if (isFormatMode && !target.closest('button, .chart-layout-handle')) {
+      openFormat('container')
+    }
+  }
+
   return (
     <div
       aria-label={label}
@@ -246,12 +256,20 @@ function ObjectFrame({
       role="group"
       style={frameStyle}
       tabIndex={0}
+      onClick={handleClick}
       onFocus={() => actions.selectObject(object.id)}
       onKeyDown={handleKeyDown}
       onPointerDown={() => actions.selectObject(object.id)}
       onPointerLeave={() => setFormatHint(null)}
     >
       {children(showFormatHint)}
+      {container.border.width > 0 ? (
+        <span
+          aria-hidden="true"
+          className="chart-item-border"
+          style={getStrokeBorderCss(container.border)}
+        />
+      ) : null}
       {isFormatMode && formatHint ? (
         <button
           aria-label={formatRegionLabels[formatHint.element]}
@@ -260,6 +278,14 @@ function ObjectFrame({
           type="button"
           onClick={() => openFormat(formatHint.element)}
           onPointerLeave={() => setFormatHint(null)}
+        />
+      ) : null}
+      {isFormatMode && !formatHint ? (
+        <span
+          aria-hidden="true"
+          className={`chart-format-region is-container ${
+            formattedElement === 'container' ? 'is-active' : ''
+          }`}
         />
       ) : null}
       {isSelected ? (

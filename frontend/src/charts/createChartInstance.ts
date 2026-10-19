@@ -38,6 +38,7 @@ type CreateChartInstanceParams = {
 export function createDefaultChartContainer(): ObjectContainer {
   return {
     background: { kind: 'surface' },
+    border: { color: '#94a3b8', lineStyle: 'solid', opacity: 1, width: 0 },
     padding: 4,
     borderRadius: 24,
   }

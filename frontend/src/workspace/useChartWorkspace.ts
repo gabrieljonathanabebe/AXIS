@@ -14,7 +14,11 @@ import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type { CevynActionResult } from '../actions/types'
 import type { ChartAppearanceSpec } from '../charts/types'
 import type { Dataset } from '../datasets/types'
-import type { ObjectLayout, ObjectTemplate } from '../objects/types'
+import type {
+  ObjectContainer,
+  ObjectLayout,
+  ObjectTemplate,
+} from '../objects/types'
 import type { CanvasActions, DataSelection, WorkspaceAction } from './types'
 
 type UseChartWorkspaceParams = {
@@ -143,6 +147,14 @@ export function useChartWorkspace({
     })
   }
 
+  /** Changes background, padding or corner radius of an object's container. */
+  function updateObjectContainer(
+    objectId: string,
+    patch: Partial<ObjectContainer>,
+  ): void {
+    dispatch({ type: 'object/updateContainer', objectId, patch })
+  }
+
   /** Moves or resizes an object. */
   function updateObjectLayout(objectId: string, layout: ObjectLayout): void {
     dispatch({ type: 'object/updateLayout', objectId, patch: layout })
@@ -159,6 +171,7 @@ export function useChartWorkspace({
     updateCardAppearance,
     updateCardData,
     updateChartAppearance,
+    updateObjectContainer,
     updateObjectLayout,
   }
 

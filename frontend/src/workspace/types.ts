@@ -128,6 +128,10 @@ export type CanvasActions = {
     key: TKey,
     value: ChartAppearanceSpec[TKey],
   ) => void
+  updateObjectContainer: (
+    objectId: string,
+    patch: Partial<ObjectContainer>,
+  ) => void
   updateObjectLayout: (objectId: string, layout: ObjectLayout) => void
 }
 

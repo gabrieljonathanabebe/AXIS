@@ -355,6 +355,13 @@ oder Zahlenformat bleiben Felder des Elements.
 - Sichtbarkeit eines dargestellten Elements heißt `visible`; `enabled`
   steht nur für Interaktion (Tooltip, Zoom, Animation, Legend-Auswahl)
 
+Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
+`src/shared/strokeStyle.ts` (`color`, `lineStyle`, `opacity`, `width`;
+`LineStyle` liegt ebenfalls dort). Aktuell nutzt ihn der Rahmen des
+Containers (`ObjectContainer.border`); HTML setzt ihn über
+`getStrokeBorderCss`. Gridlines und Linien-Marks haben noch eigene
+Felder.
+
 ### Container vs. Content
 
 Jedes Objekt auf der Canvas besteht aus einem generischen Frame und
@@ -408,8 +415,8 @@ ECharts click/mouseover (axisName)
 ```
 
 Das Formatieren am Objekt startet über den Command `object.format`
-(Pinsel in der Canvas-Toolbar). Er öffnet das Popover beim Titel des
-ausgewählten Objekts oder schließt es; das Objekt als Anker findet
+(Pinsel in der Canvas-Toolbar). Er öffnet das Popover mit dem Element
+`container` (das Objekt als Ganzes) oder schließt es; das Objekt als Anker findet
 `App` über `data-object-id` am `ObjectFrame`. Solange das Popover für
 ein Objekt offen ist, ist es im Format-Modus: Achsentitel, Achsen-Labels,
 Legende und Marks melden ihren Hover über Adapter-Events
@@ -432,7 +439,7 @@ Inspector-Widgets.
 
 ```text
 Pinsel (object.format)
-→ App.openObjectFormat: Anker per data-object-id, Element title
+→ App.openObjectFormat: Anker per data-object-id, Element container
 Region im Format-Modus (ObjectFrame)
 → onFormatElement(element, anchor) → ChartGrid ergänzt objectId
 beide
@@ -444,6 +451,14 @@ beide
 - `FormatTarget` (`objects/types.ts`) ist `anchor`, `element` und
   `objectId`. `ObjectFormatElement` ist die Union der formatierbaren
   Elemente aller Objekttypen (`ChartFormatElement | CardFormatElement`).
+  Beide enthalten `ContainerFormatElement` (`'container'`, in
+  `objects/types.ts`): das Objekt als Ganzes, im Dropdown „Chart“ bzw.
+  „Card“, mit `ContainerWidget` (Background, Padding, Radius, Rahmen).
+  Gewählt wird es im Format-Modus per Klick auf eine freie Fläche: Der
+  Frame behandelt jeden Klick, der keinen Button und kein Handle trifft,
+  als `container`; eine Region gibt es dafür nicht, nur eine Anzeige
+  ohne Pointer-Events. Beim Container blenden `syncFormatFocus` und
+  `getFormatFocusClassName` nichts ab.
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
   Elemente eines Charts: Schlüssel von `ChartAppearanceSpec`
   (`legend | title | xAxis | yAxis`) plus `xAxisLabels | yAxisLabels`
@@ -460,8 +475,8 @@ beide
   `xAxis` zusätzlich „Zoom“ (`interaction.zoom`, wirkt auf die
   X-Achse), `legend` „Interaction“ (`interaction.legend`).
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
-  Elemente ein Chart hat: Titel und Marks immer, Achsen und ihre Labels nur
-  kartesisch, Legende wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
+  Elemente ein Chart hat: Container, Titel und Marks immer, Achsen und
+  ihre Labels nur kartesisch, Legende wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
   `formatTarget.element`.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
@@ -695,6 +710,7 @@ type ObjectLayout = {
 
 type ObjectContainer = {
   background: ObjectBackground
+  border: StrokeStyle // width 0: kein Rahmen
   padding: number
   borderRadius: number
 }

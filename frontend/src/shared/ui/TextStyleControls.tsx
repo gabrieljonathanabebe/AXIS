@@ -1,5 +1,6 @@
 import ColorControl from './ColorControl'
 import ControlRow from './ControlRow'
+import { getRowLabel } from './getRowLabel'
 import FontWeightControl from './FontWeightControl'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
@@ -21,17 +22,6 @@ const fontStyleOptions = [
   { label: 'Normal', value: 'normal' },
   { label: 'Italic', value: 'italic' },
 ] satisfies { label: string; value: FontStyle }[]
-
-// ===== HELPERS ===============================================================
-/**
- * Names one row; a prefix tells two texts of one widget apart.
- * @param name Row name, e.g. "Color".
- * @param prefix Text the row belongs to, e.g. "Title".
- * @returns "Color" without prefix, "Title color" with it.
- */
-function getRowLabel(name: string, prefix?: string): string {
-  return prefix ? `${prefix} ${name.toLowerCase()}` : name
-}
 
 // ===== COMPONENT =============================================================
 /**

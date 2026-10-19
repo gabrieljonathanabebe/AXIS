@@ -12,7 +12,8 @@ import InspectorWidget from '../InspectorWidget'
 
 import type { ChartInspectorProps } from '../types'
 import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { LineStyle, ScatterSymbol } from '../../charts/types'
+import type { ScatterSymbol } from '../../charts/types'
+import type { LineStyle } from '../../shared/strokeStyle'
 
 type MarkSeriesWidgetProps = Pick<
   ChartInspectorProps,

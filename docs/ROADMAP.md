@@ -1057,9 +1057,15 @@ Beschlossen (Einstellung → neuer Ort, in dieser Reihenfolge):
    später eventuell der Slider als eigenes Element
 4. neues Element „Chart“ (generisch `container`, auch für Cards): Klick
    auf eine freie Fläche im Format-Modus; Inhalt `ContainerWidget`
-   (Hintergrund, Padding, Radius), neu ein Rahmen; ersetzt den
-   Toolbar-Trigger für Container und Hintergrund
-5. Tooltip → eigenes Element im Dropdown (nicht anklickbar), im
+   (Hintergrund, Padding, Radius), neu ein Rahmen (Breite, Stil, Farbe,
+   Deckkraft als gemeinsamer `StrokeStyle` mit `StrokeStyleControls`,
+   analog zu `TextStyle`); ersetzt den Toolbar-Trigger für Container
+   und Hintergrund
+5. zuerst Format-Modus-Hover: Regionen und die Container-Fläche zeigen
+   beim Hover ein Label, was ein Klick formatiert (Texte aus
+   `formatRegionLabels`); im Format-Modus zeigt der Chart keinen
+   Daten-Tooltip. Danach Tooltip → eigenes Element im Dropdown (nicht
+   anklickbar), im
    Marks-Popover eine Zeile, die dorthin wechselt; solange das Element
    offen ist, bleibt der echte Tooltip an einem Datenpunkt sichtbar
    (Editor-Zustand im Adapter, analog zu `syncFormatFocus`); kein
@@ -1103,6 +1109,20 @@ Umgesetzt:
 - Widgets im Popover durchgehend `bare` (`variant` an `GridWidget`,
   `ZoomWidget`, `LegendInteractionWidget`); Verhalten heißt in der
   ersten Zeile „Enabled“ (`visibility.label`)
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
+- Element „Chart“: `ContainerFormatElement` (`container`) für Charts
+  und Cards, im Dropdown „Chart“ bzw. „Card“ an erster Stelle; der
+  Pinsel öffnet das Popover damit; `ContainerWidget` (`bare`) über
+  `setContainer` bzw. die neue Canvas-Action `updateObjectContainer`
+- Klick auf eine freie Fläche im Format-Modus wählt das Objekt;
+  Anzeige als Akzent-Schein mit Tönung (Hover halb, aktiv voll),
+  Pointer auch über dem ECharts-Canvas; beim Container wird nichts
+  abgeblendet
+- Rahmen als neues Container-Feature: `ObjectContainer.border` als
+  `StrokeStyle` (Breite, Stil, Farbe, Deckkraft; Default Breite 0),
+  gezeichnet als eigenes Element im Frame; `StrokeStyleControls` und
+  `getRowLabel` in `shared/ui`, `LineStyle` nach `shared/strokeStyle.ts`
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
 

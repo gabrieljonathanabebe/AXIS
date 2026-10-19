@@ -7,7 +7,8 @@ import Slider from '../../shared/ui/Slider'
 import InspectorWidget from '../InspectorWidget'
 
 import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { GridAppearance, LineStyle } from '../../charts/types'
+import type { GridAppearance } from '../../charts/types'
+import type { LineStyle } from '../../shared/strokeStyle'
 
 type GridWidgetProps = {
   value: GridAppearance

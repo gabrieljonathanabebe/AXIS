@@ -958,6 +958,20 @@ davor oder dahinter:
 Keine Varianten über Flags: Was ein Element zusätzlich braucht, ist eine
 eigene Zeile im Widget.
 
+## 9k. StrokeStyleControls
+
+`StrokeStyleControls` ist der Baustein für das Aussehen einer Linie oder
+eines Umrisses (`StrokeStyle`), nach demselben Muster wie
+`TextStyleControls`: Zeilen statt Rahmen, `label` für Screenreader,
+`rowLabelPrefix` für die sichtbaren Zeilennamen (`getRowLabel`, von
+beiden geteilt).
+
+- Width (`ScrubbableNumber`, 0 bis `maxWidth`, Standard 8; 0 heißt kein
+  Strich), Style (`SegmentedControl` Solid/Dashed/Dotted mit
+  `.line-style-preview`), Color (`ColorControl`), Opacity (`Slider`)
+- genutzt vom Rahmen im `ContainerWidget` („Border width“ …); Gridlines,
+  Linien-Marks und später Tables sollen ihn übernehmen
+
 ## 10. Legend
 
 Legend erklärt diskrete Series oder Kategorien.
@@ -1194,10 +1208,12 @@ ausgewählten Chart.
 ### Bearbeitung am Chart
 
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-Titel, Marks, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
+Chart als Ganzes, Titel, Marks, X- und Y-Achse, Labels der X- und
+Y-Achse, Legende):
 
 - Einstieg ist der Pinsel (`Paintbrush`) in der Canvas-Toolbar. Er
-  öffnet das Popover beim Titel des ausgewählten Charts, ist gedrückt,
+  öffnet das Popover mit dem Chart als Ganzem („Chart“, bei Cards
+  „Card“), ist gedrückt,
   solange es offen ist, und schließt es beim nächsten Klick. Ohne
   ausgewählten Chart ist er deaktiviert.
 - Das Popover steht neben dem Chart (`right-start`, weicht nach links
@@ -1227,6 +1243,13 @@ Titel, Marks, X- und Y-Achse, Labels der X- und Y-Achse, Legende):
   Legendeneinträge umzuschalten oder Daten zu selektieren; der Klick auf
   eine Mark formatiert alle Marks des Charts. Sie verschwindet, sobald der Pointer
   sie verlässt. Ohne offenes Popover gibt es keine Regionen.
+- Das Objekt als Ganzes hat keine Region, sondern eine Fläche über dem
+  ganzen Frame: Akzent-Schein nach innen plus leichte Akzent-Tönung
+  (`color-mix` mit `--color-accent`). Beim Hover über eine freie Stelle
+  erscheint sie halb stark (Vorschau), solange „Chart“/„Card“ bearbeitet
+  wird voll; ein Klick auf eine freie Stelle wählt das Objekt. Freie
+  Fläche zeigt im Format-Modus `cursor: pointer`, auch über dem
+  ECharts-Canvas. Beim Objekt als Ganzem wird nichts abgeblendet.
 - Blauer Rahmen heißt „auswählen“, graue Fläche
   (`--color-surface-hover`) heißt „Text bearbeiten“: Außerhalb des
   Format-Modus bleibt ein Klick auf Chart- oder Achsentitel

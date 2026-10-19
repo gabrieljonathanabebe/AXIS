@@ -1,5 +1,6 @@
 import type { GroupAggregation } from '../charts/types'
 import type {
+  ContainerFormatElement,
   DashboardObjectBase,
   ObjectTitleAppearance,
 } from '../objects/types'
@@ -45,4 +46,5 @@ export type CardValueAppearance = {
 }
 
 // ===== FORMAT ================================================================
-export type CardFormatElement = keyof CardAppearanceSpec
+export type CardFormatElement =
+  ContainerFormatElement | keyof CardAppearanceSpec

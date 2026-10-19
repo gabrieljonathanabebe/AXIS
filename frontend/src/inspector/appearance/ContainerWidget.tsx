@@ -4,9 +4,11 @@ import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import Slider from '../../shared/ui/Slider'
+import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 import InspectorWidget from '../InspectorWidget'
 
 import type { ColorPreset } from '../../shared/ui/ColorControl'
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 import type { SetContainer } from '../types'
 import type {
   ObjectContainer,
@@ -17,6 +19,7 @@ import type {
 type ContainerWidgetProps = {
   value: ObjectContainer
   onChange: SetContainer
+  variant?: InspectorWidgetVariant
 }
 
 const backgroundPresets = [
@@ -40,9 +43,14 @@ function toBackground(value: string): ObjectBackground {
     : { kind: 'color', color: value }
 }
 
-function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
+/** Edits background, padding, corner radius and border of a container. */
+function ContainerWidget({ value, onChange, variant }: ContainerWidgetProps) {
   return (
-    <InspectorWidget title="Container" icon={<Frame size={16} />}>
+    <InspectorWidget
+      title="Container"
+      icon={<Frame size={16} />}
+      variant={variant}
+    >
       <ControlRow label="Background">
         <ColorControl
           label="Container background"
@@ -77,6 +85,12 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
           }}
         />
       </ControlRow>
+      <StrokeStyleControls
+        label="Container border"
+        rowLabelPrefix="Border"
+        value={value.border}
+        onChange={(border) => onChange('border', border)}
+      />
     </InspectorWidget>
   )
 }

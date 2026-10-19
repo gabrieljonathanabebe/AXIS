@@ -40,7 +40,8 @@ function createAxisFocus(
  * follow layout changes. The glow keeps the text colors, which the popover
  * edits; legend icons inherit the dimmed series opacity, so a formatted
  * legend resets it. Formatted marks keep their opacity without a glow,
- * since the popover edits their colors.
+ * since the popover edits their colors. The container is the whole chart,
+ * so nothing is dimmed.
  * @param instance ECharts instance of the chart.
  * @param formattedElement Element in the popover, or null when it is closed.
  * @param color Accent color of the glow.
@@ -50,7 +51,7 @@ export function syncFormatFocus(
   formattedElement: ChartFormatElement | null,
   color: string,
 ): void {
-  if (!formattedElement) {
+  if (!formattedElement || formattedElement === 'container') {
     return
   }
   const textGlow = { textShadowBlur: FOCUS_GLOW_BLUR, textShadowColor: color }

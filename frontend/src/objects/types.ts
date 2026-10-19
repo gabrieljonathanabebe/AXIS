@@ -5,6 +5,7 @@ import type {
 } from '../charts/types'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 import type { CardFormatElement, CardInstance } from '../cards/types'
+import type { StrokeStyle } from '../shared/strokeStyle'
 
 // ===== OBJECT ================================================================
 /** Fields every dashboard object has, whatever its content. */
@@ -39,6 +40,7 @@ export type ObjectSize = Pick<ObjectLayout, 'height' | 'width'>
 /** Formatting of the container around an object's content. */
 export type ObjectContainer = {
   background: ObjectBackground
+  border: StrokeStyle
   padding: number
   borderRadius: number
 }
@@ -67,6 +69,9 @@ export type ElementRect = {
 }
 
 // ===== FORMAT ================================================================
+/** The object as a whole, its container; chosen by a click on free space. */
+export type ContainerFormatElement = 'container'
+
 /** Elements that can be formatted on an object; grows with each kind. */
 export type ObjectFormatElement = ChartFormatElement | CardFormatElement
 

@@ -9,6 +9,7 @@ import {
 
 import AxisWidget from './appearance/AxisWidget'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
+import ContainerWidget from './appearance/ContainerWidget'
 import GridWidget from './appearance/GridWidget'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import LegendWidget from './appearance/LegendWidget'
@@ -36,6 +37,7 @@ type ChartFormatPopoverProps = ChartInspectorProps & {
 
 // ===== CONSTANTS =============================================================
 const elementTitles: Record<ChartFormatElement, string> = {
+  container: 'Chart',
   legend: 'Legend',
   marks: 'Marks',
   title: 'Title',
@@ -59,6 +61,19 @@ function getFormatSections(
 ): FormatSection[] {
   const { appearance, interaction } = chart.spec
   switch (element) {
+    case 'container':
+      return [
+        {
+          content: (
+            <ContainerWidget
+              value={chart.container}
+              variant="bare"
+              onChange={actions.setContainer}
+            />
+          ),
+          label: 'Chart',
+        },
+      ]
     case 'legend':
       return [
         {
