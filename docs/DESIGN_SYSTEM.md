@@ -972,6 +972,58 @@ beiden geteilt).
 - genutzt vom Rahmen im `ContainerWidget` („Border width“ …); Gridlines,
   Linien-Marks und später Tables sollen ihn übernehmen
 
+## 9l. Style-Bausteine und Abdeckung
+
+`TextStyle` ist das Muster für wiederkehrende Formatierung: ein Werttyp
+ohne Domänenwissen in `shared/`, eine Controls-Komponente mit immer
+denselben Zeilen und je eine Übersetzung pro Renderer (CSS, ECharts).
+In der Spec steht der Baustein als benanntes Unterobjekt (z. B.
+`title.textStyle`), damit ein Abschnitt im Popover genau einem Typ
+entspricht.
+
+Vorhandene Bausteine:
+
+- `TextStyle` mit `TextStyleControls` (siehe 9j)
+- `StrokeStyle` mit `StrokeStyleControls` (siehe 9k): erster Nutzer ist
+  der Container-Rahmen (`ObjectContainer.border`); Gridlines
+  (`GridAppearance`) und Linien-Marks (`LineAppearance`) haben noch
+  eigene Felder und sollen ihn übernehmen
+
+Ein neuer Baustein lohnt sich erst, wenn mindestens zwei Elemente ihn
+tatsächlich nutzen oder der zweite Nutzer konkret geplant ist. Mögliche
+weitere Bausteine (Idee, nicht beschlossen):
+
+- `NumberFormat`: Format, Währung, Nachkommastellen; heute getrennt in
+  `AxisAppearance`, `CardValueAppearance` und `tooltip.valueFormat`
+- `Fill`: Farbe und Deckkraft; heute im Container-Hintergrund, in der
+  Fläche unter Linien und in der Scatter-Deckkraft
+
+Die Matrix zeigt, welche Formatierung jedes Element heute hat. Sie dient
+als Planungsgrundlage: Eine Spalte mit vielen Lücken spricht für einen
+gemeinsamen Baustein.
+
+✓ vorhanden · ○ fehlt · – nicht sinnvoll
+
+| Element              | Text | Fill          | Stroke        | Zahlenformat            | Platzierung   |
+| -------------------- | ---- | ------------- | ------------- | ----------------------- | ------------- |
+| Titel (Chart, Card)  | ✓    | –             | –             | –                       | ✓ Ausrichtung |
+| Achsentitel          | ✓    | –             | –             | –                       | –             |
+| Achsenbeschriftung   | ✓    | –             | –             | ✓ ohne Nachkommastellen | ✓ Rotation    |
+| Achsenlinie          | –    | –             | ○             | –                       | –             |
+| Gridlines            | –    | –             | ✓ ohne Breite | –                       | –             |
+| Legende              | ✓    | ○             | –             | –                       | ✓ Position    |
+| Datenlabels          | ✓    | –             | –             | ○                       | ✓ Position    |
+| Marks Bar            | –    | ✓ Farbe       | ○ Rahmen      | –                       | –             |
+| Marks Line           | –    | ✓ Fläche      | ✓             | –                       | –             |
+| Marks Scatter        | –    | ✓ Deckkraft   | ○ Rand        | –                       | –             |
+| Container            | –    | ✓ Hintergrund | ✓ Rahmen      | –                       | ✓ Padding     |
+| Card-Wert            | ✓    | –             | –             | ✓ ohne Nachkommastellen | ○ Ausrichtung |
+| Card-Selection-Label | ✓    | –             | –             | –                       | –             |
+| Tooltip              | ○    | ○             | –             | ✓ ohne Währung          | –             |
+
+Die Matrix beschreibt den implementierten Stand und wird mit jedem
+neuen Baustein oder Element aktualisiert.
+
 ## 10. Legend
 
 Legend erklärt diskrete Series oder Kategorien.
