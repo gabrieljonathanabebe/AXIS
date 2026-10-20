@@ -682,6 +682,19 @@ Erster Teil des To-do-Punkts „Tests für Backend und Frontend“:
 - verifiziert: 28 Tests grün, `uv sync --frozen` ohne Änderungen
 - offen: Frontend-Tests, CI-Pipeline (siehe `TODO.md`)
 
+### Lesbare Upload-Fehler (implementiert)
+
+- eine leere, binäre oder fehlerhafte CSV (mehr Spalten als der
+  Header) führte zu einem 500er; `store.read_csv_frame` meldet jetzt
+  „The file could not be read as CSV.“, das Backend antwortet mit 422
+- eine CSV ohne Datenzeilen wird abgelehnt („The file has no data
+  rows.“) statt als leeres Dataset gespeichert
+- das Frontend zeigt den Grund aus dem Backend:
+  „Failed to upload dataset. The file has no data rows.“; das zuvor
+  geladene Dataset bleibt erhalten
+- verifiziert: `uv run pytest` (33 Tests, neu `tests/test_datasets.py`),
+  `npm run build`, `npm run lint`, Prettier; Upload im Browser
+
 ### TODO-Abarbeitung (in Arbeit)
 
 Slice zum Abarbeiten von `docs/TODO.md`, erst Bugs, dann Struktur und
