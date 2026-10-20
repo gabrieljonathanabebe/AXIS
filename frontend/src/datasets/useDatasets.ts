@@ -65,6 +65,11 @@ export function useDatasets(): useDatasetsResults {
     }
   }, [])
 
+  /**
+   * Uploads a CSV file and loads it as the current dataset. On failure the
+   * error names the reason from the backend, e.g. "The file has no data
+   * rows."
+   */
   async function uploadFile(file: File): Promise<void> {
     setIsLoading(true)
     setDatasetError(null)
@@ -72,8 +77,9 @@ export function useDatasets(): useDatasetsResults {
       const summary = await uploadDataset(file)
       setLoadedDataset(await loadDataset(summary))
       setSemanticRoleOverrides({})
-    } catch {
-      setDatasetError('Failed to upload dataset.')
+    } catch (error) {
+      const reason = error instanceof Error ? ` ${error.message}` : ''
+      setDatasetError(`Failed to upload dataset.${reason}`)
     } finally {
       setIsLoading(false)
     }

@@ -12,9 +12,20 @@ router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 @router.post("")
 async def create_dataset(file: UploadFile) -> DatasetSummary:
-    """Store an uploaded CSV file as a new dataset."""
+    """
+    Store an uploaded CSV file as a new dataset.
+    Args:
+        file: Uploaded CSV file.
+    Returns:
+        The summary of the new dataset.
+    Raises:
+        ValueError: If the file is no readable CSV or has no data rows;
+            answered with 422 and the message.
+    """
     content = await file.read()
     frame = store.read_csv_frame(BytesIO(content))
+    if frame.height == 0:
+        raise ValueError("The file has no data rows.")
     dataset_name = file.filename or "Untitled dataset"
     return store.register_dataset(str(uuid4()), dataset_name, frame)
 

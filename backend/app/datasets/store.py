@@ -37,13 +37,19 @@ def read_csv_frame(source: BytesIO | Path) -> pl.DataFrame:
         source: Uploaded file content or path to a CSV file.
     Returns:
         The rows, with detected dates and common null markers as nulls.
+    Raises:
+        ValueError: If the content cannot be read as CSV, e.g. an empty or
+            binary file or rows with more columns than the header.
     """
-    return pl.read_csv(
-        source,
-        try_parse_dates=True,
-        infer_schema_length=1000,
-        null_values=["", "-", "NA", "N/A", "null", "None"],
-    )
+    try:
+        return pl.read_csv(
+            source,
+            try_parse_dates=True,
+            infer_schema_length=1000,
+            null_values=["", "-", "NA", "N/A", "null", "None"],
+        )
+    except pl.exceptions.PolarsError as error:
+        raise ValueError("The file could not be read as CSV.") from error
 
 
 def register_dataset(
