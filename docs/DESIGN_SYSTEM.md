@@ -823,6 +823,16 @@ Fläche, keinen Rahmen und keinen Schatten; die Farben für Hover und
 `is-active` kommen weiter aus `.control`. Für ruhige Aktionen in
 Section-Headern.
 
+`Button` (mit Text) bietet `size` (`sm`: Höhe `--control-height-sm` wie
+die übrigen Controls einer `ControlRow`; ohne `size` bestimmt der
+Kontext die Höhe) und `variant` (`secondary`, Standard, Fläche wie
+Felder; `accent`, tonal: Akzent-Text auf `--color-accent-soft` mit
+Akzent-Rand, Hover mit `--shadow-accent`). `accent` hebt eine
+weiterführende Aktion hervor, z. B. „Edit ›“ von den Marks zum Tooltip.
+Ein solider Primary-Button ist bewusst nicht vorhanden: Er bleibt
+abschließenden Aktionen vorbehalten (Speichern, Bestätigen), die es im
+Editor bisher nicht gibt, weil Änderungen sofort wirken.
+
 ## 9d. StatWidget
 
 `StatWidget` ist eine ruhige Kennzahl-Kachel auf `Widget`-Basis (keine
@@ -1295,6 +1305,23 @@ Y-Achse, Legende):
   Legendeneinträge umzuschalten oder Daten zu selektieren; der Klick auf
   eine Mark formatiert alle Marks des Charts. Sie verschwindet, sobald der Pointer
   sie verlässt. Ohne offenes Popover gibt es keine Regionen.
+- Im Format-Modus folgt dem Pointer ein Label, das sagt, was ein Klick
+  formatiert („🖌 Format legend“, über freier Fläche „Format chart“
+  bzw. „Format card“). Es ersetzt dort den Daten-Tooltip: Was beim
+  Cursor steht, sagt, was hier passiert. Look von `.chip` mit
+  `--color-surface-overlay`, Akzent-Rand, `--shadow-sm` und Blur;
+  Abstand 12 px rechts unten, an rechtem und unterem Rand auf der
+  anderen Seite; nur Ein- und Ausblenden animiert. Der Text stammt aus
+  `formatRegionLabels`, dieselben Texte wie im `aria-label` der Region.
+- Im Format-Modus bietet der Chart keine Daten-Interaktion an: kein
+  Daten-Tooltip, kein Brush (eine bestehende Auswahl bleibt sichtbar).
+- Ausnahme Tooltip: Er hat kein klickbares Element, sondern einen
+  Eintrag im Element-Dropdown nach „Marks“; die Marks verweisen mit
+  einer Zeile „Tooltip“ und dem Button „Edit ›“ (`accent`) dorthin.
+  Solange „Tooltip“ formatiert wird, steht der echte Tooltip als
+  Vorschau am größten Wert, folgt nicht dem Pointer und zeigt jede
+  Änderung sofort; der übrige Chart ist abgeblendet. Kein eigenes
+  Vorschaufenster, keine Beispieldaten.
 - Das Objekt als Ganzes hat keine Region, sondern eine Fläche über dem
   ganzen Frame: Akzent-Schein nach innen plus leichte Akzent-Tönung
   (`color-mix` mit `--color-accent`). Beim Hover über eine freie Stelle

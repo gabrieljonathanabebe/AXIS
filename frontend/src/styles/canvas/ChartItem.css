@@ -146,6 +146,38 @@
   cursor: pointer;
 }
 
+/* Names what a click formats. Follows the pointer like a tooltip, with the
+   look of a chip; the frame writes its position, the click goes through. */
+.chart-format-label {
+  --chip-surface: var(--color-surface-overlay);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  font-size: var(--font-size-2xs);
+  font-weight: 600;
+  white-space: nowrap;
+  border-color: var(--color-border-accent);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(var(--blur-sm));
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(var(--format-label-x, 0), var(--format-label-y, 0));
+  transition: opacity var(--transition-fast);
+}
+
+.chart-format-label svg {
+  color: var(--color-accent);
+}
+
+.chart-item:hover > .chart-format-label {
+  opacity: 1;
+}
+
 /* The object as a whole: an inner accent glow with a light tint, on hover
    in format mode and while its container is formatted. Clicks go through
    to the frame. */

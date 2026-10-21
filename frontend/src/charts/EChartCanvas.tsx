@@ -13,6 +13,7 @@ import { createEChartOption } from './echarts/createEChartOption'
 import { createFormatHintFromEvent } from './echarts/createFormatHintFromEvent'
 import { syncBrush } from './echarts/createBrushOption'
 import { syncFormatFocus } from './echarts/syncFormatFocus'
+import { syncFormatTooltip } from './echarts/syncFormatTooltip'
 import {
   createAxisTitleEditFromEvent,
   isAxisTitleEvent,
@@ -236,8 +237,13 @@ function EChartCanvas({
       }),
       true,
     )
-    syncBrush(instance, chart, selection)
+    syncBrush(instance, chart, selection, formattedElement !== null)
     syncFormatFocus(instance, formattedElement, theme.accent)
+    syncFormatTooltip(
+      instance,
+      formattedElement,
+      chart.spec.interaction.tooltip.enabled,
+    )
     syncAxisTitleEdit(instance, editingAxisTitle)
   }, [
     chart,

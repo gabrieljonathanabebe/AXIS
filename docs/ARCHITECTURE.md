@@ -502,6 +502,22 @@ beide
   auf die Legende zurückgesetzt. Analog zu `syncAxisTitleEdit` und
   `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und
   verschwindet mit dem nächsten vollständigen `setOption`.
+- Im Format-Modus nimmt der Adapter dem Chart die Daten-Interaktion:
+  `syncFormatTooltip` versteckt den Tooltip (`hideTip`, `show: false`),
+  bei jedem Element einschließlich `container`. Beim Element `tooltip`
+  (nur im Dropdown, ohne Region) pinnt er ihn stattdessen als Vorschau:
+  `findPreviewPoint` sucht im gerenderten Option den größten Wert über
+  alle Serien (Zahlen, `[x, y]`-Paare, Objekte mit `value`),
+  `alwaysShowContent` und `triggerOn: 'none'` halten ihn fest, `showTip`
+  öffnet ihn. Ist der Tooltip ausgeschaltet, gibt es keine Vorschau.
+  `syncBrush` gibt den
+  Brush-Cursor ab (`brushType: false`), eine bestehende Auswahl bleibt
+  gezeichnet. Beides ist Editor-Zustand wie `syncFormatFocus`.
+- Das Format-Label am Pointer gehört dem `ObjectFrame`: ein Element für
+  alle Regionen und den Container, Text aus dem `formatHint` bzw. dem
+  Objekttyp. Die Position schreibt `moveFormatLabel` bei `pointermove`
+  direkt als CSS-Variablen ans Label, ohne React-State, damit
+  Mausbewegungen weder Frame noch Content neu rendern.
 - Der Chart-Titel ist HTML und liegt außerhalb von ECharts.
   `ChartItem` spiegelt den Fokus dort über eine CSS-Klasse
   (`is-formatted` leuchtet, `is-dimmed` tritt zurück).

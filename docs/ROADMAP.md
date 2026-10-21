@@ -1153,6 +1153,49 @@ Umgesetzt:
   `getRowLabel` in `shared/ui`, `LineStyle` nach `shared/strokeStyle.ts`
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
+- Format-Modus-Hover (5, erster Teil): Label am Pointer („🖌 Format
+  legend“, über freier Fläche „Format chart“/„Format card“) im Look von
+  `.chip` auf `--color-surface-overlay`, weicht an rechtem und unterem
+  Rand aus; Position direkt am DOM ohne Re-Render
+- im Format-Modus kein Daten-Tooltip (`syncFormatTooltip`) und kein
+  Brush bei Scatter (`syncBrush` mit `isFormatMode`); behebt das
+  Flackern zwischen Crosshair- und Pointer-Cursor
+- Element „Tooltip“ (nur im Dropdown, nach „Marks“) mit `TooltipWidget`
+  (`bare`, Enabled, Trigger außer bei Pie/Donut); Marks zeigen die Zeile
+  „Tooltip“ mit „Edit ›“, die zum Element wechselt; im Inspector
+  entfällt der Tooltip
+- `Button` mit `size` (`sm`) und `variant` (`secondary`, neu tonal
+  `accent`)
+- Tooltip-Vorschau: Beim Element „Tooltip“ steht der echte Tooltip am
+  größten Wert und ignoriert den Pointer (`syncFormatTooltip`,
+  Editor-Zustand, nicht in der `ChartSpec`)
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
+
+### Style-Bausteine ausbauen (geplant)
+
+Folgt auf „Inspector entfernen“, damit die Widgets schon an ihrem neuen
+Ort liegen. Ziel: wiederkehrende Formatierung über gemeinsame Bausteine
+statt Einzelfelder pro Element; die Abdeckungs-Matrix in
+`DESIGN_SYSTEM.md` (9l) wird geschlossen.
+
+Beschlossen:
+
+- `StrokeStyle` für alle Linien und Umrisse: Gridlines (mit Breite),
+  Linien-Marks, Achsenlinie, Bar-Rahmen, Scatter-Rand; im Popover
+  jeweils `StrokeStyleControls`, doppelte `lineStyleOptions` entfallen
+- ein zentraler Adapter-Helper übersetzt `StrokeStyle` nach ECharts,
+  analog zu `createTextStyleOption`
+- restliche Matrix-Lücken schließen, soweit sie zu einem Element mit
+  Popover gehören (Legende Fill, Datenlabels Zahlenformat, Card-Wert
+  Ausrichtung, Tooltip Text und Fill)
+- fehlende, nützliche Eigenschaften in `TextStyle`, `StrokeStyle` und
+  neuen Bausteinen ergänzen, jeweils mit echtem Nutzer im Slice
+
+Offen (im Plan abstimmen): `NumberFormat` und `Fill` als Bausteine,
+welche zusätzlichen Eigenschaften `TextStyle` und `StrokeStyle` bekommen,
+Data Labels als Abschnitt oder eigenes Element, Reihenfolge der
+Abschnitte pro Element.
 
 ## 6. Later – Visualization Completion
 

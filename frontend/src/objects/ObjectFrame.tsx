@@ -1,4 +1,4 @@
-import { GripHorizontal } from 'lucide-react'
+import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
 import { useEffect, useRef, useState } from 'react'
 
@@ -8,7 +8,13 @@ import { getRectStyle } from './elementRect'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import { getStrokeBorderCss } from '../shared/strokeStyle'
 
-import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from 'react'
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  MouseEvent,
+  PointerEvent,
+  ReactNode,
+} from 'react'
 import type { WorkspaceCommands } from '../app/types'
 import type { GridDelta } from '../workspace/chartLayout'
 import type {
@@ -79,12 +85,16 @@ const layoutHandleModes: ObjectLayoutMode[] = [
   ...(Object.keys(resizeEdgeLabels) as ObjectLayoutMode[]),
 ]
 
+/** Distance of the format label from the pointer, in pixels. */
+const FORMAT_LABEL_OFFSET = 12
+
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
   container: 'Format container',
   legend: 'Format legend',
   marks: 'Format marks',
   selectionLabel: 'Format selection label',
   title: 'Format title',
+  tooltip: 'Format tooltip',
   value: 'Format value',
   xAxis: 'Format X axis',
   xAxisLabels: 'Format X axis labels',
@@ -167,6 +177,7 @@ function ObjectFrame({
   onFormatElement,
 }: ObjectFrameProps) {
   const frameRef = useRef<HTMLDivElement | null>(null)
+  const labelRef = useRef<HTMLSpanElement | null>(null)
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
   const { container } = object
   const definition = getObjectDefinition(object.kind)
@@ -245,6 +256,28 @@ function ObjectFrame({
     }
   }
 
+  /**
+   * Moves the format label next to the pointer, flipped at the frame edges.
+   * Writes the position straight to the label, so moving renders nothing.
+   */
+  function moveFormatLabel(event: PointerEvent<HTMLDivElement>): void {
+    const label = labelRef.current
+    if (!label) {
+      return
+    }
+    const frame = event.currentTarget.getBoundingClientRect()
+    let x = event.clientX - frame.left + FORMAT_LABEL_OFFSET
+    let y = event.clientY - frame.top + FORMAT_LABEL_OFFSET
+    if (x + label.offsetWidth > frame.width) {
+      x -= label.offsetWidth + 2 * FORMAT_LABEL_OFFSET
+    }
+    if (y + label.offsetHeight > frame.height) {
+      y -= label.offsetHeight + 2 * FORMAT_LABEL_OFFSET
+    }
+    label.style.setProperty('--format-label-x', `${x}px`)
+    label.style.setProperty('--format-label-y', `${y}px`)
+  }
+
   return (
     <div
       aria-label={label}
@@ -261,6 +294,7 @@ function ObjectFrame({
       onKeyDown={handleKeyDown}
       onPointerDown={() => actions.selectObject(object.id)}
       onPointerLeave={() => setFormatHint(null)}
+      onPointerMove={isFormatMode ? moveFormatLabel : undefined}
     >
       {children(showFormatHint)}
       {container.border.width > 0 ? (
@@ -287,6 +321,18 @@ function ObjectFrame({
             formattedElement === 'container' ? 'is-active' : ''
           }`}
         />
+      ) : null}
+      {isFormatMode ? (
+        <span
+          aria-hidden="true"
+          className="chip chart-format-label"
+          ref={labelRef}
+        >
+          <Paintbrush size={12} />
+          {formatHint
+            ? formatRegionLabels[formatHint.element]
+            : `Format ${definition.label}`}
+        </span>
       ) : null}
       {isSelected ? (
         <div className="chart-item-actions">

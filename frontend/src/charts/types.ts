@@ -85,6 +85,7 @@ export type ChartFormatElement =
   | keyof Pick<ChartAppearanceSpec, 'legend' | 'title' | 'xAxis' | 'yAxis'>
   | ContainerFormatElement
   | 'marks'
+  | 'tooltip'
   | 'xAxisLabels'
   | 'yAxisLabels'
 

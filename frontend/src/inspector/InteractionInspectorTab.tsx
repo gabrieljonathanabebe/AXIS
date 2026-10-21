@@ -1,8 +1,6 @@
 import AnimationWidget from './interaction/AnimationWidget'
 import { isLegendRelevant } from '../charts/isLegendRelevant'
-import { isRadialChartType } from '../charts/chartDefinitions'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
-import TooltipWidget from './interaction/TooltipWidget'
 
 import type { ChartInspectorProps } from './types'
 
@@ -12,7 +10,6 @@ function InteractionInspectorTab({
   fields,
 }: ChartInspectorProps) {
   const { interaction } = chart.spec
-  const isRadialChart = isRadialChartType(chart.type)
   const showLegendInteraction = isLegendRelevant(chart, fields)
   return (
     <div className="stack inspector-tab-content">
@@ -24,13 +21,6 @@ function InteractionInspectorTab({
           }}
         />
       ) : null}
-      <TooltipWidget
-        showTrigger={!isRadialChart}
-        value={interaction.tooltip}
-        onChange={(tooltip) => {
-          actions.setInteraction('tooltip', tooltip)
-        }}
-      />
       <AnimationWidget
         value={interaction.animation}
         onChange={(animation) => {

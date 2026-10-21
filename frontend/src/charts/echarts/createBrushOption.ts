@@ -56,10 +56,20 @@ export function createBrushOption(
   }
 }
 
+/**
+ * Arms the brush of a points chart and draws the selection made with it.
+ * In format mode the brush is off, so dragging and the crosshair cursor do
+ * not compete with format regions; the drawn selection stays.
+ * @param instance ECharts instance of the chart.
+ * @param chart Chart whose brush is synced.
+ * @param selection Current data selection, drawn when it came from this chart.
+ * @param isFormatMode Whether a format popover is open for the chart.
+ */
 export function syncBrush(
   instance: ECharts,
   chart: ChartInstance,
   selection: DataSelection | null,
+  isFormatMode: boolean,
 ): void {
   if (!isBrushableChart(chart.type)) {
     return
@@ -69,7 +79,7 @@ export function syncBrush(
     key: 'brush',
     brushOption: {
       brushMode: 'single',
-      brushType: 'rect',
+      brushType: isFormatMode ? false : 'rect',
     },
   })
   const coordRange = getBrushCoordRange(chart, selection)

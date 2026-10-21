@@ -27,3 +27,23 @@
   border-color: var(--color-border-accent);
   box-shadow: var(--shadow-accent);
 }
+
+.button-sm {
+  height: var(--control-height-sm);
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+/* Tonal accent: stands out from field controls without the weight of a
+   solid primary action, e.g. for moving on to a related element. */
+.button-accent {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-color: var(--color-border-accent);
+}
+
+.button-accent:hover {
+  color: var(--color-accent-hover);
+  background: var(--color-accent-soft);
+  box-shadow: var(--shadow-accent);
+}

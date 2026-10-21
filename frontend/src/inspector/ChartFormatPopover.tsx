@@ -1,4 +1,5 @@
 import {
+  ChevronRight,
   Grid2X2,
   List,
   MousePointerClick,
@@ -8,19 +9,23 @@ import {
 } from 'lucide-react'
 
 import AxisWidget from './appearance/AxisWidget'
+import Button from '../shared/ui/Button'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
 import ContainerWidget from './appearance/ContainerWidget'
+import ControlRow from '../shared/ui/ControlRow'
 import GridWidget from './appearance/GridWidget'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import LegendWidget from './appearance/LegendWidget'
 import MarkSeriesWidget from './appearance/MarkSeriesWidget'
 import ObjectFormatPopover from '../objects/ObjectFormatPopover'
+import TooltipWidget from './interaction/TooltipWidget'
 import ZoomWidget from './interaction/ZoomWidget'
 import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
 } from '../charts/getChartTitle'
 import { getFormatElements } from '../charts/getFormatElements'
+import { isRadialChartType } from '../charts/chartDefinitions'
 
 import type { ChartFormatElement } from '../charts/types'
 import type { ChartInspectorProps } from './types'
@@ -41,6 +46,7 @@ const elementTitles: Record<ChartFormatElement, string> = {
   legend: 'Legend',
   marks: 'Marks',
   title: 'Title',
+  tooltip: 'Tooltip',
   xAxis: 'X Axis',
   xAxisLabels: 'X Axis Labels',
   yAxis: 'Y Axis',
@@ -53,11 +59,14 @@ const elementTitles: Record<ChartFormatElement, string> = {
  * Several sections switch by a segmented control in the popover.
  * @param element Element selected in the popover.
  * @param inspectorProps Actions, chart and fields of the inspector.
+ * @param onElementChange Switches the popover to another element, e.g. from
+ *   the marks to their tooltip.
  * @returns The sections, wired to the same actions as the inspector.
  */
 function getFormatSections(
   element: ChartFormatElement,
   { actions, chart, fields }: ChartInspectorProps,
+  onElementChange: (element: ChartFormatElement) => void,
 ): FormatSection[] {
   const { appearance, interaction } = chart.spec
   switch (element) {
@@ -103,12 +112,24 @@ function getFormatSections(
       return [
         {
           content: (
-            <MarkSeriesWidget
-              actions={actions}
-              chart={chart}
-              fields={fields}
-              variant="bare"
-            />
+            <>
+              <MarkSeriesWidget
+                actions={actions}
+                chart={chart}
+                fields={fields}
+                variant="bare"
+              />
+              <ControlRow label="Tooltip">
+                <Button
+                  size="sm"
+                  variant="accent"
+                  onClick={() => onElementChange('tooltip')}
+                >
+                  Edit
+                  <ChevronRight aria-hidden="true" size={14} />
+                </Button>
+              </ControlRow>
+            </>
           ),
           label: 'Marks',
         },
@@ -125,6 +146,20 @@ function getFormatSections(
             />
           ),
           label: 'Title',
+        },
+      ]
+    case 'tooltip':
+      return [
+        {
+          content: (
+            <TooltipWidget
+              showTrigger={!isRadialChartType(chart.type)}
+              value={interaction.tooltip}
+              variant="bare"
+              onChange={(value) => actions.setInteraction('tooltip', value)}
+            />
+          ),
+          label: 'Tooltip',
         },
       ]
     case 'xAxis':
@@ -209,7 +244,7 @@ function ChartFormatPopover({
       element={element}
       elementOptions={elementOptions}
       label="Chart format"
-      sections={getFormatSections(element, inspectorProps)}
+      sections={getFormatSections(element, inspectorProps, onElementChange)}
       target={target}
       onClose={onClose}
       onElementChange={onElementChange}
