@@ -3,6 +3,7 @@ import { LayoutDashboard } from 'lucide-react'
 import AskCevynBar from '../ai/AskCevynBar'
 import ChartGrid from './ChartGrid'
 import CommandButton from '../app/CommandButton'
+import DashboardSettingsPopover from './DashboardSettingsPopover'
 import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
@@ -64,6 +65,7 @@ function CanvasPanel({
           size="sm"
           variant="ghost"
         />
+        <DashboardSettingsPopover actions={actions} dashboard={dashboard} />
       </div>
       <div className="dashboard-surface">
         <h2 className="dashboard-title">
@@ -77,6 +79,7 @@ function CanvasPanel({
         </h2>
         <ChartGrid
           actions={actions}
+          animation={dashboard.animation}
           commands={commands}
           dataset={dataset}
           datasetId={datasetId}

@@ -1,7 +1,5 @@
-import { MoveHorizontal, MoveVertical } from 'lucide-react'
-
 import ControlRow from '../../shared/ui/ControlRow'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 import RotationDial from '../../shared/ui/RotationDial'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
@@ -13,8 +11,7 @@ import {
   VALUE_FORMAT_OPTIONS,
 } from '../../shared/format/valueFormats'
 
-import type { AxisAppearance, AxisFormat } from '../../charts/types'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
+import type { AxisAppearance, AxisFormat } from '../types'
 
 // ===== TYPES =================================================================
 type AxisOrientation = 'x' | 'y'
@@ -28,7 +25,6 @@ type AxisWidgetProps = {
   orientation: AxisOrientation
   part?: AxisWidgetPart
   value: AxisAppearance
-  variant?: InspectorWidgetVariant
 }
 
 type TickMode = 'auto' | 'custom'
@@ -57,18 +53,15 @@ function AxisWidget({
   value,
   part,
   onChange,
-  variant,
 }: AxisWidgetProps) {
   const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
-  const AxisIcon = orientation === 'x' ? MoveHorizontal : MoveVertical
   const { labels, titleStyle } = value
   const tickMode: TickMode = labels.tickCount === null ? 'auto' : 'custom'
   const showsTitle = part !== 'labels'
   const showsLabels = part !== 'title'
   return (
-    <InspectorWidget
+    <FormatWidget
       title={title}
-      icon={<AxisIcon size={16} />}
       visibility={
         showsTitle
           ? {
@@ -79,7 +72,6 @@ function AxisWidget({
             }
           : undefined
       }
-      variant={variant}
     >
       {showsTitle ? (
         <>
@@ -120,7 +112,7 @@ function AxisWidget({
             />
           </ControlRow>
           {value.format === 'currency' ? (
-            <div className="inspector-widget-subproperties">
+            <div className="format-widget-subproperties">
               <ControlRow label="Currency">
                 <SelectControl
                   label={`${title} currency`}
@@ -154,7 +146,7 @@ function AxisWidget({
             />
           </ControlRow>
           {labels.tickCount !== null ? (
-            <div className="inspector-widget-subproperties">
+            <div className="format-widget-subproperties">
               <ControlRow label="Tick count">
                 <ScrubbableNumber
                   label={`${title} tick count`}
@@ -194,7 +186,7 @@ function AxisWidget({
           />
         </>
       ) : null}
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

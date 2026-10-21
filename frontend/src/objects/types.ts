@@ -50,6 +50,12 @@ export type ObjectBackground =
 
 export type ObjectBackgroundPreset = 'surface' | 'glass' | 'blue' | 'violet'
 
+/** Changes one property of a container, e.g. its padding. */
+export type SetContainer = <TKey extends keyof ObjectContainer>(
+  key: TKey,
+  value: ObjectContainer[TKey],
+) => void
+
 // ===== TITLE =================================================================
 /** Title above the content of an object; charts and cards share it. */
 export type ObjectTitleAppearance = {

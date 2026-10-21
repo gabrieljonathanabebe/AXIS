@@ -172,7 +172,6 @@ Ein Icon steht für genau eine Bedeutung:
 | konkreter Datensatz     | `FileSpreadsheet`     |
 | Dataset-Section (Build) | `FolderOpen`          |
 | Fields                  | `Columns3`            |
-| Inspector-Tab Data      | `Table2`              |
 | Encodings               | `Waypoints`           |
 | Build                   | `Blocks`              |
 | Dashboard               | `LayoutDashboard`     |
@@ -185,21 +184,21 @@ Die View-Icons der Rail werden an keiner anderen Stelle verwendet.
 ## 4. Visualize Workspace
 
 ```text
-Build Panel | Canvas | Inspector
+Build Panel | Canvas
 ```
 
 Die Canvas erhält den verbleibenden Raum.
 
 Der Visualize Workspace ist **eine** gemeinsame Glass-Fläche
-(`visualize-workspace glass glass-thin` mit `--radius-lg`). Build,
-Canvas und Inspector haben darin keine eigene Fläche, keinen Schatten
+(`visualize-workspace glass glass-thin` mit `--radius-lg`). Build und
+Canvas haben darin keine eigene Fläche, keinen Schatten
 und keinen großen Radius; sie sind nur durch Haarlinien
 (`--color-border-subtle`) getrennt. TopBar und Navigation Rail bleiben
 eigene Glass-Flächen.
 
 ### Panel
 
-Alle drei Bereiche nutzen `Panel`.
+Beide Bereiche nutzen `Panel`.
 
 - `isEmbedded` macht ein Panel zu einem Bereich innerhalb einer
   gemeinsamen Fläche: keine Glass-Klassen, kein Radius, Haarlinie zum
@@ -220,11 +219,11 @@ Alle drei Bereiche nutzen `Panel`.
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
 - Inhaltshöhe: `isScrollable` lässt das Panel seinen Inhalt selbst
-  scrollen (Build Panel, Inspector). `isFilled` lässt den Inhalt die
+  scrollen (Build Panel). `isFilled` lässt den Inhalt die
   Höhe füllen, das Kind scrollt selbst (Canvas mit `ChartGrid`, Data mit
   `DataTable`).
 
-Build Panel und Inspector sind unabhängig einklappbar:
+Das Build Panel ist einklappbar:
 
 - `isCollapsed` und `onToggleCollapse` aktivieren das Verhalten; ohne
   `onToggleCollapse` gibt es keinen Toggle.
@@ -234,9 +233,8 @@ Build Panel und Inspector sind unabhängig einklappbar:
   Er wirkt dadurch nicht wie eine zweite Navigation Rail, deren Icons
   `ghost` sind.
 - Der Inhalt wird nur ausgeblendet, nicht entfernt; Zustand wie
-  Inspector-Tab und geöffnete Widgets bleibt erhalten.
-- Cmd/Ctrl + B schaltet das Build Panel um, Cmd/Ctrl + I den Inspector
-  (über die Command-Registry).
+  geöffnete Sections bleibt erhalten.
+- Cmd/Ctrl + B schaltet das Build Panel um (über die Command-Registry).
 - Der Layout-Zustand ist UI-State (`useWorkspaceLayout`), nicht Teil
   des Workspace-Reducers.
 
@@ -254,7 +252,7 @@ Werkzeug). Entscheidungsfrage für jedes neue Element:
 | ---------------------------------- | ------------------------------------------------ |
 | Dashboard-Titel, später Untertitel | Undo, Redo, Format, später Zoom, Present, Export |
 | Charts, später KPI, Text, Slicer   | Ask Cevyn Bar                                    |
-| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Inspector, Build            |
+| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Format-Popover, Build       |
 
 ```text
 Canvas Panel (--canvas-background, ohne Panel-Header)
@@ -263,13 +261,19 @@ Canvas Panel (--canvas-background, ohne Panel-Header)
 └── AskCevynBar         schwebend unten
 ```
 
-- Die ganze Fläche zwischen den Haarlinien zu Build und Inspector ist
+- Die ganze Fläche rechts der Haarlinie zum Build Panel ist
   die Seite; sie hat keinen eigenen Rahmen und keinen Radius.
 - `.dashboard-surface` ist der unsichtbare Rahmen um Titel und Grid.
   Ein späterer Präsentationsmodus zeigt genau dieses Element.
 - Editor-Elemente schweben mit eigenem Z-Index über der Seite. Die
   Toolbar enthält `CommandButton`s in `sm` und `ghost`; die Pille ist
   die einzige Fläche.
+- Rechts vom Pinsel öffnet das Zahnrad (`Settings2`, `IconButton` `sm`
+  `ghost`, gedrückt solange offen) das Popover „Dashboard“ mit
+  Einstellungen ohne eigenes Element auf der Canvas: Gap und Animation
+  (Schalter „Animation“, Duration). Gleiche erhöhte Glass-Ebene wie das
+  Format-Popover. Der Name bleibt inline im Titel, eine Einstellung hat
+  genau eine Heimat.
 - Toolbar und Titelzeile sind beide 36 px hoch und liegen auf einer
   Linie. Der Titel ist auf 480 px begrenzt, damit sein Eingabefeld
   nicht unter die Toolbar läuft.
@@ -460,46 +464,33 @@ ID   Identifiers   identifier (standardmäßig eingeklappt)
 
 Nicht jedes Field als große Card darstellen.
 
-## 6. Inspector
+## 6. Format-Widgets
 
-Inspector:
-
-```text
-Data
-Appearance
-Interaction
-```
-
-Der Inspector ist kontextsensitiv: Mit ausgewähltem Chart zeigt er die
-Chart-Tabs, ohne Auswahl die Dashboard-Einstellungen
-(`DashboardInspector`, Widgets „Dashboard“ und „Layout“, ohne Tabs).
+Es gibt kein Einstellungs-Panel. Einstellungen stehen am Objekt im
+Format-Popover (siehe „Bearbeitung am Chart“), Daten-Zuordnung im Build
+Panel („Chart data“), Dashboard-Einstellungen im Popover der
+Canvas-Toolbar.
 
 Ein Widget repräsentiert ein Feature oder eine logisch
-zusammengehörige Property-Gruppe.
+zusammengehörige Property-Gruppe, z. B. `GridWidget` oder
+`LegendWidget`. Im Popover ist ein Widget meist ein Abschnitt eines
+Elements.
 
-Inspector-Widgets sind plain Sections wie im Build Panel:
-`InspectorWidget` ist ein dünner Wrapper um `CollapsibleSection` mit
-`variant="plain"`, ohne eigene Fläche, getrennt durch Haarlinien.
-Abhängige Unteroptionen (`.inspector-widget-subproperties`) sind um
+Widgets rendern ihre Zeilen über `FormatWidget` (`shared/ui`): nur die
+Controls, ohne eigene Fläche, Überschrift oder Collapsible; den Namen
+trägt das Segmented Control der Abschnitte bzw. die Section im Build
+Panel. Hat das Widget eine Sichtbarkeit, ist sie die erste Zeile
+„Visible“ mit `Toggle`. Schaltet sie Verhalten statt Sichtbarkeit
+(Zoom, Tooltip, Legend Interaction), heißt die Zeile über
+`visibility.label` „Enabled“, im Dashboard-Popover „Animation“. Die
+Eigenschaften bleiben auch bei ausgeblendetem Feature editierbar.
+Abhängige Unteroptionen (`.format-widget-subproperties`) sind um
 `--indent-nested` eingerückt.
 
-`InspectorWidget` hat eine `variant` (`section` als Default, `bare`).
-`bare` rendert nur die Controls ohne Section-Rahmen, z. B. im
-Format-Popover am Objekt. Widgets wie `AxisWidget` reichen `variant`
-durch. `AxisWidget` zeigt mit `part` (`title` | `labels`) nur einen Teil
-der Zeilen, im Popover je Element; ohne `part` alle (Inspector). Die
-Sichtbarkeit gehört zu `title`, weil `visible` die ganze Achse
-ausblendet. Hat das Widget eine Sichtbarkeit, zeigt `bare` sie als erste
-Zeile „Visible“ mit `Toggle`, da es keinen Header für die Eye-Aktion
-gibt. Schaltet sie Verhalten statt Sichtbarkeit (Zoom, Legend
-Interaction), heißt die Zeile über `visibility.label` „Enabled“.
-
-Inspector-Widgets sind unabhängig vom Chart-Zustand auf- und
-zuklappbar. Eine optionale Eye-Aktion im Header (`IconButton` mit
-`variant="ghost"` und `size="xs"` im `actions`-Slot) steuert die
-Sichtbarkeit des Features im Chart. Zugeklappt und ausgeblendet sind
-verschiedene Zustände. Die Eigenschaften bleiben auch bei
-ausgeblendetem Feature editierbar.
+`AxisWidget` zeigt mit `part` (`title` | `labels`) die Zeilen eines
+Elements: „X Axis“ Sichtbarkeit und Titel, „X Axis Labels“ Format,
+Ticks, Rotation und Text. Die Sichtbarkeit gehört zu `title`, weil
+`visible` die ganze Achse ausblendet.
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
@@ -779,7 +770,7 @@ Domain Model verwenden immer `start | center | end`, nicht
 - Tastaturereignisse im Input werden nicht an Canvas-Shortcuts
   weitergegeben.
 
-Inline-Editing und Inspector ändern denselben Wert über dieselbe
+Inline-Editing und Format-Popover ändern denselben Wert über dieselbe
 Action.
 
 Die Edit-Hälfte ist als `InlineTextInput` eigenständig nutzbar, z. B.
@@ -1048,18 +1039,13 @@ France
 Italy
 ```
 
-Legend gehört primär zu:
+Legend und ihr interaktives Verhalten gehören zum Element „Legend“ im
+Format-Popover:
 
 ```text
-Inspector
-→ Appearance
-```
-
-Interaktives Legend-Verhalten gehört zu:
-
-```text
-Inspector
-→ Interaction
+Legend
+├── Legend       (Position, Ausrichtung, Text, Abstand)
+└── Interaction  (Enabled, Selection Mode)
 ```
 
 Die Legend scrollt statt überzulaufen: `layout` `auto` und `scroll`
@@ -1097,7 +1083,7 @@ ECharts `visualMap` ist ein Renderer-Detail.
 
 Im Cevyn UI heißt das Feature `Color Scale`.
 
-Der aktuelle Scatter-Inspector unterstützt:
+Das Element „Color Scale“ im Format-Popover unterstützt:
 
 - Sichtbarkeit;
 - Position links oder rechts;
@@ -1229,13 +1215,14 @@ Move und Resize rasten während des Drags live im Canvas-Grid ein.
 
 ### Chart Container
 
-Der Container eines Charts wird im Inspector unter „Container“
-formatiert:
+Der Container eines Objekts wird im Element „Chart“ bzw. „Card“ des
+Format-Popovers formatiert:
 
 - Background über `ColorControl` mit den Presets Surface (Default),
   Glass, Blue und Violet sowie eigener Farbe;
 - Padding über `ScrubbableNumber`;
-- Radius über `Slider`.
+- Radius über `Slider`;
+- Rahmen über `StrokeStyleControls` (Breite 0 heißt kein Rahmen).
 
 Alle Backgrounds bauen auf `.glass` auf (Lichtkante, Schatten) und
 ändern nur die Füllung über `--glass-fill`: Surface ist die
@@ -1370,7 +1357,6 @@ Global, außer in Textfeldern:
 | Cmd/Ctrl + Z                           | Rückgängig             |
 | Cmd/Ctrl + Shift + Z oder Cmd/Ctrl + Y | Wiederholen            |
 | Cmd/Ctrl + B                           | Build Panel umschalten |
-| Cmd/Ctrl + I                           | Inspector umschalten   |
 
 Escape darf nie der einzige Weg für eine Aktion sein. Im Vollbildmodus
 behält sich der Browser Escape vor.

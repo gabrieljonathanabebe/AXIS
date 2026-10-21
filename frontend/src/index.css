@@ -11,6 +11,7 @@
 @import './styles/ui/DropdownField.css';
 @import './styles/ui/EditableText.css';
 @import './styles/ui/EmptyState.css';
+@import './styles/ui/FormatWidget.css';
 @import './styles/ui/GradientControl.css';
 @import './styles/ui/IconBadge.css';
 @import './styles/ui/IconButton.css';
@@ -48,12 +49,10 @@
 @import './styles/canvas/EChartCanvas.css';
 @import './styles/canvas/CardItem.css';
 @import './styles/canvas/EncodingDropSlots.css';
+@import './styles/canvas/FormatPopover.css';
 
 @import './styles/data/DataTable.css';
 @import './styles/data/DataPanel.css';
 @import './styles/data/DataProfile.css';
 
 @import './styles/dnd/DragPreviewOverlay.css';
-@import './styles/inspector/ChartFormatPopover.css';
-@import './styles/inspector/InspectorTabs.css';
-@import './styles/inspector/InspectorWidget.css';

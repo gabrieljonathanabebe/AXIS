@@ -81,7 +81,7 @@ Vor dem Erstellen einer neuen:
 - Hook,
 - Type-Definition,
 - Helper-Funktion,
-- Inspector-Control-Komponente
+- Format-Widget oder Control-Komponente
 
 zuerst nach einer bestehenden Lösung suchen.
 

@@ -71,7 +71,7 @@ export type WorkspaceAction =
     }
   | {
       type: 'dashboard/update'
-      patch: Partial<Pick<DashboardSpec, 'name'>>
+      patch: Partial<Pick<DashboardSpec, 'animation' | 'name'>>
     }
   | {
       type: 'dashboard/updateLayout'
@@ -128,6 +128,10 @@ export type CanvasActions = {
     key: TKey,
     value: ChartAppearanceSpec[TKey],
   ) => void
+  updateDashboard: (
+    patch: Partial<Pick<DashboardSpec, 'animation' | 'name'>>,
+  ) => void
+  updateDashboardLayout: (patch: Partial<DashboardLayout>) => void
   updateObjectContainer: (
     objectId: string,
     patch: Partial<ObjectContainer>,
@@ -187,11 +191,22 @@ export type DataSelection = {
 }
 
 // ===== DASHBOARD =============================================================
+/** Speed curve of an animation. */
+export type AnimationEasing = 'linear' | 'cubicOut' | 'cubicInOut'
+
+/** How charts animate when they appear or change; one setting for all. */
+export type DashboardAnimation = {
+  duration: number
+  easing: AnimationEasing
+  enabled: boolean
+}
+
 export type DashboardLayout = {
   gap: number
 }
 
 export type DashboardSpec = {
+  animation: DashboardAnimation
   layout: DashboardLayout
   name: string
 }

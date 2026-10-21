@@ -22,7 +22,6 @@ export type ChartDefinition = {
   coordinates: ChartCoordinates
   dataMode: ChartDataMode
   encodings: EncodingDefinition[]
-  inspectorSections: InspectorSection[]
   defaultAggregation: Aggregation
   supportedAggregations: Aggregation[]
 }
@@ -38,8 +37,6 @@ export type EncodingDefinition = {
 }
 
 export type EncodingKey = keyof ChartEncoding
-
-export type InspectorSection = 'data' | 'appearance' | 'axes' | 'interaction'
 
 // ===== CONSTANTS =============================================================
 const radialEncodings = [
@@ -68,7 +65,6 @@ export const chartDefinitions = {
     dataMode: 'points',
     defaultAggregation: 'none',
     supportedAggregations: ['none'],
-    inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
     encodings: [
       {
         key: 'x',
@@ -108,7 +104,6 @@ export const chartDefinitions = {
     dataMode: 'aggregated',
     defaultAggregation: 'sum',
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
-    inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
     encodings: [
       {
         key: 'x',
@@ -141,7 +136,6 @@ export const chartDefinitions = {
     icon: ChartColumn,
     defaultAggregation: 'sum',
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
-    inspectorSections: ['data', 'appearance', 'axes', 'interaction'],
     encodings: [
       {
         key: 'x',
@@ -179,7 +173,6 @@ export const chartDefinitions = {
     defaultAggregation: 'sum',
     encodings: radialEncodings,
     icon: ChartPie,
-    inspectorSections: ['data', 'appearance', 'interaction'],
     label: 'Pie',
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     type: 'pie',
@@ -190,7 +183,6 @@ export const chartDefinitions = {
     defaultAggregation: 'sum',
     encodings: radialEncodings,
     icon: Donut,
-    inspectorSections: ['data', 'appearance', 'interaction'],
     label: 'Donut',
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     type: 'donut',

@@ -1,19 +1,15 @@
-import { Tags } from 'lucide-react'
-
 import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { LabelPosition, LabelsAppearance } from '../../charts/types'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
+import type { LabelPosition, LabelsAppearance } from '../types'
 
 // ===== TYPES =================================================================
 type LabelsWidgetProps = {
   isRadial?: boolean
   onChange: (value: LabelsAppearance) => void
   value: LabelsAppearance
-  variant?: InspectorWidgetVariant
 }
 
 // ===== CONSTANTS =============================================================
@@ -34,22 +30,19 @@ function LabelsWidget({
   isRadial = false,
   onChange,
   value,
-  variant,
 }: LabelsWidgetProps) {
   const activePositionOptions = isRadial
     ? radialPositionOptions
     : positionOptions
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Labels"
-      icon={<Tags size={16} />}
       visibility={{
         visible: value.visible,
         onChange: (visible) => {
           onChange({ ...value, visible })
         },
       }}
-      variant={variant}
     >
       <TextStyleControls
         label="Label"
@@ -69,7 +62,7 @@ function LabelsWidget({
           }}
         />
       </ControlRow>
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

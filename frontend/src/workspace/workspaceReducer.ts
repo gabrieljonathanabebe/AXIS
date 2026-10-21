@@ -21,6 +21,11 @@ type ObjectUpdater = (object: DashboardObject) => DashboardObject
 // ===== CONSTANTS =============================================================
 export const initialWorkspaceState: WorkspaceState = {
   dashboard: {
+    animation: {
+      duration: 500,
+      easing: 'cubicOut',
+      enabled: true,
+    },
     layout: {
       gap: 8,
     },

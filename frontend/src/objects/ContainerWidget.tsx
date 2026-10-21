@@ -1,25 +1,21 @@
-import { Frame } from 'lucide-react'
+import ColorControl from '../shared/ui/ColorControl'
+import ControlRow from '../shared/ui/ControlRow'
+import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
+import Slider from '../shared/ui/Slider'
+import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
+import FormatWidget from '../shared/ui/FormatWidget'
 
-import ColorControl from '../../shared/ui/ColorControl'
-import ControlRow from '../../shared/ui/ControlRow'
-import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
-import Slider from '../../shared/ui/Slider'
-import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
-import InspectorWidget from '../InspectorWidget'
-
-import type { ColorPreset } from '../../shared/ui/ColorControl'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { SetContainer } from '../types'
+import type { ColorPreset } from '../shared/ui/ColorControl'
 import type {
   ObjectContainer,
   ObjectBackground,
   ObjectBackgroundPreset,
-} from '../../objects/types'
+  SetContainer,
+} from './types'
 
 type ContainerWidgetProps = {
   value: ObjectContainer
   onChange: SetContainer
-  variant?: InspectorWidgetVariant
 }
 
 const backgroundPresets = [
@@ -44,13 +40,9 @@ function toBackground(value: string): ObjectBackground {
 }
 
 /** Edits background, padding, corner radius and border of a container. */
-function ContainerWidget({ value, onChange, variant }: ContainerWidgetProps) {
+function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
   return (
-    <InspectorWidget
-      title="Container"
-      icon={<Frame size={16} />}
-      variant={variant}
-    >
+    <FormatWidget title="Container">
       <ControlRow label="Background">
         <ColorControl
           label="Container background"
@@ -91,7 +83,7 @@ function ContainerWidget({ value, onChange, variant }: ContainerWidgetProps) {
         value={value.border}
         onChange={(border) => onChange('border', border)}
       />
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

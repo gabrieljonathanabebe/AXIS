@@ -6,6 +6,7 @@ import { getValueLabel } from '../getEffectiveAggregation'
 import { createChartContent } from './content/createChartContent'
 import type { ChartContentContext } from './content/chartContentTypes'
 import type { ChartTheme } from './chartTheme'
+import type { DashboardAnimation } from '../../workspace/types'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createGridOption } from './createGridOption'
 import { createLegendOption } from './createLegendOption'
@@ -14,6 +15,7 @@ import { isRadialChartType } from '../chartDefinitions'
 
 // ===== TYPES =================================================================
 type EChartOptionContext = ChartContentContext & {
+  animation: DashboardAnimation
   chartId: string
   theme: ChartTheme
 }
@@ -24,7 +26,8 @@ export function createEChartOption(
   context: EChartOptionContext,
 ): EChartsOption {
   // ===== CONSTANTS ===========================================================
-  const { chartId, chartType, dataset, selection, spec, theme } = context
+  const { animation, chartId, chartType, dataset, selection, spec, theme } =
+    context
   const { appearance, interaction } = spec
   const colorEncodingMode = getColorEncodingMode(
     chartType,
@@ -42,9 +45,9 @@ export function createEChartOption(
 
   // ===== RETURN ==============================================================
   return {
-    animation: interaction.animation.enabled,
-    animationDuration: interaction.animation.duration,
-    animationEasing: interaction.animation.easing,
+    animation: animation.enabled,
+    animationDuration: animation.duration,
+    animationEasing: animation.easing,
     backgroundColor: 'transparent',
     brush: createBrushOption(chartType, theme),
 

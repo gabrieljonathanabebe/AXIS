@@ -1,4 +1,4 @@
-.chart-format-popover {
+.format-popover {
   --glass-border: var(--color-border-accent);
   --glass-fill: var(--glass-fill-elevated);
   --glass-shadow: var(--shadow-lg), var(--shadow-accent);
@@ -12,7 +12,7 @@
   border-radius: var(--radius-md);
 }
 
-.chart-format-popover-body {
+.format-popover-body {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -20,7 +20,7 @@
   padding: var(--space-1);
 }
 
-.chart-format-popover-title {
+.format-popover-title {
   --cluster-gap: var(--space-2);
 
   color: var(--color-accent);

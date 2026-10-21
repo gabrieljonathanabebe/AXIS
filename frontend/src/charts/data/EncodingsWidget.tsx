@@ -1,18 +1,13 @@
-import { Waypoints } from 'lucide-react'
-
-import {
-  chartDefinitionList,
-  getChartDefinition,
-} from '../../charts/chartDefinitions'
-import { getCompatibleFields } from '../../charts/getCompatibleFields'
+import { chartDefinitionList, getChartDefinition } from '../chartDefinitions'
+import { getCompatibleFields } from '../getCompatibleFields'
 import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { ChartInspectorProps } from '../types'
+import type { ChartFormatProps } from '../types'
 
 type EncodingsWidgetProps = Pick<
-  ChartInspectorProps,
+  ChartFormatProps,
   'actions' | 'chart' | 'fields'
 >
 
@@ -24,7 +19,7 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
     value: type,
   }))
   return (
-    <InspectorWidget title="Encodings" icon={<Waypoints size={16} />}>
+    <FormatWidget title="Encodings">
       <ControlRow label="Chart">
         <SelectControl
           label="Chart type"
@@ -67,7 +62,7 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
           </ControlRow>
         )
       })}
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

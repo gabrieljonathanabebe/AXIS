@@ -55,8 +55,7 @@ AppShell
     └── Active View
         ├── Visualize Workspace
         │   ├── Build Panel
-        │   ├── Canvas
-        │   └── Inspector
+        │   └── Canvas (Bearbeitung am Objekt: Format-Popover, Toolbar)
         └── Data Workspace
             └── Data Panel (Profile | Table)
 ```
@@ -92,7 +91,7 @@ Visual-Analytics-Workspace.
 ```text
 Build Panel
 → Canvas
-→ Inspector
+→ Format-Popover am Objekt
 ```
 
 ### Ask Cevyn
@@ -182,10 +181,12 @@ app/         App Shell, Commands, Workspace-Layout
 shared/      API-Client, UI-Controls, Formatierung, Text-Stil, Hooks
 datasets/    Dataset laden, Profil, Semantic Roles, Data Panel
 table/       Table View, Table Query, Table Filter
-charts/      Chart Registry, ChartItem (Content), Queries, echarts/ (Adapter)
-objects/     Dashboard-Objekte: Modell, Registry, ObjectFrame, ObjectPicker
-workspace/   Workspace State, Reducer, History, Canvas, Drag and Drop
-inspector/   Inspector mit data/, appearance/, interaction/
+charts/      Chart Registry, ChartItem (Content), Queries, echarts/ (Adapter),
+             format/ (Format-Popover und Widgets), data/ (Encodings, Aggregation)
+objects/     Dashboard-Objekte: Modell, Registry, ObjectFrame, ObjectPicker,
+             Format-Popover-Hülle, Container- und Titel-Widget
+workspace/   Workspace State, Reducer, History, Canvas, Drag and Drop,
+             Dashboard-Einstellungen
 ai/          Ask Cevyn
 actions/     Action Layer (Cevyn Actions)
 ```
@@ -195,7 +196,7 @@ actions/     Action Layer (Cevyn Actions)
   `shared/api/client.ts` (`get`, `post` für FormData, `postJson` für
   JSON-Requests).
 - Unterordner gibt es aktuell für abgegrenzte Gruppen innerhalb einer
-  Domäne (z. B. `charts/echarts/content`, `inspector/appearance`,
+  Domäne (z. B. `charts/echarts/content`, `charts/format`,
   `shared/ui`). Eine feste Regel für Unterordner ist noch nicht
   beschlossen.
 - Styles liegen aktuell noch zentral unter `src/styles/<bereich>/`.
@@ -203,13 +204,13 @@ actions/     Action Layer (Cevyn Actions)
 Abhängigkeitsrichtung im Frontend (beschlossen): Imports zeigen nur
 nach unten, Objekt-Domänen importieren nie voneinander.
 
-| Schicht | Ordner                                                | Inhalt                                                                            |
-| ------- | ----------------------------------------------------- | --------------------------------------------------------------------------------- |
-| 1       | `shared/`                                             | domänenfrei: UI-Controls, API-Client, Werteformatierung, generische Hooks         |
-| 2       | `datasets/`, `queries/` (geplant)                     | Daten-Vokabular: Fields, Semantic Roles, Aggregation, Filter                      |
-| 3       | `objects/`                                            | was alle Dashboard-Objekte teilen: Frame, Layout, Container, Format-Popover-Hülle |
-| 4       | `charts/`, `cards/`, `table/`, später `slicers/`      | was nur ein Objekttyp braucht                                                     |
-| 5       | `workspace/`, `inspector/`, `app/`, `actions/`, `ai/` | Orchestrierung; darf aus allen Schichten importieren                              |
+| Schicht | Ordner                                           | Inhalt                                                                            |
+| ------- | ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| 1       | `shared/`                                        | domänenfrei: UI-Controls, API-Client, Werteformatierung, generische Hooks         |
+| 2       | `datasets/`, `queries/` (geplant)                | Daten-Vokabular: Fields, Semantic Roles, Aggregation, Filter                      |
+| 3       | `objects/`                                       | was alle Dashboard-Objekte teilen: Frame, Layout, Container, Format-Popover-Hülle |
+| 4       | `charts/`, `cards/`, `table/`, später `slicers/` | was nur ein Objekttyp braucht                                                     |
+| 5       | `workspace/`, `app/`, `actions/`, `ai/`          | Orchestrierung; darf aus allen Schichten importieren                              |
 
 - Faustregel: Braucht es nur ein Objekttyp, liegt es in dessen Ordner.
   Brauchen es mehrere, liegt es in der untersten Schicht, deren
@@ -283,7 +284,7 @@ Der zentrale Datenfluss lautet:
 
 ```mermaid
 flowchart LR
-    UI[UI / Inspector]
+    UI[UI / Format-Popover]
     Spec[ChartSpec]
     Adapter[ECharts Adapter]
     Option[EChartsOption]
@@ -397,7 +398,7 @@ Titel („Y by X“) wird in `src/charts/getChartTitle.ts` abgeleitet und
 von Header, Inline-Editing und `aria-label` gemeinsam genutzt. Dort
 liegt auch `getDefaultAxisTitle` (X: Feldname, Y: Value Label wie
 „Count of country“); es spiegelt die Achsennamen im Adapter und dient
-Inspector, Popover und Inline-Editing als Platzhalter.
+Popover und Inline-Editing als Platzhalter.
 
 Die Achsentitel rendert weiterhin ECharts. Für das Inline-Editing
 übersetzt der Adapter (`createAxisTitleEditFromEvent.ts`) Klick und
@@ -435,7 +436,7 @@ Koordinaten des Frames an `showFormatHint`. Der Frame hält genau einen
 `formatHint` (`element`, `rect`) und zeigt im Format-Modus dafür eine
 Region. Ein Klick darauf meldet nur Element und Frame als Anker nach
 oben (`onFormatElement`); Frame und Content kennen keine
-Inspector-Widgets.
+Format-Widgets.
 
 ```text
 Pinsel (object.format)
@@ -444,8 +445,8 @@ Region im Format-Modus (ObjectFrame)
 → onFormatElement(element, anchor) → ChartGrid ergänzt objectId
 beide
 → App: formatTarget (React State, nicht im Reducer)
-→ ChartFormatPopover (inspector/): Element-Auswahl + Abschnitte (bare)
-→ inspectorActions.setAppearance → chart/updateAppearance
+→ ChartFormatPopover (charts/format/): Element-Auswahl + Abschnitte
+→ chartActions.setAppearance → chart/updateAppearance
 ```
 
 - `FormatTarget` (`objects/types.ts`) ist `anchor`, `element` und
@@ -469,7 +470,7 @@ beide
   ihren Abschnitten zu (`FormatSection`: Name, optionales Icon,
   Inhalt); Achse und Labels teilen `AxisWidget` mit `part`
   (`title` | `labels`) und dieselbe `AxisAppearance`, `marks` nutzt
-  `MarkSeriesWidget` wie der Inspector. Weitere Abschnitte gehören zum
+  `MarkSeriesWidget`. Weitere Abschnitte gehören zum
   Element, das sie betreffen: `xAxis` und `yAxis` haben „Gridlines“
   (`AxisAppearance.gridLines`, im Adapter `splitLine` der Achse),
   `xAxis` zusätzlich „Zoom“ (`interaction.zoom`, wirkt auf die
@@ -496,9 +497,9 @@ beide
   `pointerdown`, also vor dem Klick. Damit der Pinsel als Toggle und
   die Regionen ihren Klick erhalten, zählen die Canvas-Toolbar und das
   formatierte Objekt nicht als außerhalb (`Popover`-Prop `keepOpenOn`).
-- `ChartFormatPopover` nutzt dieselben `inspectorActions` und denselben
-  ausgewählten Chart wie das `InspectorPanel`; es ist eine zweite
-  Darstellung derselben Bearbeitung.
+- `ChartFormatPopover` arbeitet auf dem ausgewählten Chart mit den
+  `chartActions` (`createChartActions`); „Chart data“ im Build Panel
+  nutzt dieselben Actions für Charttyp, Encodings und Aggregation.
 - Solange das Popover offen ist, legt `syncFormatFocus`
   (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern
   Editor-Zustand in die ECharts-Instanz: Serien, Legende und nicht
@@ -635,7 +636,7 @@ Beispiele:
 
 - verfügbare Encodings;
 - kompatible Semantic Roles;
-- verfügbare Inspector Properties;
+- verfügbare Format-Elemente und -Abschnitte (über `coordinates`);
 - Defaults;
 - Aggregation Rules;
 - Fähigkeiten (`dataMode`, `coordinates`).
@@ -648,7 +649,7 @@ Typnamen:
 | Fähigkeit     | Werte                  | steuert                                                                             |
 | ------------- | ---------------------- | ----------------------------------------------------------------------------------- |
 | `dataMode`    | `aggregated`, `points` | Chart- oder Points-Query, Titel „vs.“/„by“, Selection per Klick oder Brush, Tooltip |
-| `coordinates` | `cartesian`, `radial`  | Grid, Zoom, Tooltip-Trigger, Farbmodus, Inspector-Bereiche                          |
+| `coordinates` | `cartesian`, `radial`  | Grid, Zoom, Tooltip-Trigger, Farbmodus, Format-Elemente (Achsen nur kartesisch)     |
 
 Abfragen laufen über Helper in `chartDefinitions.ts`:
 `isPointsChartType`, `isRadialChartType`, `hasAggregatedColor`
@@ -706,7 +707,7 @@ Setzen von Y gespeichert:
 - `getValueLabel`: Name des Werts für Achse, Tooltip und Titel, z. B.
   „Count of country“.
 
-Query, Inspector (Aggregation-Select deaktiviert mit „Count“),
+Query, „Chart data“ im Build Panel (Aggregation-Select deaktiviert mit „Count“),
 Beschriftung und Default-Titel lesen dieselbe Ableitung. Die
 gespeicherte Aggregation bleibt erhalten und gilt wieder, sobald ein
 Measure auf Y liegt. Y ist deshalb bei Bar, Line, Pie und Donut nicht
@@ -784,7 +785,7 @@ type DashboardObject = ChartInstance | CardInstance // später | Table | …
   sollen später als zusätzliche optionale Felder ergänzt werden, ohne
   die Presets zu ersetzen.
 - `findChart(objects, id)` (`objects/findChart.ts`) liefert ein Objekt
-  nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Inspector,
+  nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Format-Popover,
   Ask-Cevyn-Validierung, `chart/setTitle`), sucht darüber.
 
 Die Objekt-Registry `objectDefinitions` (`objects/objectDefinitions.ts`)
@@ -819,15 +820,18 @@ WorkspaceState
 ```
 
 `useChartWorkspace` leitet daraus `charts` (für Ask Cevyn) und
-`selectedChart` (für Inspector und Format-Popover) ab; `App` leitet
+`selectedChart` (für Format-Popover und „Chart data“) ab; `App` leitet
 `selectedCard` für das Card-Format-Popover ab.
 
 Format-Popover: Die Hülle `ObjectFormatPopover` (`objects/`) übernimmt
 Position, Offenhalten, Element-Auswahl im Kopf und das Umschalten der
 Abschnitte für jedes Objekt; der Inhalt pro Typ kommt als `sections`.
-Der aktive Abschnitt ist lokaler UI-Zustand des Popovers. `ChartFormatPopover` und
-`CardFormatPopover` liegen in `inspector/`, weil sie Inspector-Widgets
-zusammensetzen. `isChartFormatElement` und `isCardFormatElement` grenzen
+Der aktive Abschnitt ist lokaler UI-Zustand des Popovers. `ChartFormatPopover`
+(`charts/format/`) und `CardFormatPopover` (`cards/`) liegen in ihrer
+Domäne, zusammen mit ihren Widgets; was alle Objekte teilen
+(`ContainerWidget`, `ObjectTitleWidget`), liegt in `objects/`, der
+Rahmen der Widget-Zeilen (`FormatWidget`) in `shared/ui`.
+`isChartFormatElement` und `isCardFormatElement` grenzen
 `FormatTarget.element` auf den Elementtyp des Objekts ein.
 
 ```ts
@@ -835,7 +839,14 @@ type DashboardLayout = {
   gap: number
 }
 
+type DashboardAnimation = {
+  duration: number
+  easing: AnimationEasing // 'linear' | 'cubicOut' | 'cubicInOut'
+  enabled: boolean
+}
+
 type DashboardSpec = {
+  animation: DashboardAnimation
   layout: DashboardLayout
   name: string
 }
@@ -843,7 +854,12 @@ type DashboardSpec = {
 
 `DashboardSpec` beschreibt Einstellungen, die für das ganze Dashboard
 gelten (`src/workspace/types.ts`). `layout.gap` ist der Abstand in Pixeln
-zwischen den Grid-Zellen. Spaltenzahl und Zeilenhöhe bleiben Konstanten
+zwischen den Grid-Zellen. `animation` gilt für alle Charts: Sie ist
+keine Chart-Eigenschaft mehr (`ChartInteractionSpec` hat kein
+`animation`), sondern läuft als Domain-Wert `CanvasPanel` → `ChartGrid`
+→ `ChartItem` → `EChartCanvas` → `createEChartOption({ animation })`;
+erst der Adapter setzt `animation`, `animationDuration` und
+`animationEasing`. Spaltenzahl und Zeilenhöhe bleiben Konstanten
 (siehe Canvas Layout), damit bestehende `ObjectLayout`s ihre Bedeutung
 behalten. Aktuell gibt es genau ein Dashboard, daher tragen
 Dashboard-Actions keine ID.
@@ -859,15 +875,15 @@ type DataSelection = {
 }
 ```
 
-Der Inspector arbeitet auf dem selektierten Objekt: Ist ein Chart
-ausgewählt, bearbeitet er den Chart, sonst das Dashboard. Dafür gibt es
-keinen eigenen Auswahl-State; `selectedObjectId === null` bedeutet
-Dashboard-Kontext.
+Format-Popover, Aktionsleiste und „Chart data“ arbeiten auf dem
+selektierten Objekt. Einstellungen des ganzen Dashboards liegen im
+Dashboard-Popover der Canvas-Toolbar und brauchen keine Auswahl; es gibt
+keinen eigenen Auswahl-State für das Dashboard.
 
 `selectedObjectId` und `selection` sind getrennte Konzepte:
 
 - `selectedObjectId` ist die Editor-Auswahl und bestimmt, welches
-  Objekt Inspector, Aktionsleiste und Pinsel bearbeiten.
+  Objekt Format-Popover, Aktionsleiste und Pinsel bearbeiten.
 - `selection` ist die Datenauswahl für Dashboard-Interaktion. Sie ist
   feldbasiert, an keine Achse gebunden und gilt für alle Charts
   (siehe Abschnitt 6, Selection und Cross-Highlighting).
@@ -895,7 +911,7 @@ Aktuelle Actions:
   `chart/updateEncoding`, `chart/updateAppearance`,
   `chart/updateMarkAppearance`, `chart/updateInteraction` (adressiert
   über `chartId`);
-- `dashboard/update` (Name), `dashboard/updateLayout`;
+- `dashboard/update` (Name, Animation), `dashboard/updateLayout`;
 - `selection/set`, `selection/clear`.
 
 `chart/*`-Actions ändern nur Objekte mit `kind === 'chart'`
@@ -906,10 +922,13 @@ Selection, wenn ihr Quell-Chart entfernt wird. War das entfernte Objekt
 selektiert, wählt `object/remove` das nächste Objekt in Lesereihenfolge
 (nach `y`, dann `x`) bzw. das vorherige aus (`findNeighborObjectId`).
 
-Inspector und Inline-Editing auf der Canvas verwenden dieselben
-Actions. Charttitel und Achsentitel werden z. B. im Inspector und direkt
+Format-Popover und Inline-Editing auf der Canvas verwenden dieselben
+Actions. Charttitel und Achsentitel werden z. B. im Popover und direkt
 im Chart über `chart/updateAppearance` geändert, der Dashboard-Name im
-Inspector und im Canvas-Header über `dashboard/update`.
+Canvas-Header über `dashboard/update`. Gap und
+Animation ändert das Dashboard-Popover der Canvas-Toolbar
+(`DashboardSettingsPopover`) über die `CanvasActions`
+`updateDashboardLayout` und `updateDashboard`.
 
 Regeln:
 
@@ -937,14 +956,17 @@ Komponenten-Ebenen gereicht werden, werden zu einem typisierten
 übergeben. Einzelne Callbacks oder solche, die nur eine Ebene tief
 gehen, bleiben `on…`-Props.
 
-| Objekt             | Type                 | erzeugt in               | Weg                                                                        |
-| ------------------ | -------------------- | ------------------------ | -------------------------------------------------------------------------- |
-| `InspectorActions` | `inspector/types.ts` | `createInspectorActions` | `InspectorPanel` → Tabs → Widgets                                          |
-| `CanvasActions`    | `workspace/types.ts` | `useChartWorkspace`      | `CanvasPanel` → `ChartGrid` → `ObjectFrame` / `ChartItem` → `EChartCanvas` |
+| Objekt          | Type                 | erzeugt in           | Weg                                                                         |
+| --------------- | -------------------- | -------------------- | --------------------------------------------------------------------------- |
+| `ChartActions`  | `charts/types.ts`    | `createChartActions` | `App` → `ChartFormatPopover` → Widgets; `App` → `BuildPanel` („Chart data“) |
+| `CanvasActions` | `workspace/types.ts` | `useChartWorkspace`  | `CanvasPanel` → `ChartGrid` → `ObjectFrame` / `ChartItem` → `EChartCanvas`  |
 
-- `InspectorActions` bearbeiten den ausgewählten Chart bzw. das
-  Dashboard und brauchen deshalb keine `chartId`. Den Container
-  ändern sie über `object/updateContainer`.
+- `ChartActions` bearbeiten den ausgewählten Chart und brauchen deshalb
+  keine `chartId`. Den Container ändern sie über
+  `object/updateContainer`.
+- Das Dashboard ändern `CanvasActions` (`updateDashboard`,
+  `updateDashboardLayout`); Cards ihr Format ebenfalls über
+  `CanvasActions`.
 - `CanvasActions` adressieren ihr Ziel explizit: `selectObject` und
   `updateObjectLayout` das Objekt (aus dem Frame), `updateChartAppearance`
   sowie Daten-Selection den Chart (aus dem Content).
@@ -1009,7 +1031,7 @@ unknown (JSON)
 - Aktuelle Actions:
   - `chart/create` (Charttyp, optional Encoding und Aggregation)
     → `object/add`;
-  - `chart/setType` → `chart/setType`; wie im Inspector bleiben
+  - `chart/setType` → `chart/setType`; wie im Build Panel bleiben
     passende Encodings erhalten (`carryOverEncoding`), die Aggregation
     kommt aus dem Default des neuen Typs;
   - `chart/updateEncoding` → `chart/updateEncoding`;
@@ -1141,8 +1163,7 @@ useWorkspaceCommands
 ```
 
 - Aktuelle Commands: `history.undo`, `history.redo`, `object.duplicate`,
-  `object.delete`, `object.format`, Build Panel und Inspector
-  umschalten. Die Objekt-Commands wirken auf `selectedObjectId`; ihre
+  `object.delete`, `object.format`, Build Panel umschalten. Die Objekt-Commands wirken auf `selectedObjectId`; ihre
   Labels lauten vorerst noch „… chart“.
 - Toggle-Commands wie Format setzen `isActive`; `CommandButton` zeigt
   sie dann als gedrückten Button.
@@ -1151,7 +1172,7 @@ useWorkspaceCommands
 - In Textfeldern und `contenteditable` greift kein Shortcut; dort bleibt
   z. B. das native Text-Undo erhalten.
 - Control-lokale Tastaturbedienung (Slider, `ScrubbableNumber`,
-  `RotationDial`, `InlineTextInput`, `InspectorTabs`) sowie Pfeiltasten
+  `RotationDial`, `InlineTextInput`) sowie Pfeiltasten
   und Escape auf dem fokussierten Objekt bleiben in den Komponenten
   (`ObjectFrame`).
 
@@ -1190,57 +1211,32 @@ gereicht. `EncodingDropSlots` bewertet jeden Slot über
 `useWorkspaceDnd` erhält deshalb nur gültige Encoding-Drops und prüft
 die Kompatibilität nicht erneut.
 
-## 9. Inspector Architecture
+## 9. Bearbeitung am Objekt
 
-Chart Inspector:
+Es gibt kein Einstellungs-Panel. Jede Einstellung hat genau eine Heimat:
+Was ein sichtbares Element betrifft, wird im Format-Popover dieses
+Elements bearbeitet; Verhalten ohne eigenes Element gehört als
+Abschnitt zum Element, das es betrifft. Was Daten zuordnet, liegt im
+Build Panel, was das ganze Dashboard betrifft, im Dashboard-Popover der
+Canvas-Toolbar.
 
-```text
-Inspector
-├── Data
-├── Appearance
-└── Interaction
-```
+| Bereich                            | Ort                                                                   |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| Container, Rahmen                  | Element „Chart“/„Card“ (Klick auf freie Fläche, Pinsel)               |
+| Titel                              | Element „Title“, inline editierbar                                    |
+| Marks, Datenlabels                 | Element „Marks“: Abschnitte Marks \| Labels                           |
+| Tooltip                            | Element „Tooltip“ (Dropdown, Vorschau am größten Wert)                |
+| Achsen, Gridlines, Zoom            | Elemente „X/Y Axis“ (Axis \| Gridlines \| Zoom) und „X/Y Axis Labels“ |
+| Legende, Legend Selection Mode     | Element „Legend“: Abschnitte Legend \| Interaction                    |
+| Color Scale                        | Element „Color Scale“ (Dropdown, bei kontinuierlicher Farbe)          |
+| Charttyp, Encodings, Aggregation   | Build Panel, Abschnitt „Chart data“                                   |
+| Dashboard-Name                     | inline im Canvas-Titel                                                |
+| Layout-Gap, Animation aller Charts | Dashboard-Popover (Zahnrad in der Canvas-Toolbar)                     |
 
-### Data
-
-Beschreibt, welche Daten verwendet werden.
-
-Beispiele:
-
-- X
-- Y
-- Color
-- Size
-- Series
-- Aggregation
-- Stack
-- Sort
-
-### Appearance
-
-Beschreibt visuelle Darstellung.
-
-Beispiele:
-
-- Mark / Series
-- Labels
-- Grid
-- Axes
-- Legend
-- Color Scale
-
-### Interaction
-
-Beschreibt Verhalten.
-
-Beispiele:
-
-- Tooltip
-- Hover / Emphasis
-- Zoom
-- Selection
-- Animation
-- Legend Interaction
+Die Widgets liegen in ihrer Domäne (`charts/format/`, `charts/data/`,
+`cards/`, `objects/`, `workspace/`) und rendern ihre Zeilen über
+`FormatWidget` (`shared/ui`); welche Elemente ein Objekt hat,
+bestimmen `getFormatElements` und die Fähigkeiten der Chart Registry.
 
 ## 10. Encoding Semantics
 
@@ -1293,7 +1289,8 @@ farbige Series-Legend angezeigt.
 
 Die Entscheidung trifft allein `getColorEncodingMode` über die
 effektive Semantic Role des Color-Fields. Adapter (Serien, Visual Map,
-Selection), Legend und Inspector folgen diesem Modus.
+Selection), Legend und Format-Elemente (Legende bzw. Color Scale) folgen
+diesem Modus.
 
 ## 11. Data Architecture
 

@@ -3,15 +3,14 @@ import { useState } from 'react'
 
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
-import CardFormatPopover from '../inspector/CardFormatPopover'
-import ChartFormatPopover from '../inspector/ChartFormatPopover'
-import { createInspectorActions } from '../inspector/createInspectorActions'
+import CardFormatPopover from '../cards/CardFormatPopover'
+import ChartFormatPopover from '../charts/format/ChartFormatPopover'
+import { createChartActions } from '../charts/createChartActions'
 import DataPanel from '../datasets/DataPanel'
 import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
 import { getObjectDefinition } from '../objects/objectDefinitions'
 import { isCardFormatElement } from '../cards/isCardFormatElement'
 import { isChartFormatElement } from '../charts/getFormatElements'
-import InspectorPanel from '../inspector/InspectorPanel'
 import NavigationRail from './NavigationRail'
 import TopBar from './TopBar'
 import { useAskCevyn } from '../ai/useAskCevyn'
@@ -61,7 +60,7 @@ function App() {
     undo,
   } = useChartWorkspace({ dataset: uploadedDataset })
 
-  const inspectorActions = createInspectorActions({
+  const chartActions = createChartActions({
     dispatch,
     selectedChartId: selectedChart?.id ?? null,
   })
@@ -92,10 +91,8 @@ function App() {
   const {
     activeWorkspace,
     isBuildPanelCollapsed,
-    isInspectorCollapsed,
     setActiveWorkspace,
     toggleBuildPanel,
-    toggleInspector,
   } = useWorkspaceLayout()
 
   const commands = useWorkspaceCommands({
@@ -112,7 +109,6 @@ function App() {
     onRedo: redo,
     onRemoveObject: removeObject,
     onToggleBuildPanel: toggleBuildPanel,
-    onToggleInspector: toggleInspector,
     onUndo: undo,
   })
 
@@ -130,11 +126,13 @@ function App() {
             onWorkspaceChange={setActiveWorkspace}
           />
           <main
-            className={`workspace visualize-workspace glass glass-thin ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''} ${isInspectorCollapsed ? 'is-inspector-collapsed' : ''}`}
+            className={`workspace visualize-workspace glass glass-thin ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''}`}
             hidden={activeWorkspace !== 'visualize'}
           >
             <BuildPanel
               activeDatasetSummary={activeDatasetSummary}
+              chart={selectedChart}
+              chartActions={chartActions}
               dataset={dataset}
               datasetName={datasetName}
               isCollapsed={isBuildPanelCollapsed}
@@ -166,20 +164,11 @@ function App() {
               onFormatElement={setFormatTarget}
               onRenameDashboard={renameDashboard}
             />
-            <InspectorPanel
-              actions={inspectorActions}
-              chart={selectedChart}
-              dashboard={dashboard}
-              fields={dataset.fields}
-              isCollapsed={isInspectorCollapsed}
-              onRenameDashboard={renameDashboard}
-              onToggleCollapse={toggleInspector}
-            />
             {selectedChart &&
             activeFormatTarget &&
             isChartFormatElement(activeFormatTarget.element) ? (
               <ChartFormatPopover
-                actions={inspectorActions}
+                actions={chartActions}
                 chart={selectedChart}
                 element={activeFormatTarget.element}
                 fields={dataset.fields}

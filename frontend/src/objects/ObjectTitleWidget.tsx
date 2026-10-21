@@ -1,38 +1,31 @@
-import { Type } from 'lucide-react'
+import AlignmentControl from '../shared/ui/AlignmentControl'
+import ControlRow from '../shared/ui/ControlRow'
+import TextInput from '../shared/ui/TextInput'
+import TextStyleControls from '../shared/ui/TextStyleControls'
+import FormatWidget from '../shared/ui/FormatWidget'
 
-import AlignmentControl from '../../shared/ui/AlignmentControl'
-import ControlRow from '../../shared/ui/ControlRow'
-import TextInput from '../../shared/ui/TextInput'
-import TextStyleControls from '../../shared/ui/TextStyleControls'
-import InspectorWidget from '../InspectorWidget'
+import type { ObjectTitleAppearance } from './types'
 
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { ObjectTitleAppearance } from '../../objects/types'
-
-type ChartTitleWidgetProps = {
+type ObjectTitleWidgetProps = {
   defaultTitle?: string
   value: ObjectTitleAppearance
   onChange: (value: ObjectTitleAppearance) => void
-  variant?: InspectorWidgetVariant
 }
 
-function ChartTitleWidget({
+function ObjectTitleWidget({
   defaultTitle,
   value,
   onChange,
-  variant,
-}: ChartTitleWidgetProps) {
+}: ObjectTitleWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Title"
-      icon={<Type size={16} />}
       visibility={{
         visible: value.visible,
         onChange: (visible) => {
           onChange({ ...value, visible })
         },
       }}
-      variant={variant}
     >
       <ControlRow label="Text">
         <TextInput
@@ -63,8 +56,8 @@ function ChartTitleWidget({
         value={value.textStyle}
         onChange={(textStyle) => onChange({ ...value, textStyle })}
       />
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 
-export default ChartTitleWidget
+export default ObjectTitleWidget

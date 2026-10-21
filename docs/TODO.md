@@ -27,13 +27,15 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Canvas-Hintergrund als Dashboard-Einstellung, analog zu den
   Container-Presets (Glass, Surface, None, eigene Farbe)
 - Innen-Padding der Canvas als Teil von `DashboardLayout`
-- beides im Layout-Widget des `DashboardInspector`, undo-fähig über
-  `dashboard/updateLayout` bzw. eine passende Dashboard-Action
+- beides im Dashboard-Popover der Canvas-Toolbar
+  (`DashboardSettingsPopover`), undo-fähig über `dashboard/updateLayout`
+  bzw. `dashboard/update`
 
-## Chart-Zusammenfassung über den Inspector-Tabs
+## Chart-Zusammenfassung zum ausgewählten Chart
 
-- im Inspector über dem Segmented Control Data | Appearance |
-  Interaction eine kompakte Karte zum ausgewählten Chart
+- eine kompakte Karte zum ausgewählten Chart; ursprünglich über den
+  Inspector-Tabs geplant, die es nicht mehr gibt; neuer Ort offen,
+  z. B. Kopf des Abschnitts „Chart data“ im Build Panel
 - Darstellung als Glass-Widget oder plain Section, noch zu entscheiden
 - Icon des Charttyps (z. B. Line) und darunter ein Satz, der den
   Charttyp beschreibt
@@ -42,7 +44,8 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 
 ## Weitere Actions in der Canvas-Toolbar
 
-- die schwebende Canvas-Toolbar zeigt aktuell Undo, Redo und Format
+- die schwebende Canvas-Toolbar zeigt aktuell Undo, Redo, Format und
+  die Dashboard-Einstellungen
 - weitere canvasbezogene Actions ergänzen, z. B. Zoom, Save, Export
 - als Commands über die Command-Registry und `CommandButton`
 
@@ -107,11 +110,12 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 ## Control für das Tooltip-Werteformat
 
 - `interaction.tooltip.valueFormat` wird seit der zentralen
-  Zahlenformatierung ausgewertet, hat aber kein Control im Inspector
+  Zahlenformatierung ausgewertet, hat aber kein Control
 - `auto` folgt dem Format der Y-Achse; `number`, `percent` und
   `currency` überschreiben es (Währung kommt von der Y-Achse)
-- Control im Interaction-Tab ergänzen, als `SelectControl` wie das
-  Achsenformat im `AxisWidget`
+- Control im Element „Tooltip“ des Format-Popovers ergänzen
+  (`TooltipWidget`), als `SelectControl` wie das Achsenformat im
+  `AxisWidget`
 
 ## Chart-Palette vom UI-Akzent trennen
 

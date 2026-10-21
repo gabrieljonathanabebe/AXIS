@@ -132,8 +132,11 @@ Dashboard-Zustände sollen seine Fähigkeiten gezielt ausschöpfen.
 Die grundlegende Oberfläche besteht aus:
 
 ```text
-Build Panel | Canvas | Inspector
+Build Panel | Canvas
 ```
+
+Ein eigenes Einstellungs-Panel gibt es nicht: Objekte werden direkt auf
+der Canvas bearbeitet.
 
 ### Build Panel
 
@@ -176,28 +179,20 @@ Mehrere Objekte können später:
 
 werden.
 
-### Inspector
+### Bearbeitung am Objekt
 
-Der Inspector beantwortet:
+Die Bearbeitung am Objekt beantwortet:
 
-> Wie ist das aktuell ausgewählte Objekt konfiguriert?
+> Wie sieht das ausgewählte Objekt aus und wie verhält es sich?
 
-Für Charts:
-
-```text
-Data
-Appearance
-Interaction
-```
-
-Langfristige Richtung (geplant): Wie ein Objekt aussieht und sich
-verhält, wird direkt am Objekt bearbeitet, nicht mehr im Inspector.
-Ein Element im ausgewählten Chart (Achse, Titel, Legende, Serie) öffnet
-seine Einstellungen in einem Popover neben dem Chart; Einstellungen
-ohne eigenes Element erreicht man über die Canvas-Toolbar. Das Build
-Panel beschreibt dann nur noch, was gerendert wird: Charttyp, Fields,
-Encodings und später Calculated Fields. Der Inspector wird
-schrittweise abgelöst; die Canvas gewinnt dadurch Platz.
+Wie ein Objekt aussieht und sich verhält, wird direkt am Objekt
+bearbeitet. Ein Element im ausgewählten Chart (Chart als Ganzes, Titel,
+Marks, Achse, Legende) öffnet seine Einstellungen in einem Popover neben
+dem Chart; Verhalten ohne eigenes Element gehört zu dem Element, das es
+betrifft (z. B. Zoom zur X-Achse). Einstellungen des ganzen Dashboards
+erreicht man über die Canvas-Toolbar. Das Build Panel beschreibt, was
+gerendert wird: Charttyp, Fields, Encodings, Aggregation und später
+Calculated Fields. Die Canvas gewinnt dadurch Platz.
 
 ## 6. Data Handling für Visual Analytics
 

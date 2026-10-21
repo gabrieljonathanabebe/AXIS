@@ -1,9 +1,11 @@
-import { Blocks, Columns3, FolderOpen, Plus } from 'lucide-react'
+import { Blocks, Columns3, FolderOpen, Plus, Waypoints } from 'lucide-react'
 
+import AggregationWidget from '../charts/data/AggregationWidget'
 import Button from '../shared/ui/Button'
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
 import DatasetCard from '../datasets/DatasetCard'
 import { DEMO_DATASET_ID } from '../datasets/datasetsApi'
+import EncodingsWidget from '../charts/data/EncodingsWidget'
 import FieldList from '../datasets/FieldList'
 import ObjectPicker from '../objects/ObjectPicker'
 import { objectGroups } from '../objects/objectDefinitions'
@@ -14,11 +16,14 @@ import type {
   SemanticRoleOverrides,
 } from '../datasets/types'
 
+import type { ChartActions, ChartInstance } from '../charts/types'
 import type { DatasetSummary } from '../datasets/datasetsApi'
 import type { ObjectTemplate } from '../objects/types'
 
 type BuildPanelProps = {
   activeDatasetSummary: DatasetSummary | null
+  chart: ChartInstance | null
+  chartActions: ChartActions
   dataset: Dataset
   datasetName: string
   isCollapsed: boolean
@@ -33,6 +38,8 @@ type BuildPanelProps = {
 
 function BuildPanel({
   activeDatasetSummary,
+  chart,
+  chartActions,
   dataset,
   datasetError,
   datasetName,
@@ -115,6 +122,26 @@ function BuildPanel({
             </Button>
           </div>
         </CollapsibleSection>
+        {chart ? (
+          <CollapsibleSection
+            title="Chart data"
+            icon={<Waypoints size={14} />}
+            variant="plain"
+          >
+            <div className="stack">
+              <EncodingsWidget
+                actions={chartActions}
+                chart={chart}
+                fields={dataset.fields}
+              />
+              <AggregationWidget
+                actions={chartActions}
+                chart={chart}
+                fields={dataset.fields}
+              />
+            </div>
+          </CollapsibleSection>
+        ) : null}
       </div>
     </Panel>
   )

@@ -21,8 +21,9 @@ unter `Completed` stehen.
 
 ## 2. Current Product Stage
 
-Visualization Core, Multi-Chart Canvas, Build Panel und Inspector sind
-in einem ersten vollständigen Stand. Der nächste größere Meilenstein
+Visualization Core, Multi-Chart Canvas, Build Panel und die Bearbeitung
+am Objekt (Format-Popover statt Inspector) sind in einem ersten
+vollständigen Stand. Der nächste größere Meilenstein
 ist der Data-Bereich: Cevyn soll einen geladenen Datensatz nicht nur
 darstellen, sondern deterministisch verstehen.
 
@@ -819,11 +820,10 @@ Als Nächstes:
    Element „Chart“ (siehe „Inspector entfernen“)
 4. X für Encodings im Build Panel
 
-Neue Widgets entstehen nicht mehr in `inspector/` (siehe
-Dashboard-Objekte). Die bestehenden Widgets ziehen zum Abschluss von
-„Inspector entfernen“ um. Offen: ob der Pinsel
-ohne ausgewählten Chart die Dashboard-Einstellungen öffnet, statt
-deaktiviert zu sein.
+Die Widgets liegen seit „Inspector entfernen“ in ihrer Domäne;
+`inspector/` gibt es nicht mehr. Dashboard-Einstellungen haben ein
+eigenes Zahnrad in der Canvas-Toolbar, der Pinsel bleibt ohne
+ausgewähltes Objekt deaktiviert.
 
 Der Slice pausiert, als Nächstes kommen die Dashboard-Objekte. Die
 Punkte unter „Als Nächstes“ folgen danach.
@@ -1062,7 +1062,7 @@ Umgesetzt:
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser noch offen
 
-### Inspector entfernen (in Arbeit)
+### Inspector entfernen (implementiert)
 
 Der Inspector (rechtes Panel) entfällt. Jede Einstellung, die heute
 dort liegt, ist danach direkt am Objekt erreichbar: im Format-Popover
@@ -1177,6 +1177,37 @@ Umgesetzt:
   (`ColorScaleWidget` `bare`); anklickbar wird sie erst mit einer
   eigenen HTML-Farbskala (siehe „Style-Bausteine ausbauen“); im
   Inspector entfällt das Widget
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
+- Animation als Dashboard-Einstellung: `DashboardSpec.animation`
+  (Default an, 500 ms, `cubicOut`), `AnimationEasing` nach
+  `workspace/types.ts`; `ChartInteractionSpec.animation` entfällt; der
+  Adapter bekommt die Animation über `createEChartOption({ animation })`;
+  Cards bekommen vorerst keine Animation
+- Dashboard-Popover in der Canvas-Toolbar (Zahnrad): Gap und Animation
+  über die neuen `CanvasActions` `updateDashboard` und
+  `updateDashboardLayout`; der `DashboardInspector` zeigt nur noch den
+  Namen, im Interaction-Tab entfällt die Animation
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
+
+- Abschluss: Liste „Einstellung → neuer Ort“ vollständig abgehakt;
+  `InspectorPanel`, `ChartInspector`, `InspectorTabs`, die Tabs,
+  `DashboardInspector`, `layout.toggleInspector` (Cmd+I) und die dritte
+  Spalte im Visualize-Layout entfernt
+- Widgets nach Domäne umgezogen: `charts/format/` (Format-Popover und
+  Chart-Widgets), `charts/data/` (Encodings, Aggregation), `cards/`
+  (`CardFormatPopover`), `objects/` (`ContainerWidget`,
+  `ObjectTitleWidget`), `workspace/` (`AnimationWidget`); `inspector/`
+  entfällt
+- Umbenennungen: `InspectorWidget` → `FormatWidget` (`shared/ui`, ohne
+  `variant`, nur noch Zeilen), `InspectorActions` → `ChartActions`
+  (`charts/types.ts`), `createInspectorActions` → `createChartActions`,
+  `ChartInspectorProps` → `ChartFormatProps`; `SetContainer` nach
+  `objects/types.ts`; CSS-Klassen `format-popover*` und `format-widget-*`
+- „Chart data“ im Build Panel zeigt Encodings und Aggregation ohne
+  eigene Unter-Sections; `inspectorSections` aus der Chart Registry
+  entfernt
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
 

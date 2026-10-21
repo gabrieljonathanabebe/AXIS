@@ -1,17 +1,13 @@
-import { MessageSquareText } from 'lucide-react'
-
 import ControlRow from '../../shared/ui/ControlRow'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { ChartInteractionSpec, TooltipTrigger } from '../../charts/types'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
+import type { ChartInteractionSpec, TooltipTrigger } from '../types'
 
 type TooltipWidgetProps = {
   onChange: (value: ChartInteractionSpec['tooltip']) => void
   showTrigger?: boolean
   value: ChartInteractionSpec['tooltip']
-  variant?: InspectorWidgetVariant
 }
 
 const triggerOptions = [
@@ -24,12 +20,10 @@ function TooltipWidget({
   onChange,
   showTrigger = true,
   value,
-  variant,
 }: TooltipWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Tooltip"
-      icon={<MessageSquareText size={16} />}
       visibility={{
         label: 'Enabled',
         visible: value.enabled,
@@ -37,7 +31,6 @@ function TooltipWidget({
           onChange({ ...value, enabled })
         },
       }}
-      variant={variant}
     >
       {showTrigger ? (
         <ControlRow label="Trigger">
@@ -54,7 +47,7 @@ function TooltipWidget({
           />
         </ControlRow>
       ) : null}
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

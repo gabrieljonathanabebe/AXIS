@@ -1,20 +1,20 @@
-import { createDefaultChartSpec } from '../charts/createChartInstance'
+import { createDefaultChartSpec } from './createChartInstance'
 
+import type { ChartActions } from './types'
 import type { WorkspaceAction } from '../workspace/types'
-import type { InspectorActions } from './types'
 
 // ===== TYPES =================================================================
-type InspectorActionsParams = {
+type ChartActionsParams = {
   dispatch: (action: WorkspaceAction) => void
   selectedChartId: string | null
 }
 
 // ===== FUNCTION ==============================================================
-/** Turns inspector edits into workspace actions for the selected chart. */
-export function createInspectorActions({
+/** Turns format and Build panel edits into actions on the selected chart. */
+export function createChartActions({
   dispatch,
   selectedChartId,
-}: InspectorActionsParams): InspectorActions {
+}: ChartActionsParams): ChartActions {
   function dispatchForChart(
     createAction: (chartId: string) => WorkspaceAction,
   ) {
@@ -60,9 +60,6 @@ export function createInspectorActions({
         objectId: chartId,
         patch: { [key]: value },
       }))
-    },
-    setDashboardLayout: (key, value) => {
-      dispatch({ type: 'dashboard/updateLayout', patch: { [key]: value } })
     },
     setEncodingField: (encodingKey, fieldName) => {
       dispatchForChart((chartId) => ({

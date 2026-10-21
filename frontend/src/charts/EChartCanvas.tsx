@@ -36,13 +36,18 @@ import type { ElementRect } from '../objects/types'
 import type { ChartInstance } from './types'
 import type { DataRow, Dataset } from '../datasets/types'
 import type { ChartTheme } from './echarts/chartTheme'
-import type { CanvasActions, DataSelection } from '../workspace/types'
+import type {
+  CanvasActions,
+  DashboardAnimation,
+  DataSelection,
+} from '../workspace/types'
 
 // Stable empty list, so non-scatter charts do not re-render the option.
 const EMPTY_POINTS: DataRow[] = []
 
 type EChartCanvasProps = {
   actions: CanvasActions
+  animation: DashboardAnimation
   chart: ChartInstance
   dataset: Dataset
   datasetId: string | null
@@ -101,6 +106,7 @@ function offsetRect(rect: ElementRect, container: HTMLElement): ElementRect {
 
 function EChartCanvas({
   actions,
+  animation,
   chart,
   dataset,
   datasetId,
@@ -225,6 +231,7 @@ function EChartCanvas({
     const theme = readChartTheme()
     instance.setOption(
       createEChartOption({
+        animation,
         chartId: chart.id,
         chartType: chart.type,
         dataset,
@@ -246,6 +253,7 @@ function EChartCanvas({
     )
     syncAxisTitleEdit(instance, editingAxisTitle)
   }, [
+    animation,
     chart,
     dataset,
     editingAxisTitle,
@@ -276,7 +284,7 @@ function EChartCanvas({
       {isEmpty && (
         <div className="chart-state">
           <EmptyState
-            description="Drag it from the Build panel or pick it in the Inspector."
+            description="Drag it from the Build panel or pick it under Chart data."
             icon={<ChartIcon />}
             iconVariant="illustration"
             size="sm"

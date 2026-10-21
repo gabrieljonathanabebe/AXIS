@@ -22,6 +22,7 @@ import type { DataField, Dataset } from '../datasets/types'
 import type { WorkspaceCommands } from '../app/types'
 import type {
   CanvasActions,
+  DashboardAnimation,
   ObjectLayoutMode,
   DataSelection,
   DragPayload,
@@ -38,6 +39,7 @@ import { isChartFormatElement } from '../charts/getFormatElements'
 // ===== TYPES =================================================================
 type ChartGridProps = {
   actions: CanvasActions
+  animation: DashboardAnimation
   children?: ReactNode
   commands: WorkspaceCommands
   dataset: Dataset
@@ -132,6 +134,7 @@ function getDraggedLayout(
 // ===== COMPONENT =============================================================
 function ChartGrid({
   actions,
+  animation,
   children,
   commands,
   dataset,
@@ -216,6 +219,7 @@ function ChartGrid({
         return (
           <ChartItem
             actions={actions}
+            animation={animation}
             chart={object}
             dataset={dataset}
             datasetId={datasetId}

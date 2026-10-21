@@ -3,10 +3,62 @@ import type {
   DashboardObjectBase,
   ElementRect,
   ObjectTitleAppearance,
+  SetContainer,
 } from '../objects/types'
+import type { DataField } from '../datasets/types'
 import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 import type { LineStyle } from '../shared/strokeStyle'
+
+// ===== ACTIONS ===============================================================
+export type SetAggregation = <TKey extends ChartAggregationKey>(
+  key: TKey,
+  aggregation: ChartDataSpec[TKey],
+) => void
+
+export type SetAppearance = <TKey extends keyof ChartAppearanceSpec>(
+  key: TKey,
+  value: ChartAppearanceSpec[TKey],
+) => void
+
+export type SetInteraction = <TKey extends keyof ChartInteractionSpec>(
+  key: TKey,
+  value: ChartInteractionSpec[TKey],
+) => void
+
+export type SetChartAppearance = <
+  TChartKey extends ChartMarkKey,
+  TOptionKey extends keyof ChartAppearanceSpec[TChartKey],
+>(
+  chartKey: TChartKey,
+  optionKey: TOptionKey,
+  value: ChartAppearanceSpec[TChartKey][TOptionKey],
+) => void
+
+export type SetChartType = (type: ChartType) => void
+
+export type SetEncodingField = (
+  axis: keyof ChartEncoding,
+  fieldName: string,
+) => void
+
+/** Everything the format popover and the Build panel change on a chart. */
+export type ChartActions = {
+  setAggregation: SetAggregation
+  setAppearance: SetAppearance
+  setChartAppearance: SetChartAppearance
+  setChartType: SetChartType
+  setContainer: SetContainer
+  setEncodingField: SetEncodingField
+  setInteraction: SetInteraction
+}
+
+/** What a chart format widget needs: the chart, its fields and actions. */
+export type ChartFormatProps = {
+  actions: ChartActions
+  chart: ChartInstance
+  fields: DataField[]
+}
 
 // ===== AGGREGATION ===========================================================
 export type Aggregation =
@@ -114,11 +166,6 @@ export type ChartInteractionSpec = {
     inside: boolean
     slider: boolean
   }
-  animation: {
-    enabled: boolean
-    duration: number
-    easing: AnimationEasing
-  }
 }
 
 export type ChartMarkKey = keyof Pick<
@@ -161,8 +208,6 @@ export type GridAppearance = {
 
 // ===== INTERACTION ===========================================================
 export type TooltipTrigger = 'item' | 'axis'
-
-export type AnimationEasing = 'linear' | 'cubicOut' | 'cubicInOut'
 
 // ===== LABEL =================================================================
 export type LabelPosition = 'top' | 'right' | 'inside'

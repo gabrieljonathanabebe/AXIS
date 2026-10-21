@@ -1,27 +1,19 @@
-import { Sigma } from 'lucide-react'
-
-import {
-  getChartDefinition,
-  hasAggregatedColor,
-} from '../../charts/chartDefinitions'
-import {
-  getAggregationOptions,
-  GROUP_AGGREGATIONS,
-} from '../../charts/aggregations'
+import { getChartDefinition, hasAggregatedColor } from '../chartDefinitions'
+import { getAggregationOptions, GROUP_AGGREGATIONS } from '../aggregations'
 import {
   getEffectiveAggregation,
   isCountOnly,
-} from '../../charts/getEffectiveAggregation'
+} from '../getEffectiveAggregation'
 
 import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { ChartInspectorProps } from '../types'
+import type { ChartFormatProps } from '../types'
 
 // ===== PROPS =================================================================
 type AggregationWidgetProps = Pick<
-  ChartInspectorProps,
+  ChartFormatProps,
   'actions' | 'chart' | 'fields'
 >
 
@@ -50,7 +42,7 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
   )
   // ===== RETURN ======
   return (
-    <InspectorWidget title="Aggregation" icon={<Sigma size={16} />}>
+    <FormatWidget title="Aggregation">
       <ControlRow label="Value function">
         <SelectControl
           disabled={isCountForced}
@@ -74,7 +66,7 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
           />
         </ControlRow>
       )}
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

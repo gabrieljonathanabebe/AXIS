@@ -52,7 +52,7 @@ Dokumentation Englisch bleiben.
 Beispiele:
 
 - ChartSpec
-- Inspector
+- Format-Popover
 - Build Panel
 - Calculated Field
 - Workspace
@@ -364,7 +364,7 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   `types.ts`) den Ordner im Linktext mitnennen;
 - neue Dateien ohne Zeilenanker und mit dem vollständigen Pfad ab
   Repo-Root als Linktext, z. B.
-  „Neue Datei `frontend/src/inspector/ChartFormatPopover.tsx`“, da
+  „Neue Datei `frontend/src/charts/format/ChartFormatPopover.tsx`“, da
   der Link selbst noch auf keine Datei zeigt;
 - Zeilennummern vor jedem Block aus dem aktuell gespeicherten Stand
   bestimmen, da sie sich durch vorherige Blöcke verschieben;

@@ -1,15 +1,15 @@
-import CardValueWidget from '../cards/CardValueWidget'
-import ChartTitleWidget from './appearance/ChartTitleWidget'
-import ContainerWidget from './appearance/ContainerWidget'
-import InspectorWidget from './InspectorWidget'
+import CardValueWidget from './CardValueWidget'
+import ObjectTitleWidget from '../objects/ObjectTitleWidget'
+import ContainerWidget from '../objects/ContainerWidget'
+import FormatWidget from '../shared/ui/FormatWidget'
 import ObjectFormatPopover from '../objects/ObjectFormatPopover'
 import TextStyleControls from '../shared/ui/TextStyleControls'
-import { getCardAggregations } from '../cards/getCardAggregations'
-import { getDefaultCardTitle } from '../cards/getCardTitle'
+import { getCardAggregations } from './getCardAggregations'
+import { getDefaultCardTitle } from './getCardTitle'
 
 import type { ReactNode } from 'react'
 import type { CanvasActions } from '../workspace/types'
-import type { CardFormatElement, CardInstance } from '../cards/types'
+import type { CardFormatElement, CardInstance } from './types'
 import type { DataField } from '../datasets/types'
 import type { FormatElementOption } from '../objects/ObjectFormatPopover'
 import type { FormatTarget } from '../objects/types'
@@ -50,7 +50,6 @@ function renderFormatWidget(
       return (
         <ContainerWidget
           value={card.container}
-          variant="bare"
           onChange={(key, value) =>
             actions.updateObjectContainer(card.id, { [key]: value })
           }
@@ -58,9 +57,8 @@ function renderFormatWidget(
       )
     case 'selectionLabel':
       return (
-        <InspectorWidget
+        <FormatWidget
           title="Selection"
-          variant="bare"
           visibility={{
             visible: appearance.selectionLabel.visible,
             onChange: (visible) =>
@@ -80,14 +78,13 @@ function renderFormatWidget(
               })
             }
           />
-        </InspectorWidget>
+        </FormatWidget>
       )
     case 'title':
       return (
-        <ChartTitleWidget
+        <ObjectTitleWidget
           defaultTitle={getDefaultCardTitle(data)}
           value={appearance.title}
-          variant="bare"
           onChange={(value) =>
             actions.updateCardAppearance(card.id, 'title', value)
           }
@@ -95,7 +92,7 @@ function renderFormatWidget(
       )
     case 'value':
       return (
-        <InspectorWidget title="Value" variant="bare">
+        <FormatWidget title="Value">
           <CardValueWidget
             aggregation={data.aggregation}
             aggregations={getCardAggregations(
@@ -109,7 +106,7 @@ function renderFormatWidget(
               actions.updateCardAppearance(card.id, 'value', value)
             }
           />
-        </InspectorWidget>
+        </FormatWidget>
       )
   }
 }

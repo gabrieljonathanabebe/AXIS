@@ -1,26 +1,23 @@
-import { Circle, Diamond, Paintbrush, Square, Triangle } from 'lucide-react'
+import { Circle, Diamond, Square, Triangle } from 'lucide-react'
 
-import { categoricalColorPalettes } from '../../charts/colorPalettes'
+import { categoricalColorPalettes } from '../colorPalettes'
 import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
-import { getColorEncodingMode } from '../../charts/getColorEncodingMode'
+import { getColorEncodingMode } from '../getColorEncodingMode'
 import PaletteControl from '../../shared/ui/PaletteControl'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Slider from '../../shared/ui/Slider'
 import Toggle from '../../shared/ui/Toggle'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { ChartInspectorProps } from '../types'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { ScatterSymbol } from '../../charts/types'
+import type { ChartFormatProps } from '../types'
+import type { ScatterSymbol } from '../types'
 import type { LineStyle } from '../../shared/strokeStyle'
 
 type MarkSeriesWidgetProps = Pick<
-  ChartInspectorProps,
+  ChartFormatProps,
   'actions' | 'chart' | 'fields'
-> & {
-  variant?: InspectorWidgetVariant
-}
+> & {}
 
 const scatterSymbolOptions = [
   { label: 'Circle', value: 'circle' },
@@ -44,14 +41,9 @@ const scatterSymbolIcons = {
 
 /**
  * Edits color or palette and the marks of the chart type: points, lines or
- * bars. Shows the same options in the inspector and the format popover.
+ * bars.
  */
-function MarkSeriesWidget({
-  actions,
-  chart,
-  fields,
-  variant,
-}: MarkSeriesWidgetProps) {
+function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
   const { appearance } = chart.spec
   const hasSizeEncoding = Boolean(chart.spec.data.encoding.size)
   const colorEncodingMode = getColorEncodingMode(
@@ -60,11 +52,7 @@ function MarkSeriesWidget({
     fields,
   )
   return (
-    <InspectorWidget
-      title="Mark / Series"
-      icon={<Paintbrush size={16} />}
-      variant={variant}
-    >
+    <FormatWidget title="Mark / Series">
       {colorEncodingMode === 'constant' ? (
         <ControlRow label="Color">
           <ColorControl
@@ -196,7 +184,7 @@ function MarkSeriesWidget({
             />
           </ControlRow>
           {appearance.line.areaFill ? (
-            <div className="inspector-widget-subproperties">
+            <div className="format-widget-subproperties">
               <ControlRow label="Color">
                 <ColorControl
                   label="Area fill color"
@@ -254,7 +242,7 @@ function MarkSeriesWidget({
           </ControlRow>
         </>
       ) : null}
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

@@ -1,12 +1,4 @@
-import {
-  Copy,
-  Paintbrush,
-  PanelLeft,
-  PanelRight,
-  Redo2,
-  Trash2,
-  Undo2,
-} from 'lucide-react'
+import { Copy, Paintbrush, PanelLeft, Redo2, Trash2, Undo2 } from 'lucide-react'
 
 import { useCommandShortcuts } from './useCommandShortcuts'
 
@@ -25,7 +17,6 @@ type UseWorkspaceCommandsParams = {
   onRedo: () => void
   onRemoveObject: (objectId: string) => void
   onToggleBuildPanel: () => void
-  onToggleInspector: () => void
   onUndo: () => void
 }
 
@@ -43,7 +34,6 @@ export function useWorkspaceCommands({
   onRedo,
   onRemoveObject,
   onToggleBuildPanel,
-  onToggleInspector,
   onUndo,
 }: UseWorkspaceCommandsParams): WorkspaceCommands {
   const commands: WorkspaceCommands = {
@@ -76,15 +66,6 @@ export function useWorkspaceCommands({
       run: onToggleBuildPanel,
       scope: 'global',
       shortcuts: [{ key: 'b', mod: true }],
-    },
-    'layout.toggleInspector': {
-      icon: PanelRight,
-      id: 'layout.toggleInspector',
-      isEnabled: true,
-      label: 'Toggle Inspector',
-      run: onToggleInspector,
-      scope: 'global',
-      shortcuts: [{ key: 'i', mod: true }],
     },
     'object.delete': {
       icon: Trash2,

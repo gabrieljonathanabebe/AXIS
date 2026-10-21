@@ -1,18 +1,16 @@
 import AlignmentControl from '../../shared/ui/AlignmentControl'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, List } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 
 import ControlRow from '../../shared/ui/ControlRow'
 import Slider from '../../shared/ui/Slider'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import InspectorWidget from '../InspectorWidget'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { LegendAppearance } from '../../charts/types'
+import FormatWidget from '../../shared/ui/FormatWidget'
+import type { LegendAppearance } from '../types'
 
 type LegendWidgetProps = {
   value: LegendAppearance
   onChange: (value: LegendAppearance) => void
-  variant?: InspectorWidgetVariant
 }
 
 const positionOptions = [
@@ -33,18 +31,16 @@ const positionIcons = {
 }
 
 /** Edits position, alignment and text style of the chart legend. */
-function LegendWidget({ value, onChange, variant }: LegendWidgetProps) {
+function LegendWidget({ value, onChange }: LegendWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Legend"
-      icon={<List size={16} />}
       visibility={{
         visible: value.visible,
         onChange: (visible) => {
           onChange({ ...value, visible })
         },
       }}
-      variant={variant}
     >
       <ControlRow label="Position">
         <SegmentedControl
@@ -88,7 +84,7 @@ function LegendWidget({ value, onChange, variant }: LegendWidgetProps) {
           }}
         />
       </ControlRow>
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

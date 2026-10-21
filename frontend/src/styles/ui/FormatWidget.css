@@ -1,20 +1,20 @@
-.inspector-widget-content {
-  gap: var(--space-1);
+.format-widget-content {
+  --stack-gap: var(--space-1);
 }
 
-.inspector-widget-subproperties {
+.format-widget-subproperties {
   display: grid;
   gap: var(--space-1);
   min-width: 0;
   padding-left: var(--indent-nested);
 }
 
-.inspector-widget-subproperties .control-row {
+.format-widget-subproperties .control-row {
   min-height: var(--control-height-sm);
   gap: var(--space-2);
 }
 
-.inspector-widget-subproperties .control-row-label {
+.format-widget-subproperties .control-row-label {
   font-size: var(--font-size-2xs);
 }
 

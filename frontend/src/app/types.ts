@@ -12,7 +12,6 @@ export type WorkspaceCommandId =
   | 'history.redo'
   | 'history.undo'
   | 'layout.toggleBuildPanel'
-  | 'layout.toggleInspector'
   | 'object.delete'
   | 'object.duplicate'
   | 'object.format'

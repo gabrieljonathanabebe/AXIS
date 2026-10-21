@@ -64,13 +64,13 @@ function ObjectFormatPopover<TElement extends ObjectFormatElement>({
   return (
     <Popover
       anchor={target.anchor}
-      className="chart-format-popover glass glass-thick"
+      className="format-popover glass glass-thick"
       keepOpenOn={getKeepOpenSelector(target.objectId)}
       label={label}
       open
       placement="right-start"
       title={
-        <span className="chart-format-popover-title cluster">
+        <span className="format-popover-title cluster">
           <Paintbrush aria-hidden="true" size={16} />
           <SelectControl
             label="Format element"
@@ -87,7 +87,7 @@ function ObjectFormatPopover<TElement extends ObjectFormatElement>({
         }
       }}
     >
-      <div className="chart-format-popover-body stack">
+      <div className="format-popover-body stack">
         {sections.length > 1 ? (
           <SegmentedControl
             label="Format section"

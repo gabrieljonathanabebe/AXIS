@@ -10,34 +10,31 @@ import {
   ZoomIn,
 } from 'lucide-react'
 
-import AxisWidget from './appearance/AxisWidget'
-import Button from '../shared/ui/Button'
-import ChartTitleWidget from './appearance/ChartTitleWidget'
-import ColorScaleWidget from './appearance/ColorScaleWidget'
-import ContainerWidget from './appearance/ContainerWidget'
-import ControlRow from '../shared/ui/ControlRow'
-import GridWidget from './appearance/GridWidget'
-import LabelsWidget from './appearance/LabelsWidget'
-import LegendInteractionWidget from './interaction/LegendInteractionWidget'
-import LegendWidget from './appearance/LegendWidget'
-import MarkSeriesWidget from './appearance/MarkSeriesWidget'
-import ObjectFormatPopover from '../objects/ObjectFormatPopover'
-import TooltipWidget from './interaction/TooltipWidget'
-import ZoomWidget from './interaction/ZoomWidget'
-import {
-  getDefaultAxisTitle,
-  getDefaultChartTitle,
-} from '../charts/getChartTitle'
-import { getFormatElements } from '../charts/getFormatElements'
-import { isRadialChartType } from '../charts/chartDefinitions'
+import AxisWidget from './AxisWidget'
+import Button from '../../shared/ui/Button'
+import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
+import ColorScaleWidget from './ColorScaleWidget'
+import ContainerWidget from '../../objects/ContainerWidget'
+import ControlRow from '../../shared/ui/ControlRow'
+import GridWidget from './GridWidget'
+import LabelsWidget from './LabelsWidget'
+import LegendInteractionWidget from './LegendInteractionWidget'
+import LegendWidget from './LegendWidget'
+import MarkSeriesWidget from './MarkSeriesWidget'
+import ObjectFormatPopover from '../../objects/ObjectFormatPopover'
+import TooltipWidget from './TooltipWidget'
+import ZoomWidget from './ZoomWidget'
+import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
+import { getFormatElements } from '../getFormatElements'
+import { isRadialChartType } from '../chartDefinitions'
 
-import type { ChartFormatElement } from '../charts/types'
-import type { ChartInspectorProps } from './types'
-import type { FormatSection } from '../objects/ObjectFormatPopover'
-import type { FormatTarget } from '../objects/types'
+import type { ChartFormatElement } from '../types'
+import type { ChartFormatProps } from '../types'
+import type { FormatSection } from '../../objects/ObjectFormatPopover'
+import type { FormatTarget } from '../../objects/types'
 
 // ===== TYPES =================================================================
-type ChartFormatPopoverProps = ChartInspectorProps & {
+type ChartFormatPopoverProps = ChartFormatProps & {
   element: ChartFormatElement
   target: FormatTarget
   onClose: () => void
@@ -63,14 +60,14 @@ const elementTitles: Record<ChartFormatElement, string> = {
  * Lists the sections of one chart element; each shows its widget bare.
  * Several sections switch by a segmented control in the popover.
  * @param element Element selected in the popover.
- * @param inspectorProps Actions, chart and fields of the inspector.
+ * @param formatProps Actions, chart and fields of the chart.
  * @param onElementChange Switches the popover to another element, e.g. from
  *   the marks to their tooltip.
- * @returns The sections, wired to the same actions as the inspector.
+ * @returns The sections, each wired to its chart action.
  */
 function getFormatSections(
   element: ChartFormatElement,
-  { actions, chart, fields }: ChartInspectorProps,
+  { actions, chart, fields }: ChartFormatProps,
   onElementChange: (element: ChartFormatElement) => void,
 ): FormatSection[] {
   const { appearance, interaction } = chart.spec
@@ -81,7 +78,6 @@ function getFormatSections(
           content: (
             <ColorScaleWidget
               value={appearance.colorScale.continuous}
-              variant="bare"
               onChange={(continuous) =>
                 actions.setAppearance('colorScale', {
                   ...appearance.colorScale,
@@ -99,7 +95,6 @@ function getFormatSections(
           content: (
             <ContainerWidget
               value={chart.container}
-              variant="bare"
               onChange={actions.setContainer}
             />
           ),
@@ -112,7 +107,6 @@ function getFormatSections(
           content: (
             <LegendWidget
               value={appearance.legend}
-              variant="bare"
               onChange={(value) => actions.setAppearance('legend', value)}
             />
           ),
@@ -123,7 +117,6 @@ function getFormatSections(
           content: (
             <LegendInteractionWidget
               value={interaction.legend}
-              variant="bare"
               onChange={(value) => actions.setInteraction('legend', value)}
             />
           ),
@@ -140,7 +133,6 @@ function getFormatSections(
                 actions={actions}
                 chart={chart}
                 fields={fields}
-                variant="bare"
               />
               <ControlRow label="Tooltip">
                 <Button
@@ -162,7 +154,6 @@ function getFormatSections(
             <LabelsWidget
               isRadial={isRadialChartType(chart.type)}
               value={appearance.labels}
-              variant="bare"
               onChange={(value) => actions.setAppearance('labels', value)}
             />
           ),
@@ -174,10 +165,9 @@ function getFormatSections(
       return [
         {
           content: (
-            <ChartTitleWidget
+            <ObjectTitleWidget
               defaultTitle={getDefaultChartTitle(chart, fields)}
               value={appearance.title}
-              variant="bare"
               onChange={(value) => actions.setAppearance('title', value)}
             />
           ),
@@ -191,7 +181,6 @@ function getFormatSections(
             <TooltipWidget
               showTrigger={!isRadialChartType(chart.type)}
               value={interaction.tooltip}
-              variant="bare"
               onChange={(value) => actions.setInteraction('tooltip', value)}
             />
           ),
@@ -214,7 +203,6 @@ function getFormatSections(
               orientation={axis}
               part={isAxisTitle ? 'title' : 'labels'}
               value={axisAppearance}
-              variant="bare"
               onChange={(value) => actions.setAppearance(axisElement, value)}
             />
           ),
@@ -227,7 +215,6 @@ function getFormatSections(
           content: (
             <GridWidget
               value={axisAppearance.gridLines}
-              variant="bare"
               onChange={(gridLines) =>
                 actions.setAppearance(axisElement, {
                   ...axisAppearance,
@@ -245,7 +232,6 @@ function getFormatSections(
           content: (
             <ZoomWidget
               value={interaction.zoom}
-              variant="bare"
               onChange={(value) => actions.setInteraction('zoom', value)}
             />
           ),
@@ -268,9 +254,9 @@ function ChartFormatPopover({
   target,
   onClose,
   onElementChange,
-  ...inspectorProps
+  ...formatProps
 }: ChartFormatPopoverProps) {
-  const { chart, fields } = inspectorProps
+  const { chart, fields } = formatProps
   const elementOptions = getFormatElements(chart, fields).map((element) => ({
     label: elementTitles[element],
     value: element,
@@ -280,7 +266,7 @@ function ChartFormatPopover({
       element={element}
       elementOptions={elementOptions}
       label="Chart format"
-      sections={getFormatSections(element, inspectorProps, onElementChange)}
+      sections={getFormatSections(element, formatProps, onElementChange)}
       target={target}
       onClose={onClose}
       onElementChange={onElementChange}

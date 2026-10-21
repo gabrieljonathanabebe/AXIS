@@ -171,11 +171,6 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         inside: true,
         slider: false,
       },
-      animation: {
-        enabled: true,
-        duration: 500,
-        easing: 'cubicOut',
-      },
     },
   }
 }

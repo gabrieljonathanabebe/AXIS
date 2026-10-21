@@ -1,6 +1,11 @@
 import { useState } from 'react'
 
-import type { CanvasActions, DataSelection } from '../workspace/types'
+import type {
+  CanvasActions,
+  DashboardAnimation,
+  DataSelection,
+} from '../workspace/types'
+
 import type { AxisTitleEdit, ChartFormatElement } from './types'
 
 import EChartCanvas from './EChartCanvas'
@@ -21,6 +26,7 @@ import type { DataField, Dataset } from '../datasets/types'
 
 type ChartItemProps = {
   actions: CanvasActions
+  animation: DashboardAnimation
   chart: ChartInstance
   dataset: Dataset
   datasetId: string | null
@@ -43,6 +49,7 @@ function getAxisTitleInputStyle({ axis, rect }: AxisTitleEdit): CSSProperties {
  */
 function ChartItem({
   actions,
+  animation,
   chart,
   dataset,
   datasetId,
@@ -108,6 +115,7 @@ function ChartItem({
       ) : null}
       <EChartCanvas
         actions={actions}
+        animation={animation}
         chart={chart}
         dataset={dataset}
         datasetId={datasetId}

@@ -1,19 +1,15 @@
-import { Grid2X2 } from 'lucide-react'
-
 import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Slider from '../../shared/ui/Slider'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { GridAppearance } from '../../charts/types'
+import type { GridAppearance } from '../types'
 import type { LineStyle } from '../../shared/strokeStyle'
 
 type GridWidgetProps = {
   value: GridAppearance
   onChange: (value: GridAppearance) => void
-  variant?: InspectorWidgetVariant
 }
 
 const lineStyleOptions = [
@@ -23,18 +19,16 @@ const lineStyleOptions = [
 ] satisfies { label: string; value: LineStyle }[]
 
 /** Edits the gridlines of one axis: color, opacity and line style. */
-function GridWidget({ value, onChange, variant }: GridWidgetProps) {
+function GridWidget({ value, onChange }: GridWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Gridlines"
-      icon={<Grid2X2 size={16} />}
       visibility={{
         visible: value.visible,
         onChange: (visible) => {
           onChange({ ...value, visible })
         },
       }}
-      variant={variant}
     >
       <ControlRow label="Color">
         <ColorControl
@@ -82,7 +76,7 @@ function GridWidget({ value, onChange, variant }: GridWidgetProps) {
           }}
         />
       </ControlRow>
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

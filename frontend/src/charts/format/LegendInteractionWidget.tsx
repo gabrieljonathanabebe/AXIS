@@ -1,19 +1,12 @@
-import { ListChecks } from 'lucide-react'
-
 import ControlRow from '../../shared/ui/ControlRow'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type {
-  ChartInteractionSpec,
-  LegendSelectionMode,
-} from '../../charts/types'
+import type { ChartInteractionSpec, LegendSelectionMode } from '../types'
 // ===== TYPES =================================================================
 type LegendInteractionWidgetProps = {
   value: ChartInteractionSpec['legend']
   onChange: (value: ChartInteractionSpec['legend']) => void
-  variant?: InspectorWidgetVariant
 }
 
 // ===== GLOBAL CONSTANTS ======================================================
@@ -30,12 +23,10 @@ const selectionModeOptions = [
 function LegendInteractionWidget({
   value,
   onChange,
-  variant,
 }: LegendInteractionWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Interaction"
-      icon={<ListChecks size={16} />}
       visibility={{
         label: 'Enabled',
         visible: value.enabled,
@@ -43,7 +34,6 @@ function LegendInteractionWidget({
           onChange({ ...value, enabled })
         },
       }}
-      variant={variant}
     >
       <ControlRow label="Selection">
         <SegmentedControl
@@ -55,7 +45,7 @@ function LegendInteractionWidget({
           }}
         />
       </ControlRow>
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

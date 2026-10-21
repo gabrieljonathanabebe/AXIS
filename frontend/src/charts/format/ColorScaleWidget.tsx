@@ -3,25 +3,22 @@ import {
   ArrowRight,
   MoveHorizontal,
   MoveVertical,
-  Palette,
 } from 'lucide-react'
 
 import ControlRow from '../../shared/ui/ControlRow'
 import GradientControl from '../../shared/ui/GradientControl'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Toggle from '../../shared/ui/Toggle'
 
-import type { ColorScaleAppearance } from '../../charts/types'
-import type { InspectorWidgetVariant } from '../InspectorWidget'
+import type { ColorScaleAppearance } from '../types'
 
 type ContinuousColorScale = ColorScaleAppearance['continuous']
 
 type ColorScaleWidgetProps = {
   value: ContinuousColorScale
   onChange: (value: ContinuousColorScale) => void
-  variant?: InspectorWidgetVariant
 }
 
 const positionOptions = [
@@ -51,18 +48,16 @@ const orientationIcons = {
 }
 
 /** Edits colors, placement and range of the continuous color scale. */
-function ColorScaleWidget({ value, onChange, variant }: ColorScaleWidgetProps) {
+function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Color Scale"
-      icon={<Palette size={16} />}
       visibility={{
         visible: value.visible,
         onChange: (visible) => {
           onChange({ ...value, visible })
         },
       }}
-      variant={variant}
     >
       <ControlRow label="Colors">
         <GradientControl
@@ -91,7 +86,7 @@ function ColorScaleWidget({ value, onChange, variant }: ColorScaleWidgetProps) {
         />
       </ControlRow>
       {value.min !== null ? (
-        <div className="inspector-widget-subproperties">
+        <div className="format-widget-subproperties">
           <ControlRow label="Minimum">
             <ScrubbableNumber
               label="Color scale minimum"
@@ -117,7 +112,7 @@ function ColorScaleWidget({ value, onChange, variant }: ColorScaleWidgetProps) {
         />
       </ControlRow>
       {value.max !== null ? (
-        <div className="inspector-widget-subproperties">
+        <div className="format-widget-subproperties">
           <ControlRow label="Maximum">
             <ScrubbableNumber
               label="Color scale maximum"
@@ -167,7 +162,7 @@ function ColorScaleWidget({ value, onChange, variant }: ColorScaleWidgetProps) {
           }}
         />
       </ControlRow>
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 

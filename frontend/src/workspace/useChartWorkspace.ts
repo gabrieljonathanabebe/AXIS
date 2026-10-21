@@ -19,7 +19,13 @@ import type {
   ObjectLayout,
   ObjectTemplate,
 } from '../objects/types'
-import type { CanvasActions, DataSelection, WorkspaceAction } from './types'
+import type {
+  CanvasActions,
+  DashboardLayout,
+  DashboardSpec,
+  DataSelection,
+  WorkspaceAction,
+} from './types'
 
 type UseChartWorkspaceParams = {
   dataset?: Dataset | null
@@ -160,6 +166,18 @@ export function useChartWorkspace({
     dispatch({ type: 'object/updateLayout', objectId, patch: layout })
   }
 
+  /** Changes settings of the whole dashboard, e.g. the chart animation. */
+  function updateDashboard(
+    patch: Partial<Pick<DashboardSpec, 'animation' | 'name'>>,
+  ): void {
+    dispatch({ type: 'dashboard/update', patch })
+  }
+
+  /** Changes the layout of the dashboard, e.g. the gap between objects. */
+  function updateDashboardLayout(patch: Partial<DashboardLayout>): void {
+    dispatch({ type: 'dashboard/updateLayout', patch })
+  }
+
   function renameDashboard(name: string): void {
     dispatch({ type: 'dashboard/update', patch: { name } })
   }
@@ -171,6 +189,8 @@ export function useChartWorkspace({
     updateCardAppearance,
     updateCardData,
     updateChartAppearance,
+    updateDashboard,
+    updateDashboardLayout,
     updateObjectContainer,
     updateObjectLayout,
   }

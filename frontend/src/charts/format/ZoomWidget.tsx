@@ -1,18 +1,14 @@
-import { ZoomIn } from 'lucide-react'
-
 import ControlRow from '../../shared/ui/ControlRow'
 import SelectControl from '../../shared/ui/SelectControl'
-import InspectorWidget from '../InspectorWidget'
+import FormatWidget from '../../shared/ui/FormatWidget'
 
-import type { InspectorWidgetVariant } from '../InspectorWidget'
-import type { ChartInteractionSpec } from '../../charts/types'
+import type { ChartInteractionSpec } from '../types'
 
 type ZoomMode = 'inside' | 'slider' | 'both'
 
 type ZoomWidgetProps = {
   value: ChartInteractionSpec['zoom']
   onChange: (value: ChartInteractionSpec['zoom']) => void
-  variant?: InspectorWidgetVariant
 }
 
 const zoomModeOptions = [
@@ -29,11 +25,10 @@ function getZoomMode(value: ChartInteractionSpec['zoom']): ZoomMode {
 }
 
 /** Edits whether the X axis zooms and scrolls inside the plot, by slider or both. */
-function ZoomWidget({ value, onChange, variant }: ZoomWidgetProps) {
+function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
   return (
-    <InspectorWidget
+    <FormatWidget
       title="Zoom & Scroll"
-      icon={<ZoomIn size={16} />}
       visibility={{
         label: 'Enabled',
         visible: value.enabled,
@@ -46,7 +41,6 @@ function ZoomWidget({ value, onChange, variant }: ZoomWidgetProps) {
           })
         },
       }}
-      variant={variant}
     >
       <ControlRow label="Mode">
         <SelectControl
@@ -62,7 +56,7 @@ function ZoomWidget({ value, onChange, variant }: ZoomWidgetProps) {
           }}
         />
       </ControlRow>
-    </InspectorWidget>
+    </FormatWidget>
   )
 }
 
