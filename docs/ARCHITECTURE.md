@@ -473,10 +473,18 @@ beide
   Element, das sie betreffen: `xAxis` und `yAxis` haben „Gridlines“
   (`AxisAppearance.gridLines`, im Adapter `splitLine` der Achse),
   `xAxis` zusätzlich „Zoom“ (`interaction.zoom`, wirkt auf die
-  X-Achse), `legend` „Interaction“ (`interaction.legend`).
+  X-Achse), `legend` „Interaction“ (`interaction.legend`), `marks`
+  „Labels“ (`appearance.labels`, Datenlabels sind kein eigenes Element,
+  weil ein Klick auf ein Label als Serien-Event ohnehin bei den Marks
+  landet).
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
-  Elemente ein Chart hat: Container, Titel und Marks immer, Achsen und
-  ihre Labels nur kartesisch, Legende wie `isLegendRelevant`. Die Element-Auswahl im Popover setzt nur
+  Elemente ein Chart hat: Container, Titel, Marks und Tooltip immer,
+  Achsen und ihre Labels nur kartesisch, Legende wie `isLegendRelevant`,
+  Color Scale bei kontinuierlicher Farbe (`getColorEncodingMode`).
+  Tooltip und Color Scale haben keine Region, sie sind nur über das
+  Dropdown erreichbar: Der Tooltip existiert nicht als Element im Chart,
+  die ECharts-`visualMap` liefert keine Maus-Events und ist ohne
+  interne APIs nicht auffindbar. Die Element-Auswahl im Popover setzt nur
   `formatTarget.element`.
 - `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
   DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur

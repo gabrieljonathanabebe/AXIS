@@ -1270,8 +1270,8 @@ ausgewählten Chart.
 ### Bearbeitung am Chart
 
 Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-Chart als Ganzes, Titel, Marks, X- und Y-Achse, Labels der X- und
-Y-Achse, Legende):
+Chart als Ganzes, Titel, Marks mit Datenlabels, Tooltip, X- und Y-Achse,
+Labels der X- und Y-Achse, Legende, Color Scale):
 
 - Einstieg ist der Pinsel (`Paintbrush`) in der Canvas-Toolbar. Er
   öffnet das Popover mit dem Chart als Ganzem („Chart“, bei Cards
@@ -1286,7 +1286,8 @@ Y-Achse, Legende):
   aktuelle Element als `SelectControl` mit `variant="title"`, rechts das
   X. Darunter stehen die Abschnitte des Elements.
 - Abschnitte: Ein Element mit mehreren Einstellungsgruppen (z. B.
-  X Axis: Axis | Gridlines | Zoom, Legend: Legend | Interaction) zeigt
+  X Axis: Axis | Gridlines | Zoom, Legend: Legend | Interaction, Marks:
+  Marks | Labels) zeigt
   sie als `SegmentedControl` mit Icons; der Name steht im Tooltip und
   im `aria-label`. Sichtbar ist nur der aktive Abschnitt, keine
   Collapsibles im Popover. Ein Element mit einem Abschnitt zeigt kein

@@ -89,6 +89,7 @@ const layoutHandleModes: ObjectLayoutMode[] = [
 const FORMAT_LABEL_OFFSET = 12
 
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
+  colorScale: 'Format color scale',
   container: 'Format container',
   legend: 'Format legend',
   marks: 'Format marks',

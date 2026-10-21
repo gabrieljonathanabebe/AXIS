@@ -1171,6 +1171,14 @@ Umgesetzt:
   Editor-Zustand, nicht in der `ChartSpec`)
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
+- Datenlabels als Abschnitt der Marks (`Marks | Labels`,
+  `LabelsWidget` `bare`); im Inspector entfällt das Labels-Widget
+- Element „Color Scale“ bei kontinuierlicher Farbe, nur im Dropdown
+  (`ColorScaleWidget` `bare`); anklickbar wird sie erst mit einer
+  eigenen HTML-Farbskala (siehe „Style-Bausteine ausbauen“); im
+  Inspector entfällt das Widget
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
 
 ### Style-Bausteine ausbauen (geplant)
 
@@ -1195,7 +1203,11 @@ Beschlossen:
 Offen (im Plan abstimmen): `NumberFormat` und `Fill` als Bausteine,
 welche zusätzlichen Eigenschaften `TextStyle` und `StrokeStyle` bekommen,
 Data Labels als Abschnitt oder eigenes Element, Reihenfolge der
-Abschnitte pro Element.
+Abschnitte pro Element. Idee: eigene HTML-Farbskala statt der
+ECharts-`visualMap`, damit die Color Scale wie Legende und Achsen
+anklickbar wird und Fill und Text als Bausteine bekommt; die
+`visualMap` liefert keine Maus-Events, kennt kein `containPixel`, und
+ihre Komponenten sind nur über interne APIs auffindbar.
 
 ## 6. Later – Visualization Completion
 

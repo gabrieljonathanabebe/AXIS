@@ -5,15 +5,19 @@ import {
   MousePointerClick,
   MoveHorizontal,
   MoveVertical,
+  Shapes,
+  Tags,
   ZoomIn,
 } from 'lucide-react'
 
 import AxisWidget from './appearance/AxisWidget'
 import Button from '../shared/ui/Button'
 import ChartTitleWidget from './appearance/ChartTitleWidget'
+import ColorScaleWidget from './appearance/ColorScaleWidget'
 import ContainerWidget from './appearance/ContainerWidget'
 import ControlRow from '../shared/ui/ControlRow'
 import GridWidget from './appearance/GridWidget'
+import LabelsWidget from './appearance/LabelsWidget'
 import LegendInteractionWidget from './interaction/LegendInteractionWidget'
 import LegendWidget from './appearance/LegendWidget'
 import MarkSeriesWidget from './appearance/MarkSeriesWidget'
@@ -42,6 +46,7 @@ type ChartFormatPopoverProps = ChartInspectorProps & {
 
 // ===== CONSTANTS =============================================================
 const elementTitles: Record<ChartFormatElement, string> = {
+  colorScale: 'Color Scale',
   container: 'Chart',
   legend: 'Legend',
   marks: 'Marks',
@@ -70,6 +75,24 @@ function getFormatSections(
 ): FormatSection[] {
   const { appearance, interaction } = chart.spec
   switch (element) {
+    case 'colorScale':
+      return [
+        {
+          content: (
+            <ColorScaleWidget
+              value={appearance.colorScale.continuous}
+              variant="bare"
+              onChange={(continuous) =>
+                actions.setAppearance('colorScale', {
+                  ...appearance.colorScale,
+                  continuous,
+                })
+              }
+            />
+          ),
+          label: 'Color Scale',
+        },
+      ]
     case 'container':
       return [
         {
@@ -131,7 +154,20 @@ function getFormatSections(
               </ControlRow>
             </>
           ),
+          icon: Shapes,
           label: 'Marks',
+        },
+        {
+          content: (
+            <LabelsWidget
+              isRadial={isRadialChartType(chart.type)}
+              value={appearance.labels}
+              variant="bare"
+              onChange={(value) => actions.setAppearance('labels', value)}
+            />
+          ),
+          icon: Tags,
+          label: 'Labels',
         },
       ]
     case 'title':

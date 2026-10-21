@@ -14,12 +14,14 @@ import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Toggle from '../../shared/ui/Toggle'
 
 import type { ColorScaleAppearance } from '../../charts/types'
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 
 type ContinuousColorScale = ColorScaleAppearance['continuous']
 
 type ColorScaleWidgetProps = {
   value: ContinuousColorScale
   onChange: (value: ContinuousColorScale) => void
+  variant?: InspectorWidgetVariant
 }
 
 const positionOptions = [
@@ -48,7 +50,8 @@ const orientationIcons = {
   horizontal: MoveHorizontal,
 }
 
-function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
+/** Edits colors, placement and range of the continuous color scale. */
+function ColorScaleWidget({ value, onChange, variant }: ColorScaleWidgetProps) {
   return (
     <InspectorWidget
       title="Color Scale"
@@ -59,6 +62,7 @@ function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
           onChange({ ...value, visible })
         },
       }}
+      variant={variant}
     >
       <ControlRow label="Colors">
         <GradientControl

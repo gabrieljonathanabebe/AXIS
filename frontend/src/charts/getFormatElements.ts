@@ -1,3 +1,4 @@
+import { getColorEncodingMode } from './getColorEncodingMode'
 import { isLegendRelevant } from './isLegendRelevant'
 import { isRadialChartType } from './chartDefinitions'
 
@@ -6,6 +7,7 @@ import type { DataField } from '../datasets/types'
 import type { ObjectFormatElement } from '../objects/types'
 
 const chartFormatElements: readonly ObjectFormatElement[] = [
+  'colorScale',
   'container',
   'legend',
   'marks',
@@ -20,8 +22,8 @@ const chartFormatElements: readonly ObjectFormatElement[] = [
 /**
  * Tells whether a format element belongs to charts.
  * @param element Element of a format target, or null when none is open.
- * @returns True for container, title, marks, tooltip, axes, axis labels
- *   and legend.
+ * @returns True for container, title, marks, tooltip, axes, axis labels,
+ *   legend and color scale.
  */
 export function isChartFormatElement(
   element: ObjectFormatElement | null,
@@ -32,9 +34,11 @@ export function isChartFormatElement(
 /**
  * Lists the elements of a chart that can be formatted, in reading order.
  * @param chart Chart whose elements are listed.
- * @param fields Dataset fields, which decide whether a legend is relevant.
+ * @param fields Dataset fields, which decide whether a legend or a color
+ *   scale is relevant.
  * @returns The container, title, marks and tooltip, the axes and their
- *   labels of cartesian charts and a relevant legend.
+ *   labels of cartesian charts, a relevant legend and a continuous color
+ *   scale.
  */
 export function getFormatElements(
   chart: ChartInstance,
@@ -51,6 +55,12 @@ export function getFormatElements(
   }
   if (isLegendRelevant(chart, fields)) {
     elements.push('legend')
+  }
+  if (
+    getColorEncodingMode(chart.type, chart.spec.data.encoding, fields) ===
+    'continuous'
+  ) {
+    elements.push('colorScale')
   }
   return elements
 }

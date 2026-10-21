@@ -6,12 +6,14 @@ import TextStyleControls from '../../shared/ui/TextStyleControls'
 import InspectorWidget from '../InspectorWidget'
 
 import type { LabelPosition, LabelsAppearance } from '../../charts/types'
+import type { InspectorWidgetVariant } from '../InspectorWidget'
 
 // ===== TYPES =================================================================
 type LabelsWidgetProps = {
   isRadial?: boolean
   onChange: (value: LabelsAppearance) => void
   value: LabelsAppearance
+  variant?: InspectorWidgetVariant
 }
 
 // ===== CONSTANTS =============================================================
@@ -27,10 +29,12 @@ const radialPositionOptions = [
 ] satisfies { label: string; value: LabelPosition }[]
 
 // ===== COMPONENT =============================================================
+/** Edits visibility, position and text style of the data labels. */
 function LabelsWidget({
   isRadial = false,
   onChange,
   value,
+  variant,
 }: LabelsWidgetProps) {
   const activePositionOptions = isRadial
     ? radialPositionOptions
@@ -45,6 +49,7 @@ function LabelsWidget({
           onChange({ ...value, visible })
         },
       }}
+      variant={variant}
     >
       <TextStyleControls
         label="Label"
