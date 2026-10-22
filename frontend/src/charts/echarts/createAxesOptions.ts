@@ -7,6 +7,7 @@ import type {
   ChartType,
 } from '../types'
 import { createAxisLabelFormatter } from './createAxisLabelFormatter'
+import { createStrokeStyleOption } from './createStrokeStyleOption'
 import { createTextStyleOption } from './createTextStyleOption'
 
 // ===== TYPES =================================================================
@@ -43,15 +44,9 @@ function getCategoryLabelInterval(
 function createSplitLineOption(
   axis: AxisAppearance,
 ): XAxisComponentOption['splitLine'] {
-  const { gridLines } = axis
   return {
-    lineStyle: {
-      color: gridLines.color,
-      opacity: gridLines.opacity,
-      type: gridLines.lineStyle,
-      width: 1,
-    },
-    show: axis.visible && gridLines.visible,
+    lineStyle: createStrokeStyleOption(axis.gridLines.stroke),
+    show: axis.visible && axis.gridLines.visible,
   }
 }
 

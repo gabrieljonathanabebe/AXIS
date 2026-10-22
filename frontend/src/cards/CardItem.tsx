@@ -39,19 +39,19 @@ type CardItemProps = {
 /**
  * Formats the value of a card; auto keeps large numbers short.
  * @param value Aggregated value, or null when no row has one.
- * @param appearance Number format and currency of the value.
+ * @param appearance Appearance of the value, with its number format.
  * @returns The text the card shows, a dash for no value.
  */
 function formatCardValue(
   value: number | null,
-  { currency, format }: CardValueAppearance,
+  { numberFormat }: CardValueAppearance,
 ): string {
   if (value === null) {
     return '–'
   }
-  return format === 'auto'
+  return numberFormat.style === 'auto'
     ? formatCompactNumber(value)
-    : createNumberFormatter(format, currency)(value)
+    : createNumberFormatter(numberFormat)(value)
 }
 
 /**

@@ -12,6 +12,9 @@ export type StrokeStyle = {
   width: number
 }
 
+/** Stroke of a data series, e.g. a line mark; its color comes from the series. */
+export type SeriesStrokeStyle = Omit<StrokeStyle, 'color'>
+
 // ===== FUNCTIONS =============================================================
 /**
  * Turns a stroke style into a CSS border for HTML elements.
@@ -25,4 +28,15 @@ export function getStrokeBorderCss(style: StrokeStyle): CSSProperties {
     borderWidth: style.width,
     opacity: style.opacity,
   }
+}
+
+/**
+ * Tells a stroke with its own color from a series stroke.
+ * @param stroke Stroke style, e.g. of gridlines or a line mark.
+ * @returns True when the stroke carries a color.
+ */
+export function hasStrokeColor(
+  stroke: SeriesStrokeStyle,
+): stroke is StrokeStyle {
+  return 'color' in stroke
 }

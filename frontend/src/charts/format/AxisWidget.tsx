@@ -1,17 +1,13 @@
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import RotationDial from '../../shared/ui/RotationDial'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
-import SelectControl from '../../shared/ui/SelectControl'
 import TextInput from '../../shared/ui/TextInput'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import {
-  CURRENCY_OPTIONS,
-  VALUE_FORMAT_OPTIONS,
-} from '../../shared/format/valueFormats'
 
-import type { AxisAppearance, AxisFormat } from '../types'
+import type { AxisAppearance, AxisValueType } from '../types'
 
 // ===== TYPES =================================================================
 type AxisOrientation = 'x' | 'y'
@@ -30,10 +26,10 @@ type AxisWidgetProps = {
 type TickMode = 'auto' | 'custom'
 
 // ===== CONSTANTS =============================================================
-const formatOptions = [
-  ...VALUE_FORMAT_OPTIONS,
+const valueTypeOptions = [
+  { label: 'Number', value: 'number' },
   { label: 'Date', value: 'date' },
-] satisfies { label: string; value: AxisFormat }[]
+] satisfies { label: string; value: AxisValueType }[]
 
 const tickModeOptions = [
   { label: 'Auto', value: 'auto' },
@@ -98,35 +94,24 @@ function AxisWidget({
       ) : null}
       {showsLabels ? (
         <>
-          <ControlRow label="Format">
-            <SelectControl
-              label={`${title} format`}
-              options={formatOptions}
-              value={value.format}
-              onChange={(format) => {
-                onChange({
-                  ...value,
-                  format,
-                })
+          <ControlRow label="Type">
+            <SegmentedControl
+              label={`${title} value type`}
+              options={valueTypeOptions}
+              value={labels.valueType}
+              onValueChange={(valueType) => {
+                onChange({ ...value, labels: { ...labels, valueType } })
               }}
             />
           </ControlRow>
-          {value.format === 'currency' ? (
-            <div className="format-widget-subproperties">
-              <ControlRow label="Currency">
-                <SelectControl
-                  label={`${title} currency`}
-                  options={CURRENCY_OPTIONS}
-                  value={value.currency}
-                  onChange={(currency) => {
-                    onChange({
-                      ...value,
-                      currency,
-                    })
-                  }}
-                />
-              </ControlRow>
-            </div>
+          {labels.valueType === 'number' ? (
+            <NumberFormatControls
+              label={title}
+              value={labels.numberFormat}
+              onChange={(numberFormat) => {
+                onChange({ ...value, labels: { ...labels, numberFormat } })
+              }}
+            />
           ) : null}
           <ControlRow label="Ticks">
             <SegmentedControl

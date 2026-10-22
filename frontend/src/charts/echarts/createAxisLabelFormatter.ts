@@ -1,8 +1,5 @@
 import type { AxisAppearance } from '../types'
-import {
-  createNumberFormatter,
-  formatNumber,
-} from '../../shared/format/formatNumber'
+import { createNumberFormatter } from '../../shared/format/formatNumber'
 import { formatDate } from '../../shared/format/formatDate'
 import type { NumberFormatter } from '../../shared/format/formatNumber'
 
@@ -20,18 +17,25 @@ function toFiniteNumber(value: AxisLabelValue): number | null {
   return Number.isFinite(numericValue) ? numericValue : null
 }
 
+/**
+ * Creates the label formatter of an axis: dates for a date axis, otherwise
+ * its number format; auto leaves the labels to ECharts.
+ * @param axis Appearance of the axis.
+ * @returns Formatter for ECharts, or undefined for the default labels.
+ */
 export function createAxisLabelFormatter(
   axis: AxisAppearance,
 ): AxisLabelFormatter | undefined {
-  if (axis.format === 'auto') {
-    return undefined
-  }
-
-  if (axis.format === 'date') {
+  const { numberFormat, valueType } = axis.labels
+  if (valueType === 'date') {
     return (value) => {
       const date = new Date(value)
       return Number.isNaN(date.getTime()) ? String(value) : formatDate(value)
     }
+  }
+
+  if (numberFormat.style === 'auto') {
+    return undefined
   }
 
   const formatNumericValue = createAxisNumberFormatter(axis)
@@ -49,8 +53,5 @@ export function createAxisLabelFormatter(
 export function createAxisNumberFormatter(
   axis: AxisAppearance,
 ): NumberFormatter {
-  if (axis.format === 'auto' || axis.format === 'date') {
-    return formatNumber
-  }
-  return createNumberFormatter(axis.format, axis.currency)
+  return createNumberFormatter(axis.labels.numberFormat)
 }

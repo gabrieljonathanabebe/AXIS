@@ -488,8 +488,8 @@ Abhängige Unteroptionen (`.format-widget-subproperties`) sind um
 `--indent-nested` eingerückt.
 
 `AxisWidget` zeigt mit `part` (`title` | `labels`) die Zeilen eines
-Elements: „X Axis“ Sichtbarkeit und Titel, „X Axis Labels“ Format,
-Ticks, Rotation und Text. Die Sichtbarkeit gehört zu `title`, weil
+Elements: „X Axis“ Sichtbarkeit und Titel, „X Axis Labels“ Typ (Number
+oder Date), Zahlenformat, Ticks, Rotation und Text. Die Sichtbarkeit gehört zu `title`, weil
 `visible` die ganze Achse ausblendet.
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
@@ -967,11 +967,17 @@ eines Umrisses (`StrokeStyle`), nach demselben Muster wie
 `rowLabelPrefix` für die sichtbaren Zeilennamen (`getRowLabel`, von
 beiden geteilt).
 
-- Width (`ScrubbableNumber`, 0 bis `maxWidth`, Standard 8; 0 heißt kein
-  Strich), Style (`SegmentedControl` Solid/Dashed/Dotted mit
-  `.line-style-preview`), Color (`ColorControl`), Opacity (`Slider`)
-- genutzt vom Rahmen im `ContainerWidget` („Border width“ …); Gridlines,
-  Linien-Marks und später Tables sollen ihn übernehmen
+- Width (`ScrubbableNumber`, `minWidth` bis `maxWidth`, Standard 0–8;
+  0 heißt kein Strich), Style (`SegmentedControl` Solid/Dashed/Dotted
+  mit `.line-style-preview`), Color (`ColorControl`), Opacity (`Slider`)
+- generisch über den Wert: Ein `StrokeStyle` hat eine eigene Farbe, ein
+  `SeriesStrokeStyle` nicht, weil sie aus der Serie kommt (Palette oder
+  `appearance.color`); ohne Farbe entfällt die Color-Zeile
+  (`hasStrokeColor`), `onChange` liefert denselben Typ zurück
+- genutzt vom Rahmen im `ContainerWidget` („Border width“ …), von den
+  Gridlines im `GridWidget` (Breite 1–4) und von Linien-Marks im
+  `MarkSeriesWidget` (Präfix „Line“, Breite 1–8, ohne Farbe); später
+  Achsenlinie, Bar-Rahmen, Scatter-Rand und Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -985,19 +991,21 @@ entspricht.
 Vorhandene Bausteine:
 
 - `TextStyle` mit `TextStyleControls` (siehe 9j)
-- `StrokeStyle` mit `StrokeStyleControls` (siehe 9k): erster Nutzer ist
-  der Container-Rahmen (`ObjectContainer.border`); Gridlines
-  (`GridAppearance`) und Linien-Marks (`LineAppearance`) haben noch
-  eigene Felder und sollen ihn übernehmen
+- `StrokeStyle` mit `StrokeStyleControls` (siehe 9k): Container-Rahmen
+  (`ObjectContainer.border`), Gridlines (`GridAppearance.stroke`) und
+  Linien-Marks (`LineAppearance.stroke` als `SeriesStrokeStyle`)
+- `NumberFormat` mit `NumberFormatControls` (siehe 9m):
+  Achsenbeschriftung (`AxisLabelsAppearance.numberFormat`), Card-Wert,
+  Datenlabels und Tooltip (`interaction.tooltip.numberFormat`, ohne
+  Control)
 
 Ein neuer Baustein lohnt sich erst, wenn mindestens zwei Elemente ihn
-tatsächlich nutzen oder der zweite Nutzer konkret geplant ist. Mögliche
-weitere Bausteine (Idee, nicht beschlossen):
+tatsächlich nutzen oder der zweite Nutzer konkret geplant ist. Geplant
+im Slice „Generische Style-Bausteine“:
 
-- `NumberFormat`: Format, Währung, Nachkommastellen; heute getrennt in
-  `AxisAppearance`, `CardValueAppearance` und `tooltip.valueFormat`
-- `Fill`: Farbe und Deckkraft; heute im Container-Hintergrund, in der
-  Fläche unter Linien und in der Scatter-Deckkraft
+- `Fill`: Farbe und Deckkraft für die Fläche unter Linien; später
+  Legende und Tooltip. Container-Hintergrund und Scatter-Deckkraft
+  bleiben eigene Felder
 
 Die Matrix zeigt, welche Formatierung jedes Element heute hat. Sie dient
 als Planungsgrundlage: Eine Spalte mit vielen Lücken spricht für einen
@@ -1009,21 +1017,39 @@ gemeinsamen Baustein.
 | -------------------- | ---- | ------------- | ------------- | ----------------------- | ------------- |
 | Titel (Chart, Card)  | ✓    | –             | –             | –                       | ✓ Ausrichtung |
 | Achsentitel          | ✓    | –             | –             | –                       | –             |
-| Achsenbeschriftung   | ✓    | –             | –             | ✓ ohne Nachkommastellen | ✓ Rotation    |
+| Achsenbeschriftung   | ✓    | –             | –             | ✓                       | ✓ Rotation    |
 | Achsenlinie          | –    | –             | ○             | –                       | –             |
-| Gridlines            | –    | –             | ✓ ohne Breite | –                       | –             |
+| Gridlines            | –    | –             | ✓             | –                       | –             |
 | Legende              | ✓    | ○             | –             | –                       | ✓ Position    |
-| Datenlabels          | ✓    | –             | –             | ○                       | ✓ Position    |
+| Datenlabels          | ✓    | –             | –             | ✓ auto folgt Y          | ✓ Position    |
 | Marks Bar            | –    | ✓ Farbe       | ○ Rahmen      | –                       | –             |
-| Marks Line           | –    | ✓ Fläche      | ✓             | –                       | –             |
+| Marks Line           | –    | ✓ Fläche      | ✓ Serienfarbe | –                       | –             |
 | Marks Scatter        | –    | ✓ Deckkraft   | ○ Rand        | –                       | –             |
 | Container            | –    | ✓ Hintergrund | ✓ Rahmen      | –                       | ✓ Padding     |
-| Card-Wert            | ✓    | –             | –             | ✓ ohne Nachkommastellen | ○ Ausrichtung |
+| Card-Wert            | ✓    | –             | –             | ✓                       | ○ Ausrichtung |
 | Card-Selection-Label | ✓    | –             | –             | –                       | –             |
-| Tooltip              | ○    | ○             | –             | ✓ ohne Währung          | –             |
+| Tooltip              | ○    | ○             | –             | ✓ folgt Y, ohne Control | –             |
 
 Die Matrix beschreibt den implementierten Stand und wird mit jedem
 neuen Baustein oder Element aktualisiert.
+
+## 9m. NumberFormatControls
+
+`NumberFormatControls` ist der Baustein für das Zahlenformat eines Werts
+(`NumberFormat`), nach demselben Muster: Zeilen statt Rahmen, `label`
+für Screenreader („Value format“, „Y Axis currency“).
+
+- Format (`SelectControl` Auto/Number/Percent/Currency); bei Auto
+  entscheidet der Ort, der den Wert zeigt, daher erscheint dann nur
+  diese Zeile
+- bei explizitem Stil eingerückt (`.format-widget-subproperties`):
+  Currency (`SelectControl`, nur bei Currency), Decimals
+  (`SegmentedControl` Auto/Fixed, wie die Ticks der Achse) mit Places
+  (`ScrubbableNumber` 0–6, Start bei 0), Compact (`Toggle`), Prefix und
+  Suffix (`TextInput`)
+- genutzt vom Card-Wert im `CardValueWidget`, von der Achsenbeschriftung
+  im `AxisWidget` (nur bei Typ Number) und von den Datenlabels im
+  `LabelsWidget` (nicht bei Pie und Donut, die Anteile zeigen)
 
 ## 10. Legend
 

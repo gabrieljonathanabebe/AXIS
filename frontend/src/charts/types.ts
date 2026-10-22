@@ -6,9 +6,9 @@ import type {
   SetContainer,
 } from '../objects/types'
 import type { DataField } from '../datasets/types'
-import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
+import type { NumberFormat } from '../shared/format/valueFormats'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
-import type { LineStyle } from '../shared/strokeStyle'
+import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
 
 // ===== ACTIONS ===============================================================
 export type SetAggregation = <TKey extends ChartAggregationKey>(
@@ -72,25 +72,26 @@ export type AxisAppearance = {
   title: string
   min: number | null
   max: number | null
-  format: AxisFormat
-  currency: CurrencyCode
   gridLines: GridAppearance
   labels: AxisLabelsAppearance
   titleStyle: TextStyle
 }
 
-export type AxisFormat = 'auto' | 'number' | 'percent' | 'currency' | 'date'
-
 export type AxisLabelsAppearance = {
+  numberFormat: NumberFormat
   rotation: number
   textStyle: TextStyle
   tickCount: number | null
+  valueType: AxisValueType
 }
 
 export type AxisTitleEdit = {
   axis: 'x' | 'y'
   rect: ElementRect
 }
+
+/** What the labels of an axis show; numbers use its number format. */
+export type AxisValueType = 'number' | 'date'
 
 // ===== BAR ===================================================================
 export type BarAppearance = {
@@ -158,7 +159,7 @@ export type ChartInteractionSpec = {
     enabled: boolean
     trigger: TooltipTrigger
     fields: string[]
-    valueFormat: ValueFormat
+    numberFormat: NumberFormat
     delay: number
   }
   zoom: {
@@ -201,9 +202,7 @@ export type ColorScaleAppearance = {
 // ===== GRID ================================================================
 export type GridAppearance = {
   visible: boolean
-  color: string
-  opacity: number
-  lineStyle: LineStyle
+  stroke: StrokeStyle
 }
 
 // ===== INTERACTION ===========================================================
@@ -214,6 +213,7 @@ export type LabelPosition = 'top' | 'right' | 'inside'
 
 export type LabelsAppearance = {
   visible: boolean
+  numberFormat: NumberFormat
   position: LabelPosition
   textStyle: TextStyle
 }
@@ -237,8 +237,7 @@ export type LegendSelectionMode = 'multiple' | 'single'
 
 // ===== LINE ==================================================================
 export type LineAppearance = {
-  lineWidth: number
-  lineStyle: LineStyle
+  stroke: SeriesStrokeStyle
   smooth: boolean
   showSymbol: boolean
   areaFill: boolean

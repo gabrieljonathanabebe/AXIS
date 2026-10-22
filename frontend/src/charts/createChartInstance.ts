@@ -1,4 +1,5 @@
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
+import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
 import type {
   ChartInstance,
   ChartSpec,
@@ -23,9 +24,7 @@ const CHART_TEXT_STYLE: TextStyle = {
 
 /** Default gridlines; each axis draws its own. */
 const CHART_GRID_LINES: GridAppearance = {
-  color: '#334155',
-  lineStyle: 'solid',
-  opacity: 0.08,
+  stroke: { color: '#334155', lineStyle: 'solid', opacity: 0.08, width: 1 },
   visible: true,
 }
 
@@ -88,13 +87,13 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         title: '',
         min: null,
         max: null,
-        format: 'auto',
-        currency: 'EUR',
         gridLines: CHART_GRID_LINES,
         labels: {
+          numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
           textStyle: CHART_TEXT_STYLE,
           tickCount: null,
+          valueType: 'number',
         },
         titleStyle: CHART_TEXT_STYLE,
       },
@@ -103,13 +102,13 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         title: '',
         min: null,
         max: null,
-        format: 'auto',
-        currency: 'EUR',
         gridLines: CHART_GRID_LINES,
         labels: {
+          numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
           textStyle: CHART_TEXT_STYLE,
           tickCount: null,
+          valueType: 'number',
         },
         titleStyle: CHART_TEXT_STYLE,
       },
@@ -127,6 +126,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         inactiveColor: '#8b95a7',
       },
       labels: {
+        numberFormat: DEFAULT_NUMBER_FORMAT,
         visible: isRadialChart,
         position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
         textStyle: CHART_TEXT_STYLE,
@@ -141,8 +141,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         symbol: 'circle',
       },
       line: {
-        lineWidth: 3,
-        lineStyle: 'solid',
+        stroke: { lineStyle: 'solid', opacity: 1, width: 3 },
         smooth: false,
         showSymbol: true,
         areaFill: false,
@@ -163,7 +162,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         enabled: true,
         trigger: hasItemMarks ? 'item' : 'axis',
         fields: [],
-        valueFormat: 'auto',
+        numberFormat: DEFAULT_NUMBER_FORMAT,
         delay: 0,
       },
       zoom: {

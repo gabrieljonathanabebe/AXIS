@@ -1175,7 +1175,7 @@ Umgesetzt:
   `LabelsWidget` `bare`); im Inspector entfällt das Labels-Widget
 - Element „Color Scale“ bei kontinuierlicher Farbe, nur im Dropdown
   (`ColorScaleWidget` `bare`); anklickbar wird sie erst mit einer
-  eigenen HTML-Farbskala (siehe „Style-Bausteine ausbauen“); im
+  eigenen HTML-Farbskala (siehe „Generische Style-Bausteine“); im
   Inspector entfällt das Widget
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
@@ -1211,34 +1211,80 @@ Umgesetzt:
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
 
-### Style-Bausteine ausbauen (geplant)
+### Generische Style-Bausteine (in Arbeit)
 
-Folgt auf „Inspector entfernen“, damit die Widgets schon an ihrem neuen
-Ort liegen. Ziel: wiederkehrende Formatierung über gemeinsame Bausteine
-statt Einzelfelder pro Element; die Abdeckungs-Matrix in
-`DESIGN_SYSTEM.md` (9l) wird geschlossen.
+Folgt auf „Inspector entfernen“ und ersetzt den früheren Eintrag
+„Style-Bausteine ausbauen“. Ziel: Die Appearance-Specs bekommen ihre
+endgültige Form, bevor Projekte gespeichert werden (`.cevyn`). Neue
+Formatierungen sind danach nur noch neue Felder oder neue Varianten,
+keine Formänderung, die alte Dateien bricht.
 
 Beschlossen:
 
-- `StrokeStyle` für alle Linien und Umrisse: Gridlines (mit Breite),
-  Linien-Marks, Achsenlinie, Bar-Rahmen, Scatter-Rand; im Popover
-  jeweils `StrokeStyleControls`, doppelte `lineStyleOptions` entfallen
-- ein zentraler Adapter-Helper übersetzt `StrokeStyle` nach ECharts,
-  analog zu `createTextStyleOption`
-- restliche Matrix-Lücken schließen, soweit sie zu einem Element mit
-  Popover gehören (Legende Fill, Datenlabels Zahlenformat, Card-Wert
-  Ausrichtung, Tooltip Text und Fill)
-- fehlende, nützliche Eigenschaften in `TextStyle`, `StrokeStyle` und
-  neuen Bausteinen ergänzen, jeweils mit echtem Nutzer im Slice
+- zusammengehörige Felder als benanntes Unterobjekt (`stroke`,
+  `numberFormat`, `area`) statt flach am Element; Varianten als Union
+  mit `kind` (Vorbild `ObjectBackground`)
+- jeder Baustein nach dem Muster von `TextStyle`: Werttyp in `shared/`,
+  `…Controls` mit festen Zeilen in `shared/ui/`, Übersetzung für
+  ECharts im Adapter, für CSS mit dem ersten HTML-Nutzer; Sichtbarkeit
+  bleibt eine Zeile des Abschnitts
+- `StrokeStyle` für Gridlines (`visible` + `stroke`, mit Breite) und
+  Linien-Marks; Marks nutzen `SeriesStrokeStyle` ohne Farbe, die Linie
+  behält ihre Serienfarbe; `StrokeStyleControls` zeigt die Farbzeile
+  nur bei einem Wert mit `color`, `minWidth` neben `maxWidth`;
+  zentraler Helper `createStrokeStyleOption`
+- `NumberFormat` (Stil, Währung, Nachkommastellen, kompakt, Präfix,
+  Suffix) als `numberFormat` an Achsenbeschriftung, Card-Wert, Tooltip
+  und Datenlabels; `auto` übernimmt das ganze Format des Orts bzw. der
+  Y-Achse, die Zusatzzeilen erscheinen nur bei explizitem Stil; Datum
+  bleibt eine eigene Zeile „Type“ der Achse; kein Control für das
+  Tooltip-Format
+- `Fill` (`kind: 'solid'`, Farbe, Deckkraft) für die Fläche unter der
+  Linie (`areaFill` + `area`); Scatter-Deckkraft bleibt ein eigenes
+  Feld, der Container-Hintergrund bleibt `ObjectBackground`
 
-Offen (im Plan abstimmen): `NumberFormat` und `Fill` als Bausteine,
-welche zusätzlichen Eigenschaften `TextStyle` und `StrokeStyle` bekommen,
-Data Labels als Abschnitt oder eigenes Element, Reihenfolge der
-Abschnitte pro Element. Idee: eigene HTML-Farbskala statt der
-ECharts-`visualMap`, damit die Color Scale wie Legende und Achsen
-anklickbar wird und Fill und Text als Bausteine bekommt; die
-`visualMap` liefert keine Maus-Events, kennt kein `containPixel`, und
-ihre Komponenten sind nur über interne APIs auffindbar.
+Umgesetzt:
+
+- Schritt 1 `StrokeStyle`: `GridAppearance` = `visible` + `stroke`
+  (Standard Breite 1, Optik unverändert); `LineAppearance.stroke` als
+  `SeriesStrokeStyle`, neu mit Deckkraft; `createStrokeStyleOption` im
+  Adapter; `StrokeStyleControls` generisch mit `minWidth`, im
+  `GridWidget` und `MarkSeriesWidget`, die doppelten
+  `lineStyleOptions` entfallen; verifiziert: `tsc`, `npm run lint`,
+  Prettier; Verhalten im Browser
+- Schritt 2 `NumberFormat`: Typ und `DEFAULT_NUMBER_FORMAT` in
+  `valueFormats.ts`, `createNumberFormatter(format)` mit Decimals,
+  Compact, Prefix und Suffix, `resolveNumberFormat` für `auto`;
+  `NumberFormatControls` (Decimals als Auto/Fixed wie die Ticks) am
+  Card-Wert, an der Achsenbeschriftung (neue Zeile „Type“ Number/Date,
+  `labels.valueType`) und an den Datenlabels; Tooltip trägt
+  `numberFormat` ohne Control; Standard-Optik unverändert; verifiziert:
+  `tsc`, `npm run lint`, Prettier; Verhalten im Browser
+
+Später (neue Felder auf diesen Bausteinen, nicht Teil des Slices):
+
+- `StrokeStyle` für Achsenlinie, Bar-Rahmen und Scatter-Rand
+- Legende Fill, Tooltip Text und Fill, Card-Wert Ausrichtung
+- eigene HTML-Farbskala statt der ECharts-`visualMap`, damit die Color
+  Scale wie Legende und Achsen anklickbar wird und Fill und Text als
+  Bausteine bekommt; die `visualMap` liefert keine Maus-Events, kennt
+  kein `containPixel`, und ihre Komponenten sind nur über interne APIs
+  auffindbar
+
+### ColorValue und Theme-Farben (geplant)
+
+Folgt auf „Generische Style-Bausteine“, noch vor der Persistenz, weil
+er die Form jedes Farbfelds ändert.
+
+- `ColorValue` als Union: `{ kind: 'token' }` folgt Theme und Branding,
+  `{ kind: 'custom' }` ist eine feste Farbe; später ohne Migration
+  `{ kind: 'rule' }` für bedingte Formatierung
+- `ColorToken` aus den bestehenden CSS-Variablen; Auflösung für ECharts
+  im Adapter über `ChartTheme`, für HTML über die CSS-Variable
+- `ColorControl` mit Theme-Farben als Swatches plus freiem Farbwähler
+- offen: Chart-Tokens für Standardfarben ohne passenden Token (Grid,
+  Rahmen, Inactive, Marks) oder `custom`; Tendenz: kategorische
+  Paletten bleiben Hex-Listen
 
 ## 6. Later – Visualization Completion
 

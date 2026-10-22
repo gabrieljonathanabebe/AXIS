@@ -1,8 +1,5 @@
 import ControlRow from '../shared/ui/ControlRow'
-import {
-  CURRENCY_OPTIONS,
-  VALUE_FORMAT_OPTIONS,
-} from '../shared/format/valueFormats'
+import NumberFormatControls from '../shared/ui/NumberFormatControls'
 import { getAggregationOptions } from '../charts/aggregations'
 import SelectControl from '../shared/ui/SelectControl'
 import TextStyleControls from '../shared/ui/TextStyleControls'
@@ -42,24 +39,11 @@ function CardValueWidget({
           onChange={onAggregationChange}
         />
       </ControlRow>
-      <ControlRow label="Format">
-        <SelectControl
-          label="Value format"
-          options={VALUE_FORMAT_OPTIONS}
-          value={value.format}
-          onChange={(format) => onChange({ ...value, format })}
-        />
-      </ControlRow>
-      {value.format === 'currency' ? (
-        <ControlRow label="Currency">
-          <SelectControl
-            label="Value currency"
-            options={CURRENCY_OPTIONS}
-            value={value.currency}
-            onChange={(currency) => onChange({ ...value, currency })}
-          />
-        </ControlRow>
-      ) : null}
+      <NumberFormatControls
+        label="Value"
+        value={value.numberFormat}
+        onChange={(numberFormat) => onChange({ ...value, numberFormat })}
+      />
       <TextStyleControls
         label="Value"
         maxFontSize={96}

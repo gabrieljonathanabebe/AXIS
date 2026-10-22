@@ -1,7 +1,8 @@
 import ControlRow from '../../shared/ui/ControlRow'
+import FormatWidget from '../../shared/ui/FormatWidget'
+import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import SelectControl from '../../shared/ui/SelectControl'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import FormatWidget from '../../shared/ui/FormatWidget'
 
 import type { LabelPosition, LabelsAppearance } from '../types'
 
@@ -25,7 +26,7 @@ const radialPositionOptions = [
 ] satisfies { label: string; value: LabelPosition }[]
 
 // ===== COMPONENT =============================================================
-/** Edits visibility, position and text style of the data labels. */
+/** Edits visibility, number format, text style and position of the data labels. */
 function LabelsWidget({
   isRadial = false,
   onChange,
@@ -44,6 +45,13 @@ function LabelsWidget({
         },
       }}
     >
+      {!isRadial ? (
+        <NumberFormatControls
+          label="Label"
+          value={value.numberFormat}
+          onChange={(numberFormat) => onChange({ ...value, numberFormat })}
+        />
+      ) : null}
       <TextStyleControls
         label="Label"
         value={value.textStyle}

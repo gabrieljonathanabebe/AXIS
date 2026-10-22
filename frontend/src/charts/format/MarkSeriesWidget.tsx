@@ -7,12 +7,12 @@ import { getColorEncodingMode } from '../getColorEncodingMode'
 import PaletteControl from '../../shared/ui/PaletteControl'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Slider from '../../shared/ui/Slider'
+import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 import Toggle from '../../shared/ui/Toggle'
 import FormatWidget from '../../shared/ui/FormatWidget'
 
 import type { ChartFormatProps } from '../types'
 import type { ScatterSymbol } from '../types'
-import type { LineStyle } from '../../shared/strokeStyle'
 
 type MarkSeriesWidgetProps = Pick<
   ChartFormatProps,
@@ -25,12 +25,6 @@ const scatterSymbolOptions = [
   { label: 'Triangle', value: 'triangle' },
   { label: 'Diamond', value: 'diamond' },
 ] satisfies { label: string; value: ScatterSymbol }[]
-
-const lineStyleOptions = [
-  { label: 'Solid', value: 'solid' },
-  { label: 'Dashed', value: 'dashed' },
-  { label: 'Dotted', value: 'dotted' },
-] satisfies { label: string; value: LineStyle }[]
 
 const scatterSymbolIcons = {
   circle: Circle,
@@ -128,34 +122,15 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
       ) : null}
       {chart.type === 'line' ? (
         <>
-          <ControlRow label="Line width">
-            <Slider
-              label="Line width"
-              min={1}
-              max={8}
-              step={0.5}
-              value={appearance.line.lineWidth}
-              onValueChange={(lineWidth) => {
-                actions.setChartAppearance('line', 'lineWidth', lineWidth)
-              }}
-            />
-          </ControlRow>
-          <ControlRow label="Line style">
-            <SegmentedControl
-              label="Line style"
-              options={lineStyleOptions}
-              value={appearance.line.lineStyle}
-              renderOption={(option) => (
-                <span
-                  className="line-style-preview"
-                  style={{ borderTopStyle: option.value }}
-                />
-              )}
-              onValueChange={(lineStyle) => {
-                actions.setChartAppearance('line', 'lineStyle', lineStyle)
-              }}
-            />
-          </ControlRow>
+          <StrokeStyleControls
+            label="Mark"
+            minWidth={1}
+            rowLabelPrefix="Line"
+            value={appearance.line.stroke}
+            onChange={(stroke) => {
+              actions.setChartAppearance('line', 'stroke', stroke)
+            }}
+          />
           <ControlRow label="Smooth">
             <Toggle
               label="Smooth line"

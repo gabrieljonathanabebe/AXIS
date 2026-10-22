@@ -1,4 +1,5 @@
 import { createDefaultChartContainer } from '../charts/createChartInstance'
+import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
 
 import type { CardDataSpec, CardInstance, CardSpec } from './types'
 import type { DataField } from '../datasets/types'
@@ -38,8 +39,7 @@ export function createDefaultCardSpec(): CardSpec {
         },
       },
       value: {
-        currency: 'EUR',
-        format: 'auto',
+        numberFormat: DEFAULT_NUMBER_FORMAT,
         textStyle: {
           color: '#eef4ff',
           fontSize: 40,

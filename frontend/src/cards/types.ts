@@ -4,7 +4,7 @@ import type {
   DashboardObjectBase,
   ObjectTitleAppearance,
 } from '../objects/types'
-import type { CurrencyCode, ValueFormat } from '../shared/format/valueFormats'
+import type { NumberFormat } from '../shared/format/valueFormats'
 import type { TextStyle } from '../shared/textStyle'
 
 // ===== OBJECT ================================================================
@@ -40,8 +40,7 @@ export type CardSelectionLabelAppearance = {
 }
 
 export type CardValueAppearance = {
-  currency: CurrencyCode
-  format: ValueFormat
+  numberFormat: NumberFormat
   textStyle: TextStyle
 }
 

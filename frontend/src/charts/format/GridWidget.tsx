@@ -1,22 +1,12 @@
-import ColorControl from '../../shared/ui/ColorControl'
-import ControlRow from '../../shared/ui/ControlRow'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
-import Slider from '../../shared/ui/Slider'
+import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 import FormatWidget from '../../shared/ui/FormatWidget'
 
 import type { GridAppearance } from '../types'
-import type { LineStyle } from '../../shared/strokeStyle'
 
 type GridWidgetProps = {
   value: GridAppearance
   onChange: (value: GridAppearance) => void
 }
-
-const lineStyleOptions = [
-  { label: 'Solid', value: 'solid' },
-  { label: 'Dashed', value: 'dashed' },
-  { label: 'Dotted', value: 'dotted' },
-] satisfies { label: string; value: LineStyle }[]
 
 /** Edits the gridlines of one axis: color, opacity and line style. */
 function GridWidget({ value, onChange }: GridWidgetProps) {
@@ -30,52 +20,13 @@ function GridWidget({ value, onChange }: GridWidgetProps) {
         },
       }}
     >
-      <ControlRow label="Color">
-        <ColorControl
-          label="Grid color"
-          value={value.color}
-          onChange={(color) => {
-            onChange({
-              ...value,
-              color,
-            })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Opacity">
-        <Slider
-          label="Grid opacity"
-          min={0.05}
-          max={1}
-          step={0.05}
-          value={value.opacity}
-          onValueChange={(opacity) => {
-            onChange({
-              ...value,
-              opacity,
-            })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Line style">
-        <SegmentedControl
-          label="Grid line style"
-          options={lineStyleOptions}
-          value={value.lineStyle}
-          renderOption={(option) => (
-            <span
-              className="line-style-preview"
-              style={{ borderTopStyle: option.value }}
-            />
-          )}
-          onValueChange={(lineStyle) => {
-            onChange({
-              ...value,
-              lineStyle,
-            })
-          }}
-        />
-      </ControlRow>
+      <StrokeStyleControls
+        label="Grid"
+        maxWidth={4}
+        minWidth={1}
+        value={value.stroke}
+        onChange={(stroke) => onChange({ ...value, stroke })}
+      />
     </FormatWidget>
   )
 }

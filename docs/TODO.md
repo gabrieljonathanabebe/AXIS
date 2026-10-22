@@ -22,6 +22,15 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   und ohne Selection (Labels der Basis-Serie sind bei Selection bewusst
   aus)
 
+## Optik der Control-Rows im Format-Popover
+
+- Aussehen der Zeilen (`ControlRow`) im Format-Popover überarbeiten
+- Einrückung der abhängigen Unteroptionen
+  (`.format-widget-subproperties`, `--indent-nested`) überarbeiten,
+  z. B. bei Currency und Decimals in `NumberFormatControls`
+- eigener Slice nach „Generische Style-Bausteine“; konkrete Wünsche
+  zu Beginn des Slices klären
+
 ## Weitere Dashboard-Einstellungen
 
 - Canvas-Hintergrund als Dashboard-Einstellung, analog zu den
@@ -109,23 +118,13 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 
 ## Control für das Tooltip-Werteformat
 
-- `interaction.tooltip.valueFormat` wird seit der zentralen
-  Zahlenformatierung ausgewertet, hat aber kein Control
-- `auto` folgt dem Format der Y-Achse; `number`, `percent` und
-  `currency` überschreiben es (Währung kommt von der Y-Achse)
+- `interaction.tooltip.numberFormat` (`NumberFormat`) wird
+  ausgewertet, hat aber kein Control
+- `auto` übernimmt das ganze Format der Y-Achse; ein expliziter Stil
+  überschreibt es samt Währung, Nachkommastellen, Präfix und Suffix
 - Control im Element „Tooltip“ des Format-Popovers ergänzen
-  (`TooltipWidget`), als `SelectControl` wie das Achsenformat im
-  `AxisWidget`
-
-## Chart-Palette vom UI-Akzent trennen
-
-- das Akzent-Blau der Oberfläche (Auswahl-Ring, Popover-Rahmen,
-  Format-Region, Achsen-Markierung) ist zugleich die erste Datenfarbe der Charts
-- auf blauen Charts gehen Auswahl- und Bearbeitungs-Markierungen
-  dadurch unter
-- prüfen, ob die Standard-Palette (`appearance.color`,
-  `colorScale.categorical.palette`) mit einer Farbe beginnt, die sich
-  klar vom UI-Akzent abhebt, wie bei Tableau
+  (`TooltipWidget`) über `NumberFormatControls` wie bei den
+  Datenlabels
 
 ## Cards mit Text-Werten
 

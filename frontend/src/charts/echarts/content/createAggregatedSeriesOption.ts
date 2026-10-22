@@ -1,8 +1,11 @@
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
 
 import type { ChartAppearanceSpec } from '../../types'
-import { createAxisNumberFormatter } from '../createAxisLabelFormatter'
-import { createSeriesLabelOption } from '../createSeriesLabelOption'
+import {
+  createLabelNumberFormatter,
+  createSeriesLabelOption,
+} from '../createSeriesLabelOption'
+import { createStrokeStyleOption } from '../createStrokeStyleOption'
 import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
 
 // ===== TYPES =================================================================
@@ -46,7 +49,7 @@ export function createAggregatedSeriesOption({
   const label = {
     ...createSeriesLabelOption(
       appearance.labels,
-      createAxisNumberFormatter(appearance.yAxis),
+      createLabelNumberFormatter(appearance),
     ),
     show: opacity === undefined && appearance.labels.visible,
   }
@@ -67,10 +70,9 @@ export function createAggregatedSeriesOption({
       itemStyle: { color, opacity },
       label,
       lineStyle: {
+        ...createStrokeStyleOption(appearance.line.stroke),
         color,
-        opacity,
-        type: appearance.line.lineStyle,
-        width: appearance.line.lineWidth,
+        opacity: appearance.line.stroke.opacity * (opacity ?? 1),
       },
       name: name ?? undefined,
       showSymbol:

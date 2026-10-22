@@ -1,7 +1,11 @@
 import type { LineSeriesOption } from 'echarts'
 
+import {
+  createNumberFormatter,
+  resolveNumberFormat,
+} from '../../shared/format/formatNumber'
 import { createTextStyleOption } from './createTextStyleOption'
-import type { LabelsAppearance } from '../types'
+import type { ChartAppearanceSpec, LabelsAppearance } from '../types'
 import type { NumberFormatter } from '../../shared/format/formatNumber'
 
 // ===== TYPES =================================================================
@@ -34,4 +38,20 @@ export function createSeriesLabelOption(
     position: appearance.position,
     show: appearance.visible,
   }
+}
+
+/**
+ * Number formatter of the data labels; auto follows the Y axis.
+ * @param appearance Appearance of the chart.
+ * @returns Formatter for the label values.
+ */
+export function createLabelNumberFormatter(
+  appearance: ChartAppearanceSpec,
+): NumberFormatter {
+  return createNumberFormatter(
+    resolveNumberFormat(
+      appearance.labels.numberFormat,
+      appearance.yAxis.labels.numberFormat,
+    ),
+  )
 }

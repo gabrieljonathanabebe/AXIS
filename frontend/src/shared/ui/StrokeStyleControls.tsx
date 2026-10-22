@@ -1,19 +1,21 @@
 import ColorControl from './ColorControl'
 import ControlRow from './ControlRow'
+import { getRowLabel } from './getRowLabel'
+import { hasStrokeColor } from '../strokeStyle'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 import Slider from './Slider'
-import { getRowLabel } from './getRowLabel'
 
-import type { LineStyle, StrokeStyle } from '../strokeStyle'
+import type { LineStyle, SeriesStrokeStyle } from '../strokeStyle'
 
 // ===== TYPES =================================================================
-type StrokeStyleControlsProps = {
+type StrokeStyleControlsProps<TStroke extends SeriesStrokeStyle> = {
   label: string
   maxWidth?: number
+  minWidth?: number
   rowLabelPrefix?: string
-  value: StrokeStyle
-  onChange: (value: StrokeStyle) => void
+  value: TStroke
+  onChange: (value: TStroke) => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -26,22 +28,24 @@ const lineStyleOptions = [
 // ===== COMPONENT =============================================================
 /**
  * Rows for width, line style, color and opacity of one stroke, e.g. a
- * border. Widgets place them next to their own rows.
+ * border. Widgets place them next to their own rows; a stroke without a
+ * color, e.g. a series line, gets no color row.
  */
-function StrokeStyleControls({
+function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
   label,
   maxWidth = 8,
+  minWidth = 0,
   rowLabelPrefix,
   value,
   onChange,
-}: StrokeStyleControlsProps) {
+}: StrokeStyleControlsProps<TStroke>) {
   return (
     <>
       <ControlRow label={getRowLabel('Width', rowLabelPrefix)}>
         <ScrubbableNumber
           label={`${label} width`}
           max={maxWidth}
-          min={0}
+          min={minWidth}
           step={1}
           value={value.width}
           onValueChange={(width) => onChange({ ...value, width })}
@@ -62,13 +66,15 @@ function StrokeStyleControls({
           onValueChange={(lineStyle) => onChange({ ...value, lineStyle })}
         />
       </ControlRow>
-      <ControlRow label={getRowLabel('Color', rowLabelPrefix)}>
-        <ColorControl
-          label={`${label} color`}
-          value={value.color}
-          onChange={(color) => onChange({ ...value, color })}
-        />
-      </ControlRow>
+      {hasStrokeColor(value) ? (
+        <ControlRow label={getRowLabel('Color', rowLabelPrefix)}>
+          <ColorControl
+            label={`${label} color`}
+            value={value.color}
+            onChange={(color) => onChange({ ...value, color })}
+          />
+        </ControlRow>
+      ) : null}
       <ControlRow label={getRowLabel('Opacity', rowLabelPrefix)}>
         <Slider
           label={`${label} opacity`}

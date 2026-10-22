@@ -325,16 +325,24 @@ davon gibt es nicht. Die Locale steht als `LOCALE` in
 `src/shared/config.ts`, der Sammelstelle für app-weite
 Frontend-Einstellungen; Domain-Konstanten bleiben in ihrem Ordner.
 
-`createNumberFormatter(style, currency)` liefert einen Formatter für
-`number`, `percent` oder `currency`. Im Adapter übersetzt
-`createAxisNumberFormatter(axis)` das Achsenformat aus der `ChartSpec`
-in einen solchen Formatter. Achsenlabels, Datenlabels (Bar, Line,
-Scatter) und der Tooltip nutzen diese eine Regel, dadurch zeigen sie
-denselben Wert gleich an:
+Ein Zahlenformat ist der Baustein `NumberFormat` aus
+`src/shared/format/valueFormats.ts` (`style`, `currency`, `decimals`,
+`compact`, `prefix`, `suffix`). Ihn tragen die Achsenbeschriftung
+(`AxisLabelsAppearance.numberFormat`), der Card-Wert, die Datenlabels
+und der Tooltip (`interaction.tooltip.numberFormat`). Ob eine Achse
+Zahlen oder Datumswerte zeigt, ist ein eigenes Feld
+(`AxisLabelsAppearance.valueType`), kein Teil des Zahlenformats.
 
-- Datenlabels folgen dem Format der Y-Achse; Pie zeigt Anteile (`{d}%`);
-- der Tooltip wertet `interaction.tooltip.valueFormat` aus, `auto`
-  folgt der Y-Achse;
+`createNumberFormatter(format)` baut daraus einen Formatter auf Basis von
+`Intl.NumberFormat`; `decimals: null` lässt den Stil entscheiden
+(Number und Currency höchstens 2, Percent 1). `auto` formatiert wie
+`number`, Orte mit eigenem Standard lösen es vorher auf:
+
+- die Achse überlässt die Labels bei `auto` ECharts;
+- der Card-Wert zeigt bei `auto` kompakt (`formatCompactNumber`);
+- Datenlabels (Bar, Line, Scatter) und Tooltip übernehmen bei `auto`
+  das ganze Format der Y-Achse (`resolveNumberFormat`,
+  `createLabelNumberFormatter`); Pie zeigt Anteile (`{d}%`);
 - die Enden der Colorbar nutzen `formatCompactNumber`;
 - Datumsachsen nutzen `formatDate` wie Table und Filter.
 
@@ -358,10 +366,16 @@ oder Zahlenformat bleiben Felder des Elements.
 
 Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
 `src/shared/strokeStyle.ts` (`color`, `lineStyle`, `opacity`, `width`;
-`LineStyle` liegt ebenfalls dort). Aktuell nutzt ihn der Rahmen des
-Containers (`ObjectContainer.border`); HTML setzt ihn über
-`getStrokeBorderCss`. Gridlines und Linien-Marks haben noch eigene
-Felder.
+`LineStyle` liegt ebenfalls dort). Ihn nutzen der Rahmen des Containers
+(`ObjectContainer.border`) und die Gridlines jeder Achse
+(`GridAppearance.stroke`). Linien-Marks tragen `SeriesStrokeStyle`
+(`StrokeStyle` ohne `color`), weil ihre Farbe aus der Serie kommt
+(Palette oder `appearance.color`); `hasStrokeColor` unterscheidet beide.
+
+- ECharts-Linien übersetzt `createStrokeStyleOption` im Adapter; bei
+  Serien setzt der Aufrufer die Serienfarbe und multipliziert die
+  Deckkraft mit dem Dimming der Selection
+- HTML-Umrisse setzt `getStrokeBorderCss`
 
 ### Container vs. Content
 

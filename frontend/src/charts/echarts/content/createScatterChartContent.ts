@@ -4,9 +4,11 @@ import type { ChartAppearanceSpec } from '../../types'
 import type { DataRow, DataValue } from '../../../datasets/types'
 
 import { createAxesOptions } from '../createAxesOptions'
-import { createAxisNumberFormatter } from '../createAxisLabelFormatter'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
-import { createSeriesLabelOption } from '../createSeriesLabelOption'
+import {
+  createLabelNumberFormatter,
+  createSeriesLabelOption,
+} from '../createSeriesLabelOption'
 import { DIMMED_OPACITY } from './selectionStyle'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
@@ -54,7 +56,7 @@ function createScatterSeries({
     },
     label: createSeriesLabelOption(
       appearance.labels,
-      createAxisNumberFormatter(appearance.yAxis),
+      createLabelNumberFormatter(appearance),
     ),
     name,
     symbol: appearance.scatter.symbol,

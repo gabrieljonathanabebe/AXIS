@@ -7,6 +7,7 @@ import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
 import {
   createNumberFormatter,
   formatNumber,
+  resolveNumberFormat,
 } from '../../shared/format/formatNumber'
 
 import type { NumberFormatter } from '../../shared/format/formatNumber'
@@ -43,13 +44,19 @@ function formatValue(
   return formatNumericValue(value)
 }
 
-// 'auto' follows the value axis, e.g. a currency Y axis shows € in the tooltip.
+/**
+ * Formatter for the measure values in the tooltip; auto follows the Y axis,
+ * e.g. a currency Y axis shows € in the tooltip.
+ * @param spec Spec of the chart.
+ * @returns Formatter of the tooltip values.
+ */
 function createValueFormatter(spec: ChartSpec): NumberFormatter {
-  const { valueFormat } = spec.interaction.tooltip
-  const { yAxis } = spec.appearance
-  return valueFormat === 'auto'
-    ? createAxisNumberFormatter(yAxis)
-    : createNumberFormatter(valueFormat, yAxis.currency)
+  return createNumberFormatter(
+    resolveNumberFormat(
+      spec.interaction.tooltip.numberFormat,
+      spec.appearance.yAxis.labels.numberFormat,
+    ),
+  )
 }
 
 function createRow(
