@@ -6,6 +6,7 @@ import CommandButton from '../app/CommandButton'
 import { getObjectDefinition } from './objectDefinitions'
 import { getRectStyle } from './elementRect'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
+import { getColorCss } from '../shared/colorValue'
 import { getStrokeBorderCss } from '../shared/strokeStyle'
 
 import type {
@@ -188,7 +189,7 @@ function ObjectFrame({
     ...style,
     '--chart-canvas-inset': `${container.padding}px`,
     '--chart-background':
-      background.kind === 'color' ? background.color : undefined,
+      background.kind === 'color' ? getColorCss(background.color) : undefined,
     '--chart-radius': `${container.borderRadius}px`,
   }
 

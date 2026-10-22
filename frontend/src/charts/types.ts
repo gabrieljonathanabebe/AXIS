@@ -1,3 +1,4 @@
+import type { ColorValue } from '../shared/colorValue'
 import type {
   ContainerFormatElement,
   DashboardObjectBase,
@@ -107,7 +108,7 @@ export type ChartAggregationKey = keyof Pick<
 >
 
 export type ChartAppearanceSpec = {
-  color: string
+  color: ColorValue
   colorScale: ColorScaleAppearance
   title: ObjectTitleAppearance
   xAxis: AxisAppearance
@@ -189,8 +190,8 @@ export type ColorScaleAppearance = {
     palette: string[]
   }
   continuous: {
-    startColor: string
-    endColor: string
+    startColor: ColorValue
+    endColor: ColorValue
     visible: boolean
     position: 'left' | 'right'
     orientation: 'vertical' | 'horizontal'
@@ -231,7 +232,7 @@ export type LegendAppearance = {
   itemWidth: number
   itemHeight: 14
   padding: number
-  inactiveColor: string
+  inactiveColor: ColorValue
 }
 
 export type LegendSelectionMode = 'multiple' | 'single'

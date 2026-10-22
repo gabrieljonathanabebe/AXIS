@@ -3,6 +3,7 @@ import type {
   ChartInstance,
   ChartType,
 } from '../charts/types'
+import type { ColorValue } from '../shared/colorValue'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 import type { CardFormatElement, CardInstance } from '../cards/types'
 import type { StrokeStyle } from '../shared/strokeStyle'
@@ -46,7 +47,7 @@ export type ObjectContainer = {
 }
 
 export type ObjectBackground =
-  { kind: ObjectBackgroundPreset } | { kind: 'color'; color: string }
+  { kind: ObjectBackgroundPreset } | { kind: 'color'; color: ColorValue }
 
 export type ObjectBackgroundPreset = 'surface' | 'glass' | 'blue' | 'violet'
 

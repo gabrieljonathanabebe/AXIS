@@ -1,14 +1,13 @@
+import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
+import { getNumericDomain } from './getNumericDomain'
+
+import type { ChartAppearanceSpec, ChartEncoding } from '../types'
+import type { ChartTheme } from './chartTheme'
+import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type {
   ContinuousVisualMapComponentOption,
   VisualMapComponentOption,
 } from 'echarts'
-
-import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
-import { getNumericDomain } from './getNumericDomain'
-
-import type { ColorEncodingMode } from '../getColorEncodingMode'
-
-import type { ChartAppearanceSpec, ChartEncoding } from '../types'
 import type { DataRow } from '../../datasets/types'
 
 type CreateScatterVisualMapsParams = {
@@ -16,6 +15,7 @@ type CreateScatterVisualMapsParams = {
   encoding: ChartEncoding
   appearance: ChartAppearanceSpec
   colorEncodingMode: ColorEncodingMode
+  theme: ChartTheme
 }
 
 function createSizeVisualMap(
@@ -50,12 +50,17 @@ function createSizeVisualMap(
   }
 }
 
-function createColorVisualMap(
-  rows: DataRow[],
-  encoding: ChartEncoding,
-  appearance: ChartAppearanceSpec,
-  colorEncodingMode: ColorEncodingMode,
-): VisualMapComponentOption | null {
+/**
+ * Creates the color scale of a continuous color field, if there is one.
+ * @returns Visual map of the scale, or null without continuous color.
+ */
+function createColorVisualMap({
+  appearance,
+  colorEncodingMode,
+  encoding,
+  rows,
+  theme,
+}: CreateScatterVisualMapsParams): VisualMapComponentOption | null {
   const colorFieldName = encoding.color
   if (colorEncodingMode !== 'continuous' || !colorFieldName) {
     return null
@@ -67,21 +72,24 @@ function createColorVisualMap(
   return createContinuousColorVisualMap({
     appearance: appearance.colorScale.continuous,
     dimension: 3,
+    theme,
     values,
   })
 }
 
-export function createScatterVisualMaps({
-  rows,
-  encoding,
-  appearance,
-  colorEncodingMode,
-}: CreateScatterVisualMapsParams): VisualMapComponentOption[] {
+/**
+ * Creates the hidden size scale and the visible color scale of a scatter chart.
+ * @param params Points, fields, appearance and theme of the chart.
+ * @returns Visual maps that apply to the chart.
+ */
+export function createScatterVisualMaps(
+  params: CreateScatterVisualMapsParams,
+): VisualMapComponentOption[] {
+  const { appearance, encoding, rows } = params
   const visualMaps = [
     createSizeVisualMap(rows, encoding, appearance),
-    createColorVisualMap(rows, encoding, appearance, colorEncodingMode),
+    createColorVisualMap(params),
   ]
-
   return visualMaps.filter(
     (visualMap): visualMap is VisualMapComponentOption => {
       return visualMap !== null

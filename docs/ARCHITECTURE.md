@@ -385,6 +385,38 @@ Flächen nutzen `Fill` aus `src/shared/fill.ts` (`kind: 'solid'`,
 `createFillOption`; eine CSS-Übersetzung folgt mit dem ersten
 HTML-Nutzer. Der Container-Hintergrund bleibt `ObjectBackground`.
 
+### Farbwerte
+
+Jedes Farbfeld der Specs ist ein `ColorValue` aus
+`src/shared/colorValue.ts`: `{ kind: 'token'; token }` folgt dem Theme,
+`{ kind: 'custom'; color }` ist eine feste Hex-Farbe. Das gilt für
+`TextStyle`, `StrokeStyle`, `Fill`, `ObjectBackground` mit
+`kind: 'color'`, die Chartfarbe (`appearance.color`), die Enden der
+kontinuierlichen Farbskala und `legend.inactiveColor`. Kategorische
+Paletten bleiben Hex-Listen (`string[]`).
+
+- `ColorToken` hat fachliche Namen (`text`, `textMuted`, `accent`,
+  `gridLine`, `border`, `inactive`); `COLOR_TOKEN_VARIABLES` ordnet jedem
+  Token seine CSS-Variable aus `styles/themes.css` zu, damit gespeicherte
+  Specs nicht an CSS-Namen hängen
+- Standardwerte: Struktur folgt dem Theme, Daten sind feste Farben.
+  Texte, Gridlines, Container-Rahmen und Legend-Inactive sind Tokens;
+  Chartfarbe, Fläche unter der Linie und Farbskala sind `custom`
+- HTML löst über `getColorCss` auf (`var(--…)` bzw. Hex); die
+  CSS-Helper `getTextStyleCss` und `getStrokeBorderCss` nutzen ihn
+- ECharts kennt keine CSS-Variablen: `readChartTheme` in
+  `EChartCanvas` liest die aktuellen Werte in `ChartTheme.colors`,
+  `resolveColor` im Adapter löst damit auf. `theme` hängt am
+  `ChartContentContext`; `createTextStyleOption`,
+  `createStrokeStyleOption` und `createFillOption` nehmen es als
+  zweiten Parameter
+- geplant: `{ kind: 'rule' }` für bedingte Formatierung und
+  `{ kind: 'series' }` für Elemente, die der Serienfarbe folgen; beide
+  sind neue Varianten ohne Formänderung
+- `data-theme` wird noch nirgends gesetzt, es gilt immer das Dark-Theme;
+  bei einem Theme-Wechsel müssten die Charts neu rendern, weil ECharts
+  aufgelöste Farben erhält
+
 ### Container vs. Content
 
 Jedes Objekt auf der Canvas besteht aus einem generischen Frame und

@@ -9,6 +9,7 @@ import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { DIMMED_OPACITY } from './selectionStyle'
+import { resolveColor } from '../resolveColor'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -39,9 +40,15 @@ function createSeriesData(
 export function createAggregatedChartContent(
   context: ChartContentContext,
 ): ChartContent {
-  const { chartType, dataset, highlightResult, queryResult, selection, spec } =
-    context
-
+  const {
+    chartType,
+    dataset,
+    highlightResult,
+    queryResult,
+    selection,
+    spec,
+    theme,
+  } = context
   if (chartType !== 'bar' && chartType !== 'line') {
     throw new Error(`Unsupported aggregated chart type: ${chartType}`)
   }
@@ -64,9 +71,15 @@ export function createAggregatedChartContent(
     ? Array.from(new Set(points.map((point) => point.series)))
     : [null]
 
+  /**
+   * Color of one series: the chart color, a palette color, or none for a
+   * continuous color, which the visual map sets.
+   * @param index Position of the series.
+   * @returns Color for ECharts.
+   */
   function getSeriesColor(index: number): string | undefined {
     if (colorEncodingMode === 'constant') {
-      return appearance.color
+      return resolveColor(appearance.color, theme)
     }
     if (colorEncodingMode === 'categorical') {
       return palette[index % palette.length]
@@ -84,6 +97,7 @@ export function createAggregatedChartContent(
       isHighlight: false,
       name,
       opacity: highlightPoints ? DIMMED_OPACITY : undefined,
+      theme,
       xAxisIndex: 0,
     })
   })
@@ -104,6 +118,7 @@ export function createAggregatedChartContent(
           isHighlight: true,
           name,
           opacity: undefined,
+          theme,
           xAxisIndex: 1,
         })
       })
@@ -113,6 +128,7 @@ export function createAggregatedChartContent(
     ? createContinuousColorVisualMap({
         appearance: appearance.colorScale.continuous,
         dimension: 2,
+        theme,
         values: points.map((point) => {
           return point.color_value
         }),
@@ -124,6 +140,7 @@ export function createAggregatedChartContent(
     categories,
     chartType,
     encoding,
+    theme,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

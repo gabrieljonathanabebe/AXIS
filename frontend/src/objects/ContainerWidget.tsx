@@ -6,6 +6,7 @@ import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
 import FormatWidget from '../shared/ui/FormatWidget'
 
 import type { ColorPreset } from '../shared/ui/ColorControl'
+import type { ColorValue } from '../shared/colorValue'
 import type {
   ObjectContainer,
   ObjectBackground,
@@ -23,18 +24,28 @@ const backgroundPresets = [
   { label: 'Glass', value: 'glass', fill: 'var(--glass-fill-liquid)' },
   { label: 'Blue', value: 'blue', fill: 'var(--chart-fill-blue)' },
   { label: 'Violet', value: 'violet', fill: 'var(--chart-fill-violet)' },
-] satisfies (ColorPreset & { value: ObjectBackgroundPreset })[]
+] satisfies ColorPreset<ObjectBackgroundPreset>[]
 
-function isBackgroundPreset(value: string): value is ObjectBackgroundPreset {
-  return backgroundPresets.some((preset) => preset.value === value)
-}
-
-function toColorValue(background: ObjectBackground): string {
+/**
+ * Turns a container background into the value of its color control.
+ * @param background Background of the container.
+ * @returns Name of the preset or the own color.
+ */
+function toColorValue(
+  background: ObjectBackground,
+): ColorValue | ObjectBackgroundPreset {
   return background.kind === 'color' ? background.color : background.kind
 }
 
-function toBackground(value: string): ObjectBackground {
-  return isBackgroundPreset(value)
+/**
+ * Turns the value of the color control into a container background.
+ * @param value Name of a preset or an own color.
+ * @returns Background of the container.
+ */
+function toBackground(
+  value: ColorValue | ObjectBackgroundPreset,
+): ObjectBackground {
+  return typeof value === 'string'
     ? { kind: value }
     : { kind: 'color', color: value }
 }

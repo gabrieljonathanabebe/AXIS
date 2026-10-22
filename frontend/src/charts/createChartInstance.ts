@@ -16,7 +16,7 @@ import {
 
 /** Default look of the texts drawn by ECharts: axes, legend, labels. */
 const CHART_TEXT_STYLE: TextStyle = {
-  color: '#eef4ff',
+  color: { kind: 'token', token: 'text' },
   fontSize: 12,
   fontStyle: 'normal',
   fontWeight: 'medium',
@@ -24,7 +24,12 @@ const CHART_TEXT_STYLE: TextStyle = {
 
 /** Default gridlines; each axis draws its own. */
 const CHART_GRID_LINES: GridAppearance = {
-  stroke: { color: '#334155', lineStyle: 'solid', opacity: 0.08, width: 1 },
+  stroke: {
+    color: { kind: 'token', token: 'gridLine' },
+    lineStyle: 'solid',
+    opacity: 0.08,
+    width: 1,
+  },
   visible: true,
 }
 
@@ -37,7 +42,12 @@ type CreateChartInstanceParams = {
 export function createDefaultChartContainer(): ObjectContainer {
   return {
     background: { kind: 'surface' },
-    border: { color: '#94a3b8', lineStyle: 'solid', opacity: 1, width: 0 },
+    border: {
+      color: { kind: 'token', token: 'border' },
+      lineStyle: 'solid',
+      opacity: 1,
+      width: 0,
+    },
     padding: 4,
     borderRadius: 24,
   }
@@ -55,14 +65,14 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       colorAggregation: 'mean',
     },
     appearance: {
-      color: '#199E8A',
+      color: { kind: 'custom', color: '#199E8A' },
       colorScale: {
         categorical: {
           palette: [...DEFAULT_CATEGORICAL_PALETTE],
         },
         continuous: {
-          startColor: '#fe0314',
-          endColor: '#00fa2e',
+          startColor: { kind: 'custom', color: '#fe0314' },
+          endColor: { kind: 'custom', color: '#00fa2e' },
           visible: true,
           position: 'right',
           orientation: 'vertical',
@@ -76,7 +86,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         text: '',
         alignment: 'start',
         textStyle: {
-          color: '#eef4ff',
+          color: { kind: 'token', token: 'text' },
           fontSize: 14,
           fontStyle: 'normal',
           fontWeight: 'medium',
@@ -123,7 +133,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         itemWidth: 24,
         itemHeight: 14,
         padding: 8,
-        inactiveColor: '#8b95a7',
+        inactiveColor: { kind: 'token', token: 'inactive' },
       },
       labels: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
@@ -145,7 +155,11 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         smooth: false,
         showSymbol: true,
         areaFill: false,
-        area: { color: '#199E8A', kind: 'solid', opacity: 0.25 },
+        area: {
+          color: { kind: 'custom', color: '#199E8A' },
+          kind: 'solid',
+          opacity: 0.25,
+        },
       },
       bar: {
         borderRadius: 4,

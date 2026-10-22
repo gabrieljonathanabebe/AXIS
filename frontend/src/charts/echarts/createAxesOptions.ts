@@ -1,4 +1,6 @@
-import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
+import { createAxisLabelFormatter } from './createAxisLabelFormatter'
+import { createStrokeStyleOption } from './createStrokeStyleOption'
+import { createTextStyleOption } from './createTextStyleOption'
 
 import type {
   AxisAppearance,
@@ -6,9 +8,8 @@ import type {
   ChartEncoding,
   ChartType,
 } from '../types'
-import { createAxisLabelFormatter } from './createAxisLabelFormatter'
-import { createStrokeStyleOption } from './createStrokeStyleOption'
-import { createTextStyleOption } from './createTextStyleOption'
+import type { ChartTheme } from './chartTheme'
+import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 
 // ===== TYPES =================================================================
 type CreateAxesOptionsParams = {
@@ -16,6 +17,7 @@ type CreateAxesOptionsParams = {
   categories: string[]
   chartType: ChartType
   encoding: ChartEncoding
+  theme: ChartTheme
   valueLabel: string | undefined
 }
 
@@ -39,13 +41,15 @@ function getCategoryLabelInterval(
  * Creates the gridlines of one axis. They follow the axis: a hidden axis
  * hides its gridlines too.
  * @param axis Appearance of the axis.
+ * @param theme Chart theme that resolves the gridline color.
  * @returns Split line option of the axis.
  */
 function createSplitLineOption(
   axis: AxisAppearance,
+  theme: ChartTheme,
 ): XAxisComponentOption['splitLine'] {
   return {
-    lineStyle: createStrokeStyleOption(axis.gridLines.stroke),
+    lineStyle: createStrokeStyleOption(axis.gridLines.stroke, theme),
     show: axis.visible && axis.gridLines.visible,
   }
 }
@@ -56,13 +60,14 @@ export function createAxesOptions({
   categories,
   chartType,
   encoding,
+  theme,
   valueLabel,
 }: CreateAxesOptionsParams): AxesOptions {
   const isCategoryXAxis = chartType !== 'scatter'
   return {
     xAxis: {
       axisLabel: {
-        ...createTextStyleOption(appearance.xAxis.labels.textStyle),
+        ...createTextStyleOption(appearance.xAxis.labels.textStyle, theme),
         formatter: createAxisLabelFormatter(appearance.xAxis),
         interval: isCategoryXAxis
           ? getCategoryLabelInterval(
@@ -85,9 +90,9 @@ export function createAxesOptions({
       name: appearance.xAxis.title.trim() || encoding.x || '',
       nameGap: 32,
       nameLocation: 'middle',
-      nameTextStyle: createTextStyleOption(appearance.xAxis.titleStyle),
+      nameTextStyle: createTextStyleOption(appearance.xAxis.titleStyle, theme),
       show: appearance.xAxis.visible,
-      splitLine: createSplitLineOption(appearance.xAxis),
+      splitLine: createSplitLineOption(appearance.xAxis, theme),
       splitNumber: isCategoryXAxis
         ? undefined
         : (appearance.xAxis.labels.tickCount ?? undefined),
@@ -96,7 +101,7 @@ export function createAxesOptions({
     },
     yAxis: {
       axisLabel: {
-        ...createTextStyleOption(appearance.yAxis.labels.textStyle),
+        ...createTextStyleOption(appearance.yAxis.labels.textStyle, theme),
         formatter: createAxisLabelFormatter(appearance.yAxis),
         rotate: appearance.yAxis.labels.rotation,
         show: appearance.yAxis.visible,
@@ -112,9 +117,9 @@ export function createAxesOptions({
       name: appearance.yAxis.title.trim() || valueLabel || '',
       nameGap: 48,
       nameLocation: 'middle',
-      nameTextStyle: createTextStyleOption(appearance.yAxis.titleStyle),
+      nameTextStyle: createTextStyleOption(appearance.yAxis.titleStyle, theme),
       show: appearance.yAxis.visible,
-      splitLine: createSplitLineOption(appearance.yAxis),
+      splitLine: createSplitLineOption(appearance.yAxis, theme),
       splitNumber: appearance.yAxis.labels.tickCount ?? undefined,
       triggerEvent: true,
       type: 'value',

@@ -25,6 +25,7 @@ import {
   createSelectionFromEvent,
 } from './echarts/createSelectionFromEvent'
 
+import { COLOR_TOKEN_VARIABLES } from '../shared/colorValue'
 import EmptyState from '../shared/ui/EmptyState'
 import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
 import { isSameSelection } from '../workspace/dataSelection'
@@ -32,6 +33,7 @@ import { useChartQuery } from './useChartQuery'
 import { usePointsQuery } from './usePointsQuery'
 
 import type { AxisTitleEdit, ChartFormatElement } from './types'
+import type { ColorToken } from '../shared/colorValue'
 import type { ElementRect } from '../objects/types'
 import type { ChartInstance } from './types'
 import type { DataRow, Dataset } from '../datasets/types'
@@ -75,12 +77,26 @@ function readNumberToken(styles: CSSStyleDeclaration, name: string): number {
   return numericValue
 }
 
+/**
+ * Reads the current color of each token, so ECharts can resolve tokens.
+ * @param styles Computed styles of the document root.
+ * @returns Color per token, e.g. the primary text color for `text`.
+ */
+function readColorTokens(
+  styles: CSSStyleDeclaration,
+): Record<ColorToken, string> {
+  const entries = Object.entries(COLOR_TOKEN_VARIABLES).map(
+    ([token, variable]) => [token, readToken(styles, variable)],
+  )
+  return Object.fromEntries(entries) as Record<ColorToken, string>
+}
+
 function readChartTheme(): ChartTheme {
   const styles = getComputedStyle(document.documentElement)
-
   return {
     accent: readToken(styles, '--color-accent'),
     axis: readToken(styles, '--color-border-strong'),
+    colors: readColorTokens(styles),
     text: readToken(styles, '--color-text-primary'),
     textMuted: readToken(styles, '--color-text-secondary'),
     tooltip: {

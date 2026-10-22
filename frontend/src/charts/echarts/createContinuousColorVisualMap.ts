@@ -1,20 +1,28 @@
-import type { ContinuousVisualMapComponentOption } from 'echarts'
-
-import type { ColorScaleAppearance } from '../types'
 import { formatCompactNumber } from '../../shared/format/formatNumber'
 import { getNumericDomain } from './getNumericDomain'
+import { resolveColor } from './resolveColor'
+
+import type { ChartTheme } from './chartTheme'
+import type { ColorScaleAppearance } from '../types'
+import type { ContinuousVisualMapComponentOption } from 'echarts'
 
 type CreateContinuousColorVisualMapParams = {
   appearance: ColorScaleAppearance['continuous']
   dimension: number
+  theme: ChartTheme
   values: Array<number | null | undefined>
 }
 
 type ContinuousColorVisualMap = ContinuousVisualMapComponentOption | null
 
+/**
+ * Creates the color scale of a continuous color encoding.
+ * @returns Visual map of the scale, or null without numeric values.
+ */
 export function createContinuousColorVisualMap({
   appearance,
   dimension,
+  theme,
   values,
 }: CreateContinuousColorVisualMapParams): ContinuousColorVisualMap {
   const domain = getNumericDomain(values)
@@ -31,7 +39,10 @@ export function createContinuousColorVisualMap({
     calculable: false,
     dimension,
     inRange: {
-      color: [appearance.startColor, appearance.endColor],
+      color: [
+        resolveColor(appearance.startColor, theme),
+        resolveColor(appearance.endColor, theme),
+      ],
     },
     left: appearance.position === 'left' ? 16 : undefined,
     max,

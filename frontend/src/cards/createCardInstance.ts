@@ -20,7 +20,7 @@ export function createDefaultCardSpec(): CardSpec {
     appearance: {
       selectionLabel: {
         textStyle: {
-          color: '#178bff',
+          color: { kind: 'token', token: 'accent' },
           fontSize: 13,
           fontStyle: 'normal',
           fontWeight: 'medium',
@@ -32,7 +32,7 @@ export function createDefaultCardSpec(): CardSpec {
         text: '',
         alignment: 'start',
         textStyle: {
-          color: '#eef4ff',
+          color: { kind: 'token', token: 'text' },
           fontSize: 14,
           fontStyle: 'normal',
           fontWeight: 'medium',
@@ -41,7 +41,7 @@ export function createDefaultCardSpec(): CardSpec {
       value: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
         textStyle: {
-          color: '#eef4ff',
+          color: { kind: 'token', token: 'text' },
           fontSize: 40,
           fontStyle: 'normal',
           fontWeight: 'bold',

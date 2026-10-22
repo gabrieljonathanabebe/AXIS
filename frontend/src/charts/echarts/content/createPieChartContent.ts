@@ -29,8 +29,9 @@ export function createPieChartContent(
   }
 
   // ===== CONSTANTS ===========================================================
-  const { chartType, highlightResult, queryResult, selection, spec } = context
-  const label = createSeriesLabelOption(spec.appearance.labels)
+  const { chartType, highlightResult, queryResult, selection, spec, theme } =
+    context
+  const label = createSeriesLabelOption(spec.appearance.labels, theme)
   const palette = spec.appearance.colorScale.categorical.palette
   const basePoints = queryResult?.points ?? []
   const points = selection ? (highlightResult?.points ?? []) : basePoints

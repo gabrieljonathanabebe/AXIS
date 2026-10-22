@@ -1,3 +1,6 @@
+import { getColorCss } from './colorValue'
+
+import type { ColorValue } from './colorValue'
 import type { CSSProperties } from 'react'
 
 // ===== TYPES =================================================================
@@ -11,7 +14,7 @@ export type FontWeight = 'light' | 'medium' | 'bold'
 
 /** How a text looks; each text element on the canvas carries one. */
 export type TextStyle = {
-  color: string
+  color: ColorValue
   fontSize: number
   fontStyle: FontStyle
   fontWeight: FontWeight
@@ -33,7 +36,7 @@ export const FONT_WEIGHT_VALUES = {
  */
 export function getTextStyleCss(style: TextStyle): CSSProperties {
   return {
-    color: style.color,
+    color: getColorCss(style.color),
     fontSize: style.fontSize,
     fontStyle: style.fontStyle,
     fontWeight: FONT_WEIGHT_VALUES[style.fontWeight],

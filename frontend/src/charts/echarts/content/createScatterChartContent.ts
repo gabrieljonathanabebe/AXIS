@@ -1,6 +1,7 @@
 import type { ScatterSeriesOption } from 'echarts'
 
 import type { ChartAppearanceSpec } from '../../types'
+import type { ChartTheme } from '../chartTheme'
 import type { DataRow, DataValue } from '../../../datasets/types'
 
 import { createAxesOptions } from '../createAxesOptions'
@@ -14,6 +15,7 @@ import { DIMMED_OPACITY } from './selectionStyle'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { isRowInSelection } from '../../../workspace/dataSelection'
+import { resolveColor } from '../resolveColor'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
@@ -28,6 +30,7 @@ type CreateScatterSeriesParams = {
   itemColor: string | undefined
   name?: string
   sizeFieldName?: string
+  theme: ChartTheme
 }
 
 // ===== HELPER ================================================================
@@ -38,12 +41,17 @@ function getValue(row: DataRow, fieldName?: string): DataValue {
   return row[fieldName]
 }
 
+/**
+ * Creates one scatter series; with a categorical color, one per category.
+ * @returns Scatter series with fill, labels, symbol and size.
+ */
 function createScatterSeries({
   appearance,
   data,
   itemColor,
   name,
   sizeFieldName,
+  theme,
 }: CreateScatterSeriesParams): ScatterSeriesOption {
   return {
     data,
@@ -52,11 +60,12 @@ function createScatterSeries({
       y: 1,
     },
     itemStyle: {
-      ...createFillOption(appearance.scatter.fill),
+      ...createFillOption(appearance.scatter.fill, theme),
       color: itemColor,
     },
     label: createSeriesLabelOption(
       appearance.labels,
+      theme,
       createLabelNumberFormatter(appearance),
     ),
     name,
@@ -71,7 +80,7 @@ export function createScatterChartContent(
   context: ChartContentContext,
 ): ChartContent {
   // ===== CONSTANTS ===========================================================
-  const { chartType, dataset, points, selection, spec } = context
+  const { chartType, dataset, points, selection, spec, theme } = context
   const { appearance } = spec
   const { encoding } = spec.data
   const colorFieldName = encoding.color
@@ -123,6 +132,7 @@ export function createScatterChartContent(
         itemColor: palette[index % palette.length],
         name,
         sizeFieldName,
+        theme,
       })
     })
   } else {
@@ -130,8 +140,11 @@ export function createScatterChartContent(
       createScatterSeries({
         appearance,
         data,
-        itemColor: colorFieldName ? undefined : appearance.color,
+        itemColor: colorFieldName
+          ? undefined
+          : resolveColor(appearance.color, theme),
         sizeFieldName,
+        theme,
       }),
     ]
   }
@@ -141,6 +154,7 @@ export function createScatterChartContent(
     categories: [],
     chartType,
     encoding,
+    theme,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 
@@ -151,6 +165,7 @@ export function createScatterChartContent(
       colorEncodingMode,
       encoding,
       rows,
+      theme,
     }),
     xAxis,
     yAxis,

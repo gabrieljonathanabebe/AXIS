@@ -1,10 +1,12 @@
+import type { ColorValue } from './colorValue'
+
 // ===== TYPES =================================================================
 /**
  * How an area is filled, e.g. below a line. Only solid exists for now;
  * gradients or patterns become further kinds without changing this one.
  */
 export type Fill = {
-  color: string
+  color: ColorValue
   kind: 'solid'
   opacity: number
 }

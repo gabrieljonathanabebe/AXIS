@@ -714,24 +714,31 @@ Zentrale wiederverwendbare Komponente:
 />
 ```
 
+Wert und Rückgabe sind ein `ColorValue` (siehe ARCHITECTURE,
+Farbwerte): ein Theme-Token oder eine feste Farbe.
+
 Grundstruktur:
 
-- fünf Preset Swatches;
-- ein Custom Swatch.
+- fünf Theme-Swatches: Text, Muted, Accent, Grid line, Border; sie
+  zeigen die aktuelle Theme-Farbe und speichern den Token;
+- ein Custom Swatch für eine feste Farbe.
 
 Vor Auswahl einer Custom Color zeigt der Custom Swatch einen
 Farbverlauf.
 
 Nach Auswahl zeigt er die zuletzt gewählte Custom Color.
 
-Die Custom Color bleibt erhalten, auch wenn anschließend ein Preset
-ausgewählt wird.
+Die Custom Color bleibt erhalten, auch wenn anschließend ein Swatch
+ausgewählt wird. Der Farbwähler liefert immer eine feste Farbe.
 
 Active State:
 
 - Electric Blue Ring;
 - subtiler Glow;
 - nicht nur Farbe als Zustandsindikator.
+
+Ein Token ohne eigenen Swatch markiert weder einen Swatch noch den
+Custom Swatch.
 
 Custom Picker kann über `react-colorful` umgesetzt werden.
 
@@ -741,12 +748,15 @@ Opacity wird zunächst getrennt von Color behandelt.
 
 Eigene Presets:
 
-`ColorControl` akzeptiert optional `presets`. Ohne die Prop gelten die
-Standardfarben. Ein Preset kann statt einer Hex-Farbe einen
-Token-Wert tragen und über `fill` eine eigene Vorschau-Fläche zeigen,
-z. B. Surface, Glass, Blue und Violet beim Chart-Background. Solche
-Presets verwenden im Active State den Electric-Blue-Ring und eine feine
-Kante, damit dunkle oder transparente Flächen sichtbar bleiben.
+`ColorControl` akzeptiert optional `presets`; sie ersetzen die
+Theme-Swatches. Ein Preset trägt einen `ColorValue` oder einen eigenen
+Namen, der keine Farbe ist, und zeigt dann über `fill` eine eigene
+Vorschau-Fläche, z. B. Surface, Glass, Blue und Violet beim
+Container-Hintergrund. Der Typ der Namen ergibt sich aus `presets`
+(`ColorPreset<TPreset>`), `onChange` liefert dann `ColorValue | TPreset`.
+Solche Presets verwenden im Active State den Electric-Blue-Ring und
+eine feine Kante, damit dunkle oder transparente Flächen sichtbar
+bleiben.
 
 ## 9a. AlignmentControl
 
@@ -1002,6 +1012,9 @@ Vorhandene Bausteine:
   (`LineAppearance.area`) und Scatter-Punkte (`ScatterAppearance.fill`
   als `SeriesFill`); der Container-Hintergrund bleibt
   `ObjectBackground` mit Presets
+
+Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Color-Zeile
+nutzt `ColorControl` mit Theme-Swatches (siehe 9).
 
 Ein neuer Baustein lohnt sich erst, wenn mindestens zwei Elemente ihn
 tatsächlich nutzen oder der zweite Nutzer konkret geplant ist.

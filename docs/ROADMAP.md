@@ -1285,23 +1285,50 @@ Später (neue Felder auf diesen Bausteinen, nicht Teil des Slices):
   kein `containPixel`, und ihre Komponenten sind nur über interne APIs
   auffindbar
 
-### ColorValue und Theme-Farben (geplant)
+### ColorValue und Theme-Farben (implementiert)
 
 Folgt auf „Generische Style-Bausteine“, noch vor der Persistenz, weil
 er die Form jedes Farbfelds ändert.
 
-- `ColorValue` als Union: `{ kind: 'token' }` folgt Theme und Branding,
-  `{ kind: 'custom' }` ist eine feste Farbe; später ohne Migration
-  `{ kind: 'rule' }` für bedingte Formatierung
-- `ColorToken` aus den bestehenden CSS-Variablen; Auflösung für ECharts
-  im Adapter über `ChartTheme`, für HTML über die CSS-Variable
-- `ColorControl` mit Theme-Farben als Swatches plus freiem Farbwähler
-- offen: Chart-Tokens für Standardfarben ohne passenden Token (Grid,
-  Rahmen, Inactive, Marks) oder `custom`; Tendenz: kategorische
-  Paletten bleiben Hex-Listen
-- offen: Variante „Serienfarbe“ (z. B. `{ kind: 'series' }`), damit die
-  Fläche unter der Linie und spätere Rahmen der Serienfarbe folgen
-  können; heute hat `line.area` eine feste Farbe für alle Serien
+Beschlossen:
+
+- `ColorValue` als Union in `shared/colorValue.ts`: `{ kind: 'token' }`
+  folgt Theme und Branding, `{ kind: 'custom' }` ist eine feste Farbe;
+  später ohne Migration `{ kind: 'rule' }` für bedingte Formatierung
+- `ColorToken` mit fachlichen Namen (`text`, `textMuted`, `accent`,
+  `gridLine`, `border`, `inactive`); `COLOR_TOKEN_VARIABLES` ordnet
+  jedem Token seine CSS-Variable zu, damit gespeicherte Dateien nicht
+  an CSS-Namen hängen
+- Struktur folgt dem Theme, Daten sind feste Farben: Texte, Gridlines,
+  Container-Rahmen und Legend-Inactive sind Tokens (neu
+  `--chart-grid-line`, `--chart-border`, `--chart-inactive` mit den
+  bisherigen Hex-Werten); Marks, Fläche unter der Linie und Farbskala
+  sind `custom`; kategorische Paletten bleiben Hex-Listen
+- Auflösung für ECharts im Adapter über `ChartTheme.colors`
+  (`resolveColor`), für HTML über die CSS-Variable (`getColorCss`)
+- `ObjectBackground` mit `{ kind: 'color' }` trägt einen `ColorValue`
+- `ColorControl` nimmt `ColorValue`; ohne `presets` zeigt es fünf
+  Theme-Swatches (Text, Muted, Accent, Grid line, Border) plus freien
+  Farbwähler; der `ContainerWidget` übergibt weiter seine
+  Hintergrund-Presets
+- Variante „Serienfarbe“ (`{ kind: 'series' }`) ist eine neue `kind`
+  und keine Formänderung; sie folgt mit Mark-Rahmen sowie Bar- und
+  Pie-Fill in einem späteren Slice
+
+Umgesetzt:
+
+- Schritt 1 Domain und Auflösung: `ColorValue`, `ColorToken`,
+  `COLOR_TOKEN_VARIABLES` und `getColorCss` in `shared/colorValue.ts`;
+  neue CSS-Variablen `--chart-border`, `--chart-grid-line`,
+  `--chart-inactive`; `ChartTheme.colors` über `readChartTheme`,
+  `resolveColor` im Adapter, `theme` im `ChartContentContext` und als
+  Parameter der Style-Helper; alle Farbfelder und Standardwerte
+  umgestellt; `ColorControl` generisch über `ColorPreset<TPreset>`,
+  `ContainerWidget` ohne `isBackgroundPreset`; Optik unverändert
+- Schritt 2 Theme-Swatches: Text, Muted, Accent, Grid line und Border
+  ersetzen Electric Blue, Violet, Mint und Rose als Standard-Presets
+- verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
+  Verhalten im Browser
 
 ## 6. Later – Visualization Completion
 

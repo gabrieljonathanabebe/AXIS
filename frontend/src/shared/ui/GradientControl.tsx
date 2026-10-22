@@ -1,12 +1,15 @@
 import type { CSSProperties } from 'react'
 
 import ColorControl from './ColorControl'
+import { getColorCss } from '../colorValue'
+
+import type { ColorValue } from '../colorValue'
 
 type GradientControlProps = {
   label: string
-  startColor: string
-  endColor: string
-  onChange: (colors: { startColor: string; endColor: string }) => void
+  startColor: ColorValue
+  endColor: ColorValue
+  onChange: (colors: { startColor: ColorValue; endColor: ColorValue }) => void
 }
 
 type GradientStyle = CSSProperties & {
@@ -22,8 +25,8 @@ function GradientControl({
 }: GradientControlProps) {
   // ===== LOCAL CONSTANTS =====================================================
   const style: GradientStyle = {
-    '--gradient-start': startColor,
-    '--gradient-end': endColor,
+    '--gradient-start': getColorCss(startColor),
+    '--gradient-end': getColorCss(endColor),
   }
   // ===== JSX RETURN ==========================================================
   return (

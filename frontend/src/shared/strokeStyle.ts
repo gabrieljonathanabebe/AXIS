@@ -1,3 +1,6 @@
+import { getColorCss } from './colorValue'
+
+import type { ColorValue } from './colorValue'
 import type { CSSProperties } from 'react'
 
 // ===== TYPES =================================================================
@@ -6,7 +9,7 @@ export type LineStyle = 'solid' | 'dashed' | 'dotted'
 
 /** How a line or outline looks, e.g. the border of a container. */
 export type StrokeStyle = {
-  color: string
+  color: ColorValue
   lineStyle: LineStyle
   opacity: number
   width: number
@@ -23,7 +26,7 @@ export type SeriesStrokeStyle = Omit<StrokeStyle, 'color'>
  */
 export function getStrokeBorderCss(style: StrokeStyle): CSSProperties {
   return {
-    borderColor: style.color,
+    borderColor: getColorCss(style.color),
     borderStyle: style.lineStyle,
     borderWidth: style.width,
     opacity: style.opacity,

@@ -1,6 +1,9 @@
+import type { ColorToken } from '../../shared/colorValue'
+
 export type ChartTheme = {
   accent: string
   axis: string
+  colors: Record<ColorToken, string>
   text: string
   textMuted: string
   tooltip: {
