@@ -377,6 +377,14 @@ Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
   Deckkraft mit dem Dimming der Selection
 - HTML-Umrisse setzt `getStrokeBorderCss`
 
+Flächen nutzen `Fill` aus `src/shared/fill.ts` (`kind: 'solid'`,
+`color`, `opacity`); weitere Varianten wie Verläufe kommen als neue
+`kind` hinzu. Die Fläche unter Linien trägt `Fill` (`line.area`, mit
+`areaFill` als Sichtbarkeit), Scatter-Punkte `SeriesFill` ohne Farbe
+(`hasFillColor` unterscheidet beide). ECharts übersetzt
+`createFillOption`; eine CSS-Übersetzung folgt mit dem ersten
+HTML-Nutzer. Der Container-Hintergrund bleibt `ObjectBackground`.
+
 ### Container vs. Content
 
 Jedes Objekt auf der Canvas besteht aus einem generischen Frame und

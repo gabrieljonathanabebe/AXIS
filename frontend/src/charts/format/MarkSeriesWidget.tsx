@@ -3,6 +3,7 @@ import { Circle, Diamond, Square, Triangle } from 'lucide-react'
 import { categoricalColorPalettes } from '../colorPalettes'
 import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
+import FillControls from '../../shared/ui/FillControls'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 import PaletteControl from '../../shared/ui/PaletteControl'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
@@ -106,18 +107,13 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
               />
             </ControlRow>
           ) : null}
-          <ControlRow label="Opacity">
-            <Slider
-              label="Opacity"
-              min={0.1}
-              max={1}
-              step={0.05}
-              value={appearance.scatter.opacity}
-              onValueChange={(opacity) => {
-                actions.setChartAppearance('scatter', 'opacity', opacity)
-              }}
-            />
-          </ControlRow>
+          <FillControls
+            label="Point fill"
+            value={appearance.scatter.fill}
+            onChange={(fill) => {
+              actions.setChartAppearance('scatter', 'fill', fill)
+            }}
+          />
         </>
       ) : null}
       {chart.type === 'line' ? (
@@ -160,31 +156,13 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
           </ControlRow>
           {appearance.line.areaFill ? (
             <div className="format-widget-subproperties">
-              <ControlRow label="Color">
-                <ColorControl
-                  label="Area fill color"
-                  value={appearance.line.areaColor}
-                  onChange={(areaColor) => {
-                    actions.setChartAppearance('line', 'areaColor', areaColor)
-                  }}
-                />
-              </ControlRow>
-              <ControlRow label="Opacity">
-                <Slider
-                  label="Area fill opacity"
-                  min={0.05}
-                  max={1}
-                  step={0.05}
-                  value={appearance.line.areaOpacity}
-                  onValueChange={(areaOpacity) => {
-                    actions.setChartAppearance(
-                      'line',
-                      'areaOpacity',
-                      areaOpacity,
-                    )
-                  }}
-                />
-              </ControlRow>
+              <FillControls
+                label="Area fill"
+                value={appearance.line.area}
+                onChange={(area) => {
+                  actions.setChartAppearance('line', 'area', area)
+                }}
+              />
             </div>
           ) : null}
         </>

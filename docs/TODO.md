@@ -28,6 +28,11 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Einrückung der abhängigen Unteroptionen
   (`.format-widget-subproperties`, `--indent-nested`) überarbeiten,
   z. B. bei Currency und Decimals in `NumberFormatControls`
+- Idee: Zeilen eines Abschnitts nach Baustein gruppieren (Text, Fill,
+  Stroke, Number format) mit kleinen Gruppen-Überschriften; die
+  Fill-Gruppe der Marks zeigt die Farb- bzw. Palettenzeile zusammen mit
+  `FillControls`, obwohl die Farbe in der Spec getrennt bleibt;
+  Überschriften nur bei mindestens zwei Gruppen in einem Abschnitt
 - eigener Slice nach „Generische Style-Bausteine“; konkrete Wünsche
   zu Beginn des Slices klären
 

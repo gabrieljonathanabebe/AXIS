@@ -12,7 +12,7 @@ export type StrokeStyle = {
   width: number
 }
 
-/** Stroke of a data series, e.g. a line mark; its color comes from the series. */
+/** Stroke of a data series, e.g. a line; its color comes from the series. */
 export type SeriesStrokeStyle = Omit<StrokeStyle, 'color'>
 
 // ===== FUNCTIONS =============================================================

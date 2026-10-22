@@ -998,14 +998,15 @@ Vorhandene Bausteine:
   Achsenbeschriftung (`AxisLabelsAppearance.numberFormat`), Card-Wert,
   Datenlabels und Tooltip (`interaction.tooltip.numberFormat`, ohne
   Control)
+- `Fill` mit `FillControls` (siehe 9n): Fläche unter Linien
+  (`LineAppearance.area`) und Scatter-Punkte (`ScatterAppearance.fill`
+  als `SeriesFill`); der Container-Hintergrund bleibt
+  `ObjectBackground` mit Presets
 
 Ein neuer Baustein lohnt sich erst, wenn mindestens zwei Elemente ihn
-tatsächlich nutzen oder der zweite Nutzer konkret geplant ist. Geplant
-im Slice „Generische Style-Bausteine“:
-
-- `Fill`: Farbe und Deckkraft für die Fläche unter Linien; später
-  Legende und Tooltip. Container-Hintergrund und Scatter-Deckkraft
-  bleiben eigene Felder
+tatsächlich nutzen oder der zweite Nutzer konkret geplant ist.
+Erweiterungen bestehender Bausteine sind neue Felder oder neue
+Varianten (`kind`), keine Formänderung.
 
 Die Matrix zeigt, welche Formatierung jedes Element heute hat. Sie dient
 als Planungsgrundlage: Eine Spalte mit vielen Lücken spricht für einen
@@ -1024,7 +1025,7 @@ gemeinsamen Baustein.
 | Datenlabels          | ✓    | –             | –             | ✓ auto folgt Y          | ✓ Position    |
 | Marks Bar            | –    | ✓ Farbe       | ○ Rahmen      | –                       | –             |
 | Marks Line           | –    | ✓ Fläche      | ✓ Serienfarbe | –                       | –             |
-| Marks Scatter        | –    | ✓ Deckkraft   | ○ Rand        | –                       | –             |
+| Marks Scatter        | –    | ✓ Serienfarbe | ○ Rand        | –                       | –             |
 | Container            | –    | ✓ Hintergrund | ✓ Rahmen      | –                       | ✓ Padding     |
 | Card-Wert            | ✓    | –             | –             | ✓                       | ○ Ausrichtung |
 | Card-Selection-Label | ✓    | –             | –             | –                       | –             |
@@ -1050,6 +1051,21 @@ für Screenreader („Value format“, „Y Axis currency“).
 - genutzt vom Card-Wert im `CardValueWidget`, von der Achsenbeschriftung
   im `AxisWidget` (nur bei Typ Number) und von den Datenlabels im
   `LabelsWidget` (nicht bei Pie und Donut, die Anteile zeigen)
+
+## 9n. FillControls
+
+`FillControls` ist der Baustein für die Füllung einer Fläche (`Fill`),
+nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
+`label` für Screenreader („Area fill color“).
+
+- Color (`ColorControl`), Opacity (`Slider` 0.05–1)
+- generisch über den Wert: Ein `Fill` hat eine eigene Farbe, ein
+  `SeriesFill` nicht, weil sie aus der Serie kommt; ohne Farbe entfällt
+  die Color-Zeile (`hasFillColor`)
+- `kind` ist heute immer `solid` und hat keine Zeile; mit einer zweiten
+  Variante (Verlauf, Muster) kommt eine Zeile „Type“ dazu
+- genutzt von der Fläche unter Linien und den Scatter-Punkten im
+  `MarkSeriesWidget`
 
 ## 10. Legend
 

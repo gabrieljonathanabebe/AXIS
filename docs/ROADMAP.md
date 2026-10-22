@@ -1211,7 +1211,7 @@ Umgesetzt:
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
 
-### Generische Style-Bausteine (in Arbeit)
+### Generische Style-Bausteine (implementiert)
 
 Folgt auf „Inspector entfernen“ und ersetzt den früheren Eintrag
 „Style-Bausteine ausbauen“. Ziel: Die Appearance-Specs bekommen ihre
@@ -1240,8 +1240,13 @@ Beschlossen:
   bleibt eine eigene Zeile „Type“ der Achse; kein Control für das
   Tooltip-Format
 - `Fill` (`kind: 'solid'`, Farbe, Deckkraft) für die Fläche unter der
-  Linie (`areaFill` + `area`); Scatter-Deckkraft bleibt ein eigenes
-  Feld, der Container-Hintergrund bleibt `ObjectBackground`
+  Linie (`areaFill` + `area`) und die Scatter-Punkte (`SeriesFill` ohne
+  Farbe, statt `scatter.opacity`); der Container-Hintergrund bleibt
+  `ObjectBackground`
+- Formänderungen vor der Persistenz, neue Felder später: Bar- und
+  Pie-Fill, Mark-Rahmen und Plot-Hintergrund ändern keine bestehende
+  Form und folgen in einem eigenen Slice
+- `ColorValue` als eigener Slice (siehe unten)
 
 Umgesetzt:
 
@@ -1260,10 +1265,19 @@ Umgesetzt:
   `labels.valueType`) und an den Datenlabels; Tooltip trägt
   `numberFormat` ohne Control; Standard-Optik unverändert; verifiziert:
   `tsc`, `npm run lint`, Prettier; Verhalten im Browser
+- Schritt 3 `Fill`: `shared/fill.ts` mit `Fill`, `SeriesFill` und
+  `hasFillColor`; `createFillOption` im Adapter; `FillControls`
+  generisch wie `StrokeStyleControls`; `line.area` statt `areaColor` und
+  `areaOpacity`, `scatter.fill` statt `scatter.opacity`; Optik
+  unverändert; verifiziert: `tsc`, `npm run build`, `npm run lint`,
+  Prettier; Verhalten im Browser
 
 Später (neue Felder auf diesen Bausteinen, nicht Teil des Slices):
 
-- `StrokeStyle` für Achsenlinie, Bar-Rahmen und Scatter-Rand
+- `StrokeStyle` für Achsenlinie, Bar-Rahmen, Scatter-Rand und
+  Pie-Segmente
+- `SeriesFill` für Bar und Pie (Pie braucht dafür einen eigenen
+  Eintrag in der Appearance), Plot-Hintergrund als `Fill`
 - Legende Fill, Tooltip Text und Fill, Card-Wert Ausrichtung
 - eigene HTML-Farbskala statt der ECharts-`visualMap`, damit die Color
   Scale wie Legende und Achsen anklickbar wird und Fill und Text als
@@ -1285,6 +1299,9 @@ er die Form jedes Farbfelds ändert.
 - offen: Chart-Tokens für Standardfarben ohne passenden Token (Grid,
   Rahmen, Inactive, Marks) oder `custom`; Tendenz: kategorische
   Paletten bleiben Hex-Listen
+- offen: Variante „Serienfarbe“ (z. B. `{ kind: 'series' }`), damit die
+  Fläche unter der Linie und spätere Rahmen der Serienfarbe folgen
+  können; heute hat `line.area` eine feste Farbe für alle Serien
 
 ## 6. Later – Visualization Completion
 

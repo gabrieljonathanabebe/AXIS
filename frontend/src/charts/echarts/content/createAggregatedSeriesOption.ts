@@ -1,6 +1,7 @@
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
 
 import type { ChartAppearanceSpec } from '../../types'
+import { createFillOption } from '../createFillOption'
 import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
@@ -60,8 +61,8 @@ export function createAggregatedSeriesOption({
     return {
       areaStyle: appearance.line.areaFill
         ? {
-            color: appearance.line.areaColor,
-            opacity: appearance.line.areaOpacity * (opacity ?? 1),
+            ...createFillOption(appearance.line.area),
+            opacity: appearance.line.area.opacity * (opacity ?? 1),
           }
         : undefined,
       connectNulls: isHighlight,

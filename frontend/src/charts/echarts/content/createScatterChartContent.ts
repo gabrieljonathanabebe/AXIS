@@ -4,6 +4,7 @@ import type { ChartAppearanceSpec } from '../../types'
 import type { DataRow, DataValue } from '../../../datasets/types'
 
 import { createAxesOptions } from '../createAxesOptions'
+import { createFillOption } from '../createFillOption'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import {
   createLabelNumberFormatter,
@@ -51,8 +52,8 @@ function createScatterSeries({
       y: 1,
     },
     itemStyle: {
+      ...createFillOption(appearance.scatter.fill),
       color: itemColor,
-      opacity: appearance.scatter.opacity,
     },
     label: createSeriesLabelOption(
       appearance.labels,

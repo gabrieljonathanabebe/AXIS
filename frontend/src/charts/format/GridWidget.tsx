@@ -8,7 +8,7 @@ type GridWidgetProps = {
   onChange: (value: GridAppearance) => void
 }
 
-/** Edits the gridlines of one axis: color, opacity and line style. */
+/** Edits the gridlines of one axis: width, line style, color and opacity. */
 function GridWidget({ value, onChange }: GridWidgetProps) {
   return (
     <FormatWidget

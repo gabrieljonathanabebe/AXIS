@@ -6,8 +6,9 @@ import type {
   SetContainer,
 } from '../objects/types'
 import type { DataField } from '../datasets/types'
-import type { NumberFormat } from '../shared/format/valueFormats'
+import type { Fill, SeriesFill } from '../shared/fill'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
+import type { NumberFormat } from '../shared/format/valueFormats'
 import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
 
 // ===== ACTIONS ===============================================================
@@ -241,15 +242,14 @@ export type LineAppearance = {
   smooth: boolean
   showSymbol: boolean
   areaFill: boolean
-  areaColor: string
-  areaOpacity: number
+  area: Fill
 }
 
 // ===== SCATTER ===============================================================
 export type ScatterAppearance = {
+  fill: SeriesFill
   pointSize: number
   sizeRange: ScatterSizeRange
-  opacity: number
   symbol: ScatterSymbol
 }
 

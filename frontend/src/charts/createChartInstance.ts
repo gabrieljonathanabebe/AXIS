@@ -137,7 +137,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           min: 6,
           max: 28,
         },
-        opacity: 0.9,
+        fill: { kind: 'solid', opacity: 0.9 },
         symbol: 'circle',
       },
       line: {
@@ -145,8 +145,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         smooth: false,
         showSymbol: true,
         areaFill: false,
-        areaColor: '#199E8A',
-        areaOpacity: 0.25,
+        area: { color: '#199E8A', kind: 'solid', opacity: 0.25 },
       },
       bar: {
         borderRadius: 4,
