@@ -5,7 +5,7 @@ import type { CSSProperties, ReactNode } from 'react'
 
 import Button from './Button'
 import Popover from './Popover'
-import { getColorCss } from '../colorValue'
+import { getColorCss, getColorValueKey, normalizeHex } from '../colorValue'
 
 import type { ColorValue } from '../colorValue'
 
@@ -22,43 +22,20 @@ export type ColorPreset<TPreset extends string = never> = {
 type ColorControlProps<TPreset extends string = never> = {
   label: string
   value: ColorValue | NoInfer<TPreset>
-  presets?: ColorPreset<TPreset>[]
+  presets: ColorPreset<TPreset>[]
   variant?: 'inline' | 'compact'
   onChange: (value: ColorValue | NoInfer<TPreset>) => void
 }
 
 const DEFAULT_CUSTOM_COLOR = '#8B5CF6'
 
-/** Theme colors every color control offers unless it brings own presets. */
-const DEFAULT_COLOR_PRESETS: ColorPreset[] = [
-  { label: 'Text', value: { kind: 'token', token: 'text' } },
-  { label: 'Muted', value: { kind: 'token', token: 'textMuted' } },
-  { label: 'Accent', value: { kind: 'token', token: 'accent' } },
-  { label: 'Grid line', value: { kind: 'token', token: 'gridLine' } },
-  { label: 'Border', value: { kind: 'token', token: 'border' } },
-]
-
-function normalizeHex(value: string): string {
-  const trimmedValue = value.trim()
-  const prefixedValue = trimmedValue.startsWith('#')
-    ? trimmedValue
-    : `#${trimmedValue}`
-
-  return prefixedValue.toUpperCase()
-}
-
 /**
- * Key that two equal choices share, e.g. `token:text` or `#1E90FF`.
+ * Key that two equal choices share, e.g. a preset name or `token:text`.
  * @param value Value of the control or of a preset.
- * @returns Preset name, token key or normalized hex color.
+ * @returns Preset name or key of the color value.
  */
 function getValueKey(value: ColorValue | string): string {
-  if (typeof value === 'string') {
-    return value
-  }
-  return value.kind === 'token'
-    ? `token:${value.token}`
-    : normalizeHex(value.color)
+  return typeof value === 'string' ? value : getColorValueKey(value)
 }
 
 /**
@@ -72,7 +49,7 @@ function getSwatchColor(value: ColorValue | string): string {
 
 function ColorControl<TPreset extends string = never>({
   label,
-  presets = DEFAULT_COLOR_PRESETS,
+  presets,
   value,
   variant = 'inline',
   onChange,

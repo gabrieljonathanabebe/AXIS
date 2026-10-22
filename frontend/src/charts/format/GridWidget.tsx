@@ -1,5 +1,6 @@
-import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
+import { CHART_GRID_LINES } from '../createChartInstance'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 
 import type { GridAppearance } from '../types'
 
@@ -21,6 +22,7 @@ function GridWidget({ value, onChange }: GridWidgetProps) {
       }}
     >
       <StrokeStyleControls
+        defaultColor={CHART_GRID_LINES.stroke.color}
         label="Grid"
         maxWidth={4}
         minWidth={1}

@@ -15,7 +15,7 @@ import { DIMMED_OPACITY } from './selectionStyle'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { isRowInSelection } from '../../../workspace/dataSelection'
-import { resolveColor } from '../resolveColor'
+import { resolveColor, resolvePalette } from '../resolveColor'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
@@ -116,7 +116,10 @@ export function createScatterChartContent(
         ),
       )
     : []
-  const palette = appearance.colorScale.categorical.palette
+  const palette = resolvePalette(
+    appearance.colorScale.categorical.palette,
+    theme,
+  )
 
   let series: ScatterSeriesOption[]
 

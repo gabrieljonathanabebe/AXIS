@@ -1330,6 +1330,39 @@ Umgesetzt:
 - verifiziert: `tsc`, `npm run lint`, `npm run build`, Prettier;
   Verhalten im Browser
 
+### Farbauswahl je Einsatzort und Chart-Tokens (implementiert)
+
+Folgt auf „ColorValue und Theme-Farben“. Trennt Standardwerte (Tokens in
+den Defaults) von der Auswahl im Farbwähler und behebt die einheitliche
+Flächenfarbe bei Linien mit mehreren Serien.
+
+Umgesetzt:
+
+- Daten-Tokens `chart1`–`chart5` (`--chart-1` bis `--chart-5`) mit den
+  Werten der bisherigen Default-Palette; im Light Theme Amber
+  abgedunkelt (`#B57800`)
+- `colorScale.categorical.palette` als `ColorValue[]`; „Default“ aus
+  Tokens, übrige Presets fest; `resolvePalette` im Adapter;
+  `PaletteControl` vergleicht über `getColorValueKey`;
+  `appearance.color` standardmäßig `chart1`
+- `ColorControl` ohne gemeinsame Standardreihe, `presets` ist Pflicht;
+  `colorPresets.ts` mit `createStyleColorPresets(defaultColor)` (Default
+  · Muted · Accent, ohne Dubletten) und `DATA_COLOR_PRESETS` (Chart 1–5)
+  für Markfarbe, `FillControls` und `GradientControl`
+- `TextStyleControls` und `StrokeStyleControls` mit `defaultColor`;
+  Widgets lesen ihn aus den Default-Konstanten ihrer Domain
+- gemeinsame Objekt-Defaults in `objects/objectDefaults.ts`
+  (`createDefaultTitle`, `createDefaultContainer`, `TITLE_TEXT_STYLE`,
+  `CONTAINER_BORDER`); `createDefaultChartContainer` entfällt, Cards
+  importieren keine Defaults mehr aus `charts/`
+- Bugfix: `line.area` ist `SeriesFill`; jede Fläche nimmt die Farbe
+  ihrer Serie, das Area-Widget zeigt nur noch Opacity
+- verifiziert: `tsc`, `npm run format`, `npm run build`,
+  `npm run lint`; im Browser im dunklen und hellen Theme: Standard-Charts
+  unverändert, Fläche je Serie in der Serienfarbe (auch bei
+  Cross-Highlight und im Format-Fokus), Reihen und Hover-Titel je
+  Einsatzort
+
 ## 6. Later – Visualization Completion
 
 - Picker für viele Charttypen: die Section „Charts“ zeigt eine

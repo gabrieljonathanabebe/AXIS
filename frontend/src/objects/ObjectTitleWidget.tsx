@@ -3,6 +3,7 @@ import ControlRow from '../shared/ui/ControlRow'
 import TextInput from '../shared/ui/TextInput'
 import TextStyleControls from '../shared/ui/TextStyleControls'
 import FormatWidget from '../shared/ui/FormatWidget'
+import { TITLE_TEXT_STYLE } from './objectDefaults'
 
 import type { ObjectTitleAppearance } from './types'
 
@@ -50,6 +51,7 @@ function ObjectTitleWidget({
         />
       </ControlRow>
       <TextStyleControls
+        defaultColor={TITLE_TEXT_STYLE.color}
         label="Title"
         maxFontSize={20}
         minFontSize={11}

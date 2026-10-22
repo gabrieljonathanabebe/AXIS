@@ -1,14 +1,17 @@
 import ColorControl from './ColorControl'
 import ControlRow from './ControlRow'
+import { createStyleColorPresets } from './colorPresets'
 import { getRowLabel } from './getRowLabel'
 import FontWeightControl from './FontWeightControl'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
+import type { ColorValue } from '../colorValue'
 import type { FontStyle, TextStyle } from '../textStyle'
 
 // ===== TYPES =================================================================
 type TextStyleControlsProps = {
+  defaultColor: ColorValue
   label: string
   maxFontSize?: number
   minFontSize?: number
@@ -26,9 +29,11 @@ const fontStyleOptions = [
 // ===== COMPONENT =============================================================
 /**
  * Rows for color, size, weight and slant of one text. Widgets place
- * them next to their own rows, e.g. alignment or rotation.
+ * them next to their own rows, e.g. alignment or rotation, and pass the
+ * color the text gets when created as `defaultColor`.
  */
 function TextStyleControls({
+  defaultColor,
   label,
   maxFontSize = 28,
   minFontSize = 9,
@@ -41,6 +46,7 @@ function TextStyleControls({
       <ControlRow label={getRowLabel('Color', rowLabelPrefix)}>
         <ColorControl
           label={`${label} color`}
+          presets={createStyleColorPresets(defaultColor)}
           value={value.color}
           onChange={(color) => onChange({ ...value, color })}
         />

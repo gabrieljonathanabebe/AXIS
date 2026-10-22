@@ -2,6 +2,7 @@ import type { PieSeriesOption } from 'echarts'
 
 import { isRadialChartType } from '../../chartDefinitions'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
+import { resolvePalette } from '../resolveColor'
 import type { LegendAppearance } from '../../types'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -32,7 +33,10 @@ export function createPieChartContent(
   const { chartType, highlightResult, queryResult, selection, spec, theme } =
     context
   const label = createSeriesLabelOption(spec.appearance.labels, theme)
-  const palette = spec.appearance.colorScale.categorical.palette
+  const palette = resolvePalette(
+    spec.appearance.colorScale.categorical.palette,
+    theme,
+  )
   const basePoints = queryResult?.points ?? []
   const points = selection ? (highlightResult?.points ?? []) : basePoints
   const categories = basePoints.map((point) => point.x ?? 'No category')

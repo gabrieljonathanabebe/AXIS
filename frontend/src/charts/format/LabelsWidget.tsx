@@ -1,3 +1,4 @@
+import { CHART_TEXT_STYLE } from '../createChartInstance'
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
@@ -53,6 +54,7 @@ function LabelsWidget({
         />
       ) : null}
       <TextStyleControls
+        defaultColor={CHART_TEXT_STYLE.color}
         label="Label"
         value={value.textStyle}
         onChange={(textStyle) => onChange({ ...value, textStyle })}

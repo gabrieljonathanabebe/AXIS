@@ -1,3 +1,4 @@
+import { CARD_VALUE_TEXT_STYLE } from './createCardInstance'
 import ControlRow from '../shared/ui/ControlRow'
 import NumberFormatControls from '../shared/ui/NumberFormatControls'
 import { getAggregationOptions } from '../charts/aggregations'
@@ -45,6 +46,7 @@ function CardValueWidget({
         onChange={(numberFormat) => onChange({ ...value, numberFormat })}
       />
       <TextStyleControls
+        defaultColor={CARD_VALUE_TEXT_STYLE.color}
         label="Value"
         maxFontSize={96}
         minFontSize={16}

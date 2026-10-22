@@ -1,21 +1,26 @@
+import {
+  createDefaultContainer,
+  createDefaultTitle,
+} from '../objects/objectDefaults'
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
 import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
-import type {
-  ChartInstance,
-  ChartSpec,
-  ChartType,
-  GridAppearance,
-} from './types'
-import type { ObjectContainer, ObjectLayout } from '../objects/types'
-import type { TextStyle } from '../shared/textStyle'
 import {
   getChartDefinition,
   isPointsChartType,
   isRadialChartType,
 } from './chartDefinitions'
 
+import type {
+  ChartInstance,
+  ChartSpec,
+  ChartType,
+  GridAppearance,
+} from './types'
+import type { ObjectLayout } from '../objects/types'
+import type { TextStyle } from '../shared/textStyle'
+
 /** Default look of the texts drawn by ECharts: axes, legend, labels. */
-const CHART_TEXT_STYLE: TextStyle = {
+export const CHART_TEXT_STYLE: TextStyle = {
   color: { kind: 'token', token: 'text' },
   fontSize: 12,
   fontStyle: 'normal',
@@ -23,7 +28,7 @@ const CHART_TEXT_STYLE: TextStyle = {
 }
 
 /** Default gridlines; each axis draws its own. */
-const CHART_GRID_LINES: GridAppearance = {
+export const CHART_GRID_LINES: GridAppearance = {
   stroke: {
     color: { kind: 'token', token: 'gridLine' },
     lineStyle: 'solid',
@@ -39,20 +44,6 @@ type CreateChartInstanceParams = {
   id?: string
 }
 
-export function createDefaultChartContainer(): ObjectContainer {
-  return {
-    background: { kind: 'surface' },
-    border: {
-      color: { kind: 'token', token: 'border' },
-      lineStyle: 'solid',
-      opacity: 1,
-      width: 0,
-    },
-    padding: 4,
-    borderRadius: 24,
-  }
-}
-
 export function createDefaultChartSpec(type: ChartType): ChartSpec {
   const definition = getChartDefinition(type)
   const isRadialChart = isRadialChartType(type)
@@ -65,7 +56,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       colorAggregation: 'mean',
     },
     appearance: {
-      color: { kind: 'custom', color: '#199E8A' },
+      color: { kind: 'token', token: 'chart1' },
       colorScale: {
         categorical: {
           palette: [...DEFAULT_CATEGORICAL_PALETTE],
@@ -81,17 +72,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           labels: true,
         },
       },
-      title: {
-        visible: true,
-        text: '',
-        alignment: 'start',
-        textStyle: {
-          color: { kind: 'token', token: 'text' },
-          fontSize: 14,
-          fontStyle: 'normal',
-          fontWeight: 'medium',
-        },
-      },
+      title: createDefaultTitle(),
       xAxis: {
         visible: true,
         title: '',
@@ -156,7 +137,6 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         showSymbol: true,
         areaFill: false,
         area: {
-          color: { kind: 'custom', color: '#199E8A' },
           kind: 'solid',
           opacity: 0.25,
         },
@@ -199,6 +179,6 @@ export function createChartInstance({
     type,
     spec: createDefaultChartSpec(type),
     layout,
-    container: createDefaultChartContainer(),
+    container: createDefaultContainer(),
   }
 }

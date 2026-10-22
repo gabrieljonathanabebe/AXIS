@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 
 import ColorControl from './ColorControl'
+import { DATA_COLOR_PRESETS } from './colorPresets'
 import { getColorCss } from '../colorValue'
 
 import type { ColorValue } from '../colorValue'
@@ -33,6 +34,7 @@ function GradientControl({
     <div className="gradient-control" aria-label={label} style={style}>
       <ColorControl
         label={`${label} low color`}
+        presets={DATA_COLOR_PRESETS}
         value={startColor}
         variant="compact"
         onChange={(nextStartColor) => {
@@ -45,6 +47,7 @@ function GradientControl({
       <div className="gradient-control-preview" aria-hidden="true" />
       <ColorControl
         label={`${label} high color`}
+        presets={DATA_COLOR_PRESETS}
         value={endColor}
         variant="compact"
         onChange={(nextEndColor) => {

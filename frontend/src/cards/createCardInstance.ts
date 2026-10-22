@@ -1,9 +1,29 @@
-import { createDefaultChartContainer } from '../charts/createChartInstance'
+import {
+  createDefaultContainer,
+  createDefaultTitle,
+} from '../objects/objectDefaults'
 import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
 
 import type { CardDataSpec, CardInstance, CardSpec } from './types'
 import type { DataField } from '../datasets/types'
 import type { ObjectLayout } from '../objects/types'
+import type { TextStyle } from '../shared/textStyle'
+
+/** Default look of the card value, the large number. */
+export const CARD_VALUE_TEXT_STYLE: TextStyle = {
+  color: { kind: 'token', token: 'text' },
+  fontSize: 40,
+  fontStyle: 'normal',
+  fontWeight: 'bold',
+}
+
+/** Default look of the label that names the active selection. */
+export const CARD_SELECTION_LABEL_TEXT_STYLE: TextStyle = {
+  color: { kind: 'token', token: 'accent' },
+  fontSize: 13,
+  fontStyle: 'normal',
+  fontWeight: 'medium',
+}
 
 type CreateCardInstanceParams = {
   layout: ObjectLayout
@@ -19,33 +39,13 @@ export function createDefaultCardSpec(): CardSpec {
     },
     appearance: {
       selectionLabel: {
-        textStyle: {
-          color: { kind: 'token', token: 'accent' },
-          fontSize: 13,
-          fontStyle: 'normal',
-          fontWeight: 'medium',
-        },
+        textStyle: CARD_SELECTION_LABEL_TEXT_STYLE,
         visible: true,
       },
-      title: {
-        visible: true,
-        text: '',
-        alignment: 'start',
-        textStyle: {
-          color: { kind: 'token', token: 'text' },
-          fontSize: 14,
-          fontStyle: 'normal',
-          fontWeight: 'medium',
-        },
-      },
+      title: createDefaultTitle(),
       value: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
-        textStyle: {
-          color: { kind: 'token', token: 'text' },
-          fontSize: 40,
-          fontStyle: 'normal',
-          fontWeight: 'bold',
-        },
+        textStyle: CARD_VALUE_TEXT_STYLE,
       },
     },
   }
@@ -73,6 +73,6 @@ export function createCardInstance({
     kind: 'card',
     spec: createDefaultCardSpec(),
     layout,
-    container: createDefaultChartContainer(),
+    container: createDefaultContainer(),
   }
 }

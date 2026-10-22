@@ -1,3 +1,4 @@
+import { CARD_SELECTION_LABEL_TEXT_STYLE } from './createCardInstance'
 import CardValueWidget from './CardValueWidget'
 import ObjectTitleWidget from '../objects/ObjectTitleWidget'
 import ContainerWidget from '../objects/ContainerWidget'
@@ -69,6 +70,7 @@ function renderFormatWidget(
           }}
         >
           <TextStyleControls
+            defaultColor={CARD_SELECTION_LABEL_TEXT_STYLE.color}
             label="Selection"
             value={appearance.selectionLabel.textStyle}
             onChange={(textStyle) =>

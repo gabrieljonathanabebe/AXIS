@@ -7,7 +7,7 @@ import type {
   SetContainer,
 } from '../objects/types'
 import type { DataField } from '../datasets/types'
-import type { Fill, SeriesFill } from '../shared/fill'
+import type { SeriesFill } from '../shared/fill'
 import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 import type { NumberFormat } from '../shared/format/valueFormats'
 import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
@@ -187,7 +187,7 @@ export type ChartType = 'scatter' | 'line' | 'bar' | 'pie' | 'donut'
 // ===== COLOR =================================================================
 export type ColorScaleAppearance = {
   categorical: {
-    palette: string[]
+    palette: ColorValue[]
   }
   continuous: {
     startColor: ColorValue
@@ -243,7 +243,7 @@ export type LineAppearance = {
   smooth: boolean
   showSymbol: boolean
   areaFill: boolean
-  area: Fill
+  area: SeriesFill
 }
 
 // ===== SCATTER ===============================================================

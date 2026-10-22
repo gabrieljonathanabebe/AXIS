@@ -1,6 +1,7 @@
-import AlignmentControl from '../../shared/ui/AlignmentControl'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 
+import AlignmentControl from '../../shared/ui/AlignmentControl'
+import { CHART_TEXT_STYLE } from '../createChartInstance'
 import ControlRow from '../../shared/ui/ControlRow'
 import Slider from '../../shared/ui/Slider'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
@@ -67,6 +68,7 @@ function LegendWidget({ value, onChange }: LegendWidgetProps) {
         />
       </ControlRow>
       <TextStyleControls
+        defaultColor={CHART_TEXT_STYLE.color}
         label="Legend text"
         rowLabelPrefix="Text"
         value={value.textStyle}

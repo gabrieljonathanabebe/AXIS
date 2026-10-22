@@ -106,12 +106,16 @@ Nicht jedes blaue Element benötigt einen Glow.
 
 Electric Blue ist keine Datenfarbe. Blau bedeutet in Cevyn Zustand
 (ausgewählt, gezogen, fokussiert), damit Auswahl, Brush und Format-Fokus
-auf jedem Chart lesbar bleiben. Die Standardfarben der Daten beginnen
-deshalb mit Teal (`#199E8A`, `appearance.color`, `line.areaColor`) und
-folgen der Palette `DEFAULT_CATEGORICAL_PALETTE` (`charts/colorPalettes.ts`,
-Preset „Default“): Teal, Orange, Violett, Amber, Magenta. Die Palette ist
-für Farbsehschwächen auf der dunklen Fläche geprüft; im Light Mode liegt
-Amber knapp unter 3:1. Blau bleibt als Preset im `ColorControl` wählbar.
+auf jedem Chart lesbar bleiben. Die Standardfarben der Daten sind
+deshalb die Theme-Tokens `chart1`–`chart5` (`--chart-1` bis `--chart-5`
+in `styles/themes.css`): Teal, Orange, Violett, Amber, Magenta. Sie
+bilden die Palette „Default“ (`DEFAULT_CATEGORICAL_PALETTE`,
+`charts/colorPalettes.ts`); `chart1` ist die Standard-Markfarbe
+(`appearance.color`). Die Palette ist für Farbsehschwächen auf der
+dunklen Fläche geprüft. Im Light Theme ist Amber auf `#B57800`
+abgedunkelt (3,4:1 statt 2,8:1 auf dem Hintergrund); Teal und Violett
+liegen dort bei etwa 3:1. Blau bleibt als eigene Farbe wählbar, ist aber
+kein Feld der Daten-Reihe.
 
 ### Danger
 
@@ -579,7 +583,7 @@ Darstellungsvarianten:
 
 `GradientControl` kombiniert zwei kompakte ColorControls mit einer
 Vorschau des Verlaufs. Es wird für Low-/High-Farben kontinuierlicher
-Farbskalen verwendet. Die eigentliche Farbauswahl bleibt vollständig
+Farbskalen verwendet und bietet die Daten-Reihe Chart 1–5. Die eigentliche Farbauswahl bleibt vollständig
 im zentralen ColorControl.
 
 ### Offener numerischer Wert
@@ -719,9 +723,30 @@ Farbwerte): ein Theme-Token oder eine feste Farbe.
 
 Grundstruktur:
 
-- fünf Theme-Swatches: Text, Muted, Accent, Grid line, Border; sie
-  zeigen die aktuelle Theme-Farbe und speichern den Token;
+- eine Reihe Preset-Swatches, die der Aufrufer über `presets` setzt
+  (Pflicht); Theme-Swatches zeigen die aktuelle Theme-Farbe und
+  speichern den Token;
 - ein Custom Swatch für eine feste Farbe.
+
+Reihen je Einsatzort (`shared/ui/colorPresets.ts`):
+
+| Einsatzort                                                     | Reihe                                          |
+| -------------------------------------------------------------- | ---------------------------------------------- |
+| Text (`TextStyleControls`)                                     | Default · Muted · Accent · eigene Farbe        |
+| Linien und Rahmen (`StrokeStyleControls`)                      | Default · Muted · Accent · eigene Farbe        |
+| Marks und Flächen (Markfarbe, `FillControls`), Farbskala-Enden | Chart 1–5 · eigene Farbe                       |
+| Container-Hintergrund (`ContainerWidget`)                      | Surface · Glass · Blue · Violet · eigene Farbe |
+
+- „Default“ steht für die Standardrolle des Elements, z. B. `text` beim
+  Titel, `gridLine` bei Gridlines, `border` beim Container-Rahmen,
+  `accent` beim Card-Selection-Label. Es zeigt deren Farbe, führt
+  jederzeit zum Ausgangszustand zurück und hält technische Namen wie
+  „Grid line“ aus der Auswahl. `createStyleColorPresets(defaultColor)`
+  baut die Reihe; ein Feld mit demselben Wert wie Default entfällt
+  (Selection-Label: Default · Muted).
+- Marks haben kein Default-Feld; Chart 1 ist ihr Standard
+  (`DATA_COLOR_PRESETS`).
+- Das Label eines Presets ist zugleich sein Hover-Titel.
 
 Vor Auswahl einer Custom Color zeigt der Custom Swatch einen
 Farbverlauf.
@@ -748,8 +773,7 @@ Opacity wird zunächst getrennt von Color behandelt.
 
 Eigene Presets:
 
-`ColorControl` akzeptiert optional `presets`; sie ersetzen die
-Theme-Swatches. Ein Preset trägt einen `ColorValue` oder einen eigenen
+Ein Preset trägt einen `ColorValue` oder einen eigenen
 Namen, der keine Farbe ist, und zeigt dann über `fill` eine eigene
 Vorschau-Fläche, z. B. Surface, Glass, Blue und Violet beim
 Container-Hintergrund. Der Typ der Namen ergibt sich aus `presets`
@@ -965,6 +989,10 @@ davor oder dahinter:
   „Color“, „Size“, „Weight“, „Style“
 - `minFontSize`/`maxFontSize` begrenzen die Größe (Standard 9–28), z. B.
   11–20 für Titel im festen Header, 16–96 für den Card-Wert
+- `defaultColor` (Pflicht) ist die Farbe, die der Text bei neuen
+  Objekten bekommt; sie führt die Color-Reihe als „Default“ an (siehe
+  9). Das Widget liest sie aus den Default-Konstanten seiner Domain,
+  z. B. `TITLE_TEXT_STYLE.color`
 
 Keine Varianten über Flags: Was ein Element zusätzlich braucht, ist eine
 eigene Zeile im Widget.
@@ -984,6 +1012,9 @@ beiden geteilt).
   `SeriesStrokeStyle` nicht, weil sie aus der Serie kommt (Palette oder
   `appearance.color`); ohne Farbe entfällt die Color-Zeile
   (`hasStrokeColor`), `onChange` liefert denselben Typ zurück
+- `defaultColor` wie bei `TextStyleControls`, hier optional, weil
+  Serienlinien keine Color-Zeile haben; die Color-Zeile erscheint nur
+  mit Farbe und `defaultColor`
 - genutzt vom Rahmen im `ContainerWidget` („Border width“ …), von den
   Gridlines im `GridWidget` (Breite 1–4) und von Linien-Marks im
   `MarkSeriesWidget` (Präfix „Line“, Breite 1–8, ohne Farbe); später
@@ -1009,12 +1040,12 @@ Vorhandene Bausteine:
   Datenlabels und Tooltip (`interaction.tooltip.numberFormat`, ohne
   Control)
 - `Fill` mit `FillControls` (siehe 9n): Fläche unter Linien
-  (`LineAppearance.area`) und Scatter-Punkte (`ScatterAppearance.fill`
-  als `SeriesFill`); der Container-Hintergrund bleibt
-  `ObjectBackground` mit Presets
+  (`LineAppearance.area`) und Scatter-Punkte (`ScatterAppearance.fill`),
+  beide als `SeriesFill` in der Farbe ihrer Serie; der
+  Container-Hintergrund bleibt `ObjectBackground` mit Presets
 
 Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Color-Zeile
-nutzt `ColorControl` mit Theme-Swatches (siehe 9).
+nutzt `ColorControl` mit der Reihe ihres Einsatzorts (siehe 9).
 
 Ein neuer Baustein lohnt sich erst, wenn mindestens zwei Elemente ihn
 tatsächlich nutzen oder der zweite Nutzer konkret geplant ist.
@@ -1071,14 +1102,14 @@ für Screenreader („Value format“, „Y Axis currency“).
 nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
 `label` für Screenreader („Area fill color“).
 
-- Color (`ColorControl`), Opacity (`Slider` 0.05–1)
+- Color (`ColorControl` mit Chart 1–5), Opacity (`Slider` 0.05–1)
 - generisch über den Wert: Ein `Fill` hat eine eigene Farbe, ein
   `SeriesFill` nicht, weil sie aus der Serie kommt; ohne Farbe entfällt
   die Color-Zeile (`hasFillColor`)
 - `kind` ist heute immer `solid` und hat keine Zeile; mit einer zweiten
   Variante (Verlauf, Muster) kommt eine Zeile „Type“ dazu
 - genutzt von der Fläche unter Linien und den Scatter-Punkten im
-  `MarkSeriesWidget`
+  `MarkSeriesWidget`; beide sind `SeriesFill` und zeigen nur Opacity
 
 ## 10. Legend
 

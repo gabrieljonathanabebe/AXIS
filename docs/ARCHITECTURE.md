@@ -360,7 +360,8 @@ oder Zahlenformat bleiben Felder des Elements.
 - `FONT_WEIGHT_VALUES` bildet `light | medium | bold` auf 200/500/800 ab,
   für CSS, ECharts und die Canvas-Messung der Legende
 - der Titel ist `ObjectTitleAppearance` in `objects/types.ts`, weil
-  alle Objekttypen ihn teilen
+  alle Objekttypen ihn teilen; seinen Standard erzeugt
+  `createDefaultTitle` in `objects/objectDefaults.ts`
 - Sichtbarkeit eines dargestellten Elements heißt `visible`; `enabled`
   steht nur für Interaktion (Tooltip, Zoom, Animation, Legend-Auswahl)
 
@@ -379,9 +380,12 @@ Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
 
 Flächen nutzen `Fill` aus `src/shared/fill.ts` (`kind: 'solid'`,
 `color`, `opacity`); weitere Varianten wie Verläufe kommen als neue
-`kind` hinzu. Die Fläche unter Linien trägt `Fill` (`line.area`, mit
-`areaFill` als Sichtbarkeit), Scatter-Punkte `SeriesFill` ohne Farbe
-(`hasFillColor` unterscheidet beide). ECharts übersetzt
+`kind` hinzu. Die Fläche unter Linien (`line.area`, mit `areaFill` als
+Sichtbarkeit) und Scatter-Punkte tragen `SeriesFill` ohne Farbe: Jede
+Fläche nimmt die Farbe ihrer Serie (Palette oder `appearance.color`),
+der Adapter setzt sie in `createAggregatedSeriesOption` wie bei der
+Linie. `Fill` mit eigener Farbe hat derzeit keinen Nutzer und bleibt
+als allgemeiner Typ (`hasFillColor` unterscheidet beide). ECharts übersetzt
 `createFillOption`; eine CSS-Übersetzung folgt mit dem ersten
 HTML-Nutzer. Der Container-Hintergrund bleibt `ObjectBackground`.
 
@@ -392,16 +396,29 @@ Jedes Farbfeld der Specs ist ein `ColorValue` aus
 `{ kind: 'custom'; color }` ist eine feste Hex-Farbe. Das gilt für
 `TextStyle`, `StrokeStyle`, `Fill`, `ObjectBackground` mit
 `kind: 'color'`, die Chartfarbe (`appearance.color`), die Enden der
-kontinuierlichen Farbskala und `legend.inactiveColor`. Kategorische
-Paletten bleiben Hex-Listen (`string[]`).
+kontinuierlichen Farbskala und `legend.inactiveColor`. Auch die
+kategorische Palette ist `ColorValue[]`
+(`colorScale.categorical.palette`): „Default“ besteht aus
+`chart1`–`chart5`, die übrigen Presets (Vivid, Pastel, Contrast) aus
+festen Farben; `resolvePalette` löst sie im Adapter auf.
 
-- `ColorToken` hat fachliche Namen (`text`, `textMuted`, `accent`,
-  `gridLine`, `border`, `inactive`); `COLOR_TOKEN_VARIABLES` ordnet jedem
-  Token seine CSS-Variable aus `styles/themes.css` zu, damit gespeicherte
-  Specs nicht an CSS-Namen hängen
-- Standardwerte: Struktur folgt dem Theme, Daten sind feste Farben.
-  Texte, Gridlines, Container-Rahmen und Legend-Inactive sind Tokens;
-  Chartfarbe, Fläche unter der Linie und Farbskala sind `custom`
+- `ColorToken` hat fachliche Namen: Struktur (`text`, `textMuted`,
+  `accent`, `gridLine`, `border`, `inactive`) und Daten
+  (`chart1`–`chart5`); `COLOR_TOKEN_VARIABLES` ordnet jedem Token seine
+  CSS-Variable aus `styles/themes.css` zu, damit gespeicherte Specs
+  nicht an CSS-Namen hängen
+- Standardwerte folgen dem Theme: Texte, Gridlines, Container-Rahmen
+  und Legend-Inactive nutzen Struktur-Tokens, Markfarbe und
+  Default-Palette die Daten-Tokens; nur die Enden der kontinuierlichen
+  Farbskala sind `custom`
+- Standardwerte liegen als Konstanten bei der Domain, die sie
+  erzeugt: `objects/objectDefaults.ts` für alle Objekttypen
+  (`TITLE_TEXT_STYLE`, `CONTAINER_BORDER`, `createDefaultTitle`,
+  `createDefaultContainer`), `createChartInstance` für Charts
+  (`CHART_TEXT_STYLE`, `CHART_GRID_LINES`), `createCardInstance` für
+  Cards (`CARD_VALUE_TEXT_STYLE`, `CARD_SELECTION_LABEL_TEXT_STYLE`).
+  Format-Widgets lesen daraus das „Default“-Feld des Farbwählers, damit
+  es dem Ausgangszustand neuer Objekte entspricht
 - HTML löst über `getColorCss` auf (`var(--…)` bzw. Hex); die
   CSS-Helper `getTextStyleCss` und `getStrokeBorderCss` nutzen ihn
 - ECharts kennt keine CSS-Variablen: `readChartTheme` in
@@ -413,9 +430,9 @@ Paletten bleiben Hex-Listen (`string[]`).
 - geplant: `{ kind: 'rule' }` für bedingte Formatierung und
   `{ kind: 'series' }` für Elemente, die der Serienfarbe folgen; beide
   sind neue Varianten ohne Formänderung
-- `data-theme` wird noch nirgends gesetzt, es gilt immer das Dark-Theme;
-  bei einem Theme-Wechsel müssten die Charts neu rendern, weil ECharts
-  aufgelöste Farben erhält
+- `data-theme` steht fest auf `dark` in `index.html`; einen Umschalter
+  gibt es noch nicht. Bei einem Theme-Wechsel müssten die Charts neu
+  rendern, weil ECharts aufgelöste Farben erhält
 
 ### Container vs. Content
 

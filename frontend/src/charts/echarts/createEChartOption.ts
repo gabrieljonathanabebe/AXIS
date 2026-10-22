@@ -11,7 +11,7 @@ import { createGridOption } from './createGridOption'
 import { createLegendOption } from './createLegendOption'
 import { createTooltipOption } from './createTooltipOption'
 import { isRadialChartType } from '../chartDefinitions'
-import { resolveColor } from './resolveColor'
+import { resolveColor, resolvePalette } from './resolveColor'
 
 // ===== TYPES =================================================================
 type EChartOptionContext = ChartContentContext & {
@@ -53,7 +53,7 @@ export function createEChartOption(
 
     color:
       colorEncodingMode === 'categorical'
-        ? appearance.colorScale.categorical.palette
+        ? resolvePalette(appearance.colorScale.categorical.palette, theme)
         : [resolveColor(appearance.color, theme)],
     dataZoom: isRadialChart
       ? undefined

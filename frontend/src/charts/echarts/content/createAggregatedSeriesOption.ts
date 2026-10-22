@@ -66,6 +66,7 @@ export function createAggregatedSeriesOption({
       areaStyle: appearance.line.areaFill
         ? {
             ...createFillOption(appearance.line.area, theme),
+            color,
             opacity: appearance.line.area.opacity * (opacity ?? 1),
           }
         : undefined,

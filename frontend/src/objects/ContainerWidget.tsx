@@ -1,4 +1,5 @@
 import ColorControl from '../shared/ui/ColorControl'
+import { CONTAINER_BORDER } from './objectDefaults'
 import ControlRow from '../shared/ui/ControlRow'
 import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
 import Slider from '../shared/ui/Slider'
@@ -89,6 +90,7 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
         />
       </ControlRow>
       <StrokeStyleControls
+        defaultColor={CONTAINER_BORDER.color}
         label="Container border"
         rowLabelPrefix="Border"
         value={value.border}

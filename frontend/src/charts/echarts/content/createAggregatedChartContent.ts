@@ -9,7 +9,7 @@ import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { DIMMED_OPACITY } from './selectionStyle'
-import { resolveColor } from '../resolveColor'
+import { resolveColor, resolvePalette } from '../resolveColor'
 
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -66,7 +66,10 @@ export function createAggregatedChartContent(
   const hasColorValue =
     hasAggregatedColor(chartType, encoding) &&
     colorEncodingMode === 'continuous'
-  const palette = appearance.colorScale.categorical.palette
+  const palette = resolvePalette(
+    appearance.colorScale.categorical.palette,
+    theme,
+  )
   const seriesNames = encoding.series
     ? Array.from(new Set(points.map((point) => point.series)))
     : [null]

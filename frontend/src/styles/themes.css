@@ -121,6 +121,11 @@
     rgba(44, 28, 78, 0.86),
     rgba(26, 17, 50, 0.82)
   );
+  --chart-1: #199e8a;
+  --chart-2: #d95926;
+  --chart-3: #8f80ec;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
   --chart-border: #94a3b8;
   --chart-grid-line: #334155;
   --chart-inactive: #8b95a7;
@@ -203,6 +208,11 @@
     rgba(218, 205, 252, 0.86)
   );
 
+  --chart-1: #199e8a;
+  --chart-2: #d95926;
+  --chart-3: #8f80ec;
+  --chart-4: #b57800;
+  --chart-5: #d55181;
   --chart-border: #64748b;
   --chart-grid-line: #64748b;
   --chart-inactive: #98a2b3;

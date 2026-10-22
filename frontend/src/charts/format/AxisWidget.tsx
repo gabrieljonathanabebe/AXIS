@@ -1,3 +1,4 @@
+import { CHART_TEXT_STYLE } from '../createChartInstance'
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
@@ -85,6 +86,7 @@ function AxisWidget({
             />
           </ControlRow>
           <TextStyleControls
+            defaultColor={CHART_TEXT_STYLE.color}
             label={`${title} title`}
             rowLabelPrefix="Title"
             value={titleStyle}
@@ -162,6 +164,7 @@ function AxisWidget({
             />
           </ControlRow>
           <TextStyleControls
+            defaultColor={CHART_TEXT_STYLE.color}
             label={`${title} label`}
             rowLabelPrefix="Label"
             value={labels.textStyle}

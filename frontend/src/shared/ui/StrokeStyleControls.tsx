@@ -1,15 +1,18 @@
 import ColorControl from './ColorControl'
 import ControlRow from './ControlRow'
+import { createStyleColorPresets } from './colorPresets'
 import { getRowLabel } from './getRowLabel'
 import { hasStrokeColor } from '../strokeStyle'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 import Slider from './Slider'
 
+import type { ColorValue } from '../colorValue'
 import type { LineStyle, SeriesStrokeStyle } from '../strokeStyle'
 
 // ===== TYPES =================================================================
 type StrokeStyleControlsProps<TStroke extends SeriesStrokeStyle> = {
+  defaultColor?: ColorValue
   label: string
   maxWidth?: number
   minWidth?: number
@@ -28,10 +31,12 @@ const lineStyleOptions = [
 // ===== COMPONENT =============================================================
 /**
  * Rows for width, line style, color and opacity of one stroke, e.g. a
- * border. Widgets place them next to their own rows; a stroke without a
+ * border. Widgets place them next to their own rows and pass the color
+ * the stroke gets when created as `defaultColor`; a stroke without a
  * color, e.g. a series line, gets no color row.
  */
 function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
+  defaultColor,
   label,
   maxWidth = 8,
   minWidth = 0,
@@ -66,10 +71,11 @@ function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
           onValueChange={(lineStyle) => onChange({ ...value, lineStyle })}
         />
       </ControlRow>
-      {hasStrokeColor(value) ? (
+      {hasStrokeColor(value) && defaultColor ? (
         <ControlRow label={getRowLabel('Color', rowLabelPrefix)}>
           <ColorControl
             label={`${label} color`}
+            presets={createStyleColorPresets(defaultColor)}
             value={value.color}
             onChange={(color) => onChange({ ...value, color })}
           />

@@ -3,6 +3,7 @@ import { Circle, Diamond, Square, Triangle } from 'lucide-react'
 import { categoricalColorPalettes } from '../colorPalettes'
 import ColorControl from '../../shared/ui/ColorControl'
 import ControlRow from '../../shared/ui/ControlRow'
+import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
 import FillControls from '../../shared/ui/FillControls'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 import PaletteControl from '../../shared/ui/PaletteControl'
@@ -52,6 +53,7 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
         <ControlRow label="Color">
           <ColorControl
             label="Chart color"
+            presets={DATA_COLOR_PRESETS}
             value={appearance.color}
             onChange={(color) => {
               actions.setAppearance('color', color)
