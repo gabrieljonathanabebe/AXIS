@@ -359,9 +359,12 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
 - Dateipfade als klickbaren Markdown-Link relativ zum Repo-Root
   angeben, bei bestehenden Dateien mit Zeilenanker auf die
   Einfügestelle, z. B.
-  `[createAxesOptions.ts:97](frontend/src/charts/echarts/createAxesOptions.ts#L97)`
-  oder für einen Bereich `#L97-L99`; bei mehrdeutigen Dateinamen (z. B.
-  `types.ts`) den Ordner im Linktext mitnennen;
+  `[createAxesOptions.ts:97](frontend/src/charts/echarts/createAxesOptions.ts#L97)`;
+  wird ein bestehender Bereich ersetzt oder gelöscht, markieren Linktext
+  und Anker den ganzen Bereich, z. B.
+  `[PaletteControl.tsx:18-32](frontend/src/shared/ui/PaletteControl.tsx#L18-L32)`;
+  bei mehrdeutigen Dateinamen (z. B. `types.ts`) den Ordner im Linktext
+  mitnennen;
 - neue Dateien ohne Zeilenanker und mit dem vollständigen Pfad ab
   Repo-Root als Linktext, z. B.
   „Neue Datei `frontend/src/charts/format/ChartFormatPopover.tsx`“, da

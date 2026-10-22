@@ -159,3 +159,60 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - je ein Docker-Image für Frontend und Backend
 - möglichst zusammen mit den Tests umsetzen; offen, ob das noch in
   denselben Slice passt
+
+## Stacked Area für Linien-Charts
+
+- Option, Flächen mehrerer Serien zu stapeln statt zu überlagern;
+  ungestapelte Flächen ab drei Serien vermischen sich zu bedeutungslosen
+  Farben
+- Gestapelt summiert die Werte; die oberste Linie zeigt die Summe,
+  Tooltip und Labels müssen das berücksichtigen
+- Prüfen, ob ein Hinweis sinnvoll ist, wenn Area bei vielen Serien oder
+  bei einer ungeordneten Kategorie-Achse aktiv ist
+- zusammen mit „Stacked Bar Chart“ denken: eine gemeinsame Einstellung
+  für Stapeln (aus, gestapelt, 100 %) statt je eigener Logik
+
+## Stacked Bar Chart
+
+- Balken mehrerer Serien übereinander statt nebeneinander; heute
+  gruppiert ECharts die Serien eines Bar-Charts nebeneinander
+- Variante 100 % gestapelt für Anteile je Kategorie
+- Labels: Wert je Segment und optional Summe über dem Stapel
+- Cross-Highlight und Tooltip mit gestapelten Werten prüfen
+
+## Horizontal Bar Chart
+
+- Balken horizontal, sinnvoll bei langen Kategorienamen und Rankings
+- eher Ausrichtung als Option des bestehenden Bar-Charts als eigener
+  Charttyp; im Adapter tauschen Kategorie- und Werteachse
+- Achsen-Widgets, Gridlines, Labels-Position und Brush müssen die
+  getauschten Achsen berücksichtigen
+- gilt auch für gestapelte Balken
+
+## Heatmap-Matrix
+
+- zwei Dimensionen als Zeilen und Spalten, ein Measure als Farbe der
+  Zelle, z. B. Umsatz je Land und Monat
+- nutzt die kontinuierliche Farbskala (`colorScale.continuous`,
+  `createContinuousColorVisualMap`)
+- braucht eine Visual Query mit zwei Gruppierungen; prüfen, ob das
+  bestehende `series`-Encoding als zweite Achse reicht
+- steht als „Heatmap“ bereits unter „Later – Advanced Visualizations“
+  in `docs/ROADMAP.md`
+
+## Histogramm
+
+- Verteilung eines Measures: Anzahl der Werte je gleich breitem Bin
+- das Profiling im Backend berechnet bereits Histogramme; Binning für
+  eine Chart-Query wiederverwenden statt neu bauen
+- Optionen: Anzahl der Bins bzw. Binbreite; Balken ohne Abstand,
+  Achse mit Wertebereichen statt Kategorien
+- optional später nach einer Dimension unterteilt (überlagert oder
+  gestapelt)
+
+## Kombi-Chart: Balken und Linie
+
+- Balken für ein Measure und Linie für ein zweites, z. B. Umsatz und
+  Marge, häufig mit zweiter Y-Achse
+- verbreitet in BI-Dashboards; braucht je Measure einen Mark-Typ und
+  eine Achsenzuordnung in der Spec
