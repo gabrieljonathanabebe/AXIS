@@ -1044,6 +1044,9 @@ Vorhandene Bausteine:
   beide als `SeriesFill` in der Farbe ihrer Serie; der
   Container-Hintergrund bleibt `ObjectBackground` mit Presets
 
+Geplant ist `Effect` (Glow, später Schatten) für Marks und Container
+(`ROADMAP.md`, 3.1).
+
 Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Color-Zeile
 nutzt `ColorControl` mit der Reihe ihres Einsatzorts (siehe 9).
 
@@ -1052,31 +1055,83 @@ tatsächlich nutzen oder der zweite Nutzer konkret geplant ist.
 Erweiterungen bestehender Bausteine sind neue Felder oder neue
 Varianten (`kind`), keine Formänderung.
 
-Die Matrix zeigt, welche Formatierung jedes Element heute hat. Sie dient
-als Planungsgrundlage: Eine Spalte mit vielen Lücken spricht für einen
-gemeinsamen Baustein.
+### Formen und Serienfarbe
 
-✓ vorhanden · ○ fehlt · – nicht sinnvoll
+Jedes sichtbare Teil hat eine von drei Formen; aus der Form folgen die
+Bausteine:
 
-| Element              | Text | Fill          | Stroke        | Zahlenformat            | Platzierung   |
-| -------------------- | ---- | ------------- | ------------- | ----------------------- | ------------- |
-| Titel (Chart, Card)  | ✓    | –             | –             | –                       | ✓ Ausrichtung |
-| Achsentitel          | ✓    | –             | –             | –                       | –             |
-| Achsenbeschriftung   | ✓    | –             | –             | ✓                       | ✓ Rotation    |
-| Achsenlinie          | –    | –             | ○             | –                       | –             |
-| Gridlines            | –    | –             | ✓             | –                       | –             |
-| Legende              | ✓    | ○             | –             | –                       | ✓ Position    |
-| Datenlabels          | ✓    | –             | –             | ✓ auto folgt Y          | ✓ Position    |
-| Marks Bar            | –    | ✓ Farbe       | ○ Rahmen      | –                       | –             |
-| Marks Line           | –    | ✓ Fläche      | ✓ Serienfarbe | –                       | –             |
-| Marks Scatter        | –    | ✓ Serienfarbe | ○ Rand        | –                       | –             |
-| Container            | –    | ✓ Hintergrund | ✓ Rahmen      | –                       | ✓ Padding     |
-| Card-Wert            | ✓    | –             | –             | ✓                       | ○ Ausrichtung |
-| Card-Selection-Label | ✓    | –             | –             | –                       | –             |
-| Tooltip              | ○    | ○             | –             | ✓ folgt Y, ohne Control | –             |
+| Form   | Beispiele                                                                       | Bausteine                                             |
+| ------ | ------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Fläche | Container, Balken, Scatter-Punkt, Pie-Segment, Fläche unter Linie, Hintergründe | `Fill` bzw. `background`, Rahmen als `border`, Effect |
+| Linie  | Linien-Serie, Gridlines, Achsenlinie                                            | `stroke`, Effect                                      |
+| Text   | Titel, Achsenbeschriftung, Datenlabel, Card-Wert                                | `textStyle`, bei Zahlen `numberFormat`                |
 
-Die Matrix beschreibt den implementierten Stand und wird mit jedem
-neuen Baustein oder Element aktualisiert.
+Marks (Balken, Linien, Punkte, Segmente) nehmen ihre Farbe aus der
+Serie bzw. Palette und nutzen die Varianten ohne Farbe (`SeriesFill`,
+`SeriesStrokeStyle`). Alle übrigen Teile haben eine feste Farbe als
+`ColorValue`.
+
+Feldnamen sind überall gleich: `textStyle`, `numberFormat`, `stroke`
+(Linie), `border` (Umriss einer Fläche), `fill` (Fläche einer Serie),
+`background` (feste Fläche), `effect`. Eine Suche nach dem Feldnamen
+zeigt damit den Ist-Stand im Code.
+
+### Ist und Soll
+
+Planungsgrundlage für fehlende Formatierung; Spec-Pfade relativ zur
+jeweiligen Appearance. Die Liste beschreibt den implementierten Stand
+und wird mit jedem Baustein oder Element aktualisiert. Die Reihenfolge
+der offenen Punkte steht in `ROADMAP.md`.
+
+✓ vorhanden · ○ fehlt (geplant) · später: nach dem Alpha
+
+Dashboard
+
+| Teil      | Form   | Ist          | Soll                        | Status |
+| --------- | ------ | ------------ | --------------------------- | ------ |
+| Canvas    | Fläche | –            | `canvas.background`         | ○      |
+| Abstände  | –      | `layout.gap` | zusätzlich `layout.padding` | ○      |
+| Animation | –      | `animation`  | –                           | ✓      |
+
+Objekt (Chart und Card)
+
+| Teil      | Form   | Ist                                                            | Soll                          | Status    |
+| --------- | ------ | -------------------------------------------------------------- | ----------------------------- | --------- |
+| Container | Fläche | `container.background`, `.border`, `.padding`, `.borderRadius` | `container.effect` (Schatten) | ✓, später |
+| Titel     | Text   | `title.textStyle`, `.alignment`                                | –                             | ✓         |
+
+Chart
+
+| Teil               | Form         | Ist                                               | Soll                                 | Status    |
+| ------------------ | ------------ | ------------------------------------------------- | ------------------------------------ | --------- |
+| Achsentitel        | Text         | `xAxis.titleStyle`                                | `xAxis.title: { text, textStyle }`   | ○ Name    |
+| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`         | –                                    | ✓         |
+| Achsenlinie        | Linie        | nur an/aus über `xAxis.visible`                   | `xAxis.line: { visible, stroke }`    | ○         |
+| Gridlines          | Linie        | `xAxis.gridLines.stroke`                          | –                                    | ✓         |
+| Legende            | Text         | `legend.textStyle`                                | –                                    | ✓         |
+| Legende            | Fläche       | –                                                 | `legend.background`, `.border`       | später    |
+| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`               | Label-Box (Fill, Stroke)             | ✓, später |
+| Tooltip            | Zahl         | `interaction.tooltip.numberFormat` (ohne Control) | –                                    | ✓         |
+| Tooltip            | Text, Fläche | fest im Adapter                                   | `textStyle`, `background`, `border`  | später    |
+| Farbskala          | –            | `colorScale.continuous.startColor`, `.endColor`   | eigene HTML-Farbskala mit Bausteinen | später    |
+
+Marks
+
+| Teil                | Form   | Ist                                                             | Soll                                                      | Status |
+| ------------------- | ------ | --------------------------------------------------------------- | --------------------------------------------------------- | ------ |
+| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`)                             | `line.effect`                                             | ○      |
+| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                     | –                                                         | ✓      |
+| Punkte auf Linie    | Fläche | `line.showSymbol`                                               | Marker (Form, Größe)                                      | später |
+| Balken              | Fläche | Farbe aus `color` bzw. Palette, `bar.borderRadius`, `.barWidth` | `bar.fill`, `bar.border`, `bar.effect`                    | ○      |
+| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.symbol`, `.pointSize`          | `scatter.border`, `scatter.effect`                        | ○      |
+| Pie-/Donut-Segmente | Fläche | keine Appearance, Radius fest im Adapter                        | `pie.fill`, `pie.border`, `pie.innerRadius`, `pie.effect` | ○      |
+
+Card
+
+| Teil            | Form        | Ist                                     | Soll                   | Status           |
+| --------------- | ----------- | --------------------------------------- | ---------------------- | ---------------- |
+| Wert            | Text + Zahl | `value.textStyle`, `value.numberFormat` | zusätzlich Ausrichtung | ✓, Ausrichtung ○ |
+| Selection-Label | Text        | `selectionLabel.textStyle`              | –                      | ✓                |
 
 ## 9m. NumberFormatControls
 

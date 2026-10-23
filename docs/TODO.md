@@ -36,15 +36,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - eigener Slice nach „Generische Style-Bausteine“; konkrete Wünsche
   zu Beginn des Slices klären
 
-## Weitere Dashboard-Einstellungen
-
-- Canvas-Hintergrund als Dashboard-Einstellung, analog zu den
-  Container-Presets (Glass, Surface, None, eigene Farbe)
-- Innen-Padding der Canvas als Teil von `DashboardLayout`
-- beides im Dashboard-Popover der Canvas-Toolbar
-  (`DashboardSettingsPopover`), undo-fähig über `dashboard/updateLayout`
-  bzw. `dashboard/update`
-
 ## Chart-Zusammenfassung zum ausgewählten Chart
 
 - eine kompakte Karte zum ausgewählten Chart; ursprünglich über den
@@ -104,15 +95,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   (z. B. `charts/ChartItem.css`); globale Tokens, Themes und Basis
   bleiben in `src/styles/`
 
-## Cevyn-Action-Schema aus OpenAPI generieren
-
-- das Schema der Cevyn Actions existiert doppelt: Pydantic-Modelle in
-  `backend/app/ai/models.py` und `actionShapes` in
-  `frontend/src/actions/parseCevynActions.ts`; der Abgleich ist manuell
-- Frontend-Types bzw. Strukturprüfung per Codegen aus dem
-  OpenAPI-Schema des Backends erzeugen, damit eine neue Action nur
-  einmal beschrieben wird
-
 ## Auto-Hide der Canvas-Toolbar
 
 - die Toolbar gehört zum Editor, nicht zum Dashboard, und soll die
@@ -149,16 +131,8 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - steht zeitnah an
 - passende Tests für die Frontend-Logik, Test-Framework noch zu
   entscheiden
-- das Backend hat seit dem Slice „Backend-Tests“ pytest-Tests
-  (siehe `docs/ROADMAP.md`)
-
-## CI-Pipeline mit GitHub Actions und Docker-Images
-
-- GitHub-Actions-Pipeline, die Checks und Tests für Backend und
-  Frontend ausführt
-- je ein Docker-Image für Frontend und Backend
-- möglichst zusammen mit den Tests umsetzen; offen, ob das noch in
-  denselben Slice passt
+- das Backend hat pytest-Tests (`uv run pytest`); die CI-Pipeline ist
+  in `docs/ROADMAP.md` (Alpha, 3.8) geplant
 
 ## Stacked Area für Linien-Charts
 
@@ -197,8 +171,8 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   `createContinuousColorVisualMap`)
 - braucht eine Visual Query mit zwei Gruppierungen; prüfen, ob das
   bestehende `series`-Encoding als zweite Achse reicht
-- steht als „Heatmap“ bereits unter „Later – Advanced Visualizations“
-  in `docs/ROADMAP.md`
+- in `docs/ROADMAP.md` unter „Nach dem Alpha – Visualisierung“ als
+  weiterer Charttyp vorgesehen
 
 ## Histogramm
 
