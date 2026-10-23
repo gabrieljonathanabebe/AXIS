@@ -39,12 +39,14 @@ Slices; Abhängigkeiten stehen beim Punkt):
 
 1. Effect (Glow) für Marks – implementiert
 2. Marks vervollständigen – **nächster Slice**
-3. Table-Objekt
-4. Dashboard-Einstellungen
-5. Ask Cevyn ausbauen
-6. Unabhängigkeit vom App-Namen
-7. Persistenz
-8. Alpha-Infrastruktur und Vollbild
+3. DateFormat
+4. Theme-Umschalter in der TopBar (provisorisch)
+5. Table-Objekt
+6. Dashboard-Einstellungen
+7. Ask Cevyn ausbauen
+8. Unabhängigkeit vom App-Namen
+9. Persistenz
+10. Alpha-Infrastruktur und Vollbild
 
 Kleine Lückenfüller zwischen den Slices: der Bug „Datenlabels bei
 Line-Charts fehlen“ (`TODO.md`), einzelne offene Zeilen der Ist/Soll-Liste
@@ -69,7 +71,58 @@ nutzen `Effect`, `createEffectOption` und `EffectControls` wie dort:
   sonst `title: { text, textStyle }` (`ObjectTitleAppearance`) –
   vereinheitlichen, solange es noch keine gespeicherten Dateien gibt
 
-### 3.3 Table-Objekt (geplant)
+### 3.3 DateFormat (geplant)
+
+Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
+es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
+immer `dateStyle: 'medium'` in UTC, an der Achse z. B. „Jan 1, 2025 ·
+Feb 1, 2025“ auch bei Monatsdaten.
+
+- Typ in `shared/format/` (Vorschlag):
+
+  ```ts
+  type DateFormat = {
+    style: 'auto' | 'custom'
+    unit: 'year' | 'quarter' | 'month' | 'day' // feinste Einheit
+    month: 'numeric' | 'short' | 'long' // 03 · Mar · March
+    year: 'numeric' | '2-digit' // 2025 · 25
+    time: boolean // Uhrzeit bei Datetime-Feldern
+  }
+  ```
+
+- `auto` richtet sich nach der erkannten Granularität des Felds
+  (`TemporalStatistics.granularity`): Monatsdaten „Jan 2025“,
+  Jahresdaten „2025“, Tagesdaten „1 Jan 2025“
+- Formatter auf Basis von `Intl.DateTimeFormat` mit der Locale aus
+  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.6);
+  Quartale („Q1 2025“) selbst zusammensetzen
+- `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
+  Auto nur die Zeile Format, bei Custom eingerückt Einheit, Monat, Jahr
+  und Uhrzeit
+- Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
+  im `AxisWidget` unter „Type: Date“ statt bisher nichts), Überschrift
+  des Tooltips bei Datums-X, später die Datums-Spalten der Table (3.5)
+- neues Feld, keine Formänderung; nach 3.2, weil der Marks-Slice
+  ebenfalls das `AxisWidget` ändert
+
+### 3.4 Theme-Umschalter in der TopBar (geplant, provisorisch)
+
+Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
+prüfen; wird später wieder entfernt oder durch eine echte Einstellung
+ersetzt (Theme in den Dashboard-Einstellungen, 3.6).
+
+- `IconButton` rechts in der `TopBar` (Sonne/Mond), schaltet
+  `data-theme` am `<html>` zwischen `dark` und `light` um; Standard
+  bleibt `dark` aus `index.html`
+- das Theme als React-State halten (z. B. in `App`), nicht nur am DOM:
+  HTML-Teile folgen den CSS-Variablen von selbst, die Charts lesen das
+  Theme aber nur beim Zeichnen (`readChartTheme` in `EChartCanvas`) und
+  müssen beim Umschalten neu zeichnen
+- keine Persistenz, kein Platz in der `DashboardSpec`, kein Undo
+- schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
+  provisorisch
+
+### 3.5 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
@@ -83,13 +136,13 @@ Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 - `TableInstance` in `DashboardObject`, Registry-Eintrag in
   `objectDefinitions`, Picker-Gruppe „Cards & Table“
 - Format über die Bausteine: Kopfzeile (`TextStyle`, `Fill`), Zellen
-  (`TextStyle`, `NumberFormat`), Zeilen- und Spaltenlinien
+  (`TextStyle`, `NumberFormat`, `DateFormat`), Zeilen- und Spaltenlinien
   (`StrokeStyle`), Zebra-Streifen (`Fill`), Container wie bei Chart und
   Card
 - zu klären: welche Spalten die Table zeigt (alle, Auswahl per Drop),
   und ob sie wie die Card der Selection folgt
 
-### 3.4 Dashboard-Einstellungen (geplant)
+### 3.6 Dashboard-Einstellungen (geplant)
 
 Im Dashboard-Popover der Canvas-Toolbar, undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
@@ -105,12 +158,12 @@ Persistenz festlegen soll:
 - später: `theme` (Palette, Schrift, Hell/Dunkel), `pageSize` (Voraussetzung
   für Zoom), `objectDefaults` (Container-Stil für neue Objekte)
 
-### 3.5 Ask Cevyn ausbauen (geplant)
+### 3.7 Ask Cevyn ausbauen (geplant)
 
 Ziel: Ask Cevyn erstellt eigenständig ganze Dashboards und formatiert
 sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
-3.3 und 3.4, weil die KI nur kann, was es als Action gibt.
+3.5 und 3.6, weil die KI nur kann, was es als Action gibt.
 
 - Action-Schema nur noch einmal beschreiben: Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
@@ -138,7 +191,7 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
   Verschlechterungen bei Prompt-Änderungen zu erkennen; Effort je nach
   Anfrage (ganzes Dashboard höher, kleine Änderungen niedriger)
 
-### 3.6 Unabhängigkeit vom App-Namen (geplant)
+### 3.8 Unabhängigkeit vom App-Namen (geplant)
 
 Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 
@@ -151,7 +204,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - Doku, `AGENTS.md` und `README.md` anpassen
 - der neue Name selbst ist noch offen
 
-### 3.7 Persistenz (geplant)
+### 3.9 Persistenz (geplant)
 
 - `serializeProject()` / `deserializeProject()` über den Workspace State
 - `.cevyn`-Datei (JSON mit Format-Kennung und Version) speichern und
@@ -165,7 +218,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   den Project State, Scroll- und Fokusverhalten beim Laden (siehe
   Abschnitt 7)
 
-### 3.8 Alpha-Infrastruktur und Vollbild (geplant)
+### 3.10 Alpha-Infrastruktur und Vollbild (geplant)
 
 - Docker-Images für Frontend und Backend
 - CI mit GitHub Actions: `npm run format`, `npm run build`,
@@ -232,7 +285,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
 - Text-, Bild- und Vergleichs-Objekte
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
-- Zoom (braucht `pageSize`, siehe 3.4)
+- Zoom (braucht `pageSize`, siehe 3.6)
 
 ### Daten
 
@@ -356,7 +409,7 @@ Entwicklung
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
 - Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
-  verloren; sie gehören in den serialisierbaren Project State (3.7).
+  verloren; sie gehören in den serialisierbaren Project State (3.9).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
   am Tagesrand um einen Tag abweichen.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder
@@ -371,4 +424,4 @@ Entwicklung
 - Große Schrift bei Achsen-Labels kann über den festen Plot-Rand
   (`BASE_GRID`) hinausragen.
 - Das Schema der Cevyn Actions existiert doppelt (Pydantic im Backend,
-  `actionShapes` im Frontend); wird in 3.5 aufgelöst.
+  `actionShapes` im Frontend); wird in 3.7 aufgelöst.
