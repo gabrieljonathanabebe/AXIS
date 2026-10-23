@@ -135,7 +135,10 @@ function EChartCanvas({
   const { result, isLoading, error } = useChartQuery(datasetId, query)
   const highlightQuery = createHighlightQuery(query, selection)
   const { result: highlightResult } = useChartQuery(datasetId, highlightQuery)
-  const pointsQuery = usePointsQuery(datasetId, createPointsQuery(chart))
+  const pointsQuery = usePointsQuery(
+    datasetId,
+    createPointsQuery(chart, selection),
+  )
   const points = pointsQuery.result?.rows ?? EMPTY_POINTS
   const isChartLoading = isLoading || pointsQuery.isLoading
   const chartError = error ?? pointsQuery.error
