@@ -132,7 +132,7 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - passende Tests für die Frontend-Logik, Test-Framework noch zu
   entscheiden
 - das Backend hat pytest-Tests (`uv run pytest`); die CI-Pipeline ist
-  in `docs/ROADMAP.md` (Alpha, 3.8) geplant
+  in `docs/ROADMAP.md` (Alpha, 3.10) geplant
 
 ## Stacked Area für Linien-Charts
 

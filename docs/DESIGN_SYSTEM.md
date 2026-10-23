@@ -1066,7 +1066,7 @@ Bausteine:
 | ------ | ------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | Fläche | Container, Balken, Scatter-Punkt, Pie-Segment, Fläche unter Linie, Hintergründe | `Fill` bzw. `background`, Rahmen als `border`, Effect |
 | Linie  | Linien-Serie, Gridlines, Achsenlinie                                            | `stroke`, Effect                                      |
-| Text   | Titel, Achsenbeschriftung, Datenlabel, Card-Wert                                | `textStyle`, bei Zahlen `numberFormat`                |
+| Text   | Titel, Achsenbeschriftung, Datenlabel, Card-Wert                                | `textStyle`, bei Zahlen `numberFormat`, bei Datum `dateFormat` |
 
 Marks (Balken, Linien, Punkte, Segmente) nehmen ihre Farbe aus der
 Serie bzw. Palette und nutzen die Varianten ohne Farbe (`SeriesFill`,
@@ -1108,12 +1108,14 @@ Chart
 | ------------------ | ------------ | ------------------------------------------------- | ------------------------------------ | --------- |
 | Achsentitel        | Text         | `xAxis.titleStyle`                                | `xAxis.title: { text, textStyle }`   | ○ Name    |
 | Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`         | –                                    | ✓         |
+| Achsenbeschriftung | Datum        | festes Format über `formatDate`                   | `xAxis.labels.dateFormat`            | ○         |
 | Achsenlinie        | Linie        | nur an/aus über `xAxis.visible`                   | `xAxis.line: { visible, stroke }`    | ○         |
 | Gridlines          | Linie        | `xAxis.gridLines.stroke`                          | –                                    | ✓         |
 | Legende            | Text         | `legend.textStyle`                                | –                                    | ✓         |
 | Legende            | Fläche       | –                                                 | `legend.background`, `.border`       | später    |
 | Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`               | Label-Box (Fill, Stroke)             | ✓, später |
 | Tooltip            | Zahl         | `interaction.tooltip.numberFormat` (ohne Control) | –                                    | ✓         |
+| Tooltip            | Datum        | festes Format über `formatDate`                   | `interaction.tooltip.dateFormat`     | ○         |
 | Tooltip            | Text, Fläche | fest im Adapter                                   | `textStyle`, `background`, `border`  | später    |
 | Farbskala          | –            | `colorScale.continuous.startColor`, `.endColor`   | eigene HTML-Farbskala mit Bausteinen | später    |
 
