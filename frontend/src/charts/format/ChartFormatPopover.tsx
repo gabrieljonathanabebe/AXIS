@@ -16,11 +16,12 @@ import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
 import Button from '../../shared/ui/Button'
 import ControlRow from '../../shared/ui/ControlRow'
 import { isRadialChartType } from '../chartDefinitions'
+import { CHART_AXIS_LINE, CHART_GRID_LINES } from '../createChartInstance'
 import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
+import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
-import GridWidget from './GridWidget'
 import LabelsWidget from './LabelsWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
 import LegendWidget from './LegendWidget'
@@ -197,13 +198,29 @@ function getFormatSections(
       const sections: FormatSection[] = [
         {
           content: (
-            <AxisWidget
-              defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
-              orientation={axis}
-              part={isAxisTitle ? 'title' : 'labels'}
-              value={axisAppearance}
-              onChange={(value) => actions.setAppearance(axisElement, value)}
-            />
+            <>
+              <AxisWidget
+                defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
+                orientation={axis}
+                part={isAxisTitle ? 'title' : 'labels'}
+                value={axisAppearance}
+                onChange={(value) => actions.setAppearance(axisElement, value)}
+              />
+              {isAxisTitle ? (
+                <AxisStrokeWidget
+                  defaultColor={CHART_AXIS_LINE.stroke.color}
+                  label="Axis line"
+                  title="Axis line"
+                  value={axisAppearance.line}
+                  onChange={(line) =>
+                    actions.setAppearance(axisElement, {
+                      ...axisAppearance,
+                      line,
+                    })
+                  }
+                />
+              ) : null}
+            </>
           ),
           icon: axis === 'x' ? MoveHorizontal : MoveVertical,
           label: 'Axis',
@@ -212,7 +229,10 @@ function getFormatSections(
       if (isAxisTitle) {
         sections.push({
           content: (
-            <GridWidget
+            <AxisStrokeWidget
+              defaultColor={CHART_GRID_LINES.stroke.color}
+              label="Grid"
+              title="Gridlines"
               value={axisAppearance.gridLines}
               onChange={(gridLines) =>
                 actions.setAppearance(axisElement, {

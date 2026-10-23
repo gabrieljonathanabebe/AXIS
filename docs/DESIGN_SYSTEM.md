@@ -476,7 +476,7 @@ Panel („Chart data“), Dashboard-Einstellungen im Popover der
 Canvas-Toolbar.
 
 Ein Widget repräsentiert ein Feature oder eine logisch
-zusammengehörige Property-Gruppe, z. B. `GridWidget` oder
+zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
 `LegendWidget`. Im Popover ist ein Widget meist ein Abschnitt eines
 Elements.
 
@@ -1015,10 +1015,13 @@ beiden geteilt).
 - `defaultColor` wie bei `TextStyleControls`, hier optional, weil
   Serienlinien keine Color-Zeile haben; die Color-Zeile erscheint nur
   mit Farbe und `defaultColor`
-- genutzt vom Rahmen im `ContainerWidget` („Border width“ …), von den
-  Gridlines im `GridWidget` (Breite 1–4) und von Linien-Marks im
-  `MarkSeriesWidget` (Präfix „Line“, Breite 1–8, ohne Farbe); später
-  Achsenlinie, Bar-Rahmen, Scatter-Rand und Tables
+- genutzt vom Rahmen im `ContainerWidget` („Border width“ …), von
+  Achsenlinie und Gridlines im `AxisStrokeWidget` (Breite 1–4, mit
+  Sichtbarkeit; Titel, `label` und `defaultColor` per Prop, damit ein
+  Widget beide Linien einer Achse bedient), von Linien-Marks im
+  `MarkSeriesWidget` (Präfix „Line“, Breite 1–8, ohne Farbe) und von den
+  Rahmen der Balken, Scatter-Punkte und Pie-Segmente dort (Präfix
+  „Border“, `defaultColor` aus `CHART_MARK_BORDER`); später Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -1033,18 +1036,23 @@ Vorhandene Bausteine:
 
 - `TextStyle` mit `TextStyleControls` (siehe 9j)
 - `StrokeStyle` mit `StrokeStyleControls` (siehe 9k): Container-Rahmen
-  (`ObjectContainer.border`), Gridlines (`GridAppearance.stroke`) und
-  Linien-Marks (`LineAppearance.stroke` als `SeriesStrokeStyle`)
+  (`ObjectContainer.border`), Achsenlinie und Gridlines
+  (`AxisStrokeAppearance.stroke` in `xAxis.line` und
+  `xAxis.gridLines`), Rahmen der Marks (`bar.border`, `scatter.border`,
+  `pie.border`) und Linien-Marks (`LineAppearance.stroke` als
+  `SeriesStrokeStyle`)
 - `NumberFormat` mit `NumberFormatControls` (siehe 9m):
   Achsenbeschriftung (`AxisLabelsAppearance.numberFormat`), Card-Wert,
   Datenlabels und Tooltip (`interaction.tooltip.numberFormat`, ohne
   Control)
 - `Fill` mit `FillControls` (siehe 9n): Fläche unter Linien
-  (`LineAppearance.area`) und Scatter-Punkte (`ScatterAppearance.fill`),
-  beide als `SeriesFill` in der Farbe ihrer Serie; der
-  Container-Hintergrund bleibt `ObjectBackground` mit Presets
-- `Effect` mit `EffectControls` (siehe 9o): Glow auf Linien und Balken
-  (`line.effect`, `bar.effect`) in der Farbe der Serie
+  (`line.area`), Balken (`bar.fill`), Scatter-Punkte (`scatter.fill`)
+  und Pie-Segmente (`pie.fill`), alle als `SeriesFill` in der Farbe
+  ihrer Serie; der Container-Hintergrund bleibt `ObjectBackground` mit
+  Presets
+- `Effect` mit `EffectControls` (siehe 9o): Glow auf allen Marks
+  (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`) in der
+  Farbe der Serie bzw. des Segments
 
 Ein versetzter Schatten kommt später als weitere Variante von `Effect`
 hinzu, z. B. für den Container.
@@ -1062,10 +1070,10 @@ Varianten (`kind`), keine Formänderung.
 Jedes sichtbare Teil hat eine von drei Formen; aus der Form folgen die
 Bausteine:
 
-| Form   | Beispiele                                                                       | Bausteine                                             |
-| ------ | ------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Fläche | Container, Balken, Scatter-Punkt, Pie-Segment, Fläche unter Linie, Hintergründe | `Fill` bzw. `background`, Rahmen als `border`, Effect |
-| Linie  | Linien-Serie, Gridlines, Achsenlinie                                            | `stroke`, Effect                                      |
+| Form   | Beispiele                                                                       | Bausteine                                                      |
+| ------ | ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Fläche | Container, Balken, Scatter-Punkt, Pie-Segment, Fläche unter Linie, Hintergründe | `Fill` bzw. `background`, Rahmen als `border`, Effect          |
+| Linie  | Linien-Serie, Gridlines, Achsenlinie                                            | `stroke`, Effect                                               |
 | Text   | Titel, Achsenbeschriftung, Datenlabel, Card-Wert                                | `textStyle`, bei Zahlen `numberFormat`, bei Datum `dateFormat` |
 
 Marks (Balken, Linien, Punkte, Segmente) nehmen ihre Farbe aus der
@@ -1106,10 +1114,10 @@ Chart
 
 | Teil               | Form         | Ist                                               | Soll                                 | Status    |
 | ------------------ | ------------ | ------------------------------------------------- | ------------------------------------ | --------- |
-| Achsentitel        | Text         | `xAxis.titleStyle`                                | `xAxis.title: { text, textStyle }`   | ○ Name    |
+| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`                  | –                                    | ✓         |
 | Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`         | –                                    | ✓         |
 | Achsenbeschriftung | Datum        | festes Format über `formatDate`                   | `xAxis.labels.dateFormat`            | ○         |
-| Achsenlinie        | Linie        | nur an/aus über `xAxis.visible`                   | `xAxis.line: { visible, stroke }`    | ○         |
+| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                   | –                                    | ✓         |
 | Gridlines          | Linie        | `xAxis.gridLines.stroke`                          | –                                    | ✓         |
 | Legende            | Text         | `legend.textStyle`                                | –                                    | ✓         |
 | Legende            | Fläche       | –                                                 | `legend.background`, `.border`       | später    |
@@ -1121,14 +1129,14 @@ Chart
 
 Marks
 
-| Teil                | Form   | Ist                                                                        | Soll                                                      | Status |
-| ------------------- | ------ | -------------------------------------------------------------------------- | --------------------------------------------------------- | ------ |
-| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`), `line.effect`                         | –                                                         | ✓      |
-| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                                | –                                                         | ✓      |
-| Punkte auf Linie    | Fläche | `line.showSymbol`                                                          | Marker (Form, Größe)                                      | später |
-| Balken              | Fläche | Farbe aus `color` bzw. Palette, `bar.borderRadius`, `.barWidth`, `.effect` | `bar.fill`, `bar.border`                                  | ○      |
-| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.symbol`, `.pointSize`                     | `scatter.border`, `scatter.effect`                        | ○      |
-| Pie-/Donut-Segmente | Fläche | keine Appearance, Radius fest im Adapter                                   | `pie.fill`, `pie.border`, `pie.innerRadius`, `pie.effect` | ○      |
+| Teil                | Form   | Ist                                                                           | Soll                 | Status |
+| ------------------- | ------ | ----------------------------------------------------------------------------- | -------------------- | ------ |
+| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`), `line.effect`                            | –                    | ✓      |
+| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                                   | –                    | ✓      |
+| Punkte auf Linie    | Fläche | `line.showSymbol`                                                             | Marker (Form, Größe) | später |
+| Balken              | Fläche | `bar.fill` (`SeriesFill`), `.border`, `.borderRadius`, `.barWidth`, `.effect` | –                    | ✓      |
+| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.border`, `.effect`, `.symbol`, `.pointSize`  | –                    | ✓      |
+| Pie-/Donut-Segmente | Fläche | `pie.fill` (`SeriesFill`), `.border`, `.innerRadius` (nur Donut), `.effect`   | –                    | ✓      |
 
 Card
 
@@ -1167,8 +1175,12 @@ nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
   die Color-Zeile (`hasFillColor`)
 - `kind` ist heute immer `solid` und hat keine Zeile; mit einer zweiten
   Variante (Verlauf, Muster) kommt eine Zeile „Type“ dazu
-- genutzt von der Fläche unter Linien und den Scatter-Punkten im
-  `MarkSeriesWidget`; beide sind `SeriesFill` und zeigen nur Opacity
+- genutzt von der Fläche unter Linien, den Balken, den Scatter-Punkten
+  und den Pie-Segmenten im `MarkSeriesWidget`; alle sind `SeriesFill`
+  und zeigen nur Opacity
+- bei Balken, Punkten und Segmenten ist die Deckkraft die des ganzen
+  Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen und
+  Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
 
 ## 9o. EffectControls
 
@@ -1185,8 +1197,12 @@ für Screenreader („Line effect“, „Bar glow intensity“).
 - ein erneuter Klick auf die aktive Variante ändert nichts, damit die
   Intensität erhalten bleibt
 - keine Color-Zeile, weil Glow die Farbe der Mark nimmt
-- genutzt von Linien und Balken im `MarkSeriesWidget`, jeweils nach den
-  übrigen Mark-Zeilen
+- genutzt von Linien, Balken, Scatter-Punkten und Pie-Segmenten im
+  `MarkSeriesWidget`, jeweils nach Fill und Border
+- Scatter zeichnet den Glow nur bis 500 Punkte (`MAX_GLOW_POINTS` im
+  Adapter), weil jeder Punkt seinen eigenen Schatten weichzeichnet;
+  darüber bleibt die Einstellung erhalten, ohne zu wirken, und das
+  Control zeigt keinen Hinweis
 
 ## 10. Legend
 

@@ -87,9 +87,10 @@ function ChartItem({
   /** Saves an axis title typed directly on the chart. */
   function commitAxisTitle(axis: AxisTitleEdit['axis'], text: string): void {
     const axisKey = `${axis}Axis` as const
+    const axisAppearance = chart.spec.appearance[axisKey]
     actions.updateChartAppearance(chart.id, axisKey, {
-      ...chart.spec.appearance[axisKey],
-      title: text,
+      ...axisAppearance,
+      title: { ...axisAppearance.title, text },
     })
   }
 
@@ -149,7 +150,7 @@ function ChartItem({
         <InlineTextInput
           className={`chart-axis-title-input is-${axisTitleEdit.axis}-axis`}
           initialValue={
-            chart.spec.appearance[`${axisTitleEdit.axis}Axis`].title
+            chart.spec.appearance[`${axisTitleEdit.axis}Axis`].title.text
           }
           key={axisTitleEdit.axis}
           label={`${axisTitleEdit.axis.toUpperCase()} axis title`}

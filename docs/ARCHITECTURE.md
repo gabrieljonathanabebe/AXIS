@@ -350,9 +350,10 @@ Zahlen oder Datumswerte zeigt, ist ein eigenes Feld
 
 Alle Texte auf der Canvas nutzen denselben Typ `TextStyle` aus
 `src/shared/textStyle.ts` (`color`, `fontSize`, `fontStyle`,
-`fontWeight`). Jedes Text-Element trägt ihn als `textStyle`, die Achse
-zusätzlich als `titleStyle`; Extras wie Ausrichtung, Rotation, Position
-oder Zahlenformat bleiben Felder des Elements.
+`fontWeight`). Jedes Text-Element trägt ihn als `textStyle`, auch der
+Achsentitel (`xAxis.title: { text, textStyle }`, `AxisTitleAppearance`
+als `Pick` aus `ObjectTitleAppearance`); Extras wie Ausrichtung,
+Rotation, Position oder Zahlenformat bleiben Felder des Elements.
 
 - ECharts-Texte (Achsen, Legende, Data Labels) übersetzt
   `createTextStyleOption` im Adapter; HTML-Texte (Titel, Card-Wert,
@@ -368,23 +369,37 @@ oder Zahlenformat bleiben Felder des Elements.
 Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
 `src/shared/strokeStyle.ts` (`color`, `lineStyle`, `opacity`, `width`;
 `LineStyle` liegt ebenfalls dort). Ihn nutzen der Rahmen des Containers
-(`ObjectContainer.border`) und die Gridlines jeder Achse
-(`GridAppearance.stroke`). Linien-Marks tragen `SeriesStrokeStyle`
-(`StrokeStyle` ohne `color`), weil ihre Farbe aus der Serie kommt
-(Palette oder `appearance.color`); `hasStrokeColor` unterscheidet beide.
+(`ObjectContainer.border`), Achsenlinie und Gridlines jeder Achse
+(`xAxis.line` und `xAxis.gridLines`, beide `AxisStrokeAppearance` mit
+`visible` und `stroke`) und die Rahmen der Flächen-Marks (`bar.border`,
+`scatter.border`, `pie.border`, Standard `CHART_MARK_BORDER` mit Breite
+0). Linien-Marks tragen `SeriesStrokeStyle` (`StrokeStyle` ohne
+`color`), weil ihre Farbe aus der Serie kommt (Palette oder
+`appearance.color`); `hasStrokeColor` unterscheidet beide.
 
 - ECharts-Linien übersetzt `createStrokeStyleOption` im Adapter; bei
   Serien setzt der Aufrufer die Serienfarbe und multipliziert die
   Deckkraft mit dem Dimming der Selection
+- Rahmen von Flächen übersetzt `createBorderOption` in `borderColor`,
+  `borderType` und `borderWidth` des `itemStyle`; ECharts kennt dort
+  keine Rahmen-Deckkraft, daher geht `opacity` als Alpha in die Farbe
+  (`color.modifyAlpha`)
+- Achsenlinie und Gridlines folgen der Achse: eine ausgeblendete Achse
+  blendet beide aus, die Ticks hängen nur an der Achse
 - HTML-Umrisse setzt `getStrokeBorderCss`
 
 Flächen nutzen `Fill` aus `src/shared/fill.ts` (`kind: 'solid'`,
 `color`, `opacity`); weitere Varianten wie Verläufe kommen als neue
 `kind` hinzu. Die Fläche unter Linien (`line.area`, mit `areaFill` als
-Sichtbarkeit) und Scatter-Punkte tragen `SeriesFill` ohne Farbe: Jede
-Fläche nimmt die Farbe ihrer Serie (Palette oder `appearance.color`),
-der Adapter setzt sie in `createAggregatedSeriesOption` wie bei der
-Linie. `Fill` mit eigener Farbe hat derzeit keinen Nutzer und bleibt
+Sichtbarkeit), Balken (`bar.fill`), Scatter-Punkte (`scatter.fill`) und
+Pie-Segmente (`pie.fill`) tragen `SeriesFill` ohne Farbe: Jede Fläche
+nimmt die Farbe ihrer Serie bzw. ihres Segments (Palette oder
+`appearance.color`), der Adapter setzt sie wie bei der Linie. Bei
+Balken, Punkten und Segmenten wirkt die Deckkraft als `itemStyle.opacity`
+auf das ganze Element samt Rahmen und Glow; bei Balken multipliziert sie
+sich mit dem Dimming der Selection. Pie und Donut teilen sich `pie`; der
+Innenradius (`pie.innerRadius`, Prozent der Chartgröße) gilt nur beim
+Donut. `Fill` mit eigener Farbe hat derzeit keinen Nutzer und bleibt
 als allgemeiner Typ (`hasFillColor` unterscheidet beide). ECharts übersetzt
 `createFillOption`; eine CSS-Übersetzung folgt mit dem ersten
 HTML-Nutzer. Der Container-Hintergrund bleibt `ObjectBackground`.
@@ -392,16 +407,25 @@ HTML-Nutzer. Der Container-Hintergrund bleibt `ObjectBackground`.
 Effekte nutzen `Effect` aus `src/shared/effect.ts`: `{ kind: 'none' }`
 oder `{ kind: 'glow'; blur }`, ein weichgezeichneter Schatten ohne
 Versatz. Glow hat keine eigene Farbe, er nimmt immer die Farbe der Mark;
-ein versetzter Schatten kommt später als weitere `kind` hinzu. Linien
-und Balken tragen `line.effect` und `bar.effect` (Standard `none`).
+ein versetzter Schatten kommt später als weitere `kind` hinzu. Alle
+Marks tragen ihn: `line.effect`, `bar.effect`, `scatter.effect` und
+`pie.effect` (Standard `none`).
 
 - ECharts übersetzt `createEffectOption` in `shadowBlur` und
   `shadowColor` auf `lineStyle` bzw. `itemStyle`
 - ohne Serienfarbe (kontinuierliche Farbskala, die Visual Map färbt pro
   Wert) bleibt der Glow aus, weil ECharts sonst schwarz zeichnet
 - Basis-Serien, die eine Selection abblendet, leuchten nicht; nur die
-  hervorgehobene Serie leuchtet. Der Format-Fokus setzt nur `opacity`
-  und dimmt den Glow dadurch mit
+  hervorgehobene Serie leuchtet. Beim Scatter sind abgeblendete Punkte
+  einzelne Datenpunkte; ihr eigener `itemStyle` setzt `shadowBlur: 0`.
+  Pie und Donut zeigen bei einer Selection nur die hervorgehobenen
+  Werte. Der Format-Fokus setzt nur `opacity` und dimmt den Glow
+  dadurch mit
+- Pie-Segmente leuchten einzeln in ihrer Palettenfarbe (Glow im
+  `itemStyle` jedes Datenpunkts)
+- Scatter zeichnet den Glow nur bis `MAX_GLOW_POINTS` (500) Punkte im
+  ganzen Chart; darüber gibt der Adapter keine Farbe an
+  `createEffectOption`, die Spec bleibt unverändert
 - der Glow ist im hellen und dunklen Theme gleich stark; `ChartTheme`
   schwächt ihn bewusst nicht ab, damit derselbe Wert gleich wirkt
 
@@ -1553,7 +1577,12 @@ Scatter zeichnet Einzelzeilen statt Gruppen und nutzt deshalb
 `POST /datasets/{id}/points-query`:
 
 - Request: `fields`, die encodierten Felder (x, y, optional size und
-  color), abgeleitet über `createPointsQuery` aus der `ChartInstance`;
+  color) und die Felder, nach denen die aktive Selection filtert;
+  abgeleitet über `createPointsQuery` aus `ChartInstance` und Selection.
+  Der Scatter gleicht seine Punkte im Frontend mit der Selection ab
+  (`isRowInSelection`) und braucht dafür auch die Felder einer Selection
+  aus einem anderen Chart, z. B. die Kategorie eines angeklickten
+  Balkens;
 - Ergebnis: `rows` mit nur diesen Spalten und `total_count` des
   Datensatzes;
 - über `MAX_CHART_POINTS` (2.000) wird gesampelt statt abgeschnitten

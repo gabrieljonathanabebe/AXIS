@@ -11,12 +11,13 @@ import {
 import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
 
 import type { ObjectLayout } from '../objects/types'
+import type { StrokeStyle } from '../shared/strokeStyle'
 import type { TextStyle } from '../shared/textStyle'
 import type {
+  AxisStrokeAppearance,
   ChartInstance,
   ChartSpec,
   ChartType,
-  GridAppearance,
 } from './types'
 
 /** Default look of the texts drawn by ECharts: axes, legend, labels. */
@@ -28,7 +29,7 @@ export const CHART_TEXT_STYLE: TextStyle = {
 }
 
 /** Default gridlines; each axis draws its own. */
-export const CHART_GRID_LINES: GridAppearance = {
+export const CHART_GRID_LINES: AxisStrokeAppearance = {
   stroke: {
     color: { kind: 'token', token: 'gridLine' },
     lineStyle: 'solid',
@@ -36,6 +37,25 @@ export const CHART_GRID_LINES: GridAppearance = {
     width: 1,
   },
   visible: true,
+}
+
+/** Default axis line; each axis draws its own. */
+export const CHART_AXIS_LINE: AxisStrokeAppearance = {
+  stroke: {
+    color: { kind: 'token', token: 'border' },
+    lineStyle: 'solid',
+    opacity: 1,
+    width: 1,
+  },
+  visible: true,
+}
+
+/** Default border of filled marks: bars, points and pie segments; off. */
+export const CHART_MARK_BORDER: StrokeStyle = {
+  color: { kind: 'token', token: 'border' },
+  lineStyle: 'solid',
+  opacity: 1,
+  width: 0,
 }
 
 type CreateChartInstanceParams = {
@@ -75,7 +95,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       title: createDefaultTitle(),
       xAxis: {
         visible: true,
-        title: '',
+        title: { text: '', textStyle: CHART_TEXT_STYLE },
         min: null,
         max: null,
         gridLines: CHART_GRID_LINES,
@@ -86,11 +106,11 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           tickCount: null,
           valueType: 'number',
         },
-        titleStyle: CHART_TEXT_STYLE,
+        line: CHART_AXIS_LINE,
       },
       yAxis: {
         visible: true,
-        title: '',
+        title: { text: '', textStyle: CHART_TEXT_STYLE },
         min: null,
         max: null,
         gridLines: CHART_GRID_LINES,
@@ -101,7 +121,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           tickCount: null,
           valueType: 'number',
         },
-        titleStyle: CHART_TEXT_STYLE,
+        line: CHART_AXIS_LINE,
       },
       legend: {
         visible: true,
@@ -123,6 +143,8 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         textStyle: CHART_TEXT_STYLE,
       },
       scatter: {
+        border: CHART_MARK_BORDER,
+        effect: { kind: 'none' },
         pointSize: 10,
         sizeRange: {
           min: 6,
@@ -143,9 +165,17 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         effect: { kind: 'none' },
       },
       bar: {
+        border: CHART_MARK_BORDER,
         borderRadius: 4,
         barWidth: 24,
         effect: { kind: 'none' },
+        fill: { kind: 'solid', opacity: 1 },
+      },
+      pie: {
+        border: CHART_MARK_BORDER,
+        effect: { kind: 'none' },
+        fill: { kind: 'solid', opacity: 1 },
+        innerRadius: 42,
       },
     },
     interaction: {

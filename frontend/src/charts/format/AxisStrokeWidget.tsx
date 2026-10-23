@@ -1,19 +1,31 @@
 import FormatWidget from '../../shared/ui/FormatWidget'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
-import { CHART_GRID_LINES } from '../createChartInstance'
 
-import type { GridAppearance } from '../types'
+import type { ColorValue } from '../../shared/colorValue'
+import type { AxisStrokeAppearance } from '../types'
 
-type GridWidgetProps = {
-  value: GridAppearance
-  onChange: (value: GridAppearance) => void
+type AxisStrokeWidgetProps = {
+  defaultColor: ColorValue
+  label: string
+  title: string
+  value: AxisStrokeAppearance
+  onChange: (value: AxisStrokeAppearance) => void
 }
 
-/** Edits the gridlines of one axis: width, line style, color and opacity. */
-function GridWidget({ value, onChange }: GridWidgetProps) {
+/**
+ * Edits one line of an axis, its axis line or its gridlines: visibility,
+ * width, line style, color and opacity.
+ */
+function AxisStrokeWidget({
+  defaultColor,
+  label,
+  title,
+  value,
+  onChange,
+}: AxisStrokeWidgetProps) {
   return (
     <FormatWidget
-      title="Gridlines"
+      title={title}
       visibility={{
         visible: value.visible,
         onChange: (visible) => {
@@ -22,8 +34,8 @@ function GridWidget({ value, onChange }: GridWidgetProps) {
       }}
     >
       <StrokeStyleControls
-        defaultColor={CHART_GRID_LINES.stroke.color}
-        label="Grid"
+        defaultColor={defaultColor}
+        label={label}
         maxWidth={4}
         minWidth={1}
         value={value.stroke}
@@ -33,4 +45,4 @@ function GridWidget({ value, onChange }: GridWidgetProps) {
   )
 }
 
-export default GridWidget
+export default AxisStrokeWidget

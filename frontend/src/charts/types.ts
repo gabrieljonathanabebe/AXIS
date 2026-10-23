@@ -72,12 +72,12 @@ export type GroupAggregation = Exclude<Aggregation, 'none'>
 // ===== AXIS ==================================================================
 export type AxisAppearance = {
   visible: boolean
-  title: string
+  title: AxisTitleAppearance
   min: number | null
   max: number | null
-  gridLines: GridAppearance
+  gridLines: AxisStrokeAppearance
   labels: AxisLabelsAppearance
-  titleStyle: TextStyle
+  line: AxisStrokeAppearance
 }
 
 export type AxisLabelsAppearance = {
@@ -87,6 +87,18 @@ export type AxisLabelsAppearance = {
   tickCount: number | null
   valueType: AxisValueType
 }
+
+/** A line an axis draws: its axis line or its gridlines. */
+export type AxisStrokeAppearance = {
+  visible: boolean
+  stroke: StrokeStyle
+}
+
+/** Title of an axis; text and style match the object title. */
+export type AxisTitleAppearance = Pick<
+  ObjectTitleAppearance,
+  'text' | 'textStyle'
+>
 
 export type AxisTitleEdit = {
   axis: 'x' | 'y'
@@ -98,9 +110,11 @@ export type AxisValueType = 'number' | 'date'
 
 // ===== BAR ===================================================================
 export type BarAppearance = {
+  border: StrokeStyle
   borderRadius: number
   barWidth: number
   effect: Effect
+  fill: SeriesFill
 }
 
 // ===== CHART =================================================================
@@ -120,6 +134,7 @@ export type ChartAppearanceSpec = {
   scatter: ScatterAppearance
   line: LineAppearance
   bar: BarAppearance
+  pie: PieAppearance
 }
 
 export type ChartDataSpec = {
@@ -175,7 +190,7 @@ export type ChartInteractionSpec = {
 
 export type ChartMarkKey = keyof Pick<
   ChartAppearanceSpec,
-  'bar' | 'line' | 'scatter'
+  'bar' | 'line' | 'pie' | 'scatter'
 >
 
 export type ChartSpec = {
@@ -201,12 +216,6 @@ export type ColorScaleAppearance = {
     max: number | null
     labels: boolean
   }
-}
-
-// ===== GRID ================================================================
-export type GridAppearance = {
-  visible: boolean
-  stroke: StrokeStyle
 }
 
 // ===== INTERACTION ===========================================================
@@ -249,8 +258,19 @@ export type LineAppearance = {
   effect: Effect
 }
 
+// ===== PIE ===================================================================
+/** Segments of pie and donut charts; the inner radius applies to donuts. */
+export type PieAppearance = {
+  border: StrokeStyle
+  effect: Effect
+  fill: SeriesFill
+  innerRadius: number
+}
+
 // ===== SCATTER ===============================================================
 export type ScatterAppearance = {
+  border: StrokeStyle
+  effect: Effect
   fill: SeriesFill
   pointSize: number
   sizeRange: ScatterSizeRange

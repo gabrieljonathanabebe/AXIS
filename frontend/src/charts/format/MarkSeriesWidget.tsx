@@ -11,7 +11,9 @@ import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Slider from '../../shared/ui/Slider'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 import Toggle from '../../shared/ui/Toggle'
+import { isRadialChartType } from '../chartDefinitions'
 import { categoricalColorPalettes } from '../colorPalettes'
+import { CHART_MARK_BORDER } from '../createChartInstance'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 
 import type { ChartFormatProps, ScatterSymbol } from '../types'
@@ -36,8 +38,8 @@ const scatterSymbolIcons = {
 } satisfies Record<ScatterSymbol, typeof Circle>
 
 /**
- * Edits color or palette and the marks of the chart type: points, lines or
- * bars.
+ * Edits color or palette and the marks of the chart type: points, lines,
+ * bars or pie segments.
  */
 function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
   const { appearance } = chart.spec
@@ -114,6 +116,22 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
             value={appearance.scatter.fill}
             onChange={(fill) => {
               actions.setChartAppearance('scatter', 'fill', fill)
+            }}
+          />
+          <StrokeStyleControls
+            defaultColor={CHART_MARK_BORDER.color}
+            label="Point border"
+            rowLabelPrefix="Border"
+            value={appearance.scatter.border}
+            onChange={(border) => {
+              actions.setChartAppearance('scatter', 'border', border)
+            }}
+          />
+          <EffectControls
+            label="Point"
+            value={appearance.scatter.effect}
+            onChange={(effect) => {
+              actions.setChartAppearance('scatter', 'effect', effect)
             }}
           />
         </>
@@ -202,11 +220,68 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
               }}
             />
           </ControlRow>
+          <FillControls
+            label="Bar fill"
+            value={appearance.bar.fill}
+            onChange={(fill) => {
+              actions.setChartAppearance('bar', 'fill', fill)
+            }}
+          />
+          <StrokeStyleControls
+            defaultColor={CHART_MARK_BORDER.color}
+            label="Bar border"
+            rowLabelPrefix="Border"
+            value={appearance.bar.border}
+            onChange={(border) => {
+              actions.setChartAppearance('bar', 'border', border)
+            }}
+          />
           <EffectControls
             label="Bar"
             value={appearance.bar.effect}
             onChange={(effect) => {
               actions.setChartAppearance('bar', 'effect', effect)
+            }}
+          />
+        </>
+      ) : null}
+      {isRadialChartType(chart.type) ? (
+        <>
+          {chart.type === 'donut' ? (
+            <ControlRow label="Inner radius">
+              <Slider
+                label="Donut inner radius"
+                min={20}
+                max={60}
+                step={2}
+                value={appearance.pie.innerRadius}
+                onValueChange={(innerRadius) => {
+                  actions.setChartAppearance('pie', 'innerRadius', innerRadius)
+                }}
+              />
+            </ControlRow>
+          ) : null}
+          <FillControls
+            label="Segment fill"
+            value={appearance.pie.fill}
+            onChange={(fill) => {
+              actions.setChartAppearance('pie', 'fill', fill)
+            }}
+          />
+          <StrokeStyleControls
+            defaultColor={CHART_MARK_BORDER.color}
+            label="Segment border"
+            rowLabelPrefix="Border"
+            value={appearance.pie.border}
+            onChange={(border) => {
+              actions.setChartAppearance('pie', 'border', border)
+            }}
+          />
+          <EffectControls
+            label="Segment"
+            value={appearance.pie.effect}
+            onChange={(effect) => {
+              actions.setChartAppearance('pie', 'effect', effect)
             }}
           />
         </>

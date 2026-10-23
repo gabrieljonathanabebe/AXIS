@@ -38,40 +38,121 @@ Reihenfolge (jeder Punkt ein eigener Slice oder eine kurze Folge von
 Slices; Abhängigkeiten stehen beim Punkt):
 
 1. Effect (Glow) für Marks – implementiert
-2. Marks vervollständigen – **nächster Slice**
-3. DateFormat
-4. Theme-Umschalter in der TopBar (provisorisch)
-5. Table-Objekt
-6. Dashboard-Einstellungen
-7. Ask Cevyn ausbauen
-8. Unabhängigkeit vom App-Namen
-9. Persistenz
-10. Alpha-Infrastruktur und Vollbild
+2. Marks vervollständigen – implementiert
+3. Format-Popover: Gruppen statt Sections – **nächster Slice**
+4. Legende und Tooltip mit Bausteinen
+5. DateFormat
+6. Theme-Umschalter in der TopBar (provisorisch)
+7. Table-Objekt
+8. Tooltip-Felder
+9. Dashboard-Einstellungen
+10. Ask Cevyn ausbauen
+11. Unabhängigkeit vom App-Namen
+12. Persistenz
+13. Alpha-Infrastruktur und Vollbild
 
 Kleine Lückenfüller zwischen den Slices: der Bug „Datenlabels bei
 Line-Charts fehlen“ (`TODO.md`), einzelne offene Zeilen der Ist/Soll-Liste
 in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.2 Marks vervollständigen (geplant, nächster Slice)
+### Lückenfüller vor 3.3: Paletten stabil erweitern (geplant)
 
-Lücken der Ist/Soll-Liste, die alle Marks betreffen; dieselben
-Bausteine und dasselbe Marks-Popover wie bei Linien und Balken. Effekte
-nutzen `Effect`, `createEffectOption` und `EffectControls` wie dort:
+Kategorie-Paletten haben fünf Farben und wiederholen sich danach: Ab
+der sechsten Kategorie teilen sich zwei Serien eine Farbe, bei Pie und
+Donut liegen Segment 1 und 6 direkt nebeneinander.
 
-- Balken: `bar.fill` (`SeriesFill`), `bar.border` (`StrokeStyle`)
-- Scatter: `scatter.border` (`StrokeStyle`), `scatter.effect` mit
-  Obergrenze (weichgezeichnete Schatten sind bei bis zu 2.000 Punkten
-  teuer)
-- Pie und Donut bekommen erstmals eine Appearance: `pie.fill`,
-  `pie.border`, `pie.innerRadius` (heute fest im Adapter,
-  `createPieChartContent`), `pie.effect`
-- Achsenlinie: `xAxis.line` / `yAxis.line` mit `visible` und `stroke`
-  (heute nur an/aus über `visible`, Stil fest im Adapter)
-- Konsistenz: Die Achse hat `title: string` und `titleStyle`; überall
-  sonst `title: { text, textStyle }` (`ObjectTitleAppearance`) –
-  vereinheitlichen, solange es noch keine gespeicherten Dateien gibt
+- eine Funktion, z. B. `getPaletteColor(palette, index)` in
+  `charts/echarts/resolveColor.ts`, ersetzt
+  `palette[index % palette.length]` in Pie, Scatter und den
+  aggregierten Charts sowie das `color`-Array in `createEChartOption`
+  (Legende)
+- stabil erweitern statt neu verteilen: Die erste Runde bleibt genau
+  die Palette, jede weitere nutzt hellere bzw. dunklere Varianten
+  derselben Farben (`color.lift` aus ECharts); kommt eine Kategorie
+  hinzu, behalten alle übrigen ihre Farbe
+- kein Rahmen-Default bei Pie und Donut als Ersatz; `pie.border`
+  bleibt standardmäßig aus
+- Idee für später: kleine Anteile als „Other“ zusammenfassen
 
-### 3.3 DateFormat (geplant)
+### 3.3 Format-Popover: Gruppen statt Sections (geplant, nächster Slice)
+
+Problem: Das Popover hat drei Ebenen, die nicht sauber getrennt sind.
+Das Element (Dropdown und Regionen) funktioniert. Sections per
+Segmented Control gibt es nur bei manchen Elementen (Axis | Gridlines |
+Zoom, Marks | Labels, Legend | Interaction); sie zeigen jeweils nur
+einen Teil und lassen die Höhe springen. Die Zeilen darin stehen flach
+untereinander, Bausteine und Einzelzeilen sind nicht als Gruppe
+erkennbar.
+
+Beschlossen:
+
+- Gruppen statt Sections: Ein Element zeigt alle seine Gruppen
+  untereinander, kein Segmented Control mehr im Popover.
+- Gruppen-Überschrift klein, in Großbuchstaben, mit Haarlinie
+  dazwischen – im Stil der Sections im Build Panel.
+- Optionale Gruppen haben ihren Schalter rechts in der Überschrift; er
+  ersetzt die erste Zeile „Visible“ bzw. „Enabled“. Der Schalter ist
+  zugleich das Aufklappen: aus = nur die Überschrift, an = die Zeilen.
+  Gruppen ohne Schalter sind immer offen. Keine manuellen
+  Collapsibles.
+- Kurze Zeilen-Labels („Width“ statt „Gridline width“), weil die Gruppe
+  den Kontext gibt; `rowLabelPrefix` wird im Popover kaum noch
+  gebraucht.
+- Feste Reihenfolge in jedem Element: Inhalt → Text → Fill → Stroke →
+  Effect → Zahlen- und Datumsformat → Unterelemente → Verhalten
+  (Interaction, Zoom, Tooltip).
+- Feste Plätze pro Element: Die Reihenfolge steht an genau einer Stelle
+  (z. B. `MARK_GROUP_ORDER`); das Element bzw. der Charttyp füllt nur
+  die Plätze, die es hat (z. B. `getMarkGroups(chart)` liefert
+  `Partial<Record<MarkGroupKey, FormatGroup>>`). Fehlende Plätze fallen
+  weg, statt leer oder deaktiviert zu erscheinen. Der Platz ist fest,
+  der Titel darf zum Charttyp passen (Stroke heißt bei Linien „Line“,
+  sonst „Border“; Fill heißt bei Linien „Area“).
+- Marks: Color → Shape → Fill → Stroke → Effect → Points → Labels
+
+  | Platz  | Scatter                      | Line               | Bar                | Pie / Donut         |
+  | ------ | ---------------------------- | ------------------ | ------------------ | ------------------- |
+  | Color  | Farbe bzw. Palette           | Farbe bzw. Palette | Farbe bzw. Palette | Palette             |
+  | Shape  | Symbol, Größe, Größenbereich | Smooth             | Breite, Radius     | Innenradius (Donut) |
+  | Fill   | Deckkraft                    | Area (Schalter)    | Deckkraft          | Deckkraft           |
+  | Stroke | Border                       | Line               | Border             | Border (Trennlinie) |
+  | Effect | Glow                         | Glow               | Glow               | Glow                |
+  | Points | –                            | Schalter           | –                  | –                   |
+  | Labels | –                            | Labels             | Labels             | Labels              |
+
+- Achse: Title → Labels → Line → Gridlines → Zoom (nur X). Die Elemente
+  „X Axis“ und „X Axis Labels“ bleiben vorerst getrennt.
+- Idee für später, nicht Teil des Slices: eine gemeinsame „X Axis“ mit
+  allen Gruppen; der Klick auf eine Region öffnet das Element und
+  springt zur passenden Gruppe.
+- Technik: `FormatSection[]` → `FormatGroup[]` (`key`, `label`,
+  optionale `visibility`, `content`); `ObjectFormatPopover` rendert die
+  Gruppen untereinander; `FormatWidget` zeigt die Sichtbarkeit in der
+  Überschrift; die Bausteine (`TextStyleControls`,
+  `StrokeStyleControls`, `FillControls`, `EffectControls`,
+  `NumberFormatControls`) bleiben unverändert und liefern weiter nur
+  Zeilen. Die Platz-Zuordnung liegt in `charts/format/`, nicht in
+  `chartDefinitions`; die Registry darf Fähigkeiten liefern (z. B. „hat
+  Fläche“).
+- Popover oben verankert, maximale Höhe 400 px mit scrollendem Inhalt
+  wie bisher.
+- Doku beim Umsetzen: `DESIGN_SYSTEM.md` (Popover-Struktur, Gruppen,
+  feste Reihenfolge), `ARCHITECTURE.md` nur, falls sich
+  Zuständigkeiten ändern.
+
+### 3.4 Legende und Tooltip mit Bausteinen (geplant)
+
+Klein, direkt nach 3.3, damit die neuen Zeilen gleich als Gruppen
+entstehen:
+
+- Legende: Fill (Hintergrund), Stroke (Rahmen), Radius; Text ist da
+- Tooltip: Text, Fill, Stroke, Radius und Zahlenformat
+  (`NumberFormatControls` für `interaction.tooltip.numberFormat`, das
+  heute ausgewertet wird, aber kein Control hat)
+- kein Effect; Standard-Optik unverändert
+- neue Felder, keine Formänderung
+
+### 3.5 DateFormat (geplant)
 
 Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
 es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
@@ -94,22 +175,22 @@ Feb 1, 2025“ auch bei Monatsdaten.
   (`TemporalStatistics.granularity`): Monatsdaten „Jan 2025“,
   Jahresdaten „2025“, Tagesdaten „1 Jan 2025“
 - Formatter auf Basis von `Intl.DateTimeFormat` mit der Locale aus
-  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.6);
+  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.9);
   Quartale („Q1 2025“) selbst zusammensetzen
 - `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
   Auto nur die Zeile Format, bei Custom eingerückt Einheit, Monat, Jahr
   und Uhrzeit
 - Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
   im `AxisWidget` unter „Type: Date“ statt bisher nichts), Überschrift
-  des Tooltips bei Datums-X, später die Datums-Spalten der Table (3.5)
-- neues Feld, keine Formänderung; nach 3.2, weil der Marks-Slice
-  ebenfalls das `AxisWidget` ändert
+  des Tooltips bei Datums-X, später die Datums-Spalten der Table (3.7)
+- neues Feld, keine Formänderung
+- die neuen Zeilen entstehen direkt in der Gruppen-Struktur aus 3.3
 
-### 3.4 Theme-Umschalter in der TopBar (geplant, provisorisch)
+### 3.6 Theme-Umschalter in der TopBar (geplant, provisorisch)
 
 Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
 prüfen; wird später wieder entfernt oder durch eine echte Einstellung
-ersetzt (Theme in den Dashboard-Einstellungen, 3.6).
+ersetzt (Theme in den Dashboard-Einstellungen, 3.9).
 
 - `IconButton` rechts in der `TopBar` (Sonne/Mond), schaltet
   `data-theme` am `<html>` zwischen `dark` und `light` um; Standard
@@ -122,7 +203,7 @@ ersetzt (Theme in den Dashboard-Einstellungen, 3.6).
 - schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
   provisorisch
 
-### 3.5 Table-Objekt (geplant)
+### 3.7 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
@@ -142,7 +223,22 @@ Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 - zu klären: welche Spalten die Table zeigt (alle, Auswahl per Drop),
   und ob sie wie die Card der Selection folgt
 
-### 3.6 Dashboard-Einstellungen (geplant)
+### 3.8 Tooltip-Felder (geplant)
+
+Direkt nach dem Table-Objekt:
+
+- frei wählbare Zusatzfelder im Tooltip (wie in Power BI), z. B.
+  `customers` im Scatter von revenue und profit
+- `interaction.tooltip.fields: string[]` existiert, wird aber nicht
+  genutzt; für aggregierte Charts braucht jedes Feld eine Aggregation,
+  daher Form `{ field, aggregation }[]` – Formänderung, also vor der
+  Persistenz
+- Scatter: Felder zusätzlich in der `points-query`; Bar, Line, Pie:
+  `chart-query` liefert pro Gruppe zusätzliche aggregierte Werte
+- Bedienung über dieselbe Feldliste wie die Spaltenauswahl der Table
+  (Felder ziehen, sortieren, entfernen, Aggregation)
+
+### 3.9 Dashboard-Einstellungen (geplant)
 
 Im Dashboard-Popover der Canvas-Toolbar, undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
@@ -158,12 +254,12 @@ Persistenz festlegen soll:
 - später: `theme` (Palette, Schrift, Hell/Dunkel), `pageSize` (Voraussetzung
   für Zoom), `objectDefaults` (Container-Stil für neue Objekte)
 
-### 3.7 Ask Cevyn ausbauen (geplant)
+### 3.10 Ask Cevyn ausbauen (geplant)
 
 Ziel: Ask Cevyn erstellt eigenständig ganze Dashboards und formatiert
 sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
-3.5 und 3.6, weil die KI nur kann, was es als Action gibt.
+3.7 und 3.9, weil die KI nur kann, was es als Action gibt.
 
 - Action-Schema nur noch einmal beschreiben: Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
@@ -191,7 +287,7 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
   Verschlechterungen bei Prompt-Änderungen zu erkennen; Effort je nach
   Anfrage (ganzes Dashboard höher, kleine Änderungen niedriger)
 
-### 3.8 Unabhängigkeit vom App-Namen (geplant)
+### 3.11 Unabhängigkeit vom App-Namen (geplant)
 
 Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 
@@ -204,7 +300,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - Doku, `AGENTS.md` und `README.md` anpassen
 - der neue Name selbst ist noch offen
 
-### 3.9 Persistenz (geplant)
+### 3.12 Persistenz (geplant)
 
 - `serializeProject()` / `deserializeProject()` über den Workspace State
 - `.cevyn`-Datei (JSON mit Format-Kennung und Version) speichern und
@@ -218,7 +314,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   den Project State, Scroll- und Fokusverhalten beim Laden (siehe
   Abschnitt 7)
 
-### 3.10 Alpha-Infrastruktur und Vollbild (geplant)
+### 3.13 Alpha-Infrastruktur und Vollbild (geplant)
 
 - Docker-Images für Frontend und Backend
 - CI mit GitHub Actions: `npm run format`, `npm run build`,
@@ -285,7 +381,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
 - Text-, Bild- und Vergleichs-Objekte
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
-- Zoom (braucht `pageSize`, siehe 3.6)
+- Zoom (braucht `pageSize`, siehe 3.9)
 
 ### Daten
 
@@ -355,7 +451,8 @@ Visualisierung und Canvas
 - Multi-Object-Canvas: `DashboardObject` (Chart, Card) mit Frame und
   Content, Grid-Layout, Move, Resize, Duplicate, Delete, Tastatur
 - Cross-Highlighting über eine globale Selection (Klick und Brush), auch
-  für Cards mit Selection-Label
+  für Cards mit Selection-Label; der Scatter lädt die Felder einer
+  fremden Selection mit, um seine Punkte abzugleichen
 - Undo/Redo mit Coalescing, Command-Registry mit Shortcuts und
   Hover-Titeln
 - Cards mit Feld per Drop, Aggregation, Zahlenformat
@@ -374,8 +471,13 @@ Style-Bausteine und Farben
 
 - `TextStyle`, `StrokeStyle`, `NumberFormat`, `Fill`/`SeriesFill` mit
   je einer `…Controls`-Komponente
-- `Effect` mit `EffectControls`: Glow (None/Glow, Intensity) für Linien
-  und Balken in der Serienfarbe; abgeblendete Serien leuchten nicht
+- `Effect` mit `EffectControls`: Glow (None/Glow, Intensity) für alle
+  Marks in der Serienfarbe; abgeblendete Serien und Punkte leuchten
+  nicht, Scatter ab 500 Punkten ohne Glow
+- alle Marks mit Fill, Border und Effect (Balken, Scatter-Punkte, erstmals
+  eine Appearance für Pie und Donut mit Innenradius); Achsenlinie mit
+  `StrokeStyle`; Achsentitel als `title: { text, textStyle }` wie
+  überall
 - `ColorValue` mit Theme-Tokens (Text, Muted, Accent, Grid line,
   Border, Inactive, Chart 1–5), Paletten als `ColorValue[]`, Farbauswahl
   je Einsatzort mit Default-Feld; Flächen unter Linien in der
@@ -409,7 +511,7 @@ Entwicklung
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
 - Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
-  verloren; sie gehören in den serialisierbaren Project State (3.9).
+  verloren; sie gehören in den serialisierbaren Project State (3.12).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
   am Tagesrand um einen Tag abweichen.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder
@@ -424,4 +526,4 @@ Entwicklung
 - Große Schrift bei Achsen-Labels kann über den festen Plot-Rand
   (`BASE_GRID`) hinausragen.
 - Das Schema der Cevyn Actions existiert doppelt (Pydantic im Backend,
-  `actionShapes` im Frontend); wird in 3.7 aufgelöst.
+  `actionShapes` im Frontend); wird in 3.10 aufgelöst.

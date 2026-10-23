@@ -38,6 +38,23 @@ function getCategoryLabelInterval(
 }
 
 /**
+ * Creates the line of one axis. Like the gridlines, it follows the axis: a
+ * hidden axis hides its line too.
+ * @param axis Appearance of the axis.
+ * @param theme Chart theme that resolves the line color.
+ * @returns Axis line option of the axis.
+ */
+function createAxisLineOption(
+  axis: AxisAppearance,
+  theme: ChartTheme,
+): XAxisComponentOption['axisLine'] {
+  return {
+    lineStyle: createStrokeStyleOption(axis.line.stroke, theme),
+    show: axis.visible && axis.line.visible,
+  }
+}
+
+/**
  * Creates the gridlines of one axis. They follow the axis: a hidden axis
  * hides its gridlines too.
  * @param axis Appearance of the axis.
@@ -78,19 +95,20 @@ export function createAxesOptions({
         rotate: appearance.xAxis.labels.rotation,
         show: appearance.xAxis.visible,
       },
-      axisLine: {
-        show: appearance.xAxis.visible,
-      },
+      axisLine: createAxisLineOption(appearance.xAxis, theme),
       axisTick: {
         show: appearance.xAxis.visible,
       },
       data: isCategoryXAxis ? categories : undefined,
       max: appearance.xAxis.max ?? undefined,
       min: appearance.xAxis.min ?? undefined,
-      name: appearance.xAxis.title.trim() || encoding.x || '',
+      name: appearance.xAxis.title.text.trim() || encoding.x || '',
       nameGap: 32,
       nameLocation: 'middle',
-      nameTextStyle: createTextStyleOption(appearance.xAxis.titleStyle, theme),
+      nameTextStyle: createTextStyleOption(
+        appearance.xAxis.title.textStyle,
+        theme,
+      ),
       show: appearance.xAxis.visible,
       splitLine: createSplitLineOption(appearance.xAxis, theme),
       splitNumber: isCategoryXAxis
@@ -106,18 +124,19 @@ export function createAxesOptions({
         rotate: appearance.yAxis.labels.rotation,
         show: appearance.yAxis.visible,
       },
-      axisLine: {
-        show: appearance.yAxis.visible,
-      },
+      axisLine: createAxisLineOption(appearance.yAxis, theme),
       axisTick: {
         show: appearance.yAxis.visible,
       },
       max: appearance.yAxis.max ?? undefined,
       min: appearance.yAxis.min ?? undefined,
-      name: appearance.yAxis.title.trim() || valueLabel || '',
+      name: appearance.yAxis.title.text.trim() || valueLabel || '',
       nameGap: 48,
       nameLocation: 'middle',
-      nameTextStyle: createTextStyleOption(appearance.yAxis.titleStyle, theme),
+      nameTextStyle: createTextStyleOption(
+        appearance.yAxis.title.textStyle,
+        theme,
+      ),
       show: appearance.yAxis.visible,
       splitLine: createSplitLineOption(appearance.yAxis, theme),
       splitNumber: appearance.yAxis.labels.tickCount ?? undefined,

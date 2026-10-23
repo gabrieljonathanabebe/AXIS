@@ -22,20 +22,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   und ohne Selection (Labels der Basis-Serie sind bei Selection bewusst
   aus)
 
-## Optik der Control-Rows im Format-Popover
-
-- Aussehen der Zeilen (`ControlRow`) im Format-Popover überarbeiten
-- Einrückung der abhängigen Unteroptionen
-  (`.format-widget-subproperties`, `--indent-nested`) überarbeiten,
-  z. B. bei Currency und Decimals in `NumberFormatControls`
-- Idee: Zeilen eines Abschnitts nach Baustein gruppieren (Text, Fill,
-  Stroke, Number format) mit kleinen Gruppen-Überschriften; die
-  Fill-Gruppe der Marks zeigt die Farb- bzw. Palettenzeile zusammen mit
-  `FillControls`, obwohl die Farbe in der Spec getrennt bleibt;
-  Überschriften nur bei mindestens zwei Gruppen in einem Abschnitt
-- eigener Slice nach „Generische Style-Bausteine“; konkrete Wünsche
-  zu Beginn des Slices klären
-
 ## Chart-Zusammenfassung zum ausgewählten Chart
 
 - eine kompakte Karte zum ausgewählten Chart; ursprünglich über den
@@ -103,16 +89,6 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   Rand der Canvas, per Shortcut und kurz nach einer Aktion
 - im späteren Präsentationsmodus ganz ausgeblendet
 
-## Control für das Tooltip-Werteformat
-
-- `interaction.tooltip.numberFormat` (`NumberFormat`) wird
-  ausgewertet, hat aber kein Control
-- `auto` übernimmt das ganze Format der Y-Achse; ein expliziter Stil
-  überschreibt es samt Währung, Nachkommastellen, Präfix und Suffix
-- Control im Element „Tooltip“ des Format-Popovers ergänzen
-  (`TooltipWidget`) über `NumberFormatControls` wie bei den
-  Datenlabels
-
 ## Cards mit Text-Werten
 
 - Cards sollen auch kategorische Werte zeigen, z. B. Spieler- oder
@@ -132,7 +108,7 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - passende Tests für die Frontend-Logik, Test-Framework noch zu
   entscheiden
 - das Backend hat pytest-Tests (`uv run pytest`); die CI-Pipeline ist
-  in `docs/ROADMAP.md` (Alpha, 3.10) geplant
+  in `docs/ROADMAP.md` (Alpha, 3.13) geplant
 
 ## Stacked Area für Linien-Charts
 

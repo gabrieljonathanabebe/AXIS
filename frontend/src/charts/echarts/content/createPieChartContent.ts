@@ -1,5 +1,8 @@
 import { isRadialChartType } from '../../chartDefinitions'
+import { createEffectOption } from '../createEffectOption'
+import { createFillOption } from '../createFillOption'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
+import { createBorderOption } from '../createStrokeStyleOption'
 import { resolvePalette } from '../resolveColor'
 
 import type { PieSeriesOption } from 'echarts'
@@ -22,6 +25,12 @@ function getPieCenter(legend: LegendAppearance): [string, string] {
 }
 
 // ===== FUNCTION ==============================================================
+/**
+ * Builds the single series of a pie or donut chart. Every segment takes its
+ * palette color and glows in it; fill opacity and border apply to all.
+ * @param context Spec, theme, query results and selection of the chart.
+ * @returns Pie series; radial charts have no axes.
+ */
 export function createPieChartContent(
   context: ChartContentContext,
 ): ChartContent {
@@ -33,6 +42,7 @@ export function createPieChartContent(
   const { chartType, highlightResult, queryResult, selection, spec, theme } =
     context
   const label = createSeriesLabelOption(spec.appearance.labels, theme)
+  const { pie } = spec.appearance
   const palette = resolvePalette(
     spec.appearance.colorScale.categorical.palette,
     theme,
@@ -46,9 +56,10 @@ export function createPieChartContent(
     }
     const name = point.x ?? 'No category'
     const colorIndex = Math.max(categories.indexOf(name), 0)
+    const color = palette[colorIndex % palette.length]
     return [
       {
-        itemStyle: { color: palette[colorIndex % palette.length] },
+        itemStyle: { ...createEffectOption(pie.effect, color), color },
         name,
         value: point.value,
       },
@@ -59,6 +70,10 @@ export function createPieChartContent(
     avoidLabelOverlap: true,
     center: getPieCenter(spec.appearance.legend),
     data,
+    itemStyle: {
+      ...createFillOption(pie.fill, theme),
+      ...createBorderOption(pie.border, theme),
+    },
     label: {
       ...label,
       formatter: '{d}%',
@@ -66,7 +81,7 @@ export function createPieChartContent(
         spec.appearance.labels.position === 'inside' ? 'inside' : 'outside',
     },
     percentPrecision: 0,
-    radius: chartType === 'donut' ? ['42%', '68%'] : [0, '68%'],
+    radius: chartType === 'donut' ? [`${pie.innerRadius}%`, '68%'] : [0, '68%'],
     stillShowZeroSum: false,
     type: 'pie',
   }

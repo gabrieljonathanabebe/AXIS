@@ -4,7 +4,10 @@ import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
 } from '../createSeriesLabelOption'
-import { createStrokeStyleOption } from '../createStrokeStyleOption'
+import {
+  createBorderOption,
+  createStrokeStyleOption,
+} from '../createStrokeStyleOption'
 import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
 
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
@@ -112,10 +115,12 @@ export function createAggregatedSeriesOption({
       : undefined,
     id,
     itemStyle: {
+      ...createFillOption(appearance.bar.fill, theme),
+      ...createBorderOption(appearance.bar.border, theme),
       ...createEffectOption(appearance.bar.effect, glowColor),
       borderRadius: appearance.bar.borderRadius,
       color,
-      opacity,
+      opacity: appearance.bar.fill.opacity * (opacity ?? 1),
     },
     label,
     name: name ?? undefined,

@@ -23,7 +23,7 @@ function createAxisFocus(
   const isAxisFormatted = formattedElement === `${axis}Axis`
   const areLabelsFormatted = formattedElement === `${axis}AxisLabels`
   const textGlow = { textShadowBlur: FOCUS_GLOW_BLUR, textShadowColor: color }
-  const lineGlow = { shadowBlur: FOCUS_GLOW_BLUR, shadowColor: color, width: 2 }
+  const lineGlow = { shadowBlur: FOCUS_GLOW_BLUR, shadowColor: color }
   return {
     axisLabel: areLabelsFormatted ? textGlow : FOCUS_DIMMED_STYLE,
     axisLine: { lineStyle: isAxisFormatted ? lineGlow : FOCUS_DIMMED_STYLE },

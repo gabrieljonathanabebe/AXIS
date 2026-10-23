@@ -52,7 +52,7 @@ function AxisWidget({
   onChange,
 }: AxisWidgetProps) {
   const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
-  const { labels, titleStyle } = value
+  const { labels } = value
   const tickMode: TickMode = labels.tickCount === null ? 'auto' : 'custom'
   const showsTitle = part !== 'labels'
   const showsLabels = part !== 'title'
@@ -75,13 +75,10 @@ function AxisWidget({
           <ControlRow label="Title">
             <TextInput
               label={`${title} title`}
-              value={value.title}
+              value={value.title.text}
               placeholder={defaultTitle || 'Automatic'}
-              onValueChange={(axisTitle) => {
-                onChange({
-                  ...value,
-                  title: axisTitle,
-                })
+              onValueChange={(text) => {
+                onChange({ ...value, title: { ...value.title, text } })
               }}
             />
           </ControlRow>
@@ -89,8 +86,10 @@ function AxisWidget({
             defaultColor={CHART_TEXT_STYLE.color}
             label={`${title} title`}
             rowLabelPrefix="Title"
-            value={titleStyle}
-            onChange={(style) => onChange({ ...value, titleStyle: style })}
+            value={value.title.textStyle}
+            onChange={(textStyle) =>
+              onChange({ ...value, title: { ...value.title, textStyle } })
+            }
           />
         </>
       ) : null}

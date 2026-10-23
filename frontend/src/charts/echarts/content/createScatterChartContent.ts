@@ -2,12 +2,14 @@ import { isRowInSelection } from '../../../workspace/dataSelection'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { createAxesOptions } from '../createAxesOptions'
+import { createEffectOption } from '../createEffectOption'
 import { createFillOption } from '../createFillOption'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
 } from '../createSeriesLabelOption'
+import { createBorderOption } from '../createStrokeStyleOption'
 import { resolveColor, resolvePalette } from '../resolveColor'
 import { DIMMED_OPACITY } from './selectionStyle'
 
@@ -19,18 +21,26 @@ import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
 type ScatterData = Array<{
-  itemStyle: { opacity: number } | undefined
+  itemStyle: { opacity: number; shadowBlur: number } | undefined
   value: DataValue[]
 }>
 
 type CreateScatterSeriesParams = {
   appearance: ChartAppearanceSpec
+  canGlow: boolean
   data: ScatterData
   itemColor: string | undefined
   name?: string
   sizeFieldName?: string
   theme: ChartTheme
 }
+
+// ===== CONSTANTS =============================================================
+/**
+ * Most points a scatter chart draws with a glow: every point blurs its own
+ * shadow, which slows drawing, hover and brushing.
+ */
+const MAX_GLOW_POINTS = 500
 
 // ===== HELPER ================================================================
 function getValue(row: DataRow, fieldName?: string): DataValue {
@@ -42,10 +52,13 @@ function getValue(row: DataRow, fieldName?: string): DataValue {
 
 /**
  * Creates one scatter series; with a categorical color, one per category.
- * @returns Scatter series with fill, labels, symbol and size.
+ * @param params Appearance, points and color of the series, and whether the
+ *   chart is small enough for a glow.
+ * @returns Scatter series with fill, border, glow, labels, symbol and size.
  */
 function createScatterSeries({
   appearance,
+  canGlow,
   data,
   itemColor,
   name,
@@ -60,6 +73,11 @@ function createScatterSeries({
     },
     itemStyle: {
       ...createFillOption(appearance.scatter.fill, theme),
+      ...createBorderOption(appearance.scatter.border, theme),
+      ...createEffectOption(
+        appearance.scatter.effect,
+        canGlow ? itemColor : undefined,
+      ),
       color: itemColor,
     },
     label: createSeriesLabelOption(
@@ -90,11 +108,11 @@ export function createScatterChartContent(
     dataset.fields,
   )
   const rows = points
-
+  const canGlow = rows.length <= MAX_GLOW_POINTS
   const data = rows.map((row) => ({
     itemStyle: isRowInSelection(row, selection)
       ? undefined
-      : { opacity: DIMMED_OPACITY },
+      : { opacity: DIMMED_OPACITY, shadowBlur: 0 },
     value: [
       getValue(row, encoding.x),
       getValue(row, encoding.y),
@@ -130,6 +148,7 @@ export function createScatterChartContent(
       })
       return createScatterSeries({
         appearance,
+        canGlow,
         data: seriesData,
         itemColor: palette[index % palette.length],
         name,
@@ -141,6 +160,7 @@ export function createScatterChartContent(
     series = [
       createScatterSeries({
         appearance,
+        canGlow,
         data,
         itemColor: colorFieldName
           ? undefined
