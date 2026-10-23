@@ -1,12 +1,12 @@
-import { CARD_VALUE_TEXT_STYLE } from './createCardInstance'
+import { getAggregationOptions } from '../charts/aggregations'
 import ControlRow from '../shared/ui/ControlRow'
 import NumberFormatControls from '../shared/ui/NumberFormatControls'
-import { getAggregationOptions } from '../charts/aggregations'
 import SelectControl from '../shared/ui/SelectControl'
 import TextStyleControls from '../shared/ui/TextStyleControls'
+import { CARD_VALUE_TEXT_STYLE } from './createCardInstance'
 
-import type { CardValueAppearance } from './types'
 import type { GroupAggregation } from '../charts/types'
+import type { CardValueAppearance } from './types'
 
 // ===== TYPES =================================================================
 type CardValueWidgetProps = {

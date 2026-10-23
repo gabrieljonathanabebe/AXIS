@@ -1,7 +1,7 @@
 import { getColorCss } from './colorValue'
 
-import type { ColorValue } from './colorValue'
 import type { CSSProperties } from 'react'
+import type { ColorValue } from './colorValue'
 
 // ===== TYPES =================================================================
 /** Where a text or a group of items sits along its line. */

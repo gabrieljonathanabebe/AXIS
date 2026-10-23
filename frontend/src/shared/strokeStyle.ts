@@ -1,7 +1,7 @@
 import { getColorCss } from './colorValue'
 
-import type { ColorValue } from './colorValue'
 import type { CSSProperties } from 'react'
+import type { ColorValue } from './colorValue'
 
 // ===== TYPES =================================================================
 /** How a line is dashed; ECharts and CSS both know these values. */

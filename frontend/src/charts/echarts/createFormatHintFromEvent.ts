@@ -1,9 +1,8 @@
-import type { ECElementEvent } from 'echarts'
-
 import { getElementRect } from './getElementRect'
 
-import type { ChartFormatElement } from '../types'
+import type { ECElementEvent } from 'echarts'
 import type { ElementRect } from '../../objects/types'
+import type { ChartFormatElement } from '../types'
 
 // ===== TYPES =================================================================
 /** A format element under the pointer and its bounds inside the canvas. */

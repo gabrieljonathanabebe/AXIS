@@ -1,5 +1,5 @@
-import { Ellipsis } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
+import { Ellipsis } from 'lucide-react'
 
 import WidgetButton from '../shared/ui/WidgetButton'
 import { getGroupPickerOptions } from './objectDefinitions'

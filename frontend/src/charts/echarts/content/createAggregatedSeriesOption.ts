@@ -1,7 +1,3 @@
-import type { BarSeriesOption, LineSeriesOption } from 'echarts'
-
-import type { ChartAppearanceSpec } from '../../types'
-import type { ChartTheme } from '../chartTheme'
 import { createFillOption } from '../createFillOption'
 import {
   createLabelNumberFormatter,
@@ -9,6 +5,10 @@ import {
 } from '../createSeriesLabelOption'
 import { createStrokeStyleOption } from '../createStrokeStyleOption'
 import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
+
+import type { BarSeriesOption, LineSeriesOption } from 'echarts'
+import type { ChartAppearanceSpec } from '../../types'
+import type { ChartTheme } from '../chartTheme'
 
 // ===== TYPES =================================================================
 export type AggregatedSeriesData = Array<

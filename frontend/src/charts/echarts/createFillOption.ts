@@ -1,8 +1,8 @@
 import { hasFillColor } from '../../shared/fill'
 import { resolveColor } from './resolveColor'
 
-import type { ChartTheme } from './chartTheme'
 import type { Fill, SeriesFill } from '../../shared/fill'
+import type { ChartTheme } from './chartTheme'
 
 /** Fill fields of ECharts, e.g. an area style or the item style of points. */
 type FillOption = {

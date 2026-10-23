@@ -1,6 +1,6 @@
 import ControlRow from '../shared/ui/ControlRow'
-import Slider from '../shared/ui/Slider'
 import FormatWidget from '../shared/ui/FormatWidget'
+import Slider from '../shared/ui/Slider'
 
 import type { DashboardAnimation } from './types'
 

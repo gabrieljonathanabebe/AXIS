@@ -1,9 +1,9 @@
-import { CHART_TEXT_STYLE } from '../createChartInstance'
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import SelectControl from '../../shared/ui/SelectControl'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
+import { CHART_TEXT_STYLE } from '../createChartInstance'
 
 import type { LabelPosition, LabelsAppearance } from '../types'
 

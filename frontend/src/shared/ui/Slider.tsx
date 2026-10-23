@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react'
-
 import { useDraftValue } from '../useDraftValue'
+
+import type { CSSProperties } from 'react'
 
 type SliderProps = {
   label: string

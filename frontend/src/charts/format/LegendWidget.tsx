@@ -1,12 +1,13 @@
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 
 import AlignmentControl from '../../shared/ui/AlignmentControl'
-import { CHART_TEXT_STYLE } from '../createChartInstance'
 import ControlRow from '../../shared/ui/ControlRow'
-import Slider from '../../shared/ui/Slider'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
-import TextStyleControls from '../../shared/ui/TextStyleControls'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import SegmentedControl from '../../shared/ui/SegmentedControl'
+import Slider from '../../shared/ui/Slider'
+import TextStyleControls from '../../shared/ui/TextStyleControls'
+import { CHART_TEXT_STYLE } from '../createChartInstance'
+
 import type { LegendAppearance } from '../types'
 
 type LegendWidgetProps = {

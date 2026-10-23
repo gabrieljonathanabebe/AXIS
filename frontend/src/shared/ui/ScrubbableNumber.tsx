@@ -1,9 +1,10 @@
 import { GripVertical } from 'lucide-react'
-import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useRef } from 'react'
 
-import Button from './Button'
 import { useDraftValue } from '../useDraftValue'
+import Button from './Button'
+
+import type { PointerEvent as ReactPointerEvent } from 'react'
 
 type ScrubbableNumberProps = {
   label: string

@@ -1,17 +1,18 @@
 import { LayoutDashboard } from 'lucide-react'
 
 import AskCevynBar from '../ai/AskCevynBar'
-import ChartGrid from './ChartGrid'
 import CommandButton from '../app/CommandButton'
-import DashboardSettingsPopover from './DashboardSettingsPopover'
 import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
+import ChartGrid from './ChartGrid'
+import DashboardSettingsPopover from './DashboardSettingsPopover'
+
 import type { AskCevynState } from '../ai/useAskCevyn'
-import type { DataField, Dataset } from '../datasets/types'
-import type { CanvasActions, DashboardSpec, DataSelection } from './types'
-import type { DashboardObject, FormatTarget } from '../objects/types'
 import type { WorkspaceCommands } from '../app/types'
+import type { DataField, Dataset } from '../datasets/types'
+import type { DashboardObject, FormatTarget } from '../objects/types'
+import type { CanvasActions, DashboardSpec, DataSelection } from './types'
 
 type CanvasPanelProps = {
   actions: CanvasActions

@@ -1,10 +1,14 @@
 import { Calendar, CaseUpper, Hash, IdCard } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 
 import { getSemanticRole } from './semanticRoles'
 
-import type { DataField, FieldProfile, SemanticRoleOverrides } from './types'
-import type { SemanticRole } from './types'
+import type { LucideIcon } from 'lucide-react'
+import type {
+  DataField,
+  FieldProfile,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from './types'
 
 // ===== TYPES =================================================================
 export type FieldGroupKey = 'dimensions' | 'identifiers' | 'measures' | 'time'

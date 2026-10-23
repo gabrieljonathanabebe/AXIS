@@ -1,4 +1,5 @@
 import { formatNumber } from '../shared/format/formatNumber'
+
 import type { ChartFilter } from '../charts/chartsApi'
 import type { DataRow } from '../datasets/types'
 import type { DataSelection, SelectionFilter } from './types'

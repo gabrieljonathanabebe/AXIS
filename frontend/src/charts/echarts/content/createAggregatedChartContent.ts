@@ -1,17 +1,15 @@
-import type { ChartQueryPoint } from '../../chartsApi'
-import { createAxesOptions } from '../createAxesOptions'
-import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
-import {
-  createAggregatedSeriesOption,
-  type AggregatedSeriesData,
-} from './createAggregatedSeriesOption'
 import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
-import { DIMMED_OPACITY } from './selectionStyle'
+import { createAxesOptions } from '../createAxesOptions'
+import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
 import { resolveColor, resolvePalette } from '../resolveColor'
+import { createAggregatedSeriesOption } from './createAggregatedSeriesOption'
+import { DIMMED_OPACITY } from './selectionStyle'
 
+import type { ChartQueryPoint } from '../../chartsApi'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
+import type { AggregatedSeriesData } from './createAggregatedSeriesOption'
 
 // ===== HELPERS ===============================================================
 function createSeriesData(

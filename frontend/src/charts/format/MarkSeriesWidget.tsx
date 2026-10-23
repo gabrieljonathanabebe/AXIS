@@ -1,20 +1,19 @@
 import { Circle, Diamond, Square, Triangle } from 'lucide-react'
 
-import { categoricalColorPalettes } from '../colorPalettes'
 import ColorControl from '../../shared/ui/ColorControl'
-import ControlRow from '../../shared/ui/ControlRow'
 import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
+import ControlRow from '../../shared/ui/ControlRow'
 import FillControls from '../../shared/ui/FillControls'
-import { getColorEncodingMode } from '../getColorEncodingMode'
+import FormatWidget from '../../shared/ui/FormatWidget'
 import PaletteControl from '../../shared/ui/PaletteControl'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Slider from '../../shared/ui/Slider'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 import Toggle from '../../shared/ui/Toggle'
-import FormatWidget from '../../shared/ui/FormatWidget'
+import { categoricalColorPalettes } from '../colorPalettes'
+import { getColorEncodingMode } from '../getColorEncodingMode'
 
-import type { ChartFormatProps } from '../types'
-import type { ScatterSymbol } from '../types'
+import type { ChartFormatProps, ScatterSymbol } from '../types'
 
 type MarkSeriesWidgetProps = Pick<
   ChartFormatProps,

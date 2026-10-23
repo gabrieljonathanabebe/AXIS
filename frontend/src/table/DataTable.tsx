@@ -1,10 +1,9 @@
-import { LoaderCircle, Rows3, SearchX, TriangleAlert } from 'lucide-react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { LoaderCircle, Rows3, SearchX, TriangleAlert } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 import { getSemanticRole } from '../datasets/semanticRoles'
 import EmptyState from '../shared/ui/EmptyState'
-import type { EmptyStateProps } from '../shared/ui/EmptyState'
 import DataTableColumnHeader from './DataTableColumnHeader'
 import DataTableRow from './DataTableRow'
 import DataTableToolbar from './DataTableToolbar'
@@ -17,6 +16,7 @@ import type {
   DatasetProfile,
   SemanticRoleOverrides,
 } from '../datasets/types'
+import type { EmptyStateProps } from '../shared/ui/EmptyState'
 import type { TableFilter } from './tableApi'
 import type { DataTableColumn, TableSort } from './types'
 import type { TableRows } from './useTableRows'

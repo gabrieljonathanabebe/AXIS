@@ -1,5 +1,4 @@
 import type { ElementEvent } from 'echarts'
-
 import type { ElementRect } from '../../objects/types'
 
 // ===== TYPES =================================================================

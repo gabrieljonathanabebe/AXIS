@@ -1,8 +1,8 @@
 import AlignmentControl from '../shared/ui/AlignmentControl'
 import ControlRow from '../shared/ui/ControlRow'
+import FormatWidget from '../shared/ui/FormatWidget'
 import TextInput from '../shared/ui/TextInput'
 import TextStyleControls from '../shared/ui/TextStyleControls'
-import FormatWidget from '../shared/ui/FormatWidget'
 import { TITLE_TEXT_STYLE } from './objectDefaults'
 
 import type { ObjectTitleAppearance } from './types'

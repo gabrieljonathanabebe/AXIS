@@ -49,7 +49,9 @@ def build_input_schema(request: AiCommandRequest) -> dict[str, Any]:
     schema = CevynActionBatch.model_json_schema()
     field_names = [field.name for field in request.fields]
     if field_names:
-        for encoding in schema["$defs"]["ChartEncoding"]["properties"].values():
+        for encoding in schema["$defs"]["ChartEncoding"][
+            "properties"
+        ].values():
             encoding["enum"] = field_names
     return schema
 
@@ -144,7 +146,11 @@ def find_field_name(
 ) -> str | None:
     """Return the first field with the given role, or None."""
     return next(
-        (field.name for field in request.fields if field.semantic_role == role),
+        (
+            field.name
+            for field in request.fields
+            if field.semantic_role == role
+        ),
         None,
     )
 

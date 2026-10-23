@@ -10,28 +10,27 @@ import {
   ZoomIn,
 } from 'lucide-react'
 
-import AxisWidget from './AxisWidget'
-import Button from '../../shared/ui/Button'
-import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
-import ColorScaleWidget from './ColorScaleWidget'
 import ContainerWidget from '../../objects/ContainerWidget'
+import ObjectFormatPopover from '../../objects/ObjectFormatPopover'
+import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
+import Button from '../../shared/ui/Button'
 import ControlRow from '../../shared/ui/ControlRow'
+import { isRadialChartType } from '../chartDefinitions'
+import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
+import { getFormatElements } from '../getFormatElements'
+import AxisWidget from './AxisWidget'
+import ColorScaleWidget from './ColorScaleWidget'
 import GridWidget from './GridWidget'
 import LabelsWidget from './LabelsWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
 import LegendWidget from './LegendWidget'
 import MarkSeriesWidget from './MarkSeriesWidget'
-import ObjectFormatPopover from '../../objects/ObjectFormatPopover'
 import TooltipWidget from './TooltipWidget'
 import ZoomWidget from './ZoomWidget'
-import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
-import { getFormatElements } from '../getFormatElements'
-import { isRadialChartType } from '../chartDefinitions'
 
-import type { ChartFormatElement } from '../types'
-import type { ChartFormatProps } from '../types'
 import type { FormatSection } from '../../objects/ObjectFormatPopover'
 import type { FormatTarget } from '../../objects/types'
+import type { ChartFormatElement, ChartFormatProps } from '../types'
 
 // ===== TYPES =================================================================
 type ChartFormatPopoverProps = ChartFormatProps & {

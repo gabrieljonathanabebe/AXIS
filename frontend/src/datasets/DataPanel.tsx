@@ -1,17 +1,21 @@
 import { FileSpreadsheet, LoaderCircle, TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 
-import DatasetProfileView from './DatasetProfileView'
-import DataTable from '../table/DataTable'
 import EmptyState from '../shared/ui/EmptyState'
-import type { EmptyStateProps } from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import SegmentedControl from '../shared/ui/SegmentedControl'
+import DataTable from '../table/DataTable'
+import DatasetProfileView from './DatasetProfileView'
 
-import type { Dataset, DatasetProfile, SemanticRoleOverrides } from './types'
-import type { SemanticRole } from './types'
-import type { DataView } from './types'
+import type { EmptyStateProps } from '../shared/ui/EmptyState'
 import type { OptionItem } from '../shared/ui/OptionsMenu'
+import type {
+  Dataset,
+  DatasetProfile,
+  DataView,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from './types'
 
 // ===== TYPES =================================================================
 type DataPanelProps = {

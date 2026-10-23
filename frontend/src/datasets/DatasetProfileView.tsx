@@ -5,17 +5,20 @@ import {
   FileSpreadsheet,
   Rows3,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
 
-import { groupFieldProfiles } from './fieldGroups'
 import { formatNumber, formatPercent } from '../shared/format/formatNumber'
-import { getSemanticRole } from './semanticRoles'
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
 import StatWidget from '../shared/ui/StatWidget'
+import { groupFieldProfiles } from './fieldGroups'
 import FieldProfileWidget from './FieldProfileWidget'
+import { getSemanticRole } from './semanticRoles'
 
-import type { DatasetProfile, SemanticRoleOverrides } from './types'
-import type { SemanticRole } from './types'
+import type { ReactNode } from 'react'
+import type {
+  DatasetProfile,
+  SemanticRole,
+  SemanticRoleOverrides,
+} from './types'
 
 // ===== TYPES =================================================================
 type DatasetProfileViewProps = {

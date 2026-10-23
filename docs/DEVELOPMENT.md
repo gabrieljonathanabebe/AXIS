@@ -215,6 +215,8 @@ und `README.md`.
 Nach relevanten Backend-Änderungen, im Ordner `backend/`:
 
 ```bash
+uv run ruff format .
+uv run ruff check --fix .
 uv run pytest
 ```
 
@@ -433,6 +435,14 @@ Datei oder Funktion bereits ohne sie unmittelbar erfassbar ist.
 
 Ziel der Dokumentation im Code: Mensch und KI erfassen eine Funktion,
 ohne ihren Rumpf lesen zu müssen.
+
+Import-Reihenfolge wird automatisch gesetzt, nicht von Hand:
+
+- Frontend: `@ianvs/prettier-plugin-sort-imports` über `npm run format`;
+  Gruppen: externe Pakete, eigene Module, `import type` zuletzt,
+  jeweils alphabetisch, getrennt durch eine Leerzeile
+- Backend: Ruff (`ruff check --fix`, Regel `I`); Gruppen:
+  Standardbibliothek, externe Pakete, `app.…`
 
 Python: jede Funktion erhält einen Docstring statt loser Kommentare
 darüber. Ein Satz, was die Funktion tut; unter `Args:` eine Zeile

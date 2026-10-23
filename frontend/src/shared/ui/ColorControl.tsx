@@ -1,12 +1,11 @@
-import { HexColorInput, HexColorPicker } from 'react-colorful'
 import { useState } from 'react'
+import { HexColorInput, HexColorPicker } from 'react-colorful'
 
-import type { CSSProperties, ReactNode } from 'react'
-
+import { getColorCss, getColorValueKey, normalizeHex } from '../colorValue'
 import Button from './Button'
 import Popover from './Popover'
-import { getColorCss, getColorValueKey, normalizeHex } from '../colorValue'
 
+import type { CSSProperties, ReactNode } from 'react'
 import type { ColorValue } from '../colorValue'
 
 /**

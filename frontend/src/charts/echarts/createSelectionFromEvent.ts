@@ -1,11 +1,10 @@
-import type { ECElementEvent } from 'echarts'
-
-import type { ChartInstance } from '../types'
-import type { DataField } from '../../datasets/types'
-import { getColorEncodingMode } from '../getColorEncodingMode'
 import { isPointsChartType } from '../chartDefinitions'
+import { getColorEncodingMode } from '../getColorEncodingMode'
 
+import type { ECElementEvent } from 'echarts'
+import type { DataField } from '../../datasets/types'
 import type { DataSelection, SelectionFilter } from '../../workspace/types'
+import type { ChartInstance } from '../types'
 
 // ===== TYPES =================================================================
 type BrushEndEvent = {

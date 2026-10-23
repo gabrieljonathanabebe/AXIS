@@ -1,5 +1,5 @@
-import Button from './Button'
 import { getColorCss, getColorValueKey } from '../colorValue'
+import Button from './Button'
 
 import type { ColorValue } from '../colorValue'
 

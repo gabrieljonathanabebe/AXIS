@@ -1,8 +1,8 @@
 import { formatDate } from '../shared/format/formatDate'
 import { formatCompactNumber } from '../shared/format/formatNumber'
 
-import type { FieldProfile } from './types'
 import type { HistogramBar } from '../shared/ui/MiniHistogram'
+import type { FieldProfile } from './types'
 
 // ===== HELPERS ===============================================================
 function createRangeBars(

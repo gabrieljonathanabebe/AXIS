@@ -1,9 +1,9 @@
-import type { GridComponentOption, SeriesOption } from 'echarts'
-
-import { LEGEND_EDGE_OFFSETS } from './createLegendOption'
 import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
-import type { LegendAppearance } from '../types'
+import { LEGEND_EDGE_OFFSETS } from './createLegendOption'
+
+import type { GridComponentOption, SeriesOption } from 'echarts'
 import type { TextStyle } from '../../shared/textStyle'
+import type { LegendAppearance } from '../types'
 
 // ===== TYPES =================================================================
 type CreateGridOptionParams = {

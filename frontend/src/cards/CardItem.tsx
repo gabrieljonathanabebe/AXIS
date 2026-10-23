@@ -1,28 +1,28 @@
-import DropSlot from '../workspace/DropSlot'
-import EditableText from '../shared/ui/EditableText'
-import { getTextStyleCss } from '../shared/textStyle'
 import { getRectInFrame } from '../objects/elementRect'
 import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
-import { getDefaultCardTitle } from './getCardTitle'
-import { useCardQuery } from './useCardQuery'
 import {
   createNumberFormatter,
   formatCompactNumber,
 } from '../shared/format/formatNumber'
+import { getTextStyleCss } from '../shared/textStyle'
+import EditableText from '../shared/ui/EditableText'
 import {
   formatSelectionLabel,
   getSelectionQueryFilters,
 } from '../workspace/dataSelection'
+import DropSlot from '../workspace/DropSlot'
+import { getDefaultCardTitle } from './getCardTitle'
+import { useCardQuery } from './useCardQuery'
 
+import type { DataField } from '../datasets/types'
+import type { ShowFormatHint } from '../objects/ObjectFrame'
+import type { ObjectFormatElement } from '../objects/types'
 import type { CanvasActions, DataSelection } from '../workspace/types'
 import type {
   CardFormatElement,
   CardInstance,
   CardValueAppearance,
 } from './types'
-import type { DataField } from '../datasets/types'
-import type { ObjectFormatElement } from '../objects/types'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
 
 // ===== TYPES =================================================================
 type CardItemProps = {

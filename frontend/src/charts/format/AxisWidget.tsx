@@ -1,4 +1,3 @@
-import { CHART_TEXT_STYLE } from '../createChartInstance'
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
@@ -7,6 +6,7 @@ import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import TextInput from '../../shared/ui/TextInput'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
+import { CHART_TEXT_STYLE } from '../createChartInstance'
 
 import type { AxisAppearance, AxisValueType } from '../types'
 

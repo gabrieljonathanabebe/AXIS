@@ -10,8 +10,8 @@ import {
   workspaceHistoryReducer,
 } from './workspaceHistory'
 
-import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type { CevynActionResult } from '../actions/types'
+import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type { ChartAppearanceSpec } from '../charts/types'
 import type { Dataset } from '../datasets/types'
 import type {

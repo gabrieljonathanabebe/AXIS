@@ -1,10 +1,10 @@
 import { useQuery } from '../shared/useQuery'
 import { fetchCardQuery } from './cardsApi'
 
-import type { CardQueryResult } from './cardsApi'
-import type { CardDataSpec } from './types'
 import type { ChartFilter } from '../charts/chartsApi'
 import type { Query } from '../shared/useQuery'
+import type { CardQueryResult } from './cardsApi'
+import type { CardDataSpec } from './types'
 
 /**
  * Loads the value of a card whenever its data spec or filters change.

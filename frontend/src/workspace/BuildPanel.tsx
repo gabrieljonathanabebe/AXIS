@@ -1,23 +1,23 @@
 import { Blocks, Columns3, FolderOpen, Plus, Waypoints } from 'lucide-react'
 
 import AggregationWidget from '../charts/data/AggregationWidget'
-import Button from '../shared/ui/Button'
-import CollapsibleSection from '../shared/ui/CollapsibleSection'
+import EncodingsWidget from '../charts/data/EncodingsWidget'
 import DatasetCard from '../datasets/DatasetCard'
 import { DEMO_DATASET_ID } from '../datasets/datasetsApi'
-import EncodingsWidget from '../charts/data/EncodingsWidget'
 import FieldList from '../datasets/FieldList'
-import ObjectPicker from '../objects/ObjectPicker'
 import { objectGroups } from '../objects/objectDefinitions'
+import ObjectPicker from '../objects/ObjectPicker'
+import Button from '../shared/ui/Button'
+import CollapsibleSection from '../shared/ui/CollapsibleSection'
 import Panel from '../shared/ui/Panel'
+
+import type { ChartActions, ChartInstance } from '../charts/types'
+import type { DatasetSummary } from '../datasets/datasetsApi'
 import type {
   Dataset,
   DatasetProfile,
   SemanticRoleOverrides,
 } from '../datasets/types'
-
-import type { ChartActions, ChartInstance } from '../charts/types'
-import type { DatasetSummary } from '../datasets/datasetsApi'
 import type { ObjectTemplate } from '../objects/types'
 
 type BuildPanelProps = {

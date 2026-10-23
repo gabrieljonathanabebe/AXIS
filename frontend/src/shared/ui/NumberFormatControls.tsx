@@ -1,10 +1,10 @@
+import { CURRENCY_OPTIONS, VALUE_FORMAT_OPTIONS } from '../format/valueFormats'
 import ControlRow from './ControlRow'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 import SelectControl from './SelectControl'
 import TextInput from './TextInput'
 import Toggle from './Toggle'
-import { CURRENCY_OPTIONS, VALUE_FORMAT_OPTIONS } from '../format/valueFormats'
 
 import type { NumberFormat } from '../format/valueFormats'
 

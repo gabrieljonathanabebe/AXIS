@@ -1,8 +1,8 @@
 import { isPointsChartType } from './chartDefinitions'
 import { getValueLabel } from './getEffectiveAggregation'
 
-import type { ChartInstance } from './types'
 import type { DataField } from '../datasets/types'
+import type { ChartInstance } from './types'
 
 export function getDefaultChartTitle(
   chart: ChartInstance,

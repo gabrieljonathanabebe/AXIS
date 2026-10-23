@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from 'react'
 import { chartDefinitionList } from '../charts/chartDefinitions'
 import { postAiCommand } from './aiApi'
 
-import type { AiChartContext, AiChartRule } from './aiApi'
-import type { ChartDefinition } from '../charts/chartDefinitions'
 import type { CevynActionError, CevynActionResult } from '../actions/types'
+import type { ChartDefinition } from '../charts/chartDefinitions'
 import type { ChartInstance } from '../charts/types'
 import type { Dataset } from '../datasets/types'
+import type { AiChartContext, AiChartRule } from './aiApi'
 
 // ===== TYPES =================================================================
 type UseAskCevynParams = {

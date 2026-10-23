@@ -2,9 +2,9 @@ import { formatCompactNumber } from '../../shared/format/formatNumber'
 import { getNumericDomain } from './getNumericDomain'
 import { resolveColor } from './resolveColor'
 
-import type { ChartTheme } from './chartTheme'
-import type { ColorScaleAppearance } from '../types'
 import type { ContinuousVisualMapComponentOption } from 'echarts'
+import type { ColorScaleAppearance } from '../types'
+import type { ChartTheme } from './chartTheme'
 
 type CreateContinuousColorVisualMapParams = {
   appearance: ColorScaleAppearance['continuous']

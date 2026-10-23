@@ -1,6 +1,6 @@
 import ControlRow from '../../shared/ui/ControlRow'
-import SelectControl from '../../shared/ui/SelectControl'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import SelectControl from '../../shared/ui/SelectControl'
 
 import type { ChartInteractionSpec } from '../types'
 

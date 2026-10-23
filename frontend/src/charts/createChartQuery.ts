@@ -1,14 +1,14 @@
+import { getSelectionQueryFilters } from '../workspace/dataSelection'
 import { hasAggregatedColor, isPointsChartType } from './chartDefinitions'
 import {
   getEffectiveAggregation,
   getValueField,
 } from './getEffectiveAggregation'
-import { getSelectionQueryFilters } from '../workspace/dataSelection'
 
-import type { ChartQueryRequest, PointsQueryRequest } from './chartsApi'
-import type { ChartInstance } from './types'
 import type { DataField } from '../datasets/types'
 import type { DataSelection } from '../workspace/types'
+import type { ChartQueryRequest, PointsQueryRequest } from './chartsApi'
+import type { ChartInstance } from './types'
 
 export function createChartQuery(
   chart: ChartInstance,

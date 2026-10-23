@@ -1,11 +1,11 @@
 import { resolveColor } from './resolveColor'
 
-import type { ChartTheme } from './chartTheme'
 import type {
   LineStyle,
   SeriesStrokeStyle,
   StrokeStyle,
 } from '../../shared/strokeStyle'
+import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 /** Line fields that gridlines and series lines share. */

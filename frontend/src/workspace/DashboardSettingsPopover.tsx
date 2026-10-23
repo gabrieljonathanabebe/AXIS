@@ -1,11 +1,11 @@
 import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 
-import AnimationWidget from './AnimationWidget'
 import ControlRow from '../shared/ui/ControlRow'
 import IconButton from '../shared/ui/IconButton'
 import Popover from '../shared/ui/Popover'
 import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
+import AnimationWidget from './AnimationWidget'
 
 import type { CanvasActions, DashboardSpec } from './types'
 

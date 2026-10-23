@@ -1,8 +1,8 @@
-import type { PieSeriesOption } from 'echarts'
-
 import { isRadialChartType } from '../../chartDefinitions'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { resolvePalette } from '../resolveColor'
+
+import type { PieSeriesOption } from 'echarts'
 import type { LegendAppearance } from '../../types'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 

@@ -1,13 +1,13 @@
-import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
+import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
-import { getObjectDefinition } from './objectDefinitions'
-import { getRectStyle } from './elementRect'
-import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import { getColorCss } from '../shared/colorValue'
 import { getStrokeBorderCss } from '../shared/strokeStyle'
+import { moveLayout, resizeLayout } from '../workspace/chartLayout'
+import { getRectStyle } from './elementRect'
+import { getObjectDefinition } from './objectDefinitions'
 
 import type {
   CSSProperties,

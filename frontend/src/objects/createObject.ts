@@ -1,5 +1,5 @@
-import { createChartInstance } from '../charts/createChartInstance'
 import { createCardInstance } from '../cards/createCardInstance'
+import { createChartInstance } from '../charts/createChartInstance'
 import { findFreeLayout } from '../workspace/chartLayout'
 import { getObjectDefinition } from './objectDefinitions'
 

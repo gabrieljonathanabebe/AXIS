@@ -1,7 +1,7 @@
 import { createDefaultChartSpec } from './createChartInstance'
 
-import type { ChartActions } from './types'
 import type { WorkspaceAction } from '../workspace/types'
+import type { ChartActions } from './types'
 
 // ===== TYPES =================================================================
 type ChartActionsParams = {

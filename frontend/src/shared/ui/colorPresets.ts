@@ -1,7 +1,7 @@
 import { getColorValueKey } from '../colorValue'
 
-import type { ColorPreset } from './ColorControl'
 import type { ColorValue } from '../colorValue'
+import type { ColorPreset } from './ColorControl'
 
 // ===== CONSTANTS =============================================================
 /** Theme colors a text or line offers next to its own default. */

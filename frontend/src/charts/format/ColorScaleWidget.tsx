@@ -6,8 +6,8 @@ import {
 } from 'lucide-react'
 
 import ControlRow from '../../shared/ui/ControlRow'
-import GradientControl from '../../shared/ui/GradientControl'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import GradientControl from '../../shared/ui/GradientControl'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Toggle from '../../shared/ui/Toggle'

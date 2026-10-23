@@ -2,6 +2,7 @@ import { createAxisLabelFormatter } from './createAxisLabelFormatter'
 import { createStrokeStyleOption } from './createStrokeStyleOption'
 import { createTextStyleOption } from './createTextStyleOption'
 
+import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 import type {
   AxisAppearance,
   ChartAppearanceSpec,
@@ -9,7 +10,6 @@ import type {
   ChartType,
 } from '../types'
 import type { ChartTheme } from './chartTheme'
-import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 
 // ===== TYPES =================================================================
 type CreateAxesOptionsParams = {

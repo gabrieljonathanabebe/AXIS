@@ -1,6 +1,6 @@
-import type { ObjectContainer, ObjectTitleAppearance } from './types'
 import type { StrokeStyle } from '../shared/strokeStyle'
 import type { TextStyle } from '../shared/textStyle'
+import type { ObjectContainer, ObjectTitleAppearance } from './types'
 
 // ===== CONSTANTS =============================================================
 /** Default look of an object title, of charts and cards alike. */

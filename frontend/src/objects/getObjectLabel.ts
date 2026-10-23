@@ -1,8 +1,8 @@
-import { getChartTitle } from '../charts/getChartTitle'
 import { getCardTitle } from '../cards/getCardTitle'
+import { getChartTitle } from '../charts/getChartTitle'
 
-import type { DashboardObject } from './types'
 import type { DataField } from '../datasets/types'
+import type { DashboardObject } from './types'
 
 /**
  * Names an object on the canvas for screen readers, after its title.

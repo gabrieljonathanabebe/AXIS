@@ -1,4 +1,4 @@
-import type { ColorValue } from '../shared/colorValue'
+import type { DataField } from '../datasets/types'
 import type {
   ContainerFormatElement,
   DashboardObjectBase,
@@ -6,11 +6,11 @@ import type {
   ObjectTitleAppearance,
   SetContainer,
 } from '../objects/types'
-import type { DataField } from '../datasets/types'
+import type { ColorValue } from '../shared/colorValue'
 import type { SeriesFill } from '../shared/fill'
-import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 import type { NumberFormat } from '../shared/format/valueFormats'
 import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
+import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 
 // ===== ACTIONS ===============================================================
 export type SetAggregation = <TKey extends ChartAggregationKey>(

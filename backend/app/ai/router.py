@@ -2,8 +2,8 @@ from anthropic import AnthropicError
 from fastapi import APIRouter, HTTPException
 
 from app.ai import ai_commands
-from app.datasets.dependencies import StoredDatasetDep
 from app.ai.models import AiCommandRequest, AiCommandResult
+from app.datasets.dependencies import StoredDatasetDep
 
 router = APIRouter(prefix="/datasets/{dataset_id}", tags=["ai"])
 

@@ -1,4 +1,5 @@
 import { initialWorkspaceState, workspaceReducer } from './workspaceReducer'
+
 import type {
   WorkspaceAction,
   WorkspaceHistoryAction,

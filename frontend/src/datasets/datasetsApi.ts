@@ -1,5 +1,6 @@
-import type { DataField, DatasetProfile } from './types'
 import { get, post } from '../shared/api/client'
+
+import type { DataField, DatasetProfile } from './types'
 
 export const DEMO_DATASET_ID = 'demo'
 

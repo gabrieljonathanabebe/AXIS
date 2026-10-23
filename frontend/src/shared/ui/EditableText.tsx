@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import type { PointerEvent } from 'react'
 
 import InlineTextInput from './InlineTextInput'
+
+import type { PointerEvent } from 'react'
 
 type EditableTextProps = {
   label: string

@@ -1,5 +1,5 @@
-import SegmentedControl from './SegmentedControl'
 import { FONT_WEIGHT_VALUES } from '../textStyle'
+import SegmentedControl from './SegmentedControl'
 
 import type { FontWeight } from '../textStyle'
 

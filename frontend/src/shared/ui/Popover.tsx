@@ -15,13 +15,13 @@ import {
   useInteractions,
   useRole,
 } from '@floating-ui/react'
-import { useLayoutEffect } from 'react'
 import { X } from 'lucide-react'
+import { useLayoutEffect } from 'react'
+
+import IconButton from './IconButton'
 
 import type { Placement, VirtualElement } from '@floating-ui/react'
 import type { ReactNode, RefCallback } from 'react'
-
-import IconButton from './IconButton'
 
 type PopoverRole = 'dialog' | 'listbox'
 

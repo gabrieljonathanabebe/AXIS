@@ -1,8 +1,8 @@
 import ColorControl from './ColorControl'
-import ControlRow from './ControlRow'
 import { createStyleColorPresets } from './colorPresets'
-import { getRowLabel } from './getRowLabel'
+import ControlRow from './ControlRow'
 import FontWeightControl from './FontWeightControl'
+import { getRowLabel } from './getRowLabel'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 

@@ -1,9 +1,6 @@
-import type { ScatterSeriesOption } from 'echarts'
-
-import type { ChartAppearanceSpec } from '../../types'
-import type { ChartTheme } from '../chartTheme'
-import type { DataRow, DataValue } from '../../../datasets/types'
-
+import { isRowInSelection } from '../../../workspace/dataSelection'
+import { getColorEncodingMode } from '../../getColorEncodingMode'
+import { getValueLabel } from '../../getEffectiveAggregation'
 import { createAxesOptions } from '../createAxesOptions'
 import { createFillOption } from '../createFillOption'
 import { createScatterVisualMaps } from '../createScatterVisualMaps'
@@ -11,11 +8,13 @@ import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
 } from '../createSeriesLabelOption'
-import { DIMMED_OPACITY } from './selectionStyle'
-import { getColorEncodingMode } from '../../getColorEncodingMode'
-import { getValueLabel } from '../../getEffectiveAggregation'
-import { isRowInSelection } from '../../../workspace/dataSelection'
 import { resolveColor, resolvePalette } from '../resolveColor'
+import { DIMMED_OPACITY } from './selectionStyle'
+
+import type { ScatterSeriesOption } from 'echarts'
+import type { DataRow, DataValue } from '../../../datasets/types'
+import type { ChartAppearanceSpec } from '../../types'
+import type { ChartTheme } from '../chartTheme'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================

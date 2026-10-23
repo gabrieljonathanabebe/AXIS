@@ -1,5 +1,16 @@
 {
   "printWidth": 80,
   "singleQuote": true,
-  "semi": false
+  "semi": false,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "<BUILTIN_MODULES>",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^[.]",
+    "",
+    "<TYPES>",
+    "<TYPES>^[.]"
+  ],
+  "importOrderTypeScriptVersion": "5.0.0"
 }

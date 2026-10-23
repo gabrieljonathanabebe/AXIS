@@ -1,4 +1,6 @@
 import { getChartDefinition } from '../charts/chartDefinitions'
+import { findFreeLayout, findNeighborObjectId } from './chartLayout'
+
 import type { CardInstance } from '../cards/types'
 import type {
   ChartEncoding,
@@ -6,9 +8,7 @@ import type {
   ChartSpec,
   ChartType,
 } from '../charts/types'
-
 import type { DashboardObject } from '../objects/types'
-import { findFreeLayout, findNeighborObjectId } from './chartLayout'
 import type { WorkspaceAction, WorkspaceState } from './types'
 
 // ===== TYPES =================================================================

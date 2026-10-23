@@ -1,6 +1,6 @@
 import ControlRow from '../../shared/ui/ControlRow'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import SegmentedControl from '../../shared/ui/SegmentedControl'
 
 import type { ChartInteractionSpec, TooltipTrigger } from '../types'
 

@@ -1,11 +1,12 @@
-import { Search } from 'lucide-react'
 import { useDraggable } from '@dnd-kit/core'
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 
-import { groupFields } from './fieldGroups'
 import Chip from '../shared/ui/Chip'
 import CollapsibleSection from '../shared/ui/CollapsibleSection'
 import TextInput from '../shared/ui/TextInput'
+import { groupFields } from './fieldGroups'
+
 import type { DataField, FieldProfile, SemanticRoleOverrides } from './types'
 
 type FieldListProps = {

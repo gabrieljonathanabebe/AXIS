@@ -1,5 +1,4 @@
 import type { ECharts } from 'echarts'
-
 import type { ChartFormatElement } from '../types'
 
 // ===== TYPES =================================================================

@@ -1,17 +1,17 @@
 import ColorControl from '../shared/ui/ColorControl'
-import { CONTAINER_BORDER } from './objectDefaults'
 import ControlRow from '../shared/ui/ControlRow'
+import FormatWidget from '../shared/ui/FormatWidget'
 import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
 import Slider from '../shared/ui/Slider'
 import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
-import FormatWidget from '../shared/ui/FormatWidget'
+import { CONTAINER_BORDER } from './objectDefaults'
 
-import type { ColorPreset } from '../shared/ui/ColorControl'
 import type { ColorValue } from '../shared/colorValue'
+import type { ColorPreset } from '../shared/ui/ColorControl'
 import type {
-  ObjectContainer,
   ObjectBackground,
   ObjectBackgroundPreset,
+  ObjectContainer,
   SetContainer,
 } from './types'
 

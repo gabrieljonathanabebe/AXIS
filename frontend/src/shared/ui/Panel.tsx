@@ -1,8 +1,9 @@
 import { PanelLeftClose, PanelRightClose } from 'lucide-react'
-import type { ReactNode } from 'react'
 
 import IconBadge from './IconBadge'
 import IconButton from './IconButton'
+
+import type { ReactNode } from 'react'
 
 type PanelSide = 'start' | 'end'
 

@@ -1,5 +1,4 @@
 import type { CSSProperties } from 'react'
-
 import type { ElementRect } from './types'
 
 /**

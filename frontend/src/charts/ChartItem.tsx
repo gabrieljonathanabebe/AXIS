@@ -1,28 +1,24 @@
 import { useState } from 'react'
 
+import { getRectInFrame, getRectStyle } from '../objects/elementRect'
+import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
+import { getTextStyleCss } from '../shared/textStyle'
+import EditableText from '../shared/ui/EditableText'
+import InlineTextInput from '../shared/ui/InlineTextInput'
+import { getChartDefinition } from './chartDefinitions'
+import EChartCanvas from './EChartCanvas'
+import EncodingDropSlots from './EncodingDropSlots'
+import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
+
+import type { CSSProperties } from 'react'
+import type { DataField, Dataset } from '../datasets/types'
+import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type {
   CanvasActions,
   DashboardAnimation,
   DataSelection,
 } from '../workspace/types'
-
-import type { AxisTitleEdit, ChartFormatElement } from './types'
-
-import EChartCanvas from './EChartCanvas'
-import EditableText from '../shared/ui/EditableText'
-import EncodingDropSlots from './EncodingDropSlots'
-import InlineTextInput from '../shared/ui/InlineTextInput'
-import { getChartDefinition } from './chartDefinitions'
-import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
-import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
-import { getRectInFrame, getRectStyle } from '../objects/elementRect'
-import { getTextStyleCss } from '../shared/textStyle'
-
-import type { CSSProperties } from 'react'
-import type { ChartInstance } from './types'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
-
-import type { DataField, Dataset } from '../datasets/types'
+import type { AxisTitleEdit, ChartFormatElement, ChartInstance } from './types'
 
 type ChartItemProps = {
   actions: CanvasActions

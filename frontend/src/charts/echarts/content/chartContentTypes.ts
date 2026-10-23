@@ -1,10 +1,9 @@
 import type { EChartsOption } from 'echarts'
-
+import type { DataRow, Dataset } from '../../../datasets/types'
+import type { DataSelection } from '../../../workspace/types'
 import type { ChartQueryResult } from '../../chartsApi'
 import type { ChartSpec, ChartType } from '../../types'
 import type { ChartTheme } from '../chartTheme'
-import type { DataRow, Dataset } from '../../../datasets/types'
-import type { DataSelection } from '../../../workspace/types'
 
 // ===== TYPES =================================================================
 export type ChartContent = {

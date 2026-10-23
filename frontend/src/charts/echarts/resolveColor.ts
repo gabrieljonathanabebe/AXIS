@@ -1,5 +1,5 @@
-import type { ChartTheme } from './chartTheme'
 import type { ColorValue } from '../../shared/colorValue'
+import type { ChartTheme } from './chartTheme'
 
 // ===== FUNCTIONS =============================================================
 /**

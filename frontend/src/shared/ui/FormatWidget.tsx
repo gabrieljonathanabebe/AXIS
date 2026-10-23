@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react'
-
 import ControlRow from './ControlRow'
 import Toggle from './Toggle'
+
+import type { ReactNode } from 'react'
 
 // ===== TYPES =================================================================
 type FormatWidgetProps = {

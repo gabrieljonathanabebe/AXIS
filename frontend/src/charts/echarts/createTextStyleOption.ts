@@ -1,8 +1,8 @@
 import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
 import { resolveColor } from './resolveColor'
 
-import type { ChartTheme } from './chartTheme'
 import type { FontStyle, TextStyle } from '../../shared/textStyle'
+import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 /** Text fields that axis names and labels, legend and series labels share. */

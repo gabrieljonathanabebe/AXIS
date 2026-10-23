@@ -9,13 +9,13 @@ import type {
   ChartSpec,
   ChartType,
 } from '../charts/types'
+import type { DataField, DataValue } from '../datasets/types'
+import type { ObjectPickerOption } from '../objects/objectDefinitions'
 import type {
   DashboardObject,
   ObjectContainer,
   ObjectLayout,
 } from '../objects/types'
-import type { DataField, DataValue } from '../datasets/types'
-import type { ObjectPickerOption } from '../objects/objectDefinitions'
 
 // ===== STATE =================================================================
 export type WorkspaceState = {

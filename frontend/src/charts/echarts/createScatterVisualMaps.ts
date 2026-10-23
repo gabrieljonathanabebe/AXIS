@@ -1,14 +1,14 @@
 import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
 import { getNumericDomain } from './getNumericDomain'
 
-import type { ChartAppearanceSpec, ChartEncoding } from '../types'
-import type { ChartTheme } from './chartTheme'
-import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type {
   ContinuousVisualMapComponentOption,
   VisualMapComponentOption,
 } from 'echarts'
 import type { DataRow } from '../../datasets/types'
+import type { ColorEncodingMode } from '../getColorEncodingMode'
+import type { ChartAppearanceSpec, ChartEncoding } from '../types'
+import type { ChartTheme } from './chartTheme'
 
 type CreateScatterVisualMapsParams = {
   rows: DataRow[]

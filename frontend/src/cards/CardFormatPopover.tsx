@@ -1,19 +1,19 @@
-import { CARD_SELECTION_LABEL_TEXT_STYLE } from './createCardInstance'
-import CardValueWidget from './CardValueWidget'
-import ObjectTitleWidget from '../objects/ObjectTitleWidget'
 import ContainerWidget from '../objects/ContainerWidget'
-import FormatWidget from '../shared/ui/FormatWidget'
 import ObjectFormatPopover from '../objects/ObjectFormatPopover'
+import ObjectTitleWidget from '../objects/ObjectTitleWidget'
+import FormatWidget from '../shared/ui/FormatWidget'
 import TextStyleControls from '../shared/ui/TextStyleControls'
+import CardValueWidget from './CardValueWidget'
+import { CARD_SELECTION_LABEL_TEXT_STYLE } from './createCardInstance'
 import { getCardAggregations } from './getCardAggregations'
 import { getDefaultCardTitle } from './getCardTitle'
 
 import type { ReactNode } from 'react'
-import type { CanvasActions } from '../workspace/types'
-import type { CardFormatElement, CardInstance } from './types'
 import type { DataField } from '../datasets/types'
 import type { FormatElementOption } from '../objects/ObjectFormatPopover'
 import type { FormatTarget } from '../objects/types'
+import type { CanvasActions } from '../workspace/types'
+import type { CardFormatElement, CardInstance } from './types'
 
 // ===== TYPES =================================================================
 type CardFormatPopoverProps = {

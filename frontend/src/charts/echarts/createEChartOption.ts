@@ -1,17 +1,17 @@
-import type { EChartsOption } from 'echarts'
-
-import { createBrushOption } from './createBrushOption'
+import { isRadialChartType } from '../chartDefinitions'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 import { getValueLabel } from '../getEffectiveAggregation'
 import { createChartContent } from './content/createChartContent'
-import type { ChartContentContext } from './content/chartContentTypes'
-import type { DashboardAnimation } from '../../workspace/types'
+import { createBrushOption } from './createBrushOption'
 import { createDataZoomOption } from './createDataZoomOption'
 import { createGridOption } from './createGridOption'
 import { createLegendOption } from './createLegendOption'
 import { createTooltipOption } from './createTooltipOption'
-import { isRadialChartType } from '../chartDefinitions'
 import { resolveColor, resolvePalette } from './resolveColor'
+
+import type { EChartsOption } from 'echarts'
+import type { DashboardAnimation } from '../../workspace/types'
+import type { ChartContentContext } from './content/chartContentTypes'
 
 // ===== TYPES =================================================================
 type EChartOptionContext = ChartContentContext & {

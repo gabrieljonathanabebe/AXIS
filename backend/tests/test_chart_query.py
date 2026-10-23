@@ -81,9 +81,7 @@ def test_filters_apply_before_aggregation(sales_frame: pl.DataFrame) -> None:
 
     result = chart_query.build_chart_query_result(sales_frame, query)
 
-    assert [(point.x, point.value) for point in result.points] == [
-        ("A", 20.0)
-    ]
+    assert [(point.x, point.value) for point in result.points] == [("A", 20.0)]
 
 
 # ===== VALIDATE ==============================================================

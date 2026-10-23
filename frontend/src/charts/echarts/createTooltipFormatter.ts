@@ -1,16 +1,16 @@
-import type { ChartSpec, ChartType } from '../types'
-import { createAxisNumberFormatter } from './createAxisLabelFormatter'
-import type { DataSelection } from '../../workspace/types'
-import { formatSelectionLabel } from '../../workspace/dataSelection'
-import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
-import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
 import {
   createNumberFormatter,
   formatNumber,
   resolveNumberFormat,
 } from '../../shared/format/formatNumber'
+import { formatSelectionLabel } from '../../workspace/dataSelection'
+import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
+import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
+import { createAxisNumberFormatter } from './createAxisLabelFormatter'
 
 import type { NumberFormatter } from '../../shared/format/formatNumber'
+import type { DataSelection } from '../../workspace/types'
+import type { ChartSpec, ChartType } from '../types'
 
 type TooltipValue = string | number | null | undefined
 

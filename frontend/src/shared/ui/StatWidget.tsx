@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react'
-
 import IconBadge from './IconBadge'
 import Widget from './Widget'
+
+import type { ReactNode } from 'react'
 
 type StatWidgetProps = {
   hint?: string

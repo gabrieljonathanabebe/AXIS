@@ -1,10 +1,10 @@
-import type { ChartTheme } from './chartTheme'
 import { createTextStyleOption } from './createTextStyleOption'
 import { resolveColor } from './resolveColor'
 
-import type { ChartInteractionSpec, LegendAppearance } from '../types'
-import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type { LegendComponentOption } from 'echarts'
+import type { ColorEncodingMode } from '../getColorEncodingMode'
+import type { ChartInteractionSpec, LegendAppearance } from '../types'
+import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 type CreateLegendOptionParams = {

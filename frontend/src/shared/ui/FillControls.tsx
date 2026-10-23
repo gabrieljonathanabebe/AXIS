@@ -1,7 +1,7 @@
-import ColorControl from './ColorControl'
-import ControlRow from './ControlRow'
-import { DATA_COLOR_PRESETS } from './colorPresets'
 import { hasFillColor } from '../fill'
+import ColorControl from './ColorControl'
+import { DATA_COLOR_PRESETS } from './colorPresets'
+import ControlRow from './ControlRow'
 import Slider from './Slider'
 
 import type { SeriesFill } from '../fill'

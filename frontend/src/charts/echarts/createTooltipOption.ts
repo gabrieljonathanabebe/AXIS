@@ -1,10 +1,10 @@
-import type { TooltipComponentOption } from 'echarts'
+import { isRadialChartType } from '../chartDefinitions'
+import { createTooltipFormatter } from './createTooltipFormatter'
 
+import type { TooltipComponentOption } from 'echarts'
+import type { DataSelection } from '../../workspace/types'
 import type { ChartSpec, ChartType } from '../types'
 import type { ChartTheme } from './chartTheme'
-import { createTooltipFormatter } from './createTooltipFormatter'
-import type { DataSelection } from '../../workspace/types'
-import { isRadialChartType } from '../chartDefinitions'
 
 // ===== TYPES =================================================================
 type CreateTooltipOptionsParams = {

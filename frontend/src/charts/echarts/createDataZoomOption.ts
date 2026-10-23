@@ -1,5 +1,4 @@
 import type { DataZoomComponentOption } from 'echarts'
-
 import type { ChartInteractionSpec } from '../types'
 
 // ===== FUNCTION ==============================================================

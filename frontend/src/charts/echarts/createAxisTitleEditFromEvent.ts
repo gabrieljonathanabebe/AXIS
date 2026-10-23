@@ -1,7 +1,6 @@
-import type { ECElementEvent, ECharts } from 'echarts'
-
 import { getElementRect } from './getElementRect'
 
+import type { ECElementEvent, ECharts } from 'echarts'
 import type { AxisTitleEdit } from '../types'
 
 // ===== CONSTANTS =============================================================

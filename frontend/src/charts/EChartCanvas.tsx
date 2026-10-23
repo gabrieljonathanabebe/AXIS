@@ -1,48 +1,44 @@
 import * as echarts from 'echarts'
-import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
 import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
+import { COLOR_TOKEN_VARIABLES } from '../shared/colorValue'
+import EmptyState from '../shared/ui/EmptyState'
+import { isSameSelection } from '../workspace/dataSelection'
+import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
 import {
   createChartQuery,
   createHighlightQuery,
   createPointsQuery,
 } from './createChartQuery'
-
-import { createEChartOption } from './echarts/createEChartOption'
-import { createFormatHintFromEvent } from './echarts/createFormatHintFromEvent'
-import { syncBrush } from './echarts/createBrushOption'
-import { syncFormatFocus } from './echarts/syncFormatFocus'
-import { syncFormatTooltip } from './echarts/syncFormatTooltip'
 import {
   createAxisTitleEditFromEvent,
   isAxisTitleEvent,
   syncAxisTitleEdit,
 } from './echarts/createAxisTitleEditFromEvent'
-
+import { syncBrush } from './echarts/createBrushOption'
+import { createEChartOption } from './echarts/createEChartOption'
+import { createFormatHintFromEvent } from './echarts/createFormatHintFromEvent'
 import {
   createSelectionFromBrush,
   createSelectionFromEvent,
 } from './echarts/createSelectionFromEvent'
-
-import { COLOR_TOKEN_VARIABLES } from '../shared/colorValue'
-import EmptyState from '../shared/ui/EmptyState'
-import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
-import { isSameSelection } from '../workspace/dataSelection'
+import { syncFormatFocus } from './echarts/syncFormatFocus'
+import { syncFormatTooltip } from './echarts/syncFormatTooltip'
 import { useChartQuery } from './useChartQuery'
 import { usePointsQuery } from './usePointsQuery'
 
-import type { AxisTitleEdit, ChartFormatElement } from './types'
-import type { ColorToken } from '../shared/colorValue'
-import type { ElementRect } from '../objects/types'
-import type { ChartInstance } from './types'
+import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
 import type { DataRow, Dataset } from '../datasets/types'
-import type { ChartTheme } from './echarts/chartTheme'
+import type { ElementRect } from '../objects/types'
+import type { ColorToken } from '../shared/colorValue'
 import type {
   CanvasActions,
   DashboardAnimation,
   DataSelection,
 } from '../workspace/types'
+import type { ChartTheme } from './echarts/chartTheme'
+import type { AxisTitleEdit, ChartFormatElement, ChartInstance } from './types'
 
 // Stable empty list, so non-scatter charts do not re-render the option.
 const EMPTY_POINTS: DataRow[] = []

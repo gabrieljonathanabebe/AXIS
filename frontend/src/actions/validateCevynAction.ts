@@ -2,13 +2,14 @@ import {
   chartDefinitions,
   getChartDefinition,
   getSemanticCompatibility,
-  type EncodingKey,
 } from '../charts/chartDefinitions'
 import { findChart } from '../objects/findChart'
-import type { CevynAction } from './types'
+
+import type { EncodingKey } from '../charts/chartDefinitions'
 import type { Aggregation, ChartEncoding, ChartType } from '../charts/types'
 import type { Dataset } from '../datasets/types'
 import type { WorkspaceState } from '../workspace/types'
+import type { CevynAction } from './types'
 
 // ===== HELPERS ===============================================================
 function validateChartType(chartType: ChartType): string[] {

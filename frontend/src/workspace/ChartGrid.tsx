@@ -1,40 +1,39 @@
 import { useDndContext, useDndMonitor, useDroppable } from '@dnd-kit/core'
 import { useState } from 'react'
-import type { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
-import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 
+import CardItem from '../cards/CardItem'
+import ChartItem from '../charts/ChartItem'
+import { isChartFormatElement } from '../charts/getFormatElements'
+import { getObjectLabel } from '../objects/getObjectLabel'
+import { getObjectDefinition } from '../objects/objectDefinitions'
+import ObjectFrame from '../objects/ObjectFrame'
 import {
   CHART_GRID,
   findFreeLayout,
   moveLayout,
   resizeLayout,
 } from './chartLayout'
-import { getObjectDefinition } from '../objects/objectDefinitions'
 
+import type { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
+import type { CSSProperties, PointerEvent, ReactNode } from 'react'
+import type { WorkspaceCommands } from '../app/types'
+import type { DataField, Dataset } from '../datasets/types'
+import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type {
   DashboardObject,
   FormatTarget,
   ObjectFormatElement,
   ObjectLayout,
 } from '../objects/types'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
-import type { DataField, Dataset } from '../datasets/types'
-import type { WorkspaceCommands } from '../app/types'
+import type { GridDelta } from './chartLayout'
 import type {
   CanvasActions,
   DashboardAnimation,
-  ObjectLayoutMode,
   DataSelection,
   DragPayload,
   DropTarget,
+  ObjectLayoutMode,
 } from './types'
-import type { GridDelta } from './chartLayout'
-
-import ChartItem from '../charts/ChartItem'
-import CardItem from '../cards/CardItem'
-import ObjectFrame from '../objects/ObjectFrame'
-import { getObjectLabel } from '../objects/getObjectLabel'
-import { isChartFormatElement } from '../charts/getFormatElements'
 
 // ===== TYPES =================================================================
 type ChartGridProps = {

@@ -5,9 +5,9 @@ import Popover from '../shared/ui/Popover'
 import SegmentedControl from '../shared/ui/SegmentedControl'
 import SelectControl from '../shared/ui/SelectControl'
 
-import type { FormatTarget, ObjectFormatElement } from './types'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
+import type { FormatTarget, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
 export type FormatElementOption<TElement extends ObjectFormatElement> = {

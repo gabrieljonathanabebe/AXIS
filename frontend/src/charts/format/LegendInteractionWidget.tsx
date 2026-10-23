@@ -1,8 +1,9 @@
 import ControlRow from '../../shared/ui/ControlRow'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import SegmentedControl from '../../shared/ui/SegmentedControl'
 
 import type { ChartInteractionSpec, LegendSelectionMode } from '../types'
+
 // ===== TYPES =================================================================
 type LegendInteractionWidgetProps = {
   value: ChartInteractionSpec['legend']

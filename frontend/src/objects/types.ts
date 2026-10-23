@@ -1,12 +1,12 @@
+import type { CardFormatElement, CardInstance } from '../cards/types'
 import type {
   ChartFormatElement,
   ChartInstance,
   ChartType,
 } from '../charts/types'
 import type { ColorValue } from '../shared/colorValue'
-import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
-import type { CardFormatElement, CardInstance } from '../cards/types'
 import type { StrokeStyle } from '../shared/strokeStyle'
+import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
 
 // ===== OBJECT ================================================================
 /** Fields every dashboard object has, whatever its content. */

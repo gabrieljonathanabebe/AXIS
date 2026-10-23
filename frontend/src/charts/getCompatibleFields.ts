@@ -1,11 +1,11 @@
 import {
   getChartDefinition,
   getSemanticCompatibility,
-  type EncodingKey,
 } from './chartDefinitions'
 
-import type { ChartType } from './types'
 import type { DataField } from '../datasets/types'
+import type { EncodingKey } from './chartDefinitions'
+import type { ChartType } from './types'
 
 export function getCompatibleFields(
   chartType: ChartType,

@@ -1,6 +1,6 @@
-import { CHART_GRID_LINES } from '../createChartInstance'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
+import { CHART_GRID_LINES } from '../createChartInstance'
 
 import type { GridAppearance } from '../types'
 

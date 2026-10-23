@@ -1,9 +1,8 @@
-import type { CSSProperties } from 'react'
-
+import { getColorCss } from '../colorValue'
 import ColorControl from './ColorControl'
 import { DATA_COLOR_PRESETS } from './colorPresets'
-import { getColorCss } from '../colorValue'
 
+import type { CSSProperties } from 'react'
 import type { ColorValue } from '../colorValue'
 
 type GradientControlProps = {

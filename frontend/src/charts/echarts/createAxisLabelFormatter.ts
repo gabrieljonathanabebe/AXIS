@@ -1,7 +1,8 @@
-import type { AxisAppearance } from '../types'
-import { createNumberFormatter } from '../../shared/format/formatNumber'
 import { formatDate } from '../../shared/format/formatDate'
+import { createNumberFormatter } from '../../shared/format/formatNumber'
+
 import type { NumberFormatter } from '../../shared/format/formatNumber'
+import type { AxisAppearance } from '../types'
 
 type AxisLabelValue = string | number
 
