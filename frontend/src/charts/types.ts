@@ -7,6 +7,7 @@ import type {
   SetContainer,
 } from '../objects/types'
 import type { ColorValue } from '../shared/colorValue'
+import type { Effect } from '../shared/effect'
 import type { SeriesFill } from '../shared/fill'
 import type { NumberFormat } from '../shared/format/valueFormats'
 import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
@@ -99,6 +100,7 @@ export type AxisValueType = 'number' | 'date'
 export type BarAppearance = {
   borderRadius: number
   barWidth: number
+  effect: Effect
 }
 
 // ===== CHART =================================================================
@@ -244,6 +246,7 @@ export type LineAppearance = {
   showSymbol: boolean
   areaFill: boolean
   area: SeriesFill
+  effect: Effect
 }
 
 // ===== SCATTER ===============================================================

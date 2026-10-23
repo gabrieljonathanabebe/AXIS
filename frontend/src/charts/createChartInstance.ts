@@ -140,10 +140,12 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           kind: 'solid',
           opacity: 0.25,
         },
+        effect: { kind: 'none' },
       },
       bar: {
         borderRadius: 4,
         barWidth: 24,
+        effect: { kind: 'none' },
       },
     },
     interaction: {

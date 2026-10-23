@@ -1,3 +1,4 @@
+import { createEffectOption } from '../createEffectOption'
 import { createFillOption } from '../createFillOption'
 import {
   createLabelNumberFormatter,
@@ -37,6 +38,13 @@ type AggregatedSeriesOption = BarSeriesOption | LineSeriesOption
 const MAX_LINE_SYMBOLS = 30
 
 // ===== FUNCTION ==============================================================
+/**
+ * Builds one bar or line series of an aggregated chart. Base series that a
+ * selection dims get no glow, so the highlighted part stands out.
+ * @param params Appearance, chart type, color, data and selection state of
+ * the series.
+ * @returns Series option for ECharts.
+ */
 export function createAggregatedSeriesOption({
   appearance,
   chartType,
@@ -59,6 +67,7 @@ export function createAggregatedSeriesOption({
     show: opacity === undefined && appearance.labels.visible,
   }
   const id = isHighlight ? `${HIGHLIGHT_SERIES_PREFIX}${name ?? ''}` : undefined
+  const glowColor = opacity === undefined ? color : undefined
 
   // ===== RETURN ==============================================================
   if (chartType === 'line') {
@@ -77,6 +86,7 @@ export function createAggregatedSeriesOption({
       label,
       lineStyle: {
         ...createStrokeStyleOption(appearance.line.stroke, theme),
+        ...createEffectOption(appearance.line.effect, glowColor),
         color,
         opacity: appearance.line.stroke.opacity * (opacity ?? 1),
       },
@@ -102,6 +112,7 @@ export function createAggregatedSeriesOption({
       : undefined,
     id,
     itemStyle: {
+      ...createEffectOption(appearance.bar.effect, glowColor),
       borderRadius: appearance.bar.borderRadius,
       color,
       opacity,

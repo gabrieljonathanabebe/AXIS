@@ -24,7 +24,7 @@ Multi-Chart-Canvas, Cross-Highlighting, Cards, Ask Cevyn V1 und die
 Bearbeitung am Objekt (Format-Popover statt Inspector) sind in einem
 ersten vollständigen Stand. Die Appearance-Specs sind auf gemeinsame
 Bausteine umgestellt (`TextStyle`, `StrokeStyle`, `NumberFormat`,
-`Fill`, `ColorValue` mit Theme-Tokens).
+`Fill`, `Effect`, `ColorValue` mit Theme-Tokens).
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -37,8 +37,8 @@ Ask Cevyn), gestalten, speichern und wieder öffnen.
 Reihenfolge (jeder Punkt ein eigener Slice oder eine kurze Folge von
 Slices; Abhängigkeiten stehen beim Punkt):
 
-1. Effect (Glow) für Marks – **nächster Slice**
-2. Marks vervollständigen
+1. Effect (Glow) für Marks – implementiert
+2. Marks vervollständigen – **nächster Slice**
 3. Table-Objekt
 4. Dashboard-Einstellungen
 5. Ask Cevyn ausbauen
@@ -50,43 +50,11 @@ Kleine Lückenfüller zwischen den Slices: der Bug „Datenlabels bei
 Line-Charts fehlen“ (`TODO.md`), einzelne offene Zeilen der Ist/Soll-Liste
 in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.1 Effect (Glow) für Marks (geplant, nächster Slice)
+### 3.2 Marks vervollständigen (geplant, nächster Slice)
 
-Marks sollen leuchten können („Glow“, Neon-Look): ein weichgezeichneter
-Schatten ohne Versatz in der Farbe der Mark selbst.
-
-- neuer Baustein `Effect` in `shared/effect.ts`, nach dem Muster der
-  übrigen Bausteine (`DESIGN_SYSTEM.md`, „Style-Bausteine und
-  Abdeckung“):
-
-  ```ts
-  type Effect = { kind: 'none' } | { kind: 'glow'; blur: number }
-  // später ohne Migration: { kind: 'shadow'; … } für versetzte Schatten
-  ```
-
-  Glow hat keine eigene Farbe; er nimmt immer die Farbe der Mark bzw.
-  Serie.
-
-- neue Felder `line.effect` und `bar.effect` (Standard `none`); Scatter
-  und Pie folgen in 3.2
-- Adapter: zentraler Helper (analog `createStrokeStyleOption`), der
-  `shadowBlur` und `shadowColor` (aufgelöste Serienfarbe, Versatz 0) auf
-  `lineStyle` bzw. `itemStyle` setzt. Dieselbe Technik nutzt bereits
-  `syncFormatFocus` (`lineGlow`)
-- Zusammenspiel prüfen: abgeblendete Basis-Serien bei Cross-Highlight
-  leuchten nicht oder abgeschwächt, Format-Fokus, helles Theme (Glow
-  dort bei Bedarf über `ChartTheme` abschwächen)
-- optional, wenn klein: stärkerer Glow beim Hover (`emphasis`)
-- `EffectControls` in `shared/ui`: Effect (`SegmentedControl`
-  None | Glow) und bei Glow Intensity (`ScrubbableNumber` für `blur`);
-  im Marks-Popover nach den Fill- und Stroke-Zeilen
-- undo-fähig über die bestehende Action für Mark-Appearance
-- `effect` ist ein neues Feld, keine Formänderung bestehender Felder
-
-### 3.2 Marks vervollständigen (geplant)
-
-Lücken der Ist/Soll-Liste, die alle Marks betreffen; dieselben Typen und
-dasselbe Marks-Popover wie 3.1:
+Lücken der Ist/Soll-Liste, die alle Marks betreffen; dieselben
+Bausteine und dasselbe Marks-Popover wie bei Linien und Balken. Effekte
+nutzen `Effect`, `createEffectOption` und `EffectControls` wie dort:
 
 - Balken: `bar.fill` (`SeriesFill`), `bar.border` (`StrokeStyle`)
 - Scatter: `scatter.border` (`StrokeStyle`), `scatter.effect` mit
@@ -353,6 +321,8 @@ Style-Bausteine und Farben
 
 - `TextStyle`, `StrokeStyle`, `NumberFormat`, `Fill`/`SeriesFill` mit
   je einer `…Controls`-Komponente
+- `Effect` mit `EffectControls`: Glow (None/Glow, Intensity) für Linien
+  und Balken in der Serienfarbe; abgeblendete Serien leuchten nicht
 - `ColorValue` mit Theme-Tokens (Text, Muted, Accent, Grid line,
   Border, Inactive, Chart 1–5), Paletten als `ColorValue[]`, Farbauswahl
   je Einsatzort mit Default-Feld; Flächen unter Linien in der

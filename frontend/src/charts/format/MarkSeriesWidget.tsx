@@ -3,6 +3,7 @@ import { Circle, Diamond, Square, Triangle } from 'lucide-react'
 import ColorControl from '../../shared/ui/ColorControl'
 import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
 import ControlRow from '../../shared/ui/ControlRow'
+import EffectControls from '../../shared/ui/EffectControls'
 import FillControls from '../../shared/ui/FillControls'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import PaletteControl from '../../shared/ui/PaletteControl'
@@ -166,6 +167,13 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
               />
             </div>
           ) : null}
+          <EffectControls
+            label="Line"
+            value={appearance.line.effect}
+            onChange={(effect) => {
+              actions.setChartAppearance('line', 'effect', effect)
+            }}
+          />
         </>
       ) : null}
       {chart.type === 'bar' ? (
@@ -194,6 +202,13 @@ function MarkSeriesWidget({ actions, chart, fields }: MarkSeriesWidgetProps) {
               }}
             />
           </ControlRow>
+          <EffectControls
+            label="Bar"
+            value={appearance.bar.effect}
+            onChange={(effect) => {
+              actions.setChartAppearance('bar', 'effect', effect)
+            }}
+          />
         </>
       ) : null}
     </FormatWidget>

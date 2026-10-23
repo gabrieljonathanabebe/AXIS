@@ -1043,9 +1043,11 @@ Vorhandene Bausteine:
   (`LineAppearance.area`) und Scatter-Punkte (`ScatterAppearance.fill`),
   beide als `SeriesFill` in der Farbe ihrer Serie; der
   Container-Hintergrund bleibt `ObjectBackground` mit Presets
+- `Effect` mit `EffectControls` (siehe 9o): Glow auf Linien und Balken
+  (`line.effect`, `bar.effect`) in der Farbe der Serie
 
-Geplant ist `Effect` (Glow, später Schatten) für Marks und Container
-(`ROADMAP.md`, 3.1).
+Ein versetzter Schatten kommt später als weitere Variante von `Effect`
+hinzu, z. B. für den Container.
 
 Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Color-Zeile
 nutzt `ColorControl` mit der Reihe ihres Einsatzorts (siehe 9).
@@ -1117,14 +1119,14 @@ Chart
 
 Marks
 
-| Teil                | Form   | Ist                                                             | Soll                                                      | Status |
-| ------------------- | ------ | --------------------------------------------------------------- | --------------------------------------------------------- | ------ |
-| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`)                             | `line.effect`                                             | ○      |
-| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                     | –                                                         | ✓      |
-| Punkte auf Linie    | Fläche | `line.showSymbol`                                               | Marker (Form, Größe)                                      | später |
-| Balken              | Fläche | Farbe aus `color` bzw. Palette, `bar.borderRadius`, `.barWidth` | `bar.fill`, `bar.border`, `bar.effect`                    | ○      |
-| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.symbol`, `.pointSize`          | `scatter.border`, `scatter.effect`                        | ○      |
-| Pie-/Donut-Segmente | Fläche | keine Appearance, Radius fest im Adapter                        | `pie.fill`, `pie.border`, `pie.innerRadius`, `pie.effect` | ○      |
+| Teil                | Form   | Ist                                                                        | Soll                                                      | Status |
+| ------------------- | ------ | -------------------------------------------------------------------------- | --------------------------------------------------------- | ------ |
+| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`), `line.effect`                         | –                                                         | ✓      |
+| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                                | –                                                         | ✓      |
+| Punkte auf Linie    | Fläche | `line.showSymbol`                                                          | Marker (Form, Größe)                                      | später |
+| Balken              | Fläche | Farbe aus `color` bzw. Palette, `bar.borderRadius`, `.barWidth`, `.effect` | `bar.fill`, `bar.border`                                  | ○      |
+| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.symbol`, `.pointSize`                     | `scatter.border`, `scatter.effect`                        | ○      |
+| Pie-/Donut-Segmente | Fläche | keine Appearance, Radius fest im Adapter                                   | `pie.fill`, `pie.border`, `pie.innerRadius`, `pie.effect` | ○      |
 
 Card
 
@@ -1165,6 +1167,24 @@ nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
   Variante (Verlauf, Muster) kommt eine Zeile „Type“ dazu
 - genutzt von der Fläche unter Linien und den Scatter-Punkten im
   `MarkSeriesWidget`; beide sind `SeriesFill` und zeigen nur Opacity
+
+## 9o. EffectControls
+
+`EffectControls` ist der Baustein für den Effekt einer Mark (`Effect`),
+nach demselben Muster wie `FillControls`: Zeilen statt Rahmen, `label`
+für Screenreader („Line effect“, „Bar glow intensity“).
+
+- Effect (`SegmentedControl` None/Glow); ein `SegmentedControl` statt
+  `Toggle`, weil `kind` eine Auswahl von Varianten ist und ein späterer
+  Schatten als dritte Option dazukommt
+- bei Glow eingerückt (`.format-widget-subproperties`): Intensity
+  (`ScrubbableNumber` für `blur`, 1–40, Start bei `DEFAULT_GLOW_BLUR`
+  = 12)
+- ein erneuter Klick auf die aktive Variante ändert nichts, damit die
+  Intensität erhalten bleibt
+- keine Color-Zeile, weil Glow die Farbe der Mark nimmt
+- genutzt von Linien und Balken im `MarkSeriesWidget`, jeweils nach den
+  übrigen Mark-Zeilen
 
 ## 10. Legend
 

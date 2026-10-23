@@ -389,6 +389,22 @@ als allgemeiner Typ (`hasFillColor` unterscheidet beide). ECharts übersetzt
 `createFillOption`; eine CSS-Übersetzung folgt mit dem ersten
 HTML-Nutzer. Der Container-Hintergrund bleibt `ObjectBackground`.
 
+Effekte nutzen `Effect` aus `src/shared/effect.ts`: `{ kind: 'none' }`
+oder `{ kind: 'glow'; blur }`, ein weichgezeichneter Schatten ohne
+Versatz. Glow hat keine eigene Farbe, er nimmt immer die Farbe der Mark;
+ein versetzter Schatten kommt später als weitere `kind` hinzu. Linien
+und Balken tragen `line.effect` und `bar.effect` (Standard `none`).
+
+- ECharts übersetzt `createEffectOption` in `shadowBlur` und
+  `shadowColor` auf `lineStyle` bzw. `itemStyle`
+- ohne Serienfarbe (kontinuierliche Farbskala, die Visual Map färbt pro
+  Wert) bleibt der Glow aus, weil ECharts sonst schwarz zeichnet
+- Basis-Serien, die eine Selection abblendet, leuchten nicht; nur die
+  hervorgehobene Serie leuchtet. Der Format-Fokus setzt nur `opacity`
+  und dimmt den Glow dadurch mit
+- der Glow ist im hellen und dunklen Theme gleich stark; `ChartTheme`
+  schwächt ihn bewusst nicht ab, damit derselbe Wert gleich wirkt
+
 ### Farbwerte
 
 Jedes Farbfeld der Specs ist ein `ColorValue` aus
