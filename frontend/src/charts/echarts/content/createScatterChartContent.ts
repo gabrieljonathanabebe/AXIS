@@ -10,7 +10,7 @@ import {
   createSeriesLabelOption,
 } from '../createSeriesLabelOption'
 import { createBorderOption } from '../createStrokeStyleOption'
-import { resolveColor, resolvePalette } from '../resolveColor'
+import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
 import { DIMMED_OPACITY } from './selectionStyle'
 
 import type { ScatterSeriesOption } from 'echarts'
@@ -150,7 +150,7 @@ export function createScatterChartContent(
         appearance,
         canGlow,
         data: seriesData,
-        itemColor: palette[index % palette.length],
+        itemColor: getPaletteColor(palette, index),
         name,
         sizeFieldName,
         theme,

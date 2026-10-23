@@ -3,7 +3,7 @@ import { createEffectOption } from '../createEffectOption'
 import { createFillOption } from '../createFillOption'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { createBorderOption } from '../createStrokeStyleOption'
-import { resolvePalette } from '../resolveColor'
+import { getPaletteColor, resolvePalette } from '../resolveColor'
 
 import type { PieSeriesOption } from 'echarts'
 import type { LegendAppearance } from '../../types'
@@ -56,7 +56,7 @@ export function createPieChartContent(
     }
     const name = point.x ?? 'No category'
     const colorIndex = Math.max(categories.indexOf(name), 0)
-    const color = palette[colorIndex % palette.length]
+    const color = getPaletteColor(palette, colorIndex)
     return [
       {
         itemStyle: { ...createEffectOption(pie.effect, color), color },

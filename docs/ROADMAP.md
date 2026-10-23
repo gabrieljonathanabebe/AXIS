@@ -55,25 +55,6 @@ Kleine Lückenfüller zwischen den Slices: der Bug „Datenlabels bei
 Line-Charts fehlen“ (`TODO.md`), einzelne offene Zeilen der Ist/Soll-Liste
 in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### Lückenfüller vor 3.3: Paletten stabil erweitern (geplant)
-
-Kategorie-Paletten haben fünf Farben und wiederholen sich danach: Ab
-der sechsten Kategorie teilen sich zwei Serien eine Farbe, bei Pie und
-Donut liegen Segment 1 und 6 direkt nebeneinander.
-
-- eine Funktion, z. B. `getPaletteColor(palette, index)` in
-  `charts/echarts/resolveColor.ts`, ersetzt
-  `palette[index % palette.length]` in Pie, Scatter und den
-  aggregierten Charts sowie das `color`-Array in `createEChartOption`
-  (Legende)
-- stabil erweitern statt neu verteilen: Die erste Runde bleibt genau
-  die Palette, jede weitere nutzt hellere bzw. dunklere Varianten
-  derselben Farben (`color.lift` aus ECharts); kommt eine Kategorie
-  hinzu, behalten alle übrigen ihre Farbe
-- kein Rahmen-Default bei Pie und Donut als Ersatz; `pie.border`
-  bleibt standardmäßig aus
-- Idee für später: kleine Anteile als „Other“ zusammenfassen
-
 ### 3.3 Format-Popover: Gruppen statt Sections (geplant, nächster Slice)
 
 Problem: Das Popover hat drei Ebenen, die nicht sauber getrennt sind.
@@ -375,6 +356,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
   Treemap, Sankey, Radar, Maps
 - Drill-down, Referenzlinien, Mehrfachauswahl, Range-Selection für Line
   und Bar
+- kleine Anteile bei Pie und Donut als „Other“ zusammenfassen (Idee)
 
 ### Canvas und Dashboard-Objekte
 
@@ -482,6 +464,9 @@ Style-Bausteine und Farben
   Border, Inactive, Chart 1–5), Paletten als `ColorValue[]`, Farbauswahl
   je Einsatzort mit Default-Feld; Flächen unter Linien in der
   Serienfarbe
+- Paletten stabil erweitert (`getPaletteColor`): ab der sechsten
+  Kategorie hellere bzw. dunklere Runden derselben Farben statt
+  Wiederholung; vorhandene Kategorien behalten ihre Farbe
 
 Ask Cevyn V1
 

@@ -3,7 +3,7 @@ import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { createAxesOptions } from '../createAxesOptions'
 import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
-import { resolveColor, resolvePalette } from '../resolveColor'
+import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
 import { createAggregatedSeriesOption } from './createAggregatedSeriesOption'
 import { DIMMED_OPACITY } from './selectionStyle'
 
@@ -83,7 +83,7 @@ export function createAggregatedChartContent(
       return resolveColor(appearance.color, theme)
     }
     if (colorEncodingMode === 'categorical') {
-      return palette[index % palette.length]
+      return getPaletteColor(palette, index)
     }
     return undefined
   }
