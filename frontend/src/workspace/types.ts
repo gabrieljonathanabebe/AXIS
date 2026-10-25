@@ -16,6 +16,7 @@ import type {
   ObjectContainer,
   ObjectLayout,
 } from '../objects/types'
+import type { Layout } from '../shared/layout'
 
 // ===== STATE =================================================================
 export type WorkspaceState = {
@@ -201,9 +202,8 @@ export type DashboardAnimation = {
   enabled: boolean
 }
 
-export type DashboardLayout = {
-  gap: number
-}
+/** Spacing of the dashboard canvas, e.g. the gap between objects. */
+export type DashboardLayout = Pick<Layout, 'gap'>
 
 export type DashboardSpec = {
   animation: DashboardAnimation

@@ -1,6 +1,6 @@
-import AlignmentControl from '../shared/ui/AlignmentControl'
 import ControlRow from '../shared/ui/ControlRow'
 import FormatWidget from '../shared/ui/FormatWidget'
+import LayoutControls from '../shared/ui/LayoutControls'
 import TextInput from '../shared/ui/TextInput'
 import TextStyleControls from '../shared/ui/TextStyleControls'
 import { TITLE_TEXT_STYLE } from './objectDefaults'
@@ -13,52 +13,45 @@ type ObjectTitleWidgetProps = {
   onChange: (value: ObjectTitleAppearance) => void
 }
 
+/**
+ * Groups of an object title: its text, its alignment and its text style.
+ * Whether the title shows is the element toggle in the popover header.
+ */
 function ObjectTitleWidget({
   defaultTitle,
   value,
   onChange,
 }: ObjectTitleWidgetProps) {
   return (
-    <FormatWidget
-      title="Title"
-      visibility={{
-        visible: value.visible,
-        onChange: (visible) => {
-          onChange({ ...value, visible })
-        },
-      }}
-    >
-      <ControlRow label="Text">
-        <TextInput
+    <>
+      <FormatWidget title="Content">
+        <ControlRow label="Text">
+          <TextInput
+            label="Title"
+            value={value.text}
+            placeholder={defaultTitle || 'Automatic'}
+            onValueChange={(text) => onChange({ ...value, text })}
+          />
+        </ControlRow>
+      </FormatWidget>
+      <FormatWidget title="Layout">
+        <LayoutControls
           label="Title"
-          value={value.text}
-          placeholder={defaultTitle || 'Automatic'}
-          onValueChange={(text) => {
-            onChange({
-              ...value,
-              text,
-            })
-          }}
+          value={value.layout}
+          onChange={(layout) => onChange({ ...value, layout })}
         />
-      </ControlRow>
-      <ControlRow label="Alignment">
-        <AlignmentControl
-          label="Title alignment"
-          value={value.alignment}
-          onValueChange={(alignment) => {
-            onChange({ ...value, alignment })
-          }}
+      </FormatWidget>
+      <FormatWidget title="Text">
+        <TextStyleControls
+          defaultColor={TITLE_TEXT_STYLE.color}
+          label="Title"
+          maxFontSize={20}
+          minFontSize={11}
+          value={value.textStyle}
+          onChange={(textStyle) => onChange({ ...value, textStyle })}
         />
-      </ControlRow>
-      <TextStyleControls
-        defaultColor={TITLE_TEXT_STYLE.color}
-        label="Title"
-        maxFontSize={20}
-        minFontSize={11}
-        value={value.textStyle}
-        onChange={(textStyle) => onChange({ ...value, textStyle })}
-      />
-    </FormatWidget>
+      </FormatWidget>
+    </>
   )
 }
 

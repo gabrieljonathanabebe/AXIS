@@ -40,7 +40,7 @@ function createEffect(kind: Effect['kind']): Effect {
 function EffectControls({ label, value, onChange }: EffectControlsProps) {
   return (
     <>
-      <ControlRow label="Effect">
+      <ControlRow label="Type">
         <SegmentedControl
           label={`${label} effect`}
           options={effectKindOptions}

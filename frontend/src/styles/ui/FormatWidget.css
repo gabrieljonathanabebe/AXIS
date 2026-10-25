@@ -1,3 +1,26 @@
+.format-widget {
+  --stack-gap: var(--space-2);
+}
+
+.format-widget:not(:first-child) > .format-widget-header {
+  padding-top: var(--space-3);
+  border-top: var(--border-width-thin) solid var(--color-border-subtle);
+}
+
+.format-widget-header {
+  --spread-gap: var(--space-2);
+
+  min-height: 24px;
+}
+
+.format-widget-title {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .format-widget-content {
   --stack-gap: var(--space-1);
 }
@@ -18,10 +41,10 @@
   font-size: var(--font-size-2xs);
 }
 
-.legend-position-control .segmented-control-option {
+.layout-position-control .segmented-control-option {
   padding-inline: 0;
 }
 
-.legend-position-control .segmented-control-option svg {
+.layout-position-control .segmented-control-option svg {
   flex-shrink: 0;
 }

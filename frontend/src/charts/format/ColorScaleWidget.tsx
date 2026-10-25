@@ -1,15 +1,8 @@
-import {
-  ArrowLeft,
-  ArrowRight,
-  MoveHorizontal,
-  MoveVertical,
-} from 'lucide-react'
-
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import GradientControl from '../../shared/ui/GradientControl'
+import LayoutControls from '../../shared/ui/LayoutControls'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
 import Toggle from '../../shared/ui/Toggle'
 
 import type { ColorScaleAppearance } from '../types'
@@ -26,143 +19,89 @@ const positionOptions = [
   { label: 'Right', value: 'right' },
 ] satisfies {
   label: string
-  value: ContinuousColorScale['position']
+  value: ContinuousColorScale['layout']['position']
 }[]
 
-const positionIcons = {
-  left: ArrowLeft,
-  right: ArrowRight,
-}
-
-const orientationOptions = [
-  { label: 'Vertical', value: 'vertical' },
-  { label: 'Horizontal', value: 'horizontal' },
-] satisfies {
-  label: string
-  value: ContinuousColorScale['orientation']
-}[]
-
-const orientationIcons = {
-  vertical: MoveVertical,
-  horizontal: MoveHorizontal,
-}
-
-/** Edits colors, placement and range of the continuous color scale. */
+/**
+ * Groups of the continuous color scale: its value range, where it sits,
+ * its colors and its labels. Whether it shows is the element toggle in
+ * the popover header.
+ */
 function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
   return (
-    <FormatWidget
-      title="Color Scale"
-      visibility={{
-        visible: value.visible,
-        onChange: (visible) => {
-          onChange({ ...value, visible })
-        },
-      }}
-    >
-      <ControlRow label="Colors">
-        <GradientControl
+    <>
+      <FormatWidget title="Range">
+        <ControlRow label="Min auto">
+          <Toggle
+            label="Use automatic color scale minimum"
+            checked={value.min === null}
+            onCheckedChange={(automatic) => {
+              onChange({ ...value, min: automatic ? null : 0 })
+            }}
+          />
+        </ControlRow>
+        {value.min !== null ? (
+          <div className="format-widget-subproperties">
+            <ControlRow label="Minimum">
+              <ScrubbableNumber
+                label="Color scale minimum"
+                step={1}
+                value={value.min}
+                onValueChange={(min) => onChange({ ...value, min })}
+              />
+            </ControlRow>
+          </div>
+        ) : null}
+        <ControlRow label="Max auto">
+          <Toggle
+            label="Use automatic color scale maximum"
+            checked={value.max === null}
+            onCheckedChange={(automatic) => {
+              onChange({ ...value, max: automatic ? null : 100 })
+            }}
+          />
+        </ControlRow>
+        {value.max !== null ? (
+          <div className="format-widget-subproperties">
+            <ControlRow label="Maximum">
+              <ScrubbableNumber
+                label="Color scale maximum"
+                step={1}
+                value={value.max}
+                onValueChange={(max) => onChange({ ...value, max })}
+              />
+            </ControlRow>
+          </div>
+        ) : null}
+      </FormatWidget>
+      <FormatWidget title="Layout">
+        <LayoutControls
           label="Color scale"
-          startColor={value.startColor}
-          endColor={value.endColor}
-          onChange={({ startColor, endColor }) => {
-            onChange({
-              ...value,
-              startColor,
-              endColor,
-            })
-          }}
+          positions={positionOptions}
+          value={value.layout}
+          onChange={(layout) => onChange({ ...value, layout })}
         />
-      </ControlRow>
-      <ControlRow label="Min auto">
-        <Toggle
-          label="Use automatic color scale minimum"
-          checked={value.min === null}
-          onCheckedChange={(automatic) => {
-            onChange({
-              ...value,
-              min: automatic ? null : 0,
-            })
-          }}
-        />
-      </ControlRow>
-      {value.min !== null ? (
-        <div className="format-widget-subproperties">
-          <ControlRow label="Minimum">
-            <ScrubbableNumber
-              label="Color scale minimum"
-              step={1}
-              value={value.min}
-              onValueChange={(min) => {
-                onChange({ ...value, min })
-              }}
-            />
-          </ControlRow>
-        </div>
-      ) : null}
-      <ControlRow label="Max auto">
-        <Toggle
-          label="Use automatic color scale maximum"
-          checked={value.max === null}
-          onCheckedChange={(automatic) => {
-            onChange({
-              ...value,
-              max: automatic ? null : 100,
-            })
-          }}
-        />
-      </ControlRow>
-      {value.max !== null ? (
-        <div className="format-widget-subproperties">
-          <ControlRow label="Maximum">
-            <ScrubbableNumber
-              label="Color scale maximum"
-              step={1}
-              value={value.max}
-              onValueChange={(max) => {
-                onChange({ ...value, max })
-              }}
-            />
-          </ControlRow>
-        </div>
-      ) : null}
-      <ControlRow label="Labels">
-        <Toggle
-          label="Show color scale labels"
-          checked={value.labels}
-          onCheckedChange={(labels) => {
-            onChange({ ...value, labels })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Position">
-        <SegmentedControl
-          label="Color scale position"
-          options={positionOptions}
-          value={value.position}
-          renderOption={(option) => {
-            const Icon = positionIcons[option.value]
-            return <Icon aria-hidden="true" size={16} />
-          }}
-          onValueChange={(position) => {
-            onChange({ ...value, position })
-          }}
-        />
-      </ControlRow>
-      <ControlRow label="Orientation">
-        <SegmentedControl
-          label="Color scale orientation"
-          options={orientationOptions}
-          value={value.orientation}
-          renderOption={(option) => {
-            const Icon = orientationIcons[option.value]
-            return <Icon aria-hidden="true" size={16} />
-          }}
-          onValueChange={(orientation) => {
-            onChange({ ...value, orientation })
-          }}
-        />
-      </ControlRow>
-    </FormatWidget>
+      </FormatWidget>
+      <FormatWidget title="Colors">
+        <ControlRow label="Gradient">
+          <GradientControl
+            label="Color scale"
+            startColor={value.startColor}
+            endColor={value.endColor}
+            onChange={({ startColor, endColor }) => {
+              onChange({ ...value, startColor, endColor })
+            }}
+          />
+        </ControlRow>
+      </FormatWidget>
+      <FormatWidget
+        title="Labels"
+        visibility={{
+          visible: value.labels,
+          onChange: (labels) => onChange({ ...value, labels }),
+        }}
+      />
+    </>
   )
 }
 

@@ -1,12 +1,11 @@
 import { Paintbrush } from 'lucide-react'
-import { useState } from 'react'
 
 import Popover from '../shared/ui/Popover'
-import SegmentedControl from '../shared/ui/SegmentedControl'
 import SelectControl from '../shared/ui/SelectControl'
+import Toggle from '../shared/ui/Toggle'
 
-import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
+import type { FormatVisibility } from '../shared/ui/FormatWidget'
 import type { FormatTarget, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
@@ -15,19 +14,14 @@ export type FormatElementOption<TElement extends ObjectFormatElement> = {
   value: TElement
 }
 
-/** One part of an element's settings; several switch by a segmented control. */
-export type FormatSection = {
-  content: ReactNode
-  icon?: LucideIcon
-  label: string
-}
-
 type ObjectFormatPopoverProps<TElement extends ObjectFormatElement> = {
+  children: ReactNode
   element: TElement
   elementOptions: FormatElementOption<TElement>[]
   label: string
-  sections: FormatSection[]
   target: FormatTarget
+  /** Shows or hides the whole element, e.g. the legend. */
+  visibility?: FormatVisibility
   onClose: () => void
   onElementChange: (element: TElement) => void
 }
@@ -44,25 +38,36 @@ function getKeepOpenSelector(objectId: string): string {
 
 // ===== COMPONENT =============================================================
 /**
- * Shows the format settings of one element next to its object. The element
- * select switches between the elements of the same object, a segmented
- * control between the sections of an element. The active section is kept by
- * its label, so it stays when the next element has a section of that name.
+ * Shows the format groups of one element next to its object. The element
+ * select switches between the elements of the same object. A visibility
+ * puts the element's toggle into the header; while the element is hidden,
+ * only the header remains.
  */
 function ObjectFormatPopover<TElement extends ObjectFormatElement>({
+  children,
   element,
   elementOptions,
   label,
-  sections,
   target,
+  visibility,
   onClose,
   onElementChange,
 }: ObjectFormatPopoverProps<TElement>) {
-  const [activeLabel, setActiveLabel] = useState<string | null>(null)
-  const activeSection =
-    sections.find((section) => section.label === activeLabel) ?? sections[0]
+  const elementLabel =
+    elementOptions.find((option) => option.value === element)?.label ?? label
+  const visibilityLabel = visibility?.label ?? 'Visible'
+  const showsGroups = visibility?.visible ?? true
   return (
     <Popover
+      actions={
+        visibility ? (
+          <Toggle
+            checked={visibility.visible}
+            label={`${elementLabel} ${visibilityLabel.toLowerCase()}`}
+            onCheckedChange={visibility.onChange}
+          />
+        ) : null
+      }
       anchor={target.anchor}
       className="format-popover glass glass-thick"
       keepOpenOn={getKeepOpenSelector(target.objectId)}
@@ -87,26 +92,9 @@ function ObjectFormatPopover<TElement extends ObjectFormatElement>({
         }
       }}
     >
-      <div className="format-popover-body stack">
-        {sections.length > 1 ? (
-          <SegmentedControl
-            label="Format section"
-            options={sections.map((section) => ({
-              label: section.label,
-              value: section.label,
-            }))}
-            renderOption={(option) => {
-              const Icon = sections.find(
-                (section) => section.label === option.value,
-              )?.icon
-              return Icon ? <Icon aria-hidden="true" size={15} /> : option.label
-            }}
-            value={activeSection.label}
-            onValueChange={setActiveLabel}
-          />
-        ) : null}
-        {activeSection.content}
-      </div>
+      {showsGroups ? (
+        <div className="format-popover-body stack">{children}</div>
+      ) : null}
     </Popover>
   )
 }

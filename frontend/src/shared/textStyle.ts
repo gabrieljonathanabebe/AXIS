@@ -4,9 +4,6 @@ import type { CSSProperties } from 'react'
 import type { ColorValue } from './colorValue'
 
 // ===== TYPES =================================================================
-/** Where a text or a group of items sits along its line. */
-export type HorizontalAlignment = 'start' | 'center' | 'end'
-
 /** Slant of a text; ECharts and CSS both know these values. */
 export type FontStyle = 'normal' | 'italic'
 

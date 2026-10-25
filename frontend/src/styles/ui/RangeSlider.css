@@ -1,6 +1,15 @@
 .range-slider {
   --range-thumb-size: 16px;
   --stack-gap: var(--space-1);
+  width: 100%;
+  min-width: 0;
+}
+
+.range-slider.has-inputs {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .range-slider-track {

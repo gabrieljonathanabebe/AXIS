@@ -351,9 +351,10 @@ Zahlen oder Datumswerte zeigt, ist ein eigenes Feld
 Alle Texte auf der Canvas nutzen denselben Typ `TextStyle` aus
 `src/shared/textStyle.ts` (`color`, `fontSize`, `fontStyle`,
 `fontWeight`). Jedes Text-Element trägt ihn als `textStyle`, auch der
-Achsentitel (`xAxis.title: { text, textStyle }`, `AxisTitleAppearance`
-als `Pick` aus `ObjectTitleAppearance`); Extras wie Ausrichtung,
-Rotation, Position oder Zahlenformat bleiben Felder des Elements.
+Achsentitel (`xAxis.title: { text, textStyle, visible }`,
+`AxisTitleAppearance` als `Pick` aus `ObjectTitleAppearance`);
+Ausrichtung und Position liegen im Baustein `layout` (siehe
+„Platzierung“), Rotation und Zahlenformat bleiben Felder des Elements.
 
 - ECharts-Texte (Achsen, Legende, Data Labels) übersetzt
   `createTextStyleOption` im Adapter; HTML-Texte (Titel, Card-Wert,
@@ -428,6 +429,54 @@ Marks tragen ihn: `line.effect`, `bar.effect`, `scatter.effect` und
   `createEffectOption`, die Spec bleibt unverändert
 - der Glow ist im hellen und dunklen Theme gleich stark; `ChartTheme`
   schwächt ihn bewusst nicht ab, damit derselbe Wert gleich wirkt
+
+### Platzierung
+
+Wo ein Element sitzt und wie es seinen Inhalt verteilt, beschreibt
+`Layout` aus `src/shared/layout.ts` (`alignment`, `gap`, `orientation`,
+`padding`, `position`; dort liegen auch `HorizontalAlignment`, `Side`
+und `Orientation`). Jedes Element trägt nur die Felder, die es hat, als
+`Pick` im Unterobjekt `layout`; die Positionen lassen sich über den
+Typparameter einschränken:
+
+| Element     | Spec                | Typ                                                            |
+| ----------- | ------------------- | -------------------------------------------------------------- |
+| Titel       | `title.layout`      | `Pick<Layout, 'alignment'>`                                    |
+| Container   | `container.layout`  | `Pick<Layout, 'padding'>`                                      |
+| Dashboard   | `dashboard.layout`  | `Pick<Layout, 'gap'>`                                          |
+| Legende     | `legend.layout`     | `Pick<Layout, 'alignment' \| 'gap' \| 'position'>`             |
+| Farbskala   | `continuous.layout` | `Pick<Layout<'left' \| 'right'>, 'orientation' \| 'position'>` |
+| Datenlabels | `labels.layout`     | `Pick<Layout<LabelPosition>, 'position'>`                      |
+
+- `alignment` meint die Lage entlang der Seite: Eine Legende rechts mit
+  `start` sitzt oben am rechten Rand (`createLegendPlacement`)
+- ein neues Layout-Feld eines Elements erweitert sein `Pick`, kein neuer
+  Typ; das bisherige Legendenfeld für den Überlauf heißt `overflow`
+- nicht zum Layout gehören Form (`borderRadius`, `barWidth`) und die
+  Grid-Position eines Objekts (`object.layout`, `ObjectLayout`)
+
+### Darstellung der Marks
+
+- Kategorien nehmen ihre Farbe über `getPaletteColor(palette, index)`
+  (`charts/echarts/resolveColor.ts`): Die erste Runde ist die Palette
+  selbst, jede weitere Runde eine hellere bzw. dunklere Variante derselben
+  Farben (`PALETTE_ROUND_SHIFTS`; heller über `color.lift`, dunkler als
+  Mischung mit Schwarz). Die Farbe hängt nur am Index, eine neue
+  Kategorie färbt die übrigen nicht um. Die Legende übernimmt die Farbe,
+  die jede Serie bzw. jedes Segment selbst setzt
+- Punkte auf Linien: `line.points` ist `auto | on | off`; `auto` zeigt
+  sie bis `MAX_LINE_SYMBOLS` (30) Datenpunkte. ECharts zeichnet Labels
+  einer Linie nur an ihren Symbolen, daher bleiben die Symbole bei
+  sichtbaren Labels an und werden ohne gewünschte Punkte mit Größe 0
+  gezeichnet. `symbolSize` wird immer ausdrücklich gesetzt
+  (`LINE_SYMBOL_SIZE`), weil `undefined` den ECharts-Default ersetzt
+- die Größe von Scatter-Punkten mit Size-Encoding ist flächentreu: Der
+  Durchmesser wächst mit der Wurzel des Werts, der größte Wert bekommt
+  `scatter.sizeRange.max`, `min` ist die Untergrenze
+  (`createAreaSymbolSize` in der Serie statt einer linearen
+  `visualMap`)
+- Labels von Linien und Scatter-Punkten blenden Überlappungen aus
+  (`labelLayout: { hideOverlap: true }`)
 
 ### Farbwerte
 
@@ -577,18 +626,22 @@ beide
   für die Tick-Labels unter `xAxis.labels` bzw. `yAxis.labels` und
   `marks` für Farbe, Palette und die Marks des Charttyps (`color`,
   `colorScale.categorical`, `scatter`, `line`, `bar`).
-  `ChartFormatPopover` ordnet sie in `getFormatSections` per `switch`
-  ihren Abschnitten zu (`FormatSection`: Name, optionales Icon,
-  Inhalt); Achse und Labels teilen `AxisWidget` mit `part`
-  (`title` | `labels`) und dieselbe `AxisAppearance`, `marks` nutzt
-  `MarkSeriesWidget`. Weitere Abschnitte gehören zum
-  Element, das sie betreffen: `xAxis` und `yAxis` haben „Gridlines“
-  (`AxisAppearance.gridLines`, im Adapter `splitLine` der Achse),
-  `xAxis` zusätzlich „Zoom“ (`interaction.zoom`, wirkt auf die
-  X-Achse), `legend` „Interaction“ (`interaction.legend`), `marks`
-  „Labels“ (`appearance.labels`, Datenlabels sind kein eigenes Element,
-  weil ein Klick auf ein Label als Serien-Event ohnehin bei den Marks
-  landet).
+  `ChartFormatPopover` beantwortet pro Element per `switch` zwei Fragen:
+  `getFormatGroups` liefert die Gruppen untereinander, und
+  `getElementVisibility` den Schalter, der das ganze Element ein- oder
+  ausblendet (Titel, Legende, Farbskala, Tooltip, Achse). Achse und
+  Labels teilen `AxisWidget` mit `part` (`title` | `labels`) und
+  dieselbe `AxisAppearance`. `marks` füllt feste Plätze:
+  `getMarkGroups` (`charts/format/markGroups.tsx`) liefert pro Charttyp
+  `Partial<Record<MarkGroupKey, ReactNode>>`, `MARK_GROUP_ORDER` legt
+  die Reihenfolge an genau einer Stelle fest. Gruppen gehören zum
+  Element, das sie betreffen: `xAxis` und `yAxis` haben „Line“ und
+  „Gridlines“ (`AxisAppearance.line` bzw. `.gridLines`, im Adapter
+  `axisLine` und `splitLine`), `xAxis` zusätzlich „Zoom“
+  (`interaction.zoom`, wirkt auf die X-Achse), `legend` „Interaction“
+  (`interaction.legend`), `marks` „Labels“ (`appearance.labels`,
+  Datenlabels sind kein eigenes Element, weil ein Klick auf ein Label
+  als Serien-Event ohnehin bei den Marks landet).
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
   Elemente ein Chart hat: Container, Titel, Marks und Tooltip immer,
   Achsen und ihre Labels nur kartesisch, Legende wie `isLegendRelevant`,
@@ -772,8 +825,9 @@ sind; Grundlage des Empty State im Chart).
 Ein neuer Charttyp braucht damit einen Eintrag in `chartDefinitions`,
 einen Content-Builder in der Registry (siehe Abschnitt 6) und ggf.
 eigene Mark-Appearance. Wo sich ein Typ tatsächlich anders darstellt,
-bleibt die Abfrage bewusst am Typnamen: Mark-Controls im
-`MarkSeriesWidget`, die Line-Series in `createAggregatedSeriesOption`
+bleibt die Abfrage bewusst am Typnamen: Mark-Gruppen in
+`getChartTypeGroups` (`charts/format/markGroups.tsx`), die Line-Series in
+`createAggregatedSeriesOption`
 und der Donut-Radius. Ein neuer Wert für `dataMode` oder `coordinates`
 (z. B. für Histogram oder Radar) erweitert die Union und die
 betroffenen Helper.
@@ -847,7 +901,7 @@ type ObjectLayout = {
 type ObjectContainer = {
   background: ObjectBackground
   border: StrokeStyle // width 0: kein Rahmen
-  padding: number
+  layout: Pick<Layout, 'padding'>
   borderRadius: number
 }
 
@@ -935,9 +989,9 @@ WorkspaceState
 `selectedCard` für das Card-Format-Popover ab.
 
 Format-Popover: Die Hülle `ObjectFormatPopover` (`objects/`) übernimmt
-Position, Offenhalten, Element-Auswahl im Kopf und das Umschalten der
-Abschnitte für jedes Objekt; der Inhalt pro Typ kommt als `sections`.
-Der aktive Abschnitt ist lokaler UI-Zustand des Popovers. `ChartFormatPopover`
+Position, Offenhalten, Element-Auswahl und Element-Schalter im Kopf für
+jedes Objekt; die Gruppen pro Typ kommen als `children` und stehen
+untereinander, ohne eigenen UI-Zustand. `ChartFormatPopover`
 (`charts/format/`) und `CardFormatPopover` (`cards/`) liegen in ihrer
 Domäne, zusammen mit ihren Widgets; was alle Objekte teilen
 (`ContainerWidget`, `ObjectTitleWidget`), liegt in `objects/`, der
@@ -946,9 +1000,7 @@ Rahmen der Widget-Zeilen (`FormatWidget`) in `shared/ui`.
 `FormatTarget.element` auf den Elementtyp des Objekts ein.
 
 ```ts
-type DashboardLayout = {
-  gap: number
-}
+type DashboardLayout = Pick<Layout, 'gap'>
 
 type DashboardAnimation = {
   duration: number

@@ -2,6 +2,7 @@ import { createTextStyleOption } from './createTextStyleOption'
 import { resolveColor } from './resolveColor'
 
 import type { LegendComponentOption } from 'echarts'
+import type { Side } from '../../shared/layout'
 import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartInteractionSpec, LegendAppearance } from '../types'
 import type { ChartTheme } from './chartTheme'
@@ -26,11 +27,16 @@ export const LEGEND_EDGE_OFFSETS = {
   left: 8,
   right: 8,
   top: 16,
-} satisfies Record<LegendAppearance['position'], number>
+} satisfies Record<Side, number>
 
 // ===== HELPER ================================================================
+/**
+ * Places the legend at its side and, by its alignment, along that side.
+ * @param appearance Legend with its layout.
+ * @returns Distances of the legend to the chart edges for ECharts.
+ */
 function createLegendPlacement(appearance: LegendAppearance): LegendPlacement {
-  const { alignment, position } = appearance
+  const { alignment, position } = appearance.layout
   const isVertical = position === 'left' || position === 'right'
   const placement: LegendPlacement = {
     [position]: LEGEND_EDGE_OFFSETS[position],
@@ -68,9 +74,10 @@ export function createLegendOption({
 }: CreateLegendOptionParams): LegendComponentOption {
   const textColor = resolveColor(appearance.textStyle.color, theme)
   return {
-    itemGap: appearance.gap,
+    itemGap: appearance.layout.gap,
     orient:
-      appearance.position === 'left' || appearance.position === 'right'
+      appearance.layout.position === 'left' ||
+      appearance.layout.position === 'right'
         ? 'vertical'
         : 'horizontal',
     pageIconColor: textColor,
@@ -81,7 +88,7 @@ export function createLegendOption({
     textStyle: createTextStyleOption(appearance.textStyle, theme),
     triggerEvent: true,
     // Scrolls instead of overflowing when items exceed the chart width.
-    type: appearance.layout === 'plain' ? 'plain' : 'scroll',
+    type: appearance.overflow === 'plain' ? 'plain' : 'scroll',
     ...createLegendPlacement(appearance),
   }
 }

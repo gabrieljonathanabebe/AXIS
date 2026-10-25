@@ -5,6 +5,7 @@ import { createTextStyleOption } from './createTextStyleOption'
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 import type {
   AxisAppearance,
+  AxisTitleAppearance,
   ChartAppearanceSpec,
   ChartEncoding,
   ChartType,
@@ -27,6 +28,16 @@ type AxesOptions = {
 }
 
 // ===== HELPERS ===============================================================
+/**
+ * Name ECharts shows at an axis: the own title text, else the field.
+ * @param title Title of the axis.
+ * @param fallback Name of the field on the axis.
+ * @returns The name, or an empty one while the title is hidden.
+ */
+function getAxisName(title: AxisTitleAppearance, fallback = ''): string {
+  return title.visible ? title.text.trim() || fallback : ''
+}
+
 function getCategoryLabelInterval(
   tickCount: number | null,
   categoryCount: number,
@@ -102,7 +113,7 @@ export function createAxesOptions({
       data: isCategoryXAxis ? categories : undefined,
       max: appearance.xAxis.max ?? undefined,
       min: appearance.xAxis.min ?? undefined,
-      name: appearance.xAxis.title.text.trim() || encoding.x || '',
+      name: getAxisName(appearance.xAxis.title, encoding.x),
       nameGap: 32,
       nameLocation: 'middle',
       nameTextStyle: createTextStyleOption(
@@ -130,7 +141,7 @@ export function createAxesOptions({
       },
       max: appearance.yAxis.max ?? undefined,
       min: appearance.yAxis.min ?? undefined,
-      name: appearance.yAxis.title.text.trim() || valueLabel || '',
+      name: getAxisName(appearance.yAxis.title, valueLabel),
       nameGap: 48,
       nameLocation: 'middle',
       nameTextStyle: createTextStyleOption(

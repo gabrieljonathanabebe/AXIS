@@ -55,7 +55,8 @@ function measureTextWidth(text: string, style: TextStyle): number {
  */
 function getLegendExtent(legend: LegendAppearance, names: string[]): number {
   const padding = 2 * LEGEND_PADDING
-  if (legend.position === 'top' || legend.position === 'bottom') {
+  const { position } = legend.layout
+  if (position === 'top' || position === 'bottom') {
     return Math.max(legend.itemHeight, legend.textStyle.fontSize) + padding
   }
   const textWidth = Math.max(
@@ -81,7 +82,7 @@ export function createGridOption({
   if (!showsLegend) {
     return { ...BASE_GRID, containLabel: false }
   }
-  const { position } = legend
+  const { position } = legend.layout
   const names = [series].flat().map((item) => String(item.name ?? ''))
   return {
     ...BASE_GRID,

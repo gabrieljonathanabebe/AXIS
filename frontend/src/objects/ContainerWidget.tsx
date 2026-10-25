@@ -1,7 +1,7 @@
 import ColorControl from '../shared/ui/ColorControl'
 import ControlRow from '../shared/ui/ControlRow'
 import FormatWidget from '../shared/ui/FormatWidget'
-import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
+import LayoutControls from '../shared/ui/LayoutControls'
 import Slider from '../shared/ui/Slider'
 import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
 import { CONTAINER_BORDER } from './objectDefaults'
@@ -51,52 +51,55 @@ function toBackground(
     : { kind: 'color', color: value }
 }
 
-/** Edits background, padding, corner radius and border of a container. */
+/**
+ * Groups of a container: padding, corner radius, background and border,
+ * in the fixed order Layout → Shape → Fill → Stroke.
+ */
 function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
   return (
-    <FormatWidget title="Container">
-      <ControlRow label="Background">
-        <ColorControl
-          label="Container background"
-          presets={backgroundPresets}
-          value={toColorValue(value.background)}
-          onChange={(color) => {
-            onChange('background', toBackground(color))
-          }}
+    <>
+      <FormatWidget title="Layout">
+        <LayoutControls
+          label="Container"
+          value={value.layout}
+          onChange={(layout) => onChange('layout', layout)}
         />
-      </ControlRow>
-      <ControlRow label="Padding">
-        <ScrubbableNumber
-          label="Container padding"
-          min={0}
-          max={64}
-          step={2}
-          value={value.padding}
-          onValueChange={(padding) => {
-            onChange('padding', padding)
-          }}
+      </FormatWidget>
+      <FormatWidget title="Shape">
+        <ControlRow label="Radius">
+          <Slider
+            label="Container radius"
+            min={0}
+            max={32}
+            step={2}
+            value={value.borderRadius}
+            onValueChange={(borderRadius) => {
+              onChange('borderRadius', borderRadius)
+            }}
+          />
+        </ControlRow>
+      </FormatWidget>
+      <FormatWidget title="Background">
+        <ControlRow label="Color">
+          <ColorControl
+            label="Container background"
+            presets={backgroundPresets}
+            value={toColorValue(value.background)}
+            onChange={(color) => {
+              onChange('background', toBackground(color))
+            }}
+          />
+        </ControlRow>
+      </FormatWidget>
+      <FormatWidget title="Border">
+        <StrokeStyleControls
+          defaultColor={CONTAINER_BORDER.color}
+          label="Container border"
+          value={value.border}
+          onChange={(border) => onChange('border', border)}
         />
-      </ControlRow>
-      <ControlRow label="Radius">
-        <Slider
-          label="Container radius"
-          min={0}
-          max={32}
-          step={2}
-          value={value.borderRadius}
-          onValueChange={(borderRadius) => {
-            onChange('borderRadius', borderRadius)
-          }}
-        />
-      </ControlRow>
-      <StrokeStyleControls
-        defaultColor={CONTAINER_BORDER.color}
-        label="Container border"
-        rowLabelPrefix="Border"
-        value={value.border}
-        onChange={(border) => onChange('border', border)}
-      />
-    </FormatWidget>
+      </FormatWidget>
+    </>
   )
 }
 

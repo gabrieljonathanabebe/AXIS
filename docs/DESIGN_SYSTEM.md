@@ -468,53 +468,230 @@ ID   Identifiers   identifier (standardmäßig eingeklappt)
 
 Nicht jedes Field als große Card darstellen.
 
-## 6. Format-Widgets
+## 6. Format-Popover
 
 Es gibt kein Einstellungs-Panel. Einstellungen stehen am Objekt im
-Format-Popover (siehe „Bearbeitung am Chart“), Daten-Zuordnung im Build
-Panel („Chart data“), Dashboard-Einstellungen im Popover der
+Format-Popover (Bedienung siehe „Bearbeitung am Chart“), Daten-Zuordnung
+im Build Panel („Chart data“), Dashboard-Einstellungen im Popover der
 Canvas-Toolbar.
+
+### Aufbau: Element, Gruppen, Zeilen (implementiert)
+
+```text
+┌─ 🖌  X Axis ▾                  [on]  × ┐   Kopf: Element + Element-Schalter
+│ TITLE                           [on]   │   Gruppe mit Schalter
+│   Text · Color · Size · Weight · Style │   Zeilen
+│ ────────────────────────────────────── │
+│ LINE                            [on]   │
+│ ────────────────────────────────────── │
+│ GRIDLINES                       [off]  │   aus: nur die Überschrift
+│ ────────────────────────────────────── │
+│ ZOOM                            [off]  │
+└────────────────────────────────────────┘
+```
+
+- **Element:** Der Kopf zeigt das Element als `SelectControl`
+  (`variant="title"`). Lässt sich das ganze Element ausblenden (Titel,
+  Legende, Farbskala, Tooltip, Achse, Card Selection), steht sein
+  Schalter rechts im Kopf (`visibility` an `ObjectFormatPopover`, über
+  den Slot `actions` des `Popover`). Ist das Element aus, bleibt nur der
+  Kopf.
+- **Gruppen:** Ein Element zeigt alle seine Gruppen untereinander; es
+  gibt kein Segmented Control und keine Collapsibles im Popover. Die
+  Überschrift ist klein, in Versalien, mit Haarlinie zur vorigen Gruppe,
+  im Stil der plain Sections im Build Panel.
+- **Gruppen-Schalter:** Eine optionale Gruppe hat ihren Schalter rechts
+  in der Überschrift (Title der Achse, Line, Gridlines, Zoom, Area,
+  Labels, Interaction, Animation). Der Schalter ist zugleich das
+  Aufklappen: aus = nur die Überschrift, an = die Zeilen. Gruppen ohne
+  Schalter sind immer offen.
+- **Zeilen:** kurze Labels („Width“ statt „Gridline width“), weil die
+  Gruppe den Kontext gibt. Abhängige Unteroptionen
+  (`.format-widget-subproperties`) sind um `--indent-nested`
+  eingerückt.
+- Das Popover ist oben verankert, höchstens 400 px hoch, der Inhalt
+  scrollt.
+
+Ab 3.4 ersetzen Auge bzw. ＋/− den Schalter in Kopf und Überschrift
+(siehe „Kompakte Controls“ unten).
+
+### Feste Reihenfolge (implementiert)
+
+Jedes Element ordnet seine Gruppen gleich:
+
+```text
+Inhalt → Layout → Shape → Text → Fill → Stroke → Effect
+→ Zahlen- und Datumsformat → Unterelemente → Verhalten
+```
+
+Ein Element füllt nur die Plätze, die es hat; fehlende Plätze fallen
+weg, statt leer oder deaktiviert zu erscheinen. Der Platz ist fest, der
+Titel darf zum Element passen (Fill heißt am Container „Background“,
+bei Linien „Area“; Stroke heißt bei Linien „Line“, sonst „Border“).
+
+| Element                 | Gruppen                                                   |
+| ----------------------- | --------------------------------------------------------- |
+| Chart bzw. Card         | Layout (Padding) · Shape (Radius) · Background · Border   |
+| Title                   | Content (Text) · Layout (Alignment) · Text                |
+| X Axis, Y Axis          | Title · Line · Gridlines · Zoom (nur X)                   |
+| X Axis Labels, Y Axis … | Content (Type, Ticks) · Layout (Rotation) · Text · Format |
+| Legend                  | Layout (Position, Alignment, Gap) · Text · Interaction    |
+| Color Scale             | Range · Layout (Position, Orientation) · Colors · Labels  |
+| Tooltip                 | Behavior (Trigger; nicht bei Pie und Donut)               |
+| Card Value              | Content (Function) · Text · Format                        |
+| Card Selection          | Text                                                      |
+| Dashboard (Toolbar)     | Layout (Gap) · Animation                                  |
+
+Marks haben feste Plätze in `MARK_GROUP_ORDER`
+(`charts/format/markGroups.tsx`), der einzigen Stelle mit ihrer
+Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
+
+| Platz   | Scatter                                  | Line                  | Bar           | Pie / Donut          |
+| ------- | ---------------------------------------- | --------------------- | ------------- | -------------------- |
+| Color   | Farbe, Palette oder Link „Color scale“   | wie Scatter           | wie Scatter   | Palette              |
+| Shape   | Symbol, Size bzw. Size range (Size-Feld) | Smooth                | Width, Radius | Inner radius (Donut) |
+| Fill    | Fill                                     | Area (mit Schalter)   | Fill          | Fill                 |
+| Stroke  | Border                                   | Line                  | Border        | Border               |
+| Effect  | Effect                                   | Effect                | Effect        | Effect               |
+| Points  | –                                        | Show: Auto · On · Off | –             | –                    |
+| Labels  | Labels                                   | Labels                | Labels        | Labels               |
+| Tooltip | Link „Settings → Edit ›“                 | wie Scatter           | wie Scatter   | wie Scatter          |
+
+- Bei kontinuierlicher Farbe verweist Color auf das Element „Color
+  Scale“, beim Tooltip auf „Tooltip“ (`getElementLinkGroup`, Button
+  „Edit ›“ in `accent`).
+- Welchen Inhalt die Datenlabels zeigen, ist noch fest (Wert bzw. Anteil);
+  die Wahl kommt mit „Tooltip-Felder“ (`ROADMAP.md`).
+
+### Format-Widgets (implementiert)
 
 Ein Widget repräsentiert ein Feature oder eine logisch
 zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
-`LegendWidget`. Im Popover ist ein Widget meist ein Abschnitt eines
-Elements.
+`LegendWidget`; es liefert eine oder mehrere Gruppen.
 
-Widgets rendern ihre Zeilen über `FormatWidget` (`shared/ui`): nur die
-Controls, ohne eigene Fläche, Überschrift oder Collapsible; den Namen
-trägt das Segmented Control der Abschnitte bzw. die Section im Build
-Panel. Hat das Widget eine Sichtbarkeit, ist sie die erste Zeile
-„Visible“ mit `Toggle`. Schaltet sie Verhalten statt Sichtbarkeit
-(Zoom, Tooltip, Legend Interaction), heißt die Zeile über
-`visibility.label` „Enabled“, im Dashboard-Popover „Animation“. Die
-Eigenschaften bleiben auch bei ausgeblendetem Feature editierbar.
-Abhängige Unteroptionen (`.format-widget-subproperties`) sind um
-`--indent-nested` eingerückt.
-
-`AxisWidget` zeigt mit `part` (`title` | `labels`) die Zeilen eines
-Elements: „X Axis“ Sichtbarkeit und Titel, „X Axis Labels“ Typ (Number
-oder Date), Zahlenformat, Ticks, Rotation und Text. Die Sichtbarkeit gehört zu `title`, weil
-`visible` die ganze Achse ausblendet.
+- `FormatWidget` (`shared/ui`) ist die Gruppe: `title` wird zur
+  Überschrift, `visibility` zum Schalter darin; `children` sind die
+  Zeilen und dürfen fehlen (Gruppe nur mit Schalter). Ohne `title`
+  bleiben nur die Zeilen, z. B. im Build Panel unter „Chart data“.
+  `FormatVisibility` ist der gemeinsame Typ für Gruppen- und
+  Element-Schalter.
+- Schaltet der Schalter Verhalten statt Sichtbarkeit (Zoom, Tooltip,
+  Legend Interaction, Animation), benennt `visibility.label` ihn für
+  Screenreader („Tooltip enabled“).
+- Die Bausteine (`LayoutControls`, `TextStyleControls`,
+  `StrokeStyleControls`, `FillControls`, `EffectControls`,
+  `NumberFormatControls`) liefern nur Zeilen; das Widget legt sie in
+  seine Gruppen.
+- `AxisWidget` zeigt mit `part` (`title` | `labels`) die Gruppen eines
+  Elements: „X Axis“ die Gruppe Title, „X Axis Labels“ Content, Layout,
+  Text und Format (nur bei Typ Number).
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
-Beispiel:
+### Kompakte Controls im Figma-Stil (geplant, 3.4)
+
+Ziel: Das Popover sieht aus und bedient sich wie das Design-Panel in
+Figma: dicht, ruhig, Icons statt Text-Labels, eine klare Sprache pro
+Ebene. Die Spec ändert sich nicht, nur die Darstellung der Controls.
+
+**Regel 1: drei Ebenen, jede mit eigener Sprache**
+
+| Ebene                  | Inhalt                           | Erlaubte Controls                                                         |
+| ---------------------- | -------------------------------- | ------------------------------------------------------------------------- |
+| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts nur Auge oder ＋ / −, nie ein Schalter                             |
+| 2. Zeilen              | Werte, kompakt, ohne Text-Label  | Felder mit Icon im Feld, Icon-Gruppen (Segmented mit Icons), Icon-Toggles |
+| 3. Details             | seltene Einstellungen            | hinter ⚙ am Zeilenende, als eigenes kleines Popover                       |
+
+- **Auge:** blendet einen sichtbaren Teil ein oder aus (Title,
+  Gridlines, Area, Points, Labels, Achsenlinie, Legende); ausgeblendet
+  zeigt die Gruppe nur ihre Überschrift.
+- **＋ / −:** fügt etwas hinzu oder entfernt es (Effects, Zoom, später
+  Referenzlinien); ohne Eintrag zeigt die Gruppe nur Überschrift und ＋.
+- Einzelne An/Aus-Optionen in einer Gruppe (Smooth, Compact, Italic,
+  Legend-Auswahl) sind Icon-Toggles in der Zeile (`IconButton` mit
+  `isActive`). Im Popover gibt es danach keinen `Toggle` mehr.
+
+**Regel 2: Zeilen-Muster der Bausteine**
 
 ```text
-Labels
-├── Position
-├── Font Size
-├── Weight
-└── Color
+TEXT
+[ Aa 14 ]  [ Medium ▾ ]  [ I ]
+[■ EEF4FF                 100 %]
+
+FILL                          👁
+[■ 199E8A                  90 %]
+
+STROKE                        👁
+[ ═ 2 px ]  [ — ┄ ┈ ]       [⚙]
+[■ 94A3B8                 100 %]
+
+EFFECTS                        ＋
+[ Glow ▾ ]  [ ◌ 12 ]   👁   −
+
+NUMBER FORMAT
+[ Currency        ▾ ]       [⚙]
+
+LEGEND – Position
+[ ⊞ ]   3×3-Raster
 ```
 
-statt mehrfach verschachtelter Einzelwidgets.
+- **Farbzeile** (`PaintControl`): Farbfeld, Hex-Wert (direkt editierbar)
+  und Deckkraft in % (scrubbable) in einer Zeile; das Farbfeld öffnet
+  den bisherigen Farbwähler mit den Farben des Einsatzorts
+  (`colorPresets`). Bei Serienfarben (`SeriesFill`, `SeriesStrokeStyle`)
+  bleibt nur das Deckkraft-Feld.
+- **Text:** Zeile 1 Größe (Icon Aa) | Gewicht (Select) | Italic
+  (Icon-Toggle), Zeile 2 Farbzeile; Ausrichtung als Icon-Gruppe, wo es
+  sie gibt.
+- **Stroke:** Zeile 1 Breite (Icon ═, Einheit px) | Stil als Icon-Gruppe
+  (— ┄ ┈) | ⚙ für Seltenes, Zeile 2 Farbzeile.
+- **Effects:** Überschrift mit ＋; jeder Eintrag eine Zeile: Art
+  (Glow ▾) | Stärke (Icon ◌) | Auge | −. Ersetzt None | Glow.
+- **Number Format:** Format-Select | ⚙; Currency, Decimals, Compact,
+  Prefix und Suffix im Details-Popover statt eingerückter Zeilen;
+  DateFormat später nach demselben Muster.
+- **Zahlenpaare** in einer Zeile: Size range (↧ min | ↥ max), Bar width
+  | Radius, Min | Max einer Achse.
+- **Position der Legende** als `PositionGrid` (3×3), ohne Formänderung:
+  obere Reihe `top` mit `alignment` start/center/end, untere Reihe
+  `bottom`, mittlere Reihe `left` | (Mitte deaktiviert) | `right`.
 
-Seltene technische Optionen gehören in:
+**Regel 3: Details-Popover statt Einrückung**
 
-```text
-Advanced
-```
+- ⚙ öffnet ein kleines Popover neben der Zeile, verschachtelt über den
+  bestehenden `Popover` (`FloatingTree`); höchstens eine Ebene tief,
+  schließt mit Escape und Klick daneben.
+- Ersetzt `.format-widget-subproperties` und die Einrückung ganz.
+
+**Regel 4: Dichte und Ruhe**
+
+- Zeilen ca. 28–32 px statt 36 px, Schrift 11–12 px, einheitlich.
+- Felder ohne Rahmen, feine Kante erst bei Hover und Fokus.
+- Glass nur für die Popover-Fläche, innen flach und ruhig.
+- Kurze Übergänge (ca. 100–150 ms).
+- Zahlenfelder: Pfeile ±1, Shift ±10, Enter übernimmt, Escape verwirft.
+
+**Regel 5: Icons und Barrierefreiheit**
+
+- Icons aus `lucide-react`, in Feldern einheitlich 14 px.
+- Jedes Icon ohne Text bekommt `title` und `aria-label` (z. B. „Stroke
+  width“, „Italic“, „Advanced number format“); ohne Text-Label sind
+  Tooltips die einzige Erklärung.
+
+**Komponenten** (erweitern vor neu bauen):
+
+| Bedarf                                  | Umsetzung                                                     |
+| --------------------------------------- | ------------------------------------------------------------- |
+| Zahlenfeld mit Icon und Einheit im Feld | `ScrubbableNumber` mit neuen Props `icon` und `unit`          |
+| Farbzeile                               | neu: `PaintControl` (nutzt `ColorControl` bzw. dessen Picker) |
+| Icon-Toggle                             | `IconButton` mit `isActive` (vorhanden)                       |
+| zwei Felder pro Zeile, Zeile ohne Label | `ControlRow` mit optionalem `label` und Zwei-Spalten-Variante |
+| Header-Aktionen Auge und ＋ / −         | Gruppen-Überschrift (`FormatWidget`) erweitern                |
+| Details-Popover hinter ⚙                | kleine Hülle um den bestehenden `Popover`                     |
+| 3×3-Raster                              | neu: `PositionGrid` in `shared/ui`                            |
+
+Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt wird kompakt,
+dadurch wirkt jeder Schritt auf alle Elemente gleichzeitig.
 
 ## 7. Control Mapping
 
@@ -619,7 +796,9 @@ Verwenden:
 `Range Slider + Inputs`
 
 Nur verwenden, wenn tatsächlich ein Min-/Max-Intervall editiert wird.
-Aktuell als `RangeSlider` ohne Inputs umgesetzt (Table Filter).
+Umgesetzt als `RangeSlider`: mit Zahlenfeldern links und rechts (Size
+range der Scatter-Punkte), mit `formatValue` beschriftet (Table
+Filter).
 
 ### Field
 
@@ -910,9 +1089,15 @@ sich nicht überholen.
 
 - Optik wie `Slider`: Thumb in `--color-control-handle` mit
   Accent-Rand, nur der gewählte Bereich in Electric Blue.
-- Beschriftung von Start und Ende darunter über `formatValue`.
-- Generisch über Zahlen: Aufrufer übergeben Positionen (z. B. Indizes
-  von Datums- oder Werteschritten) und formatieren selbst.
+- Ohne `formatValue` stehen links und rechts der Spur zwei
+  `NumberInput`s für Start und Ende (wie beim `Slider`); sie begrenzen
+  sich gegenseitig wie die Griffe.
+- Mit `formatValue` stehen Start und Ende formatiert unter der Spur:
+  Aufrufer übergeben Positionen (z. B. Indizes von Datums- oder
+  Werteschritten), für die ein Zahlenfeld falsch wäre.
+- `NumberInput` (`shared/ui`) ist das kleine Zahlenfeld neben `Slider`
+  und `RangeSlider`: Entwurf bis Enter oder Blur, dann auf `min` und
+  `max` begrenzt.
 
 ## 9h. Popover
 
@@ -927,7 +1112,8 @@ Klick daneben):
   Schließen-Button (`IconButton`, `ghost`, `xs`, benannt nach `label`).
   `title` ist ein Slot (`ReactNode`), z. B. Icon plus `SelectControl`
   im Format-Popover. Ohne `title` bleibt das Popover kopflos
-  (Dropdowns, Farbwähler).
+  (Dropdowns, Farbwähler). `actions` nimmt Controls vor dem
+  Schließen-Button auf, z. B. den Element-Schalter des Format-Popovers.
 - `SelectControl` hat eine `variant`: `field` (Default, Feld mit
   Rahmen, Menü so breit wie das Feld) und `title` (liest sich als
   Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover in
@@ -941,7 +1127,7 @@ Klick daneben):
   folgende Klick würde es wieder öffnen.
 - Das Format-Popover scrollt nicht als Ganzes: Header und Glass-Kante
   (`.glass::before`) bleiben stehen, nur der Inhalt scrollt in
-  `.chart-format-popover-body`. Padding und gleich großer negativer
+  `.format-popover-body`. Padding und gleich großer negativer
   Margin verhindern, dass Fokusringe am Rand abgeschnitten werden.
 - Positionierung: `flip` wechselt die Seite, `shift` hält das Popover
   im Viewport, bei Platzmangel auch quer zur Platzierung. Ein Popover
@@ -984,9 +1170,9 @@ davor oder dahinter:
   „A“-Vorschau)
 - `label` benennt die Controls für Screenreader, z. B. „Legend text“
   → „Legend text color“
-- `rowLabelPrefix` trennt zwei Texte in einem Widget, z. B. „Title
-  color“ und „Label color“ an der Achse; ohne Präfix heißen die Zeilen
-  „Color“, „Size“, „Weight“, „Style“
+- die Zeilen heißen „Color“, „Size“, „Weight“, „Style“; den Kontext gibt
+  die Gruppe. `rowLabelPrefix` („Title color“) hat seit 3.3 keinen
+  Nutzer mehr und entfällt mit dem Umbau in 3.4
 - `minFontSize`/`maxFontSize` begrenzen die Größe (Standard 9–28), z. B.
   11–20 für Titel im festen Header, 16–96 für den Card-Wert
 - `defaultColor` (Pflicht) ist die Farbe, die der Text bei neuen
@@ -1015,13 +1201,14 @@ beiden geteilt).
 - `defaultColor` wie bei `TextStyleControls`, hier optional, weil
   Serienlinien keine Color-Zeile haben; die Color-Zeile erscheint nur
   mit Farbe und `defaultColor`
-- genutzt vom Rahmen im `ContainerWidget` („Border width“ …), von
+- genutzt vom Rahmen im `ContainerWidget` (Gruppe Border), von
   Achsenlinie und Gridlines im `AxisStrokeWidget` (Breite 1–4, mit
-  Sichtbarkeit; Titel, `label` und `defaultColor` per Prop, damit ein
-  Widget beide Linien einer Achse bedient), von Linien-Marks im
-  `MarkSeriesWidget` (Präfix „Line“, Breite 1–8, ohne Farbe) und von den
-  Rahmen der Balken, Scatter-Punkte und Pie-Segmente dort (Präfix
-  „Border“, `defaultColor` aus `CHART_MARK_BORDER`); später Tables
+  Schalter in der Überschrift; Titel, `label` und `defaultColor` per
+  Prop, damit ein Widget beide Linien einer Achse bedient), von
+  Linien-Marks (Gruppe Line, Breite 1–8, ohne Farbe) und den Rahmen der
+  Balken, Scatter-Punkte und Pie-Segmente (Gruppe Border,
+  `defaultColor` aus `CHART_MARK_BORDER`) in `markGroups.tsx`; später
+  Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -1029,7 +1216,7 @@ beiden geteilt).
 ohne Domänenwissen in `shared/`, eine Controls-Komponente mit immer
 denselben Zeilen und je eine Übersetzung pro Renderer (CSS, ECharts).
 In der Spec steht der Baustein als benanntes Unterobjekt (z. B.
-`title.textStyle`), damit ein Abschnitt im Popover genau einem Typ
+`title.textStyle`), damit eine Gruppe im Popover genau einem Typ
 entspricht.
 
 Vorhandene Bausteine:
@@ -1053,6 +1240,10 @@ Vorhandene Bausteine:
 - `Effect` mit `EffectControls` (siehe 9o): Glow auf allen Marks
   (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`) in der
   Farbe der Serie bzw. des Segments
+- `Layout` mit `LayoutControls` (siehe 9p): Titel (`title.layout`),
+  Container (`container.layout`), Dashboard (`dashboard.layout`),
+  Legende (`legend.layout`), Farbskala (`continuous.layout`) und
+  Datenlabels (`labels.layout`)
 
 Ein versetzter Schatten kommt später als weitere Variante von `Effect`
 hinzu, z. B. für den Container.
@@ -1105,38 +1296,38 @@ Dashboard
 
 Objekt (Chart und Card)
 
-| Teil      | Form   | Ist                                                            | Soll                          | Status    |
-| --------- | ------ | -------------------------------------------------------------- | ----------------------------- | --------- |
-| Container | Fläche | `container.background`, `.border`, `.padding`, `.borderRadius` | `container.effect` (Schatten) | ✓, später |
-| Titel     | Text   | `title.textStyle`, `.alignment`                                | –                             | ✓         |
+| Teil      | Form   | Ist                                                           | Soll                          | Status    |
+| --------- | ------ | ------------------------------------------------------------- | ----------------------------- | --------- |
+| Container | Fläche | `container.background`, `.border`, `.layout`, `.borderRadius` | `container.effect` (Schatten) | ✓, später |
+| Titel     | Text   | `title.textStyle`, `.layout`                                  | –                             | ✓         |
 
 Chart
 
-| Teil               | Form         | Ist                                               | Soll                                 | Status    |
-| ------------------ | ------------ | ------------------------------------------------- | ------------------------------------ | --------- |
-| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`                  | –                                    | ✓         |
-| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`         | –                                    | ✓         |
-| Achsenbeschriftung | Datum        | festes Format über `formatDate`                   | `xAxis.labels.dateFormat`            | ○         |
-| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                   | –                                    | ✓         |
-| Gridlines          | Linie        | `xAxis.gridLines.stroke`                          | –                                    | ✓         |
-| Legende            | Text         | `legend.textStyle`                                | –                                    | ✓         |
-| Legende            | Fläche       | –                                                 | `legend.background`, `.border`       | später    |
-| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`               | Label-Box (Fill, Stroke)             | ✓, später |
-| Tooltip            | Zahl         | `interaction.tooltip.numberFormat` (ohne Control) | –                                    | ✓         |
-| Tooltip            | Datum        | festes Format über `formatDate`                   | `interaction.tooltip.dateFormat`     | ○         |
-| Tooltip            | Text, Fläche | fest im Adapter                                   | `textStyle`, `background`, `border`  | später    |
-| Farbskala          | –            | `colorScale.continuous.startColor`, `.endColor`   | eigene HTML-Farbskala mit Bausteinen | später    |
+| Teil               | Form         | Ist                                                        | Soll                                 | Status    |
+| ------------------ | ------------ | ---------------------------------------------------------- | ------------------------------------ | --------- |
+| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`, `.visible`               | –                                    | ✓         |
+| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`                  | –                                    | ✓         |
+| Achsenbeschriftung | Datum        | festes Format über `formatDate`                            | `xAxis.labels.dateFormat`            | ○         |
+| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                            | –                                    | ✓         |
+| Gridlines          | Linie        | `xAxis.gridLines.stroke`                                   | –                                    | ✓         |
+| Legende            | Text         | `legend.textStyle`, `.layout`                              | –                                    | ✓         |
+| Legende            | Fläche       | –                                                          | `legend.background`, `.border`       | ○         |
+| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.layout`             | Label-Box (Fill, Stroke)             | ✓, später |
+| Tooltip            | Zahl         | `interaction.tooltip.numberFormat` (ohne Control)          | Control                              | ✓, ○      |
+| Tooltip            | Datum        | festes Format über `formatDate`                            | `interaction.tooltip.dateFormat`     | ○         |
+| Tooltip            | Text, Fläche | fest im Adapter                                            | `textStyle`, `background`, `border`  | ○         |
+| Farbskala          | –            | `colorScale.continuous.startColor`, `.endColor`, `.layout` | eigene HTML-Farbskala mit Bausteinen | ○         |
 
 Marks
 
-| Teil                | Form   | Ist                                                                           | Soll                 | Status |
-| ------------------- | ------ | ----------------------------------------------------------------------------- | -------------------- | ------ |
-| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`), `line.effect`                            | –                    | ✓      |
-| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                                   | –                    | ✓      |
-| Punkte auf Linie    | Fläche | `line.showSymbol`                                                             | Marker (Form, Größe) | später |
-| Balken              | Fläche | `bar.fill` (`SeriesFill`), `.border`, `.borderRadius`, `.barWidth`, `.effect` | –                    | ✓      |
-| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.border`, `.effect`, `.symbol`, `.pointSize`  | –                    | ✓      |
-| Pie-/Donut-Segmente | Fläche | `pie.fill` (`SeriesFill`), `.border`, `.innerRadius` (nur Donut), `.effect`   | –                    | ✓      |
+| Teil                | Form   | Ist                                                                                        | Soll                 | Status |
+| ------------------- | ------ | ------------------------------------------------------------------------------------------ | -------------------- | ------ |
+| Linie               | Linie  | `line.stroke` (`SeriesStrokeStyle`), `line.effect`                                         | –                    | ✓      |
+| Fläche unter Linie  | Fläche | `line.areaFill`, `line.area` (`SeriesFill`)                                                | –                    | ✓      |
+| Punkte auf Linie    | Fläche | `line.points` (`auto`, `on`, `off`)                                                        | Marker (Form, Größe) | später |
+| Balken              | Fläche | `bar.fill` (`SeriesFill`), `.border`, `.borderRadius`, `.barWidth`, `.effect`              | –                    | ✓      |
+| Scatter-Punkte      | Fläche | `scatter.fill` (`SeriesFill`), `.border`, `.effect`, `.symbol`, `.pointSize`, `.sizeRange` | –                    | ✓      |
+| Pie-/Donut-Segmente | Fläche | `pie.fill` (`SeriesFill`), `.border`, `.innerRadius` (nur Donut), `.effect`                | –                    | ✓      |
 
 Card
 
@@ -1175,9 +1366,9 @@ nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
   die Color-Zeile (`hasFillColor`)
 - `kind` ist heute immer `solid` und hat keine Zeile; mit einer zweiten
   Variante (Verlauf, Muster) kommt eine Zeile „Type“ dazu
-- genutzt von der Fläche unter Linien, den Balken, den Scatter-Punkten
-  und den Pie-Segmenten im `MarkSeriesWidget`; alle sind `SeriesFill`
-  und zeigen nur Opacity
+- genutzt von der Fläche unter Linien (Gruppe Area mit Schalter), den
+  Balken, den Scatter-Punkten und den Pie-Segmenten (Gruppe Fill) in
+  `markGroups.tsx`; alle sind `SeriesFill` und zeigen nur Opacity
 - bei Balken, Punkten und Segmenten ist die Deckkraft die des ganzen
   Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen und
   Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
@@ -1188,7 +1379,7 @@ nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
 nach demselben Muster wie `FillControls`: Zeilen statt Rahmen, `label`
 für Screenreader („Line effect“, „Bar glow intensity“).
 
-- Effect (`SegmentedControl` None/Glow); ein `SegmentedControl` statt
+- Type (`SegmentedControl` None/Glow); ein `SegmentedControl` statt
   `Toggle`, weil `kind` eine Auswahl von Varianten ist und ein späterer
   Schatten als dritte Option dazukommt
 - bei Glow eingerückt (`.format-widget-subproperties`): Intensity
@@ -1197,12 +1388,31 @@ für Screenreader („Line effect“, „Bar glow intensity“).
 - ein erneuter Klick auf die aktive Variante ändert nichts, damit die
   Intensität erhalten bleibt
 - keine Color-Zeile, weil Glow die Farbe der Mark nimmt
-- genutzt von Linien, Balken, Scatter-Punkten und Pie-Segmenten im
-  `MarkSeriesWidget`, jeweils nach Fill und Border
+- genutzt von Linien, Balken, Scatter-Punkten und Pie-Segmenten in der
+  Gruppe Effect der Marks, jeweils nach Fill und Stroke
 - Scatter zeichnet den Glow nur bis 500 Punkte (`MAX_GLOW_POINTS` im
   Adapter), weil jeder Punkt seinen eigenen Schatten weichzeichnet;
   darüber bleibt die Einstellung erhalten, ohne zu wirken, und das
   Control zeigt keinen Hinweis
+
+## 9p. LayoutControls
+
+`LayoutControls` ist der Baustein für die Platzierung eines Elements
+(`Layout`), nach demselben Muster wie die übrigen Bausteine: Zeilen
+statt Rahmen, `label` für Screenreader („Legend position“).
+
+- Position (`SegmentedControl`), Orientation (Icons vertikal und
+  horizontal), Alignment (`AlignmentControl`), Gap und Padding
+  (`ScrubbableNumber`, Schritt 2, Grenzen über `maxGap` und
+  `maxPadding`)
+- generisch über den Wert: Es erscheinen nur die Zeilen, deren Felder
+  das Layout hat; der Titel zeigt nur Alignment, die Legende Position,
+  Alignment und Gap
+- `positions` schränkt die Positionen ein (Standard: die vier Seiten);
+  Seiten erscheinen als Pfeile (`.layout-position-control`), sobald
+  eine Position keine Seite ist (Labels „Inside“), zeigt die ganze Zeile
+  Text
+- steht im Popover immer in der Gruppe Layout
 
 ## 10. Legend
 
@@ -1222,12 +1432,13 @@ Legend und ihr interaktives Verhalten gehören zum Element „Legend“ im
 Format-Popover:
 
 ```text
-Legend
-├── Legend       (Position, Ausrichtung, Text, Abstand)
-└── Interaction  (Enabled, Selection Mode)
+Legend                [on]
+├── Layout       (Position, Alignment, Gap)
+├── Text
+└── Interaction  [on] (Selection Mode)
 ```
 
-Die Legend scrollt statt überzulaufen: `layout` `auto` und `scroll`
+Die Legend scrollt statt überzulaufen: `overflow` `auto` und `scroll`
 ergeben eine ECharts-Scroll-Legend mit Blätter-Pfeilen in Text- und
 Inactive-Farbe, `plain` eine einfache Legend. Pie und Donut rücken zur
 Gegenseite einer sichtbaren Legend (`getPieCenter`); ihre Legend steht
@@ -1262,14 +1473,12 @@ ECharts `visualMap` ist ein Renderer-Detail.
 
 Im Cevyn UI heißt das Feature `Color Scale`.
 
-Das Element „Color Scale“ im Format-Popover unterstützt:
-
-- Sichtbarkeit;
-- Position links oder rechts;
-- vertikale oder horizontale Ausrichtung;
-- Auto-/Custom-Minimum und -Maximum;
-- Low-/High-Farben über GradientControl;
-- ein- und ausblendbare Endlabels.
+Das Element „Color Scale“ im Format-Popover hat seinen Schalter im
+Kopf und die Gruppen Range (Auto-/Custom-Minimum und -Maximum), Layout
+(Position links oder rechts, vertikal oder horizontal), Colors (Low-
+und High-Farbe über `GradientControl`) und Labels (Schalter für die
+Endlabels). Bei kontinuierlicher Farbe verweist die Gruppe Color der
+Marks mit „Color scale → Edit ›“ hierher.
 
 ## 12. Chart Tooltips
 
@@ -1450,19 +1659,11 @@ Labels der X- und Y-Achse, Legende, Color Scale):
   einen Rahmen in `--color-border-accent`.
 - Der Kopf ist die Navigation: Pinsel in `--color-accent`, daneben das
   aktuelle Element als `SelectControl` mit `variant="title"`, rechts das
-  X. Darunter stehen die Abschnitte des Elements.
-- Abschnitte: Ein Element mit mehreren Einstellungsgruppen (z. B.
-  X Axis: Axis | Gridlines | Zoom, Legend: Legend | Interaction, Marks:
-  Marks | Labels) zeigt
-  sie als `SegmentedControl` mit Icons; der Name steht im Tooltip und
-  im `aria-label`. Sichtbar ist nur der aktive Abschnitt, keine
-  Collapsibles im Popover. Ein Element mit einem Abschnitt zeigt kein
-  Segmented Control. Jeder Abschnitt rendert sein Widget `bare`.
+  X; dazwischen der Element-Schalter, wo es einen gibt.
+- Darunter stehen alle Gruppen des Elements untereinander, mit dem
+  Element-Schalter im Kopf (Aufbau und Reihenfolge siehe Abschnitt 6).
   Verhalten ohne Element im Chart (z. B. Legend Selection Mode, Zoom)
-  ist ein eigener Abschnitt des Elements, das es betrifft.
-- Der aktive Abschnitt wird über seinen Namen gemerkt: Wechselt man das
-  Element und es hat einen Abschnitt gleichen Namens (Gridlines von
-  X Axis zu Y Axis), bleibt dieser aktiv, sonst der erste.
+  ist eine Gruppe des Elements, das es betrifft.
 - Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel,
   Achsen-Labels, Legende oder eine Mark zeigt eine Region (bei Labels
   und Legende um alle Einträge, bei Marks um die einzelne Mark, bei
@@ -1484,7 +1685,8 @@ Labels der X- und Y-Achse, Legende, Color Scale):
   Daten-Tooltip, kein Brush (eine bestehende Auswahl bleibt sichtbar).
 - Ausnahme Tooltip: Er hat kein klickbares Element, sondern einen
   Eintrag im Element-Dropdown nach „Marks“; die Marks verweisen mit
-  einer Zeile „Tooltip“ und dem Button „Edit ›“ (`accent`) dorthin.
+  ihrer letzten Gruppe Tooltip und dem Button „Edit ›“ (`accent`)
+  dorthin.
   Solange „Tooltip“ formatiert wird, steht der echte Tooltip als
   Vorschau am größten Wert, folgt nicht dem Pointer und zeigt jede
   Änderung sofort; der übrige Chart ist abgeblendet. Kein eigenes

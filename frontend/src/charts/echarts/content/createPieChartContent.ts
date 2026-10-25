@@ -6,22 +6,23 @@ import { createBorderOption } from '../createStrokeStyleOption'
 import { getPaletteColor, resolvePalette } from '../resolveColor'
 
 import type { PieSeriesOption } from 'echarts'
+import type { Side } from '../../../shared/layout'
 import type { LegendAppearance } from '../../types'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== HELPERS ===============================================================
-// Moves the pie away from a visible legend so the two never overlap.
+/** Moves the pie away from a visible legend so the two never overlap. */
 function getPieCenter(legend: LegendAppearance): [string, string] {
   if (!legend.visible) {
     return ['50%', '50%']
   }
-  const centers: Record<LegendAppearance['position'], [string, string]> = {
+  const centers: Record<Side, [string, string]> = {
     bottom: ['50%', '44%'],
     left: ['60%', '50%'],
     right: ['40%', '50%'],
     top: ['50%', '56%'],
   }
-  return centers[legend.position]
+  return centers[legend.layout.position]
 }
 
 // ===== FUNCTION ==============================================================
@@ -78,7 +79,9 @@ export function createPieChartContent(
       ...label,
       formatter: '{d}%',
       position:
-        spec.appearance.labels.position === 'inside' ? 'inside' : 'outside',
+        spec.appearance.labels.layout.position === 'inside'
+          ? 'inside'
+          : 'outside',
     },
     percentPrecision: 0,
     radius: chartType === 'donut' ? [`${pie.innerRadius}%`, '68%'] : [0, '68%'],

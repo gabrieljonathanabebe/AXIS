@@ -11,7 +11,7 @@ import {
 import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
 
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
-import type { ChartAppearanceSpec } from '../../types'
+import type { ChartAppearanceSpec, LinePoints } from '../../types'
 import type { ChartTheme } from '../chartTheme'
 
 // ===== TYPES =================================================================
@@ -37,8 +37,26 @@ type CreateAggregatedSeriesOptionParams = {
 type AggregatedSeriesOption = BarSeriesOption | LineSeriesOption
 
 // ===== CONSTANTS =============================================================
-// Above this many points, line symbols merge into a bead chain.
+/** Above this many points, line symbols merge into a bead chain. */
 const MAX_LINE_SYMBOLS = 30
+
+/**
+ * Size of visible line points, the ECharts default. Set explicitly because
+ * `symbolSize: undefined` would replace the default and hide the points.
+ */
+const LINE_SYMBOL_SIZE = 6
+
+// ===== HELPERS ===============================================================
+/**
+ * Tells whether a line shows its points: always, never, or in auto mode
+ * only up to `MAX_LINE_SYMBOLS`.
+ * @param points Points setting of the line.
+ * @param count Number of data points of the series.
+ * @returns True when ECharts draws the symbols.
+ */
+function showsLinePoints(points: LinePoints, count: number): boolean {
+  return points === 'auto' ? count <= MAX_LINE_SYMBOLS : points === 'on'
+}
 
 // ===== FUNCTION ==============================================================
 /**
@@ -74,6 +92,8 @@ export function createAggregatedSeriesOption({
 
   // ===== RETURN ==============================================================
   if (chartType === 'line') {
+    const showsPoints =
+      isHighlight || showsLinePoints(appearance.line.points, data.length)
     return {
       areaStyle: appearance.line.areaFill
         ? {
@@ -87,6 +107,7 @@ export function createAggregatedSeriesOption({
       id,
       itemStyle: { color, opacity },
       label,
+      labelLayout: { hideOverlap: true },
       lineStyle: {
         ...createStrokeStyleOption(appearance.line.stroke, theme),
         ...createEffectOption(appearance.line.effect, glowColor),
@@ -94,10 +115,9 @@ export function createAggregatedSeriesOption({
         opacity: appearance.line.stroke.opacity * (opacity ?? 1),
       },
       name: name ?? undefined,
-      showSymbol:
-        isHighlight ||
-        (appearance.line.showSymbol && data.length <= MAX_LINE_SYMBOLS),
+      showSymbol: showsPoints || label.show,
       smooth: appearance.line.smooth,
+      symbolSize: showsPoints ? LINE_SYMBOL_SIZE : 0,
       triggerEvent: true,
       type: 'line',
       xAxisIndex,

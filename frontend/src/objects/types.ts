@@ -5,8 +5,9 @@ import type {
   ChartType,
 } from '../charts/types'
 import type { ColorValue } from '../shared/colorValue'
+import type { Layout } from '../shared/layout'
 import type { StrokeStyle } from '../shared/strokeStyle'
-import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
+import type { TextStyle } from '../shared/textStyle'
 
 // ===== OBJECT ================================================================
 /** Fields every dashboard object has, whatever its content. */
@@ -42,7 +43,7 @@ export type ObjectSize = Pick<ObjectLayout, 'height' | 'width'>
 export type ObjectContainer = {
   background: ObjectBackground
   border: StrokeStyle
-  padding: number
+  layout: Pick<Layout, 'padding'>
   borderRadius: number
 }
 
@@ -51,7 +52,7 @@ export type ObjectBackground =
 
 export type ObjectBackgroundPreset = 'surface' | 'glass' | 'blue' | 'violet'
 
-/** Changes one property of a container, e.g. its padding. */
+/** Changes one property of a container, e.g. its border. */
 export type SetContainer = <TKey extends keyof ObjectContainer>(
   key: TKey,
   value: ObjectContainer[TKey],
@@ -60,7 +61,7 @@ export type SetContainer = <TKey extends keyof ObjectContainer>(
 // ===== TITLE =================================================================
 /** Title above the content of an object; charts and cards share it. */
 export type ObjectTitleAppearance = {
-  alignment: HorizontalAlignment
+  layout: Pick<Layout, 'alignment'>
   text: string
   textStyle: TextStyle
   visible: boolean

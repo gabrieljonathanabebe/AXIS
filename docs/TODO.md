@@ -7,21 +7,6 @@ bleibt.
 Ein Punkt verlässt diese Liste, wenn er erledigt ist oder als geplanter
 Scope in `docs/ROADMAP.md` übernommen wird.
 
-## Bug: Datenlabels bei Line-Charts fehlen
-
-- „Labels → Visible“ wirkt bei Line-Charts teilweise nicht: ECharts
-  zeichnet Labels einer Line-Serie nur an ihren Symbolen
-  (`LineView`: `showSymbol && symbolDraw.updateData`)
-- der Adapter schaltet die Symbole ab bei mehr als 30 Punkten
-  (`MAX_LINE_SYMBOLS` in `createAggregatedSeriesOption`) und wenn
-  „Show symbol“ aus ist; damit verschwinden auch die Labels
-- Fix-Idee: bei sichtbaren Labels Symbole technisch an lassen und
-  unsichtbar zeichnen, wenn keine Punkte gewünscht sind; bei vielen
-  Punkten `labelLayout: { hideOverlap: true }`
-- im Browser prüfen: wenige und viele Punkte, Symbole an und aus, mit
-  und ohne Selection (Labels der Basis-Serie sind bei Selection bewusst
-  aus)
-
 ## Chart-Zusammenfassung zum ausgewählten Chart
 
 - eine kompakte Karte zum ausgewählten Chart; ursprünglich über den
@@ -108,7 +93,7 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - passende Tests für die Frontend-Logik, Test-Framework noch zu
   entscheiden
 - das Backend hat pytest-Tests (`uv run pytest`); die CI-Pipeline ist
-  in `docs/ROADMAP.md` (Alpha, 3.13) geplant
+  in `docs/ROADMAP.md` (Alpha, 3.14) geplant
 
 ## Stacked Area für Linien-Charts
 

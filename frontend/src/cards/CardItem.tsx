@@ -127,7 +127,7 @@ function CardItem({
             className={`card-item-title ${getFormatFocusClassName('title', formattedElement)}`}
             style={{
               ...getTextStyleCss(title.textStyle),
-              textAlign: title.alignment,
+              textAlign: title.layout.alignment,
             }}
           >
             <EditableText

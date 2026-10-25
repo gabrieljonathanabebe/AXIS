@@ -28,7 +28,7 @@ function getZoomMode(value: ChartInteractionSpec['zoom']): ZoomMode {
 function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
   return (
     <FormatWidget
-      title="Zoom & Scroll"
+      title="Zoom"
       visibility={{
         label: 'Enabled',
         visible: value.enabled,

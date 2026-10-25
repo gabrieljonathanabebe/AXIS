@@ -1,7 +1,6 @@
-import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import LayoutControls from '../../shared/ui/LayoutControls'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
-import SelectControl from '../../shared/ui/SelectControl'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
 import { CHART_TEXT_STYLE } from '../createChartInstance'
 
@@ -27,25 +26,36 @@ const radialPositionOptions = [
 ] satisfies { label: string; value: LabelPosition }[]
 
 // ===== COMPONENT =============================================================
-/** Edits visibility, number format, text style and position of the data labels. */
+/**
+ * Group of the data labels with its toggle: where they sit, how their text
+ * looks and their number format. Radial charts label percentages, so they
+ * have no number format.
+ */
 function LabelsWidget({
   isRadial = false,
   onChange,
   value,
 }: LabelsWidgetProps) {
-  const activePositionOptions = isRadial
-    ? radialPositionOptions
-    : positionOptions
   return (
     <FormatWidget
       title="Labels"
       visibility={{
         visible: value.visible,
-        onChange: (visible) => {
-          onChange({ ...value, visible })
-        },
+        onChange: (visible) => onChange({ ...value, visible }),
       }}
     >
+      <LayoutControls
+        label="Label"
+        positions={isRadial ? radialPositionOptions : positionOptions}
+        value={value.layout}
+        onChange={(layout) => onChange({ ...value, layout })}
+      />
+      <TextStyleControls
+        defaultColor={CHART_TEXT_STYLE.color}
+        label="Label"
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
       {!isRadial ? (
         <NumberFormatControls
           label="Label"
@@ -53,25 +63,6 @@ function LabelsWidget({
           onChange={(numberFormat) => onChange({ ...value, numberFormat })}
         />
       ) : null}
-      <TextStyleControls
-        defaultColor={CHART_TEXT_STYLE.color}
-        label="Label"
-        value={value.textStyle}
-        onChange={(textStyle) => onChange({ ...value, textStyle })}
-      />
-      <ControlRow label="Position">
-        <SelectControl
-          label="Label position"
-          options={activePositionOptions}
-          value={value.position}
-          onChange={(position) => {
-            onChange({
-              ...value,
-              position,
-            })
-          }}
-        />
-      </ControlRow>
     </FormatWidget>
   )
 }

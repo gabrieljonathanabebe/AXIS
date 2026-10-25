@@ -44,11 +44,11 @@ export function createContinuousColorVisualMap({
         resolveColor(appearance.endColor, theme),
       ],
     },
-    left: appearance.position === 'left' ? 16 : undefined,
+    left: appearance.layout.position === 'left' ? 16 : undefined,
     max,
     min,
-    orient: appearance.orientation,
-    right: appearance.position === 'right' ? 16 : undefined,
+    orient: appearance.layout.orientation,
+    right: appearance.layout.position === 'right' ? 16 : undefined,
     show: appearance.visible,
     text: appearance.labels
       ? [formatCompactNumber(max), formatCompactNumber(min)]

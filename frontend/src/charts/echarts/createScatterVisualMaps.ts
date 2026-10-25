@@ -1,10 +1,6 @@
 import { createContinuousColorVisualMap } from './createContinuousColorVisualMap'
-import { getNumericDomain } from './getNumericDomain'
 
-import type {
-  ContinuousVisualMapComponentOption,
-  VisualMapComponentOption,
-} from 'echarts'
+import type { VisualMapComponentOption } from 'echarts'
 import type { DataRow } from '../../datasets/types'
 import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartAppearanceSpec, ChartEncoding } from '../types'
@@ -16,38 +12,6 @@ type CreateScatterVisualMapsParams = {
   appearance: ChartAppearanceSpec
   colorEncodingMode: ColorEncodingMode
   theme: ChartTheme
-}
-
-function createSizeVisualMap(
-  rows: DataRow[],
-  encoding: ChartEncoding,
-  appearance: ChartAppearanceSpec,
-): ContinuousVisualMapComponentOption | null {
-  const fieldName = encoding.size
-
-  if (!fieldName) {
-    return null
-  }
-
-  const domain = getNumericDomain(rows.map((row) => row[fieldName]))
-
-  if (!domain) {
-    return null
-  }
-
-  return {
-    show: false,
-    type: 'continuous',
-    dimension: 2,
-    min: domain.min,
-    max: domain.min === domain.max ? domain.min + 1 : domain.max,
-    inRange: {
-      symbolSize: [
-        appearance.scatter.sizeRange.min,
-        appearance.scatter.sizeRange.max,
-      ],
-    },
-  }
 }
 
 /**
@@ -78,21 +42,14 @@ function createColorVisualMap({
 }
 
 /**
- * Creates the hidden size scale and the visible color scale of a scatter chart.
+ * Creates the color scale of a scatter chart; point sizes come from the
+ * series, so they stay true to area.
  * @param params Points, fields, appearance and theme of the chart.
  * @returns Visual maps that apply to the chart.
  */
 export function createScatterVisualMaps(
   params: CreateScatterVisualMapsParams,
 ): VisualMapComponentOption[] {
-  const { appearance, encoding, rows } = params
-  const visualMaps = [
-    createSizeVisualMap(rows, encoding, appearance),
-    createColorVisualMap(params),
-  ]
-  return visualMaps.filter(
-    (visualMap): visualMap is VisualMapComponentOption => {
-      return visualMap !== null
-    },
-  )
+  const colorVisualMap = createColorVisualMap(params)
+  return colorVisualMap ? [colorVisualMap] : []
 }

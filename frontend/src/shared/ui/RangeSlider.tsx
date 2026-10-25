@@ -1,3 +1,5 @@
+import NumberInput from './NumberInput'
+
 import type { CSSProperties } from 'react'
 
 // ===== TYPES =================================================================
@@ -19,14 +21,18 @@ type RangeSliderStyle = CSSProperties & {
 }
 
 // ===== COMPONENT =============================================================
-// Two native range inputs on one track; the thumbs cannot cross.
+/**
+ * Two native range inputs on one track; the thumbs cannot cross. Plain
+ * numbers get a number field on each side, like `Slider`; with
+ * `formatValue`, e.g. dates of a filter, the formatted values sit below.
+ */
 function RangeSlider({
   label,
   max,
   min,
   step = 1,
   value,
-  formatValue = String,
+  formatValue,
   onValueChange,
 }: RangeSliderProps) {
   const [start, end] = value
@@ -38,44 +44,68 @@ function RangeSlider({
   // The start thumb lies on top in the upper half, so both stay reachable.
   const isStartRaised = start > min + span / 2
 
+  const track = (
+    <div className="range-slider-track" style={style}>
+      <input
+        className={`range-slider-input ${isStartRaised ? 'is-raised' : ''}`}
+        type="range"
+        aria-label={`${label} start`}
+        max={max}
+        min={min}
+        step={step}
+        value={start}
+        onChange={(event) => {
+          onValueChange([Math.min(event.currentTarget.valueAsNumber, end), end])
+        }}
+      />
+      <input
+        className="range-slider-input"
+        type="range"
+        aria-label={`${label} end`}
+        max={max}
+        min={min}
+        step={step}
+        value={end}
+        onChange={(event) => {
+          onValueChange([
+            start,
+            Math.max(event.currentTarget.valueAsNumber, start),
+          ])
+        }}
+      />
+    </div>
+  )
+
+  if (formatValue) {
+    return (
+      <div className="range-slider stack">
+        {track}
+        <div className="range-slider-values spread">
+          <span>{formatValue(start)}</span>
+          <span>{formatValue(end)}</span>
+        </div>
+      </div>
+    )
+  }
   return (
-    <div className="range-slider stack">
-      <div className="range-slider-track" style={style}>
-        <input
-          className={`range-slider-input ${isStartRaised ? 'is-raised' : ''}`}
-          type="range"
-          aria-label={`${label} start`}
-          max={max}
-          min={min}
-          step={step}
-          value={start}
-          onChange={(event) => {
-            onValueChange([
-              Math.min(event.currentTarget.valueAsNumber, end),
-              end,
-            ])
-          }}
-        />
-        <input
-          className="range-slider-input"
-          type="range"
-          aria-label={`${label} end`}
-          max={max}
-          min={min}
-          step={step}
-          value={end}
-          onChange={(event) => {
-            onValueChange([
-              start,
-              Math.max(event.currentTarget.valueAsNumber, start),
-            ])
-          }}
-        />
-      </div>
-      <div className="range-slider-values spread">
-        <span>{formatValue(start)}</span>
-        <span>{formatValue(end)}</span>
-      </div>
+    <div className="range-slider has-inputs">
+      <NumberInput
+        label={`${label} start value`}
+        max={end}
+        min={min}
+        step={step}
+        value={start}
+        onValueChange={(nextStart) => onValueChange([nextStart, end])}
+      />
+      {track}
+      <NumberInput
+        label={`${label} end value`}
+        max={max}
+        min={start}
+        step={step}
+        value={end}
+        onValueChange={(nextEnd) => onValueChange([start, nextEnd])}
+      />
     </div>
   )
 }

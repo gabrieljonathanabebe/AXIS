@@ -45,7 +45,7 @@ export function createSeriesLabelOption(
           return labelValue === null ? '' : formatValue(labelValue)
         }
       : undefined,
-    position: appearance.position,
+    position: appearance.layout.position,
     show: appearance.visible,
   }
 }

@@ -13,14 +13,14 @@ import type { AxisAppearance, AxisValueType } from '../types'
 // ===== TYPES =================================================================
 type AxisOrientation = 'x' | 'y'
 
-/** Rows of one part of the axis; without a part the widget shows both. */
+/** Part of the axis: its title group or the groups of its labels. */
 type AxisWidgetPart = 'labels' | 'title'
 
 type AxisWidgetProps = {
   defaultTitle?: string
   onChange: (value: AxisAppearance) => void
   orientation: AxisOrientation
-  part?: AxisWidgetPart
+  part: AxisWidgetPart
   value: AxisAppearance
 }
 
@@ -41,8 +41,9 @@ const DEFAULT_TICK_COUNT = 5
 
 // ===== FUNCTIONS =============================================================
 /**
- * Formats one axis: visibility, title and labels. With `part` it shows only
- * the title or only the label rows, e.g. per element in the format popover.
+ * Groups of one axis part: the title group of the axis element, or the
+ * groups of the axis labels element (values, rotation, text and number
+ * format). Whether the axis shows is the element toggle in the header.
  */
 function AxisWidget({
   defaultTitle,
@@ -54,126 +55,118 @@ function AxisWidget({
   const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
   const { labels } = value
   const tickMode: TickMode = labels.tickCount === null ? 'auto' : 'custom'
-  const showsTitle = part !== 'labels'
-  const showsLabels = part !== 'title'
-  return (
-    <FormatWidget
-      title={title}
-      visibility={
-        showsTitle
-          ? {
-              visible: value.visible,
-              onChange: (visible) => {
-                onChange({ ...value, visible })
-              },
-            }
-          : undefined
-      }
-    >
-      {showsTitle ? (
-        <>
-          <ControlRow label="Title">
-            <TextInput
-              label={`${title} title`}
-              value={value.title.text}
-              placeholder={defaultTitle || 'Automatic'}
-              onValueChange={(text) => {
-                onChange({ ...value, title: { ...value.title, text } })
-              }}
-            />
-          </ControlRow>
-          <TextStyleControls
-            defaultColor={CHART_TEXT_STYLE.color}
+  if (part === 'title') {
+    return (
+      <FormatWidget
+        title="Title"
+        visibility={{
+          visible: value.title.visible,
+          onChange: (visible) => {
+            onChange({ ...value, title: { ...value.title, visible } })
+          },
+        }}
+      >
+        <ControlRow label="Text">
+          <TextInput
             label={`${title} title`}
-            rowLabelPrefix="Title"
-            value={value.title.textStyle}
-            onChange={(textStyle) =>
-              onChange({ ...value, title: { ...value.title, textStyle } })
-            }
+            value={value.title.text}
+            placeholder={defaultTitle || 'Automatic'}
+            onValueChange={(text) => {
+              onChange({ ...value, title: { ...value.title, text } })
+            }}
           />
-        </>
-      ) : null}
-      {showsLabels ? (
-        <>
-          <ControlRow label="Type">
-            <SegmentedControl
-              label={`${title} value type`}
-              options={valueTypeOptions}
-              value={labels.valueType}
-              onValueChange={(valueType) => {
-                onChange({ ...value, labels: { ...labels, valueType } })
-              }}
-            />
-          </ControlRow>
-          {labels.valueType === 'number' ? (
-            <NumberFormatControls
-              label={title}
-              value={labels.numberFormat}
-              onChange={(numberFormat) => {
-                onChange({ ...value, labels: { ...labels, numberFormat } })
-              }}
-            />
-          ) : null}
-          <ControlRow label="Ticks">
-            <SegmentedControl
-              label={`${title} tick mode`}
-              options={tickModeOptions}
-              value={tickMode}
-              onValueChange={(nextTickMode) => {
-                onChange({
-                  ...value,
-                  labels: {
-                    ...labels,
-                    tickCount:
-                      nextTickMode === 'auto' ? null : DEFAULT_TICK_COUNT,
-                  },
-                })
-              }}
-            />
-          </ControlRow>
-          {labels.tickCount !== null ? (
-            <div className="format-widget-subproperties">
-              <ControlRow label="Tick count">
-                <ScrubbableNumber
-                  label={`${title} tick count`}
-                  min={2}
-                  max={20}
-                  step={1}
-                  value={labels.tickCount}
-                  onValueChange={(tickCount) => {
-                    onChange({
-                      ...value,
-                      labels: { ...labels, tickCount },
-                    })
-                  }}
-                />
-              </ControlRow>
-            </div>
-          ) : null}
-          <ControlRow label="Label rotation">
-            <RotationDial
-              label={`${title} label rotation`}
-              value={labels.rotation}
-              onValueChange={(rotation) => {
-                onChange({
-                  ...value,
-                  labels: { ...labels, rotation },
-                })
-              }}
-            />
-          </ControlRow>
-          <TextStyleControls
-            defaultColor={CHART_TEXT_STYLE.color}
-            label={`${title} label`}
-            rowLabelPrefix="Label"
-            value={labels.textStyle}
-            onChange={(textStyle) =>
-              onChange({ ...value, labels: { ...labels, textStyle } })
-            }
+        </ControlRow>
+        <TextStyleControls
+          defaultColor={CHART_TEXT_STYLE.color}
+          label={`${title} title`}
+          value={value.title.textStyle}
+          onChange={(textStyle) =>
+            onChange({ ...value, title: { ...value.title, textStyle } })
+          }
+        />
+      </FormatWidget>
+    )
+  }
+  return (
+    <>
+      <FormatWidget title="Content">
+        <ControlRow label="Type">
+          <SegmentedControl
+            label={`${title} value type`}
+            options={valueTypeOptions}
+            value={labels.valueType}
+            onValueChange={(valueType) => {
+              onChange({ ...value, labels: { ...labels, valueType } })
+            }}
           />
-        </>
+        </ControlRow>
+        <ControlRow label="Ticks">
+          <SegmentedControl
+            label={`${title} tick mode`}
+            options={tickModeOptions}
+            value={tickMode}
+            onValueChange={(nextTickMode) => {
+              onChange({
+                ...value,
+                labels: {
+                  ...labels,
+                  tickCount:
+                    nextTickMode === 'auto' ? null : DEFAULT_TICK_COUNT,
+                },
+              })
+            }}
+          />
+        </ControlRow>
+        {labels.tickCount !== null ? (
+          <div className="format-widget-subproperties">
+            <ControlRow label="Tick count">
+              <ScrubbableNumber
+                label={`${title} tick count`}
+                min={2}
+                max={20}
+                step={1}
+                value={labels.tickCount}
+                onValueChange={(tickCount) => {
+                  onChange({ ...value, labels: { ...labels, tickCount } })
+                }}
+              />
+            </ControlRow>
+          </div>
+        ) : null}
+      </FormatWidget>
+      <FormatWidget title="Layout">
+        <ControlRow label="Rotation">
+          <RotationDial
+            label={`${title} label rotation`}
+            value={labels.rotation}
+            onValueChange={(rotation) => {
+              onChange({ ...value, labels: { ...labels, rotation } })
+            }}
+          />
+        </ControlRow>
+      </FormatWidget>
+      <FormatWidget title="Text">
+        <TextStyleControls
+          defaultColor={CHART_TEXT_STYLE.color}
+          label={`${title} label`}
+          value={labels.textStyle}
+          onChange={(textStyle) =>
+            onChange({ ...value, labels: { ...labels, textStyle } })
+          }
+        />
+      </FormatWidget>
+      {labels.valueType === 'number' ? (
+        <FormatWidget title="Format">
+          <NumberFormatControls
+            label={title}
+            value={labels.numberFormat}
+            onChange={(numberFormat) => {
+              onChange({ ...value, labels: { ...labels, numberFormat } })
+            }}
+          />
+        </FormatWidget>
       ) : null}
-    </FormatWidget>
+    </>
   )
 }
 

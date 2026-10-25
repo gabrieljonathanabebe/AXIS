@@ -12,6 +12,7 @@ import type { ReactNode } from 'react'
 import type { DataField } from '../datasets/types'
 import type { FormatElementOption } from '../objects/ObjectFormatPopover'
 import type { FormatTarget } from '../objects/types'
+import type { FormatVisibility } from '../shared/ui/FormatWidget'
 import type { CanvasActions } from '../workspace/types'
 import type { CardFormatElement, CardInstance } from './types'
 
@@ -58,17 +59,7 @@ function renderFormatWidget(
       )
     case 'selectionLabel':
       return (
-        <FormatWidget
-          title="Selection"
-          visibility={{
-            visible: appearance.selectionLabel.visible,
-            onChange: (visible) =>
-              actions.updateCardAppearance(card.id, 'selectionLabel', {
-                ...appearance.selectionLabel,
-                visible,
-              }),
-          }}
-        >
+        <FormatWidget title="Text">
           <TextStyleControls
             defaultColor={CARD_SELECTION_LABEL_TEXT_STYLE.color}
             label="Selection"
@@ -94,22 +85,53 @@ function renderFormatWidget(
       )
     case 'value':
       return (
-        <FormatWidget title="Value">
-          <CardValueWidget
-            aggregation={data.aggregation}
-            aggregations={getCardAggregations(
-              fields.find((field) => field.name === data.field),
-            )}
-            value={appearance.value}
-            onAggregationChange={(aggregation) =>
-              actions.updateCardData(card.id, { aggregation })
-            }
-            onChange={(value) =>
-              actions.updateCardAppearance(card.id, 'value', value)
-            }
-          />
-        </FormatWidget>
+        <CardValueWidget
+          aggregation={data.aggregation}
+          aggregations={getCardAggregations(
+            fields.find((field) => field.name === data.field),
+          )}
+          value={appearance.value}
+          onAggregationChange={(aggregation) =>
+            actions.updateCardData(card.id, { aggregation })
+          }
+          onChange={(value) =>
+            actions.updateCardAppearance(card.id, 'value', value)
+          }
+        />
       )
+  }
+}
+
+/**
+ * Toggle that shows or hides a whole card element; it sits in the popover
+ * header.
+ * @param element Element in the popover.
+ * @param props Card and the actions that change it.
+ * @returns The visibility, or none for elements that always show.
+ */
+function getElementVisibility(
+  element: CardFormatElement,
+  { actions, card }: CardFormatPopoverProps,
+): FormatVisibility | undefined {
+  const { selectionLabel, title } = card.spec.appearance
+  switch (element) {
+    case 'selectionLabel':
+      return {
+        visible: selectionLabel.visible,
+        onChange: (visible) =>
+          actions.updateCardAppearance(card.id, 'selectionLabel', {
+            ...selectionLabel,
+            visible,
+          }),
+      }
+    case 'title':
+      return {
+        visible: title.visible,
+        onChange: (visible) =>
+          actions.updateCardAppearance(card.id, 'title', { ...title, visible }),
+      }
+    default:
+      return undefined
   }
 }
 
@@ -125,13 +147,13 @@ function CardFormatPopover(props: CardFormatPopoverProps) {
       element={element}
       elementOptions={elementOptions}
       label="Card format"
-      sections={[
-        { content: renderFormatWidget(element, props), label: 'Format' },
-      ]}
       target={target}
+      visibility={getElementVisibility(element, props)}
       onClose={onClose}
       onElementChange={onElementChange}
-    />
+    >
+      {renderFormatWidget(element, props)}
+    </ObjectFormatPopover>
   )
 }
 

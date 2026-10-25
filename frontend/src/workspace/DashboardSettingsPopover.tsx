@@ -1,10 +1,10 @@
 import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 
-import ControlRow from '../shared/ui/ControlRow'
+import FormatWidget from '../shared/ui/FormatWidget'
 import IconButton from '../shared/ui/IconButton'
+import LayoutControls from '../shared/ui/LayoutControls'
 import Popover from '../shared/ui/Popover'
-import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
 import AnimationWidget from './AnimationWidget'
 
 import type { CanvasActions, DashboardSpec } from './types'
@@ -48,16 +48,13 @@ function DashboardSettingsPopover({
       )}
     >
       <div className="format-popover-body stack">
-        <ControlRow label="Gap">
-          <ScrubbableNumber
-            label="Gap between objects"
-            max={48}
-            min={0}
-            step={2}
-            value={dashboard.layout.gap}
-            onValueChange={(gap) => actions.updateDashboardLayout({ gap })}
+        <FormatWidget title="Layout">
+          <LayoutControls
+            label="Dashboard"
+            value={dashboard.layout}
+            onChange={actions.updateDashboardLayout}
           />
-        </ControlRow>
+        </FormatWidget>
         <AnimationWidget
           value={dashboard.animation}
           onChange={(animation) => actions.updateDashboard({ animation })}

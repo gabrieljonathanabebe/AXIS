@@ -15,38 +15,28 @@ const triggerOptions = [
   { label: 'Axis', value: 'axis' },
 ] satisfies { label: string; value: TooltipTrigger }[]
 
-/** Edits whether the data tooltip shows and what triggers it. */
+/**
+ * Group of the data tooltip: what triggers it. Whether it shows is the
+ * element toggle in the popover header; radial charts have no trigger.
+ */
 function TooltipWidget({
   onChange,
   showTrigger = true,
   value,
 }: TooltipWidgetProps) {
+  if (!showTrigger) {
+    return null
+  }
   return (
-    <FormatWidget
-      title="Tooltip"
-      visibility={{
-        label: 'Enabled',
-        visible: value.enabled,
-        onChange: (enabled) => {
-          onChange({ ...value, enabled })
-        },
-      }}
-    >
-      {showTrigger ? (
-        <ControlRow label="Trigger">
-          <SegmentedControl
-            label="Tooltip trigger"
-            options={triggerOptions}
-            value={value.trigger}
-            onValueChange={(trigger) => {
-              onChange({
-                ...value,
-                trigger,
-              })
-            }}
-          />
-        </ControlRow>
-      ) : null}
+    <FormatWidget title="Behavior">
+      <ControlRow label="Trigger">
+        <SegmentedControl
+          label="Tooltip trigger"
+          options={triggerOptions}
+          value={value.trigger}
+          onValueChange={(trigger) => onChange({ ...value, trigger })}
+        />
+      </ControlRow>
     </FormatWidget>
   )
 }

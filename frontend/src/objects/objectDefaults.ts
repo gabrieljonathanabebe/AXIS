@@ -23,7 +23,7 @@ export const CONTAINER_BORDER: StrokeStyle = {
 /** Creates the title every new object starts with; its text is empty. */
 export function createDefaultTitle(): ObjectTitleAppearance {
   return {
-    alignment: 'start',
+    layout: { alignment: 'start' },
     text: '',
     textStyle: TITLE_TEXT_STYLE,
     visible: true,
@@ -36,6 +36,6 @@ export function createDefaultContainer(): ObjectContainer {
     background: { kind: 'surface' },
     border: CONTAINER_BORDER,
     borderRadius: 24,
-    padding: 4,
+    layout: { padding: 4 },
   }
 }

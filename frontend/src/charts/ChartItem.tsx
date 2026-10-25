@@ -128,7 +128,7 @@ function ChartItem({
           className={`chart-item-header ${titleFocusClassName}`}
           style={{
             ...getTextStyleCss(title.textStyle),
-            textAlign: title.alignment,
+            textAlign: title.layout.alignment,
           }}
         >
           <EditableText

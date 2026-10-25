@@ -10,12 +10,13 @@ import {
   createSeriesLabelOption,
 } from '../createSeriesLabelOption'
 import { createBorderOption } from '../createStrokeStyleOption'
+import { getNumericDomain } from '../getNumericDomain'
 import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
 import { DIMMED_OPACITY } from './selectionStyle'
 
 import type { ScatterSeriesOption } from 'echarts'
 import type { DataRow, DataValue } from '../../../datasets/types'
-import type { ChartAppearanceSpec } from '../../types'
+import type { ChartAppearanceSpec, ScatterSizeRange } from '../../types'
 import type { ChartTheme } from '../chartTheme'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
@@ -25,13 +26,16 @@ type ScatterData = Array<{
   value: DataValue[]
 }>
 
+/** Size of a point in pixels: one for all, or one per point by its value. */
+type ScatterSymbolSize = number | ((value: DataValue[]) => number)
+
 type CreateScatterSeriesParams = {
   appearance: ChartAppearanceSpec
   canGlow: boolean
   data: ScatterData
   itemColor: string | undefined
   name?: string
-  sizeFieldName?: string
+  symbolSize: ScatterSymbolSize
   theme: ChartTheme
 }
 
@@ -43,11 +47,33 @@ type CreateScatterSeriesParams = {
 const MAX_GLOW_POINTS = 500
 
 // ===== HELPER ================================================================
+/** Reads the value of one field from a point, or null without a field. */
 function getValue(row: DataRow, fieldName?: string): DataValue {
   if (!fieldName) {
     return null
   }
   return row[fieldName]
+}
+
+/**
+ * Sizes points by their size value so that the area, not the diameter,
+ * grows with the value: the largest value gets the largest size, smaller
+ * values the square root of their share, never below the smallest size.
+ * @param maxValue Largest size value of the chart.
+ * @param sizeRange Smallest and largest point size in pixels.
+ * @returns Size of one point for ECharts; the size value is dimension 2.
+ */
+function createAreaSymbolSize(
+  maxValue: number,
+  { max, min }: ScatterSizeRange,
+): (value: DataValue[]) => number {
+  return (value) => {
+    const size = value[2]
+    if (typeof size !== 'number' || size <= 0 || maxValue <= 0) {
+      return min
+    }
+    return Math.max(min, max * Math.sqrt(size / maxValue))
+  }
 }
 
 /**
@@ -62,7 +88,7 @@ function createScatterSeries({
   data,
   itemColor,
   name,
-  sizeFieldName,
+  symbolSize,
   theme,
 }: CreateScatterSeriesParams): ScatterSeriesOption {
   return {
@@ -85,9 +111,10 @@ function createScatterSeries({
       theme,
       createLabelNumberFormatter(appearance),
     ),
+    labelLayout: { hideOverlap: true },
     name,
     symbol: appearance.scatter.symbol,
-    symbolSize: sizeFieldName ? undefined : appearance.scatter.pointSize,
+    symbolSize,
     type: 'scatter',
   }
 }
@@ -109,6 +136,12 @@ export function createScatterChartContent(
   )
   const rows = points
   const canGlow = rows.length <= MAX_GLOW_POINTS
+  const sizeDomain = sizeFieldName
+    ? getNumericDomain(rows.map((row) => row[sizeFieldName]))
+    : null
+  const symbolSize = sizeDomain
+    ? createAreaSymbolSize(sizeDomain.max, appearance.scatter.sizeRange)
+    : appearance.scatter.pointSize
   const data = rows.map((row) => ({
     itemStyle: isRowInSelection(row, selection)
       ? undefined
@@ -152,7 +185,7 @@ export function createScatterChartContent(
         data: seriesData,
         itemColor: getPaletteColor(palette, index),
         name,
-        sizeFieldName,
+        symbolSize,
         theme,
       })
     })
@@ -165,7 +198,7 @@ export function createScatterChartContent(
         itemColor: colorFieldName
           ? undefined
           : resolveColor(appearance.color, theme),
-        sizeFieldName,
+        symbolSize,
         theme,
       }),
     ]

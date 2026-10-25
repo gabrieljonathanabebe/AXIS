@@ -41,7 +41,7 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
   )
   // ===== RETURN ======
   return (
-    <FormatWidget title="Aggregation">
+    <FormatWidget>
       <ControlRow label="Value function">
         <SelectControl
           disabled={isCountForced}

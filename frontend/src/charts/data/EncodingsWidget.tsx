@@ -19,7 +19,7 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
     value: type,
   }))
   return (
-    <FormatWidget title="Encodings">
+    <FormatWidget>
       <ControlRow label="Chart">
         <SelectControl
           label="Chart type"

@@ -32,6 +32,8 @@ type PopoverTriggerProps = {
 }
 
 type PopoverProps = {
+  /** Controls in the header before the close button, e.g. a toggle. */
+  actions?: ReactNode
   anchor?: VirtualElement
   label: string
   open: boolean
@@ -49,6 +51,7 @@ type PopoverProps = {
 
 /** Floating surface of one popover, positioned at its trigger or anchor. */
 function PopoverNode({
+  actions,
   anchor,
   label,
   open,
@@ -143,6 +146,7 @@ function PopoverNode({
                 {title ? (
                   <header className="popover-header">
                     <h2 className="popover-title">{title}</h2>
+                    {actions}
                     <IconButton
                       label={`Close ${label.toLowerCase()}`}
                       size="xs"

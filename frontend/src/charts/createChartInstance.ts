@@ -85,8 +85,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           startColor: { kind: 'custom', color: '#fe0314' },
           endColor: { kind: 'custom', color: '#00fa2e' },
           visible: true,
-          position: 'right',
-          orientation: 'vertical',
+          layout: { orientation: 'vertical', position: 'right' },
           min: null,
           max: null,
           labels: true,
@@ -95,7 +94,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       title: createDefaultTitle(),
       xAxis: {
         visible: true,
-        title: { text: '', textStyle: CHART_TEXT_STYLE },
+        title: { text: '', textStyle: CHART_TEXT_STYLE, visible: true },
         min: null,
         max: null,
         gridLines: CHART_GRID_LINES,
@@ -110,7 +109,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       },
       yAxis: {
         visible: true,
-        title: { text: '', textStyle: CHART_TEXT_STYLE },
+        title: { text: '', textStyle: CHART_TEXT_STYLE, visible: true },
         min: null,
         max: null,
         gridLines: CHART_GRID_LINES,
@@ -125,21 +124,24 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       },
       legend: {
         visible: true,
-        position: isRadialChart ? 'right' : 'bottom',
-        alignment: 'center',
+        layout: {
+          alignment: 'center',
+          gap: 8,
+          position: isRadialChart ? 'right' : 'bottom',
+        },
         symbol: 'auto',
         textStyle: CHART_TEXT_STYLE,
-        gap: 8,
-        layout: 'auto',
+        overflow: 'auto',
         itemWidth: 24,
         itemHeight: 14,
-        padding: 8,
         inactiveColor: { kind: 'token', token: 'inactive' },
       },
       labels: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
         visible: isRadialChart,
-        position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
+        layout: {
+          position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
+        },
         textStyle: CHART_TEXT_STYLE,
       },
       scatter: {
@@ -156,7 +158,7 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       line: {
         stroke: { lineStyle: 'solid', opacity: 1, width: 3 },
         smooth: false,
-        showSymbol: true,
+        points: 'auto',
         areaFill: false,
         area: {
           kind: 'solid',

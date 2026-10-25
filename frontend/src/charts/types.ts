@@ -10,8 +10,9 @@ import type { ColorValue } from '../shared/colorValue'
 import type { Effect } from '../shared/effect'
 import type { SeriesFill } from '../shared/fill'
 import type { NumberFormat } from '../shared/format/valueFormats'
+import type { Layout } from '../shared/layout'
 import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
-import type { HorizontalAlignment, TextStyle } from '../shared/textStyle'
+import type { TextStyle } from '../shared/textStyle'
 
 // ===== ACTIONS ===============================================================
 export type SetAggregation = <TKey extends ChartAggregationKey>(
@@ -94,10 +95,10 @@ export type AxisStrokeAppearance = {
   stroke: StrokeStyle
 }
 
-/** Title of an axis; text and style match the object title. */
+/** Title of an axis; text, style and visibility match the object title. */
 export type AxisTitleAppearance = Pick<
   ObjectTitleAppearance,
-  'text' | 'textStyle'
+  'text' | 'textStyle' | 'visible'
 >
 
 export type AxisTitleEdit = {
@@ -210,8 +211,7 @@ export type ColorScaleAppearance = {
     startColor: ColorValue
     endColor: ColorValue
     visible: boolean
-    position: 'left' | 'right'
-    orientation: 'vertical' | 'horizontal'
+    layout: Pick<Layout<'left' | 'right'>, 'orientation' | 'position'>
     min: number | null
     max: number | null
     labels: boolean
@@ -227,22 +227,20 @@ export type LabelPosition = 'top' | 'right' | 'inside'
 export type LabelsAppearance = {
   visible: boolean
   numberFormat: NumberFormat
-  position: LabelPosition
+  layout: Pick<Layout<LabelPosition>, 'position'>
   textStyle: TextStyle
 }
 
 // ===== LEGEND ================================================================
 export type LegendAppearance = {
-  alignment: HorizontalAlignment
   visible: boolean
-  position: 'top' | 'bottom' | 'left' | 'right'
+  layout: Pick<Layout, 'alignment' | 'gap' | 'position'>
   symbol: 'auto' | 'circle' | 'rect' | 'line'
   textStyle: TextStyle
-  gap: number
-  layout: 'auto' | 'plain' | 'scroll'
+  /** Whether too many entries page by scrolling; `plain` shows all. */
+  overflow: 'auto' | 'plain' | 'scroll'
   itemWidth: number
   itemHeight: 14
-  padding: number
   inactiveColor: ColorValue
 }
 
@@ -252,11 +250,17 @@ export type LegendSelectionMode = 'multiple' | 'single'
 export type LineAppearance = {
   stroke: SeriesStrokeStyle
   smooth: boolean
-  showSymbol: boolean
+  points: LinePoints
   areaFill: boolean
   area: SeriesFill
   effect: Effect
 }
+
+/**
+ * Whether a line shows its points: `auto` only while there are few enough
+ * to read as points, not as a bead chain.
+ */
+export type LinePoints = 'auto' | 'on' | 'off'
 
 // ===== PIE ===================================================================
 /** Segments of pie and donut charts; the inner radius applies to donuts. */

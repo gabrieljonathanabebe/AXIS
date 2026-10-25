@@ -187,7 +187,7 @@ function ObjectFrame({
   const isFormatMode = formattedElement !== null
   const frameStyle: ObjectFrameStyle = {
     ...style,
-    '--chart-canvas-inset': `${container.padding}px`,
+    '--chart-canvas-inset': `${container.layout.padding}px`,
     '--chart-background':
       background.kind === 'color' ? getColorCss(background.color) : undefined,
     '--chart-radius': `${container.borderRadius}px`,
