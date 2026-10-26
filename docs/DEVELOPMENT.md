@@ -491,6 +491,8 @@ Komponenten und Handler innerhalb von Komponenten:
   Editor per `/**` + Enter vorbefüllt);
 - Konstanten und Types, die eine Erklärung brauchen, ebenfalls mit
   JSDoc statt `//`;
+- einzelne Props und Felder eines Types erhalten keinen eigenen JSDoc;
+  ihre Bedeutung steht im JSDoc der Komponente bzw. Funktion;
 - Begründungen gehören in den JSDoc der Funktion; `//` innerhalb einer
   Funktion nur ausnahmsweise, wenn eine einzelne Zeile sonst
   missverständlich wäre.

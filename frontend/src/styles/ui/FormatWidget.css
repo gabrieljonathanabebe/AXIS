@@ -8,6 +8,7 @@
 }
 
 .format-widget-header {
+  --cluster-gap: var(--space-1);
   --spread-gap: var(--space-2);
 
   min-height: 24px;

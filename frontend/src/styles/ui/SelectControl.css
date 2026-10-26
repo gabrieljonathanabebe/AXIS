@@ -9,7 +9,8 @@
   min-width: 0;
   height: var(--control-height-sm);
   padding-inline: var(--space-3);
-  font-size: var(--font-size-sm);
+  font-size: var(--field-font-size, var(--font-size-sm));
+  border-color: var(--field-border-color, var(--color-border-subtle));
 }
 
 .select-control-value {

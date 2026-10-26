@@ -1,9 +1,11 @@
-import Toggle from './Toggle'
+import { Eye, EyeOff, Paintbrush } from 'lucide-react'
+
+import IconButton from './IconButton'
 
 import type { ReactNode } from 'react'
 
 // ===== TYPES =================================================================
-/** Toggle that shows or hides a group or a whole element. */
+/** Shows or hides a group or a whole element, e.g. by its eye. */
 export type FormatVisibility = {
   label?: string
   visible: boolean
@@ -14,31 +16,54 @@ type FormatWidgetProps = {
   children?: ReactNode
   title?: string
   visibility?: FormatVisibility
+  /** Opens the format of another element, e.g. the tooltip. */
+  onFormat?: () => void
 }
 
 // ===== COMPONENT =============================================================
 /**
  * One group of format rows, e.g. in the format popover. The title becomes a
- * small heading; a visibility becomes a toggle on its right, which also
- * shows or hides the rows. Without a title the rows stand alone, e.g. in a
- * section of the build panel.
- * @param props Rows, optional title and optional visibility.
+ * small heading; a visibility becomes an eye on its right, which also
+ * shows or hides the rows, and `onFormat` a paintbrush that opens another
+ * element. Without a title the rows stand alone, e.g. in a section of the
+ * build panel.
+ * @param props Rows, optional title, visibility and format action.
  */
-function FormatWidget({ children, title, visibility }: FormatWidgetProps) {
-  const visibilityLabel = visibility?.label ?? 'Visible'
+function FormatWidget({
+  children,
+  title,
+  visibility,
+  onFormat,
+}: FormatWidgetProps) {
+  const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsRows = visibility?.visible ?? true
   return (
     <div className="format-widget stack">
       {title ? (
         <div className="format-widget-header spread">
           <span className="format-widget-title">{title}</span>
-          {visibility ? (
-            <Toggle
-              checked={visibility.visible}
-              label={`${title} ${visibilityLabel.toLowerCase()}`}
-              onCheckedChange={visibility.onChange}
-            />
-          ) : null}
+          <span className="cluster">
+            {visibility ? (
+              <IconButton
+                label={`${visibilityAction} ${title.toLowerCase()}`}
+                size="xs"
+                variant="ghost"
+                onClick={() => visibility.onChange(!visibility.visible)}
+              >
+                {visibility.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+              </IconButton>
+            ) : null}
+            {onFormat ? (
+              <IconButton
+                label={`Format ${title.toLowerCase()}`}
+                size="xs"
+                variant="ghost"
+                onClick={onFormat}
+              >
+                <Paintbrush size={14} />
+              </IconButton>
+            ) : null}
+          </span>
         </div>
       ) : null}
       {showsRows && children ? (

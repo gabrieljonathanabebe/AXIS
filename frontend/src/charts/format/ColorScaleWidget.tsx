@@ -1,6 +1,5 @@
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
-import GradientControl from '../../shared/ui/GradientControl'
 import LayoutControls from '../../shared/ui/LayoutControls'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import Toggle from '../../shared/ui/Toggle'
@@ -23,9 +22,9 @@ const positionOptions = [
 }[]
 
 /**
- * Groups of the continuous color scale: its value range, where it sits,
- * its colors and its labels. Whether it shows is the element toggle in
- * the popover header.
+ * Groups of the continuous color scale: its value range, where it sits and
+ * its labels; its colors are part of the data color of the marks. Whether
+ * it shows is the element toggle in the popover header.
  */
 function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
   return (
@@ -81,18 +80,6 @@ function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
-      </FormatWidget>
-      <FormatWidget title="Colors">
-        <ControlRow label="Gradient">
-          <GradientControl
-            label="Color scale"
-            startColor={value.startColor}
-            endColor={value.endColor}
-            onChange={({ startColor, endColor }) => {
-              onChange({ ...value, startColor, endColor })
-            }}
-          />
-        </ControlRow>
       </FormatWidget>
       <FormatWidget
         title="Labels"

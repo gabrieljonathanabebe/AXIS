@@ -1,12 +1,13 @@
+import { Equal } from 'lucide-react'
+
 import { hasStrokeColor } from '../strokeStyle'
-import ColorControl from './ColorControl'
 import { createStyleColorPresets } from './colorPresets'
 import ControlRow from './ControlRow'
-import { getRowLabel } from './getRowLabel'
+import PaintControl from './PaintControl'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
-import Slider from './Slider'
 
+import type { ReactNode } from 'react'
 import type { ColorValue } from '../colorValue'
 import type { LineStyle, SeriesStrokeStyle } from '../strokeStyle'
 
@@ -16,7 +17,8 @@ type StrokeStyleControlsProps<TStroke extends SeriesStrokeStyle> = {
   label: string
   maxWidth?: number
   minWidth?: number
-  rowLabelPrefix?: string
+  /** Field of the series color for a stroke without own color. */
+  seriesColor?: ReactNode
   value: TStroke
   onChange: (value: TStroke) => void
 }
@@ -30,33 +32,33 @@ const lineStyleOptions = [
 
 // ===== COMPONENT =============================================================
 /**
- * Rows for width, line style, color and opacity of one stroke, e.g. a
- * border. Widgets place them next to their own rows and pass the color
+ * Rows of one stroke, e.g. a border: width and line style, then color and
+ * opacity. Widgets place them next to their own rows and pass the color
  * the stroke gets when created as `defaultColor`; a stroke without a
- * color, e.g. a series line, gets no color row.
+ * color, e.g. a series line, shows `seriesColor` in its place.
  */
 function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
   defaultColor,
   label,
   maxWidth = 8,
   minWidth = 0,
-  rowLabelPrefix,
+  seriesColor,
   value,
   onChange,
 }: StrokeStyleControlsProps<TStroke>) {
   return (
     <>
-      <ControlRow label={getRowLabel('Width', rowLabelPrefix)}>
+      <ControlRow>
         <ScrubbableNumber
+          icon={<Equal size={14} />}
           label={`${label} width`}
           max={maxWidth}
           min={minWidth}
           step={1}
+          unit="px"
           value={value.width}
           onValueChange={(width) => onChange({ ...value, width })}
         />
-      </ControlRow>
-      <ControlRow label={getRowLabel('Style', rowLabelPrefix)}>
         <SegmentedControl
           label={`${label} line style`}
           options={lineStyleOptions}
@@ -71,26 +73,21 @@ function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
           onValueChange={(lineStyle) => onChange({ ...value, lineStyle })}
         />
       </ControlRow>
-      {hasStrokeColor(value) && defaultColor ? (
-        <ControlRow label={getRowLabel('Color', rowLabelPrefix)}>
-          <ColorControl
-            label={`${label} color`}
-            presets={createStyleColorPresets(defaultColor)}
-            value={value.color}
-            onChange={(color) => onChange({ ...value, color })}
-          />
-        </ControlRow>
-      ) : null}
-      <ControlRow label={getRowLabel('Opacity', rowLabelPrefix)}>
-        <Slider
-          label={`${label} opacity`}
-          max={1}
-          min={0.05}
-          step={0.05}
-          value={value.opacity}
-          onValueChange={(opacity) => onChange({ ...value, opacity })}
-        />
-      </ControlRow>
+      <PaintControl
+        color={
+          hasStrokeColor(value) && defaultColor
+            ? {
+                presets: createStyleColorPresets(defaultColor),
+                value: value.color,
+                onChange: (color) => onChange({ ...value, color }),
+              }
+            : undefined
+        }
+        label={label}
+        opacity={value.opacity}
+        seriesColor={seriesColor}
+        onOpacityChange={(opacity) => onChange({ ...value, opacity })}
+      />
     </>
   )
 }

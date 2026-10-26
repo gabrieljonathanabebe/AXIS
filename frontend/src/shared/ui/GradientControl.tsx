@@ -17,6 +17,11 @@ type GradientStyle = CSSProperties & {
   '--gradient-end': string
 }
 
+/**
+ * Two colors with the gradient between them, e.g. of a continuous data
+ * color; each end opens the color picker.
+ * @param props Name, start and end color and their handler.
+ */
 function GradientControl({
   label,
   startColor,
@@ -30,7 +35,7 @@ function GradientControl({
   }
   // ===== JSX RETURN ==========================================================
   return (
-    <div className="gradient-control" aria-label={label} style={style}>
+    <div className="field gradient-control" aria-label={label} style={style}>
       <ColorControl
         label={`${label} low color`}
         presets={DATA_COLOR_PRESETS}

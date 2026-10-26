@@ -532,11 +532,11 @@ bei Linien „Area“; Stroke heißt bei Linien „Line“, sonst „Border“).
 | Element                 | Gruppen                                                   |
 | ----------------------- | --------------------------------------------------------- |
 | Chart bzw. Card         | Layout (Padding) · Shape (Radius) · Background · Border   |
-| Title                   | Content (Text) · Layout (Alignment) · Text                |
+| Title                   | Content (Text) · Text (mit Alignment)                     |
 | X Axis, Y Axis          | Title · Line · Gridlines · Zoom (nur X)                   |
 | X Axis Labels, Y Axis … | Content (Type, Ticks) · Layout (Rotation) · Text · Format |
 | Legend                  | Layout (Position, Alignment, Gap) · Text · Interaction    |
-| Color Scale             | Range · Layout (Position, Orientation) · Colors · Labels  |
+| Color Scale             | Range · Layout (Position, Orientation) · Labels           |
 | Tooltip                 | Behavior (Trigger; nicht bei Pie und Donut)               |
 | Card Value              | Content (Function) · Text · Format                        |
 | Card Selection          | Text                                                      |
@@ -546,20 +546,21 @@ Marks haben feste Plätze in `MARK_GROUP_ORDER`
 (`charts/format/markGroups.tsx`), der einzigen Stelle mit ihrer
 Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
 
-| Platz   | Scatter                                  | Line                  | Bar           | Pie / Donut          |
-| ------- | ---------------------------------------- | --------------------- | ------------- | -------------------- |
-| Color   | Farbe, Palette oder Link „Color scale“   | wie Scatter           | wie Scatter   | Palette              |
-| Shape   | Symbol, Size bzw. Size range (Size-Feld) | Smooth                | Width, Radius | Inner radius (Donut) |
-| Fill    | Fill                                     | Area (mit Schalter)   | Fill          | Fill                 |
-| Stroke  | Border                                   | Line                  | Border        | Border               |
-| Effect  | Effect                                   | Effect                | Effect        | Effect               |
-| Points  | –                                        | Show: Auto · On · Off | –             | –                    |
-| Labels  | Labels                                   | Labels                | Labels        | Labels               |
-| Tooltip | Link „Settings → Edit ›“                 | wie Scatter           | wie Scatter   | wie Scatter          |
+| Platz      | Scatter                                  | Line                   | Bar           | Pie / Donut          |
+| ---------- | ---------------------------------------- | ---------------------- | ------------- | -------------------- |
+| Data color | Fill mit Datenfarbe                      | Line mit Datenfarbe    | wie Scatter   | Fill mit Palette     |
+| Shape      | Symbol, Size bzw. Size range (Size-Feld) | Smooth                 | Width, Radius | Inner radius (Donut) |
+| Fill       | –                                        | Area (Deckkraft, Auge) | –             | –                    |
+| Stroke     | Border                                   | –                      | Border        | Border               |
+| Effect     | Effect                                   | Effect                 | Effect        | Effect               |
+| Points     | –                                        | Show: Auto · On · Off  | –             | –                    |
+| Labels     | Labels                                   | Labels                 | Labels        | Labels               |
+| Tooltip    | Pinsel in der Überschrift                | wie Scatter            | wie Scatter   | wie Scatter          |
 
-- Bei kontinuierlicher Farbe verweist Color auf das Element „Color
-  Scale“, beim Tooltip auf „Tooltip“ (`getElementLinkGroup`, Button
-  „Edit ›“ in `accent`).
+- Data color ist die Gruppe, die mit der Datenfarbe gezeichnet wird;
+  siehe „Datenfarbe in der Farbzeile“ unter „Kompakte Controls“.
+- Der Tooltip ist eine Gruppe ohne Zeilen; ihr Pinsel öffnet das Element
+  Tooltip im selben Popover (`getElementLinkGroup`).
 - Welchen Inhalt die Datenlabels zeigen, ist noch fest (Wert bzw. Anteil);
   die Wahl kommt mit „Tooltip-Felder“ (`ROADMAP.md`).
 
@@ -588,17 +589,24 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
-### Kompakte Controls im Figma-Stil (geplant, 3.4)
+### Kompakte Controls im Figma-Stil (in Arbeit, 3.4)
 
 Ziel: Das Popover sieht aus und bedient sich wie das Design-Panel in
 Figma: dicht, ruhig, Icons statt Text-Labels, eine klare Sprache pro
 Ebene. Die Spec ändert sich nicht, nur die Darstellung der Controls.
 
+Stand: implementiert sind Stroke, Fill und Text im neuen Stil
+(`ScrubbableNumber` mit `icon` und `unit`, `ControlRow` ohne Label,
+`PaintControl` mit `ColorField`, Italic als Icon-Toggle, Ausrichtung des
+Titels in der Text-Zeile), die Datenfarbe in der Farbzeile sowie Auge
+und Pinsel in der Überschrift von `FormatWidget`; alles Übrige ist
+geplant.
+
 **Regel 1: drei Ebenen, jede mit eigener Sprache**
 
 | Ebene                  | Inhalt                           | Erlaubte Controls                                                         |
 | ---------------------- | -------------------------------- | ------------------------------------------------------------------------- |
-| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts nur Auge oder ＋ / −, nie ein Schalter                             |
+| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts nur Auge, ＋ / − oder Pinsel, nie ein Schalter                     |
 | 2. Zeilen              | Werte, kompakt, ohne Text-Label  | Felder mit Icon im Feld, Icon-Gruppen (Segmented mit Icons), Icon-Toggles |
 | 3. Details             | seltene Einstellungen            | hinter ⚙ am Zeilenende, als eigenes kleines Popover                       |
 
@@ -607,6 +615,11 @@ Ebene. Die Spec ändert sich nicht, nur die Darstellung der Controls.
   zeigt die Gruppe nur ihre Überschrift.
 - **＋ / −:** fügt etwas hinzu oder entfernt es (Effects, Zoom, später
   Referenzlinien); ohne Eintrag zeigt die Gruppe nur Überschrift und ＋.
+- **Pinsel:** öffnet ein anderes Element im selben Popover (`onFormat`
+  an `FormatWidget`), z. B. den Tooltip unter den Marks; dasselbe Icon
+  wie „Format …“ am Chart. Kein ⚙, weil ⚙ nur seltene Einstellungen der
+  eigenen Zeile öffnet, und kein zweites Popover: ein Popover zeigt ein
+  Element, das Select im Kopf ist der Weg zurück.
 - Einzelne An/Aus-Optionen in einer Gruppe (Smooth, Compact, Italic,
   Legend-Auswahl) sind Icon-Toggles in der Zeile (`IconButton` mit
   `isActive`). Im Popover gibt es danach keinen `Toggle` mehr.
@@ -615,15 +628,15 @@ Ebene. Die Spec ändert sich nicht, nur die Darstellung der Controls.
 
 ```text
 TEXT
-[ Aa 14 ]  [ Medium ▾ ]  [ I ]
-[■ EEF4FF                 100 %]
+[Aa 14 px      ]  [ A  A  A      ]  [I]
+[● Default     ]  [ ≡  ≡  ≡      ]
 
 FILL                          👁
-[■ 199E8A                  90 %]
+[● 199E8A      ]  [◐ 90 %      ]
 
 STROKE                        👁
-[ ═ 2 px ]  [ — ┄ ┈ ]       [⚙]
-[■ 94A3B8                 100 %]
+[═ 2 px        ]  [ — ┄ ┈      ]
+[● 94A3B8      ]  [◐ 100 %     ]
 
 EFFECTS                        ＋
 [ Glow ▾ ]  [ ◌ 12 ]   👁   −
@@ -635,16 +648,26 @@ LEGEND – Position
 [ ⊞ ]   3×3-Raster
 ```
 
-- **Farbzeile** (`PaintControl`): Farbfeld, Hex-Wert (direkt editierbar)
-  und Deckkraft in % (scrubbable) in einer Zeile; das Farbfeld öffnet
-  den bisherigen Farbwähler mit den Farben des Einsatzorts
-  (`colorPresets`). Bei Serienfarben (`SeriesFill`, `SeriesStrokeStyle`)
-  bleibt nur das Deckkraft-Feld.
-- **Text:** Zeile 1 Größe (Icon Aa) | Gewicht (Select) | Italic
-  (Icon-Toggle), Zeile 2 Farbzeile; Ausrichtung als Icon-Gruppe, wo es
-  sie gibt.
+- **Farbzeile** (`PaintControl`): links das Farbfeld, rechts die
+  Deckkraft in % (Icon ◐, scrubbable), in den zwei Spalten der Zeile.
+  Eine eigene Farbe zeigt `ColorField`: Swatch und Hex-Wert (direkt
+  editierbar), bei einer Theme-Farbe Swatch und den Namen ihres Presets;
+  das Swatch öffnet den bisherigen Farbwähler mit den Farben des
+  Einsatzorts (`colorPresets`). Bei Serienfarben (`SeriesFill`,
+  `SeriesStrokeStyle`) steht links das Feld der Datenfarbe
+  (`seriesColor`), sofern der Paint sie trägt, sonst nur die Deckkraft.
+- **Text:** Zeile 1 Größe (Icon Aa, Einheit px) | Gewicht als
+  Icon-Gruppe (Light · Medium · Bold; ein Select erst bei mehr
+  Schnitten) | Italic (Icon-Toggle); Zeile 2 Farbfeld (`ColorField`,
+  `TextStyle` hat keine Deckkraft) | Text-Ausrichtung als Icon-Gruppe,
+  wo das Element sie hat (Titel), sonst bleibt die rechte Spalte leer.
+  Der Titel verliert damit seine Gruppe Layout; zur Trennung von
+  Position, Anordnung und Text-Ausrichtung siehe `ARCHITECTURE.md`,
+  „Kasten-Modell“.
 - **Stroke:** Zeile 1 Breite (Icon ═, Einheit px) | Stil als Icon-Gruppe
-  (— ┄ ┈) | ⚙ für Seltenes, Zeile 2 Farbzeile.
+  (— ┄ ┈), Zeile 2 Farbzeile. Kein ⚙, solange `StrokeStyle` nichts
+  Seltenes hat; Cap, Join oder eigene Strichmuster wären eine
+  Formänderung und gelten nicht für CSS-Rahmen.
 - **Effects:** Überschrift mit ＋; jeder Eintrag eine Zeile: Art
   (Glow ▾) | Stärke (Icon ◌) | Auge | −. Ersetzt None | Glow.
 - **Number Format:** Format-Select | ⚙; Currency, Decimals, Compact,
@@ -655,6 +678,42 @@ LEGEND – Position
 - **Position der Legende** als `PositionGrid` (3×3), ohne Formänderung:
   obere Reihe `top` mit `alignment` start/center/end, untere Reihe
   `bottom`, mittlere Reihe `left` | (Mitte deaktiviert) | `right`.
+
+**Datenfarbe in der Farbzeile (implementiert)**
+
+Die Datenfarbe der Marks (eine Farbe, Palette oder Farbskala) steht in
+der Farbzeile des Paints, der mit ihr gezeichnet wird, statt in einer
+eigenen Gruppe Color. Diese Gruppe nimmt den ersten Platz in
+`MARK_GROUP_ORDER` ein (`dataColor`). Pro Charttyp ist nur festgelegt,
+welcher Paint die Datenfarbe trägt:
+
+| Chart                     | Paint         | Reihenfolge                               |
+| ------------------------- | ------------- | ----------------------------------------- |
+| Bar, Scatter, Pie / Donut | Fill          | Fill → Shape → Border → Effect → …        |
+| Line                      | Line (Stroke) | Line → Shape → Area → Effect → Points → … |
+
+Das linke Feld folgt dem Farbmodus (`getColorEncodingMode`):
+
+```text
+konstant        [● Chart 1         ]  [◐ 90 %]   ColorField
+kategorial      [▬▬ Default       ▾]  [◐ 90 %]   PaletteControl (Dropdown)
+kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]   GradientControl
+```
+
+- `getDataColorField` (`markGroups.tsx`) baut das Feld einmal; Fill der
+  gefüllten Marks bzw. die Line reichen es als `seriesColor` an
+  `FillControls` bzw. `StrokeStyleControls` weiter. Die Bausteine
+  bleiben generisch.
+- Weitere Paints in der Serienfarbe, z. B. die Area der Line, zeigen nur
+  ihre Deckkraft; die Datenfarbe hat genau eine Stelle.
+- Start- und Endfarbe der Farbskala sind Datenfarbe und stehen deshalb
+  nicht mehr im Element Color Scale. Range (Min/Max) gehört ebenfalls
+  dazu und kommt später als ⚙-Details an die Farbzeile (geplant); bis
+  dahin bleibt Range in Color Scale.
+- `PaletteControl` ist ein `SelectControl` mit `renderOption`: Button
+  und Menü zeigen jede Palette als Farbstreifen mit Namen; Farben ohne
+  passende Palette zeigen „Custom“.
+- Die Spec ändert sich nicht (`appearance.color`, `colorScale`).
 
 **Regel 3: Details-Popover statt Einrückung**
 

@@ -41,7 +41,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 1. Effect (Glow) für Marks – implementiert
 2. Marks vervollständigen – implementiert
 3. Format-Popover: Gruppen statt Sections – implementiert
-4. Kompakte Controls im Figma-Stil – **nächster Slice**
+4. Kompakte Controls im Figma-Stil – **in Arbeit**
 5. Legende, Tooltip und Farbskala mit Bausteinen
 6. DateFormat
 7. Theme-Umschalter in der TopBar (provisorisch)
@@ -56,7 +56,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.4 Kompakte Controls im Figma-Stil (geplant, nächster Slice)
+### 3.4 Kompakte Controls im Figma-Stil (in Arbeit)
 
 Das Format-Popover soll aussehen und sich bedienen lassen wie das
 Design-Panel in Figma: dicht, ruhig, Icons statt Text-Labels, eine klare
@@ -70,6 +70,9 @@ Produkt. Die Regeln stehen in `DESIGN_SYSTEM.md`, Abschnitt 6
 - Zeilen-Muster je Baustein: Farbzeile (`PaintControl`: Farbfeld, Hex,
   Deckkraft), Text, Stroke, Effects mit ＋, Number Format mit ⚙,
   Zahlenpaare in einer Zeile, `PositionGrid` (3×3) für die Legende
+- Datenfarbe der Marks in der Farbzeile des Paints, der mit ihr
+  gezeichnet wird (Fill bzw. Line), statt in einer eigenen Gruppe Color;
+  Paletten als Dropdown mit Vorschau
 - Dichte: Zeilen 28–32 px, Felder ohne Rahmen bis Hover und Fokus,
   Tastatur in Zahlenfeldern (Pfeile, Shift, Enter, Escape)
 - jedes Icon ohne Text mit `title` und `aria-label`
@@ -82,13 +85,20 @@ neu nur `PaintControl` und `PositionGrid`. `rowLabelPrefix` entfällt.
 
 Vorgehen:
 
-1. Pilot nur Stroke komplett im neuen Stil (Breite mit Icon, Stil-Icons,
-   Farbzeile, ⚙, Auge in der Überschrift); danach Screenshot und OK
-   abwarten
-2. Baustein für Baustein: Fill → Text → Effects (mit ＋) → Number Format
-   (mit ⚙) → elementspezifische Zeilen (Shape der Marks, Achse,
-   Legende) → `PositionGrid` für die Legende
-3. alle übrigen `Toggle`s im Popover durch Auge, ＋/− oder Icon-Toggle
+1. Pilot Stroke – implementiert: Breite mit Icon und Einheit,
+   Stil-Icons, Farbzeile (`PaintControl`), Auge in der Überschrift; ohne
+   ⚙, weil `StrokeStyle` ohne Formänderung nichts Seltenes hat
+2. Fill und Datenfarbe in der Farbzeile – implementiert: Farbe, Palette
+   (Dropdown mit Vorschau) oder Verlauf im Fill bzw. in der Line, die
+   Gruppe Color entfällt, Start- und Endfarbe nicht mehr in Color Scale;
+   Tooltip-Link als Pinsel in der Überschrift
+3. Baustein für Baustein: Text (implementiert; Gewicht als Icon-Gruppe,
+   Italic als Icon-Toggle, Ausrichtung des Titels in der Text-Zeile, die
+   Gruppe Layout des Titels entfällt) → Effects (mit ＋) → Number Format (mit
+   ⚙; danach Range der Farbskala als ⚙ an der Farbzeile) →
+   elementspezifische Zeilen (Shape der Marks, Achse, Legende) →
+   `PositionGrid` für die Legende
+4. alle übrigen `Toggle`s im Popover durch Auge, ＋/− oder Icon-Toggle
    ersetzen
 
 Regeln: keine Formänderung der Spec, alles bleibt undo-fähig über die
@@ -107,7 +117,12 @@ kompakten Stil:
 - Farbskala als HTML: die ECharts-`visualMap` bleibt mit `show: false`
   für die Farbzuordnung, nur der Balken wird HTML: Text und Zahlenformat
   für die Werte, Fill und Stroke, eigene Format-Region wie die Legende
-  (damit wird die Color Scale anklickbar)
+  (damit wird die Color Scale anklickbar); das Element regelt nur die
+  Komponente selbst, ihre Farben gehören zur Datenfarbe der Marks
+- Kasten-Modell (`ARCHITECTURE.md`, „Platzierung“): ein gemeinsamer
+  Baustein für die Fläche (Fill, Stroke, Radius, Padding) statt je
+  Element; Entscheidung, ob die Spec Position und Anordnung trennt (wäre
+  eine Formänderung)
 - kein Effect; Standard-Optik unverändert
 - neue Felder, keine Formänderung
 
@@ -342,7 +357,8 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
 
 ### Canvas und Dashboard-Objekte
 
-- Text-, Bild- und Vergleichs-Objekte
+- Text-, Bild- und Vergleichs-Objekte; Textfelder als frei verschiebbare
+  Kästen mit eigener Größe (Kasten-Modell, `ARCHITECTURE.md`)
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
 - Zoom (braucht `pageSize`, siehe 3.10)

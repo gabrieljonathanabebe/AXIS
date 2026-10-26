@@ -7,6 +7,7 @@
 @import './styles/ui/CheckList.css';
 @import './styles/ui/CollapsibleSection.css';
 @import './styles/ui/ColorControl.css';
+@import './styles/ui/ColorField.css';
 @import './styles/ui/ControlRow.css';
 @import './styles/ui/DropdownField.css';
 @import './styles/ui/EditableText.css';
@@ -33,6 +34,7 @@
 @import './styles/ui/Toggle.css';
 @import './styles/ui/Widget.css';
 
+@import './styles/field.css';
 @import './styles/glass.css';
 @import './styles/utilities.css';
 @import './styles/App.css';

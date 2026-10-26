@@ -5,7 +5,8 @@
   height: 36px;
   color: var(--color-text-secondary);
   background: var(--color-surface-default);
-  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border: var(--border-width-thin) solid;
+  border-color: var(--field-border-color, var(--color-border-subtle));
   border-radius: var(--radius-pill);
   transition:
     background var(--transition-fast),

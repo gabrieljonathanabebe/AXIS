@@ -455,6 +455,34 @@ Typparameter einschränken:
 - nicht zum Layout gehören Form (`borderRadius`, `barWidth`) und die
   Grid-Position eines Objekts (`object.layout`, `ObjectLayout`)
 
+**Kasten-Modell (geplant)**
+
+`Layout` vereint heute drei Bedeutungen. Geplant ist, sie zu trennen und
+Elemente mit eigener Fläche als Kasten zu beschreiben, wie Frames und
+Textebenen in Figma:
+
+| Bedeutung        | Frage                                 | Heute                                                |
+| ---------------- | ------------------------------------- | ---------------------------------------------------- |
+| Position         | Wo sitzt der Kasten in seinem Eltern? | `position`, `alignment` (Legende, Farbskala, Labels) |
+| Anordnung        | Wie ordnet der Kasten seinen Inhalt?  | `orientation`, `gap`, `padding`                      |
+| Text-Ausrichtung | Wie steht der Text im Kasten?         | `title.layout.alignment`                             |
+
+- Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
+  und Text; die Gruppen des Format-Popovers folgen schon dieser
+  Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
+- Einführung mit 3.5 (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
+  Fill, Stroke und Radius bekommen: ein gemeinsamer Baustein für die
+  Fläche statt je Element; dort fällt auch die Entscheidung, ob die Spec
+  Position und Anordnung trennt.
+- Der Adapter bildet den Kasten auf beide Renderer ab: CSS beim
+  Objekttitel, ECharts bei Legende, Titel und Tooltip; auch ECharts-Texte
+  kennen `backgroundColor`, `border*`, `padding`, `width`, `height`,
+  `align` und `verticalAlign`.
+- Später: frei verschiebbare Kästen mit eigener Größe (Versatz bzw. x/y,
+  Breite, Höhe, vertikale Ausrichtung), zusammen mit dem Text-Objekt.
+- In 3.4 ändert sich die Spec nicht; die Text-Ausrichtung des Titels
+  steht dort nur in der Oberfläche beim Text.
+
 ### Darstellung der Marks
 
 - Kategorien nehmen ihre Farbe über `getPaletteColor(palette, index)`

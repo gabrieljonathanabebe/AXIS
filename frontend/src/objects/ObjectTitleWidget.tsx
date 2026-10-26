@@ -1,6 +1,5 @@
 import ControlRow from '../shared/ui/ControlRow'
 import FormatWidget from '../shared/ui/FormatWidget'
-import LayoutControls from '../shared/ui/LayoutControls'
 import TextInput from '../shared/ui/TextInput'
 import TextStyleControls from '../shared/ui/TextStyleControls'
 import { TITLE_TEXT_STYLE } from './objectDefaults'
@@ -14,8 +13,9 @@ type ObjectTitleWidgetProps = {
 }
 
 /**
- * Groups of an object title: its text, its alignment and its text style.
- * Whether the title shows is the element toggle in the popover header.
+ * Groups of an object title: its text and its text style with the
+ * alignment. Whether the title shows is the element toggle in the popover
+ * header.
  */
 function ObjectTitleWidget({
   defaultTitle,
@@ -34,15 +34,14 @@ function ObjectTitleWidget({
           />
         </ControlRow>
       </FormatWidget>
-      <FormatWidget title="Layout">
-        <LayoutControls
-          label="Title"
-          value={value.layout}
-          onChange={(layout) => onChange({ ...value, layout })}
-        />
-      </FormatWidget>
       <FormatWidget title="Text">
         <TextStyleControls
+          alignment={{
+            value: value.layout.alignment,
+            onChange: (alignment) => {
+              onChange({ ...value, layout: { ...value.layout, alignment } })
+            },
+          }}
           defaultColor={TITLE_TEXT_STYLE.color}
           label="Title"
           maxFontSize={20}

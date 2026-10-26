@@ -22,6 +22,7 @@ const alignmentIcons = {
   end: AlignRight,
 } satisfies Record<HorizontalAlignment, typeof AlignLeft>
 
+/** Start, center or end as an icon group, e.g. for a title. */
 function AlignmentControl({
   label,
   value,
@@ -34,7 +35,7 @@ function AlignmentControl({
       value={value}
       renderOption={(option) => {
         const AlignmentIcon = alignmentIcons[option.value]
-        return <AlignmentIcon aria-hidden="true" size={16} />
+        return <AlignmentIcon aria-hidden="true" size={14} />
       }}
       onValueChange={onValueChange}
     />
