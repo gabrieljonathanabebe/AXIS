@@ -470,7 +470,7 @@ Textebenen in Figma:
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
   und Text; die Gruppen des Format-Popovers folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
-- Einführung mit 3.5 (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
+- Einführung mit 3.6 (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
   Fill, Stroke und Radius bekommen: ein gemeinsamer Baustein für die
   Fläche statt je Element; dort fällt auch die Entscheidung, ob die Spec
   Position und Anordnung trennt.
