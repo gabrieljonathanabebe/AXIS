@@ -26,22 +26,6 @@
   --stack-gap: var(--space-1);
 }
 
-.format-widget-subproperties {
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-  padding-left: var(--indent-nested);
-}
-
-.format-widget-subproperties .control-row {
-  min-height: var(--control-height-sm);
-  gap: var(--space-2);
-}
-
-.format-widget-subproperties .control-row-label {
-  font-size: var(--font-size-2xs);
-}
-
 .layout-position-control .segmented-control-option {
   padding-inline: 0;
 }

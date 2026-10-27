@@ -92,6 +92,7 @@ const FORMAT_LABEL_OFFSET = 12
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
   colorScale: 'Format color scale',
   container: 'Format container',
+  labels: 'Format data labels',
   legend: 'Format legend',
   marks: 'Format marks',
   selectionLabel: 'Format selection label',

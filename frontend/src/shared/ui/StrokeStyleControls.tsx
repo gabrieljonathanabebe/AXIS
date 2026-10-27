@@ -14,6 +14,7 @@ import type { LineStyle, SeriesStrokeStyle } from '../strokeStyle'
 // ===== TYPES =================================================================
 type StrokeStyleControlsProps<TStroke extends SeriesStrokeStyle> = {
   defaultColor?: ColorValue
+  details?: ReactNode
   label: string
   maxWidth?: number
   minWidth?: number
@@ -32,13 +33,15 @@ const lineStyleOptions = [
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of one stroke, e.g. a border: width and line style, then color and
- * opacity. Widgets place them next to their own rows and pass the color
- * the stroke gets when created as `defaultColor`; a stroke without a
- * color, e.g. a series line, shows `seriesColor` in its place.
+ * Rows of one stroke, e.g. a border: width and line style, then color,
+ * opacity and the gear of `details`, if given. Widgets place them next to
+ * their own rows and pass the color the stroke gets when created as
+ * `defaultColor`; a stroke without a color, e.g. a series line, shows
+ * `seriesColor` in its place.
  */
 function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
   defaultColor,
+  details,
   label,
   maxWidth = 8,
   minWidth = 0,
@@ -83,6 +86,7 @@ function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
               }
             : undefined
         }
+        details={details}
         label={label}
         opacity={value.opacity}
         seriesColor={seriesColor}

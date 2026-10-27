@@ -1,0 +1,13 @@
+.details-popover {
+  z-index: 100;
+  width: min(250px, calc(100vw - 32px));
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.details-popover-body {
+  --field-border-color: transparent;
+  --field-font-size: var(--font-size-xs);
+  --field-width: 100%;
+  --stack-gap: var(--space-1);
+}

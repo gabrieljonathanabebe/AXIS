@@ -48,6 +48,10 @@
   outline: none;
 }
 
+.scrubbable-number-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
 .scrubbable-number-input::-webkit-inner-spin-button,
 .scrubbable-number-input::-webkit-outer-spin-button {
   margin: 0;

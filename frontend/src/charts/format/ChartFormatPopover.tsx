@@ -3,13 +3,14 @@ import { Fragment } from 'react'
 import ContainerWidget from '../../objects/ContainerWidget'
 import ObjectFormatPopover from '../../objects/ObjectFormatPopover'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
-import { isRadialChartType } from '../chartDefinitions'
+import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
 import { CHART_AXIS_LINE, CHART_GRID_LINES } from '../createChartInstance'
 import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
 import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
+import LabelsWidget from './LabelsWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
 import LegendWidget from './LegendWidget'
 import { getMarkGroups, MARK_GROUP_ORDER } from './markGroups'
@@ -33,6 +34,7 @@ type ChartFormatPopoverProps = ChartFormatProps & {
 const elementTitles: Record<ChartFormatElement, string> = {
   colorScale: 'Color Scale',
   container: 'Chart',
+  labels: 'Data Labels',
   legend: 'Legend',
   marks: 'Marks',
   title: 'Title',
@@ -76,6 +78,15 @@ function getFormatGroups(
         <ContainerWidget
           value={chart.container}
           onChange={actions.setContainer}
+        />
+      )
+    case 'labels':
+      return (
+        <LabelsWidget
+          isRadial={isRadialChartType(chart.type)}
+          positions={getChartDefinition(chart.type).labelPositions}
+          value={appearance.labels}
+          onChange={(value) => actions.setAppearance('labels', value)}
         />
       )
     case 'legend':
@@ -180,7 +191,7 @@ function getElementVisibility(
   element: ChartFormatElement,
   { actions, chart }: ChartFormatProps,
 ): FormatVisibility | undefined {
-  const { colorScale, legend, title } = chart.spec.appearance
+  const { colorScale, labels, legend, title } = chart.spec.appearance
   const { tooltip } = chart.spec.interaction
   switch (element) {
     case 'colorScale':
@@ -191,6 +202,12 @@ function getElementVisibility(
             ...colorScale,
             continuous: { ...colorScale.continuous, visible },
           }),
+      }
+    case 'labels':
+      return {
+        visible: labels.visible,
+        onChange: (visible) =>
+          actions.setAppearance('labels', { ...labels, visible }),
       }
     case 'legend':
       return {

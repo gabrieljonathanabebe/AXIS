@@ -25,7 +25,7 @@ function ObjectTitleWidget({
   return (
     <>
       <FormatWidget title="Content">
-        <ControlRow label="Text">
+        <ControlRow>
           <TextInput
             label="Title"
             value={value.text}

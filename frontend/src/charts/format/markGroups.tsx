@@ -1,29 +1,43 @@
-import { Circle, Diamond, Square, Triangle } from 'lucide-react'
+import {
+  ArrowDownToLine,
+  ArrowUpToLine,
+  ChartLine,
+  ChartSpline,
+  Circle,
+  Diamond,
+  Donut,
+  Scaling,
+  Square,
+  SquareRoundCorner,
+  Triangle,
+  UnfoldHorizontal,
+} from 'lucide-react'
 
+import { createEffect } from '../../shared/effect'
 import ColorField from '../../shared/ui/ColorField'
 import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
 import ControlRow from '../../shared/ui/ControlRow'
+import DetailsPopover from '../../shared/ui/DetailsPopover'
 import EffectControls from '../../shared/ui/EffectControls'
 import FillControls from '../../shared/ui/FillControls'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import GradientControl from '../../shared/ui/GradientControl'
 import PaletteControl from '../../shared/ui/PaletteControl'
-import RangeSlider from '../../shared/ui/RangeSlider'
+import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
-import Slider from '../../shared/ui/Slider'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
-import Toggle from '../../shared/ui/Toggle'
-import { isRadialChartType } from '../chartDefinitions'
 import { categoricalColorPalettes } from '../colorPalettes'
 import { CHART_MARK_BORDER } from '../createChartInstance'
 import { getColorEncodingMode } from '../getColorEncodingMode'
-import LabelsWidget from './LabelsWidget'
 
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
+import type { Effect } from '../../shared/effect'
+import type { FormatVisibility } from '../../shared/ui/FormatWidget'
 import type {
   ChartFormatElement,
   ChartFormatProps,
+  ColorScaleAppearance,
   LinePoints,
   ScatterSymbol,
 } from '../types'
@@ -43,6 +57,15 @@ type MarkGroupProps = Pick<ChartFormatProps, 'actions' | 'chart'>
 /** Switches the popover to another element, e.g. the tooltip. */
 type ElementChange = (element: ChartFormatElement) => void
 
+/**
+ * Data color of the marks: its field, and for a continuous scale its range
+ * behind a gear.
+ */
+type DataColorControls = { details?: ReactNode; field: ReactNode }
+
+/** Course of a line between its points: straight or a smooth curve. */
+type LineCurve = 'smooth' | 'straight'
+
 // ===== CONSTANTS =============================================================
 /**
  * Fixed order of the groups of the marks element, the same for every
@@ -61,10 +84,19 @@ export const MARK_GROUP_ORDER = [
   'tooltip',
 ] as const
 
+const lineCurveOptions = [
+  { label: 'Straight', value: 'straight' },
+  { label: 'Smooth', value: 'smooth' },
+] satisfies { label: string; value: LineCurve }[]
+
+const lineCurveIcons = {
+  smooth: ChartSpline,
+  straight: ChartLine,
+} satisfies Record<LineCurve, LucideIcon>
+
 const linePointsOptions = [
   { label: 'Auto', value: 'auto' },
-  { label: 'On', value: 'on' },
-  { label: 'Off', value: 'off' },
+  { label: 'Always', value: 'on' },
 ] satisfies { label: string; value: LinePoints }[]
 
 const scatterSymbolOptions = [
@@ -84,34 +116,40 @@ const scatterSymbolIcons = {
 // ===== HELPERS ===============================================================
 /**
  * Group without rows whose paintbrush opens another element, e.g. the
- * tooltip.
+ * tooltip; with a visibility, its eye also shows or hides that element.
  * @param title Title of the group.
  * @param element Element the paintbrush opens.
  * @param onElementChange Switches the popover to that element.
- * @returns The group with a paintbrush in its heading.
+ * @param visibility Shows or hides the element, e.g. the data labels.
+ * @returns The group with a paintbrush and an optional eye in its heading.
  */
 function getElementLinkGroup(
   title: string,
   element: ChartFormatElement,
   onElementChange: ElementChange,
+  visibility?: FormatVisibility,
 ): ReactNode {
   return (
-    <FormatWidget title={title} onFormat={() => onElementChange(element)} />
+    <FormatWidget
+      title={title}
+      visibility={visibility}
+      onFormat={() => onElementChange(element)}
+    />
   )
 }
 
 /**
- * Field of the data color in the color row of the marks: one color, a
- * palette for categories, or a gradient when a continuous field colors
- * the marks.
+ * Data color in the color row of the marks: one color, a palette for
+ * categories, or a gradient when a continuous field colors the marks; the
+ * gradient brings the range of its scale behind a gear.
  * @param formatProps Actions, chart and fields of the chart.
- * @returns The field of the color mode.
+ * @returns The field of the color mode and, for a gradient, its details.
  */
-function getDataColorField({
+function getDataColorControls({
   actions,
   chart,
   fields,
-}: ChartFormatProps): ReactNode {
+}: ChartFormatProps): DataColorControls {
   const { appearance } = chart.spec
   const colorEncodingMode = getColorEncodingMode(
     chart.type,
@@ -119,43 +157,105 @@ function getDataColorField({
     fields,
   )
   if (colorEncodingMode === 'constant') {
-    return (
-      <ColorField
-        label="Chart"
-        presets={DATA_COLOR_PRESETS}
-        value={appearance.color}
-        onChange={(color) => actions.setAppearance('color', color)}
-      />
-    )
+    return {
+      field: (
+        <ColorField
+          label="Chart"
+          presets={DATA_COLOR_PRESETS}
+          value={appearance.color}
+          onChange={(color) => actions.setAppearance('color', color)}
+        />
+      ),
+    }
   }
   if (colorEncodingMode === 'categorical') {
+    return {
+      field: (
+        <PaletteControl
+          label="Categorical color palette"
+          palettes={categoricalColorPalettes}
+          value={appearance.colorScale.categorical.palette}
+          onChange={(palette) => {
+            actions.setAppearance('colorScale', {
+              ...appearance.colorScale,
+              categorical: { ...appearance.colorScale.categorical, palette },
+            })
+          }}
+        />
+      ),
+    }
+  }
+  const { continuous } = appearance.colorScale
+
+  /** Saves changed fields of the continuous scale, e.g. its minimum. */
+  function setContinuous(
+    changes: Partial<ColorScaleAppearance['continuous']>,
+  ): void {
+    actions.setAppearance('colorScale', {
+      ...appearance.colorScale,
+      continuous: { ...continuous, ...changes },
+    })
+  }
+
+  return {
+    details: (
+      <DetailsPopover label="Color range">
+        <ControlRow>
+          <ScrubbableNumber
+            icon={<ArrowDownToLine size={14} />}
+            label="Color scale minimum"
+            step={1}
+            value={continuous.min}
+            onAuto={() => setContinuous({ min: null })}
+            onValueChange={(min) => setContinuous({ min })}
+          />
+          <ScrubbableNumber
+            icon={<ArrowUpToLine size={14} />}
+            label="Color scale maximum"
+            step={1}
+            value={continuous.max}
+            onAuto={() => setContinuous({ max: null })}
+            onValueChange={(max) => setContinuous({ max })}
+          />
+        </ControlRow>
+      </DetailsPopover>
+    ),
+    field: (
+      <GradientControl
+        label="Chart"
+        startColor={continuous.startColor}
+        endColor={continuous.endColor}
+        onChange={setContinuous}
+      />
+    ),
+  }
+}
+
+/**
+ * Effect group of one mark: without an effect only the plus in its
+ * heading, which adds a glow, else the row of the effect.
+ * @param label Name of the mark for screen readers, e.g. "Bar".
+ * @param effect Effect of the mark.
+ * @param onChange Saves the changed effect.
+ * @returns The effect group.
+ */
+function getEffectGroup(
+  label: string,
+  effect: Effect,
+  onChange: (effect: Effect) => void,
+): ReactNode {
+  if (effect.kind === 'none') {
     return (
-      <PaletteControl
-        label="Categorical color palette"
-        palettes={categoricalColorPalettes}
-        value={appearance.colorScale.categorical.palette}
-        onChange={(palette) => {
-          actions.setAppearance('colorScale', {
-            ...appearance.colorScale,
-            categorical: { ...appearance.colorScale.categorical, palette },
-          })
-        }}
+      <FormatWidget
+        title="Effect"
+        onAdd={() => onChange(createEffect('glow'))}
       />
     )
   }
-  const { continuous } = appearance.colorScale
   return (
-    <GradientControl
-      label="Chart"
-      startColor={continuous.startColor}
-      endColor={continuous.endColor}
-      onChange={({ startColor, endColor }) => {
-        actions.setAppearance('colorScale', {
-          ...appearance.colorScale,
-          continuous: { ...continuous, startColor, endColor },
-        })
-      }}
-    />
+    <FormatWidget title="Effect">
+      <EffectControls label={label} value={effect} onChange={onChange} />
+    </FormatWidget>
   )
 }
 
@@ -166,38 +266,31 @@ function getDataColorField({
  * @param props Actions and chart of the chart.
  * @param mark Appearance key of the mark.
  * @param label Name of the mark for screen readers, e.g. "Bar".
- * @param dataColor Field of the data color.
+ * @param dataColor Field and details of the data color.
  * @returns The data color, stroke and effect groups.
  */
 function getFilledMarkGroups(
   { actions, chart }: MarkGroupProps,
   mark: FilledMarkKey,
   label: string,
-  dataColor: ReactNode,
+  dataColor: DataColorControls,
 ): MarkGroups {
   const { border, effect, fill } = chart.spec.appearance[mark]
   return {
     dataColor: (
       <FormatWidget title="Fill">
         <FillControls
+          details={dataColor.details}
           label={`${label} fill`}
-          seriesColor={dataColor}
+          seriesColor={dataColor.field}
           value={fill}
           onChange={(value) => actions.setChartAppearance(mark, 'fill', value)}
         />
       </FormatWidget>
     ),
-    effect: (
-      <FormatWidget title="Effect">
-        <EffectControls
-          label={label}
-          value={effect}
-          onChange={(value) =>
-            actions.setChartAppearance(mark, 'effect', value)
-          }
-        />
-      </FormatWidget>
-    ),
+    effect: getEffectGroup(label, effect, (value) => {
+      actions.setChartAppearance(mark, 'effect', value)
+    }),
     stroke: (
       <FormatWidget title="Border">
         <StrokeStyleControls
@@ -215,41 +308,44 @@ function getFilledMarkGroups(
 
 /**
  * Groups only some chart types have: shape, and for lines their area,
- * line, glow and points.
+ * line, effect and points.
  * @param props Actions and chart of the chart.
- * @param dataColor Field of the data color for the group drawn with it.
+ * @param dataColor Field and details of the data color for its group.
  * @returns The groups of the chart type.
  */
 function getChartTypeGroups(
   props: MarkGroupProps,
-  dataColor: ReactNode,
+  dataColor: DataColorControls,
 ): MarkGroups {
   const { actions, chart } = props
   const { bar, line, pie, scatter } = chart.spec.appearance
+  const sizeField = chart.spec.data.encoding.size
   switch (chart.type) {
     case 'bar':
       return {
         ...getFilledMarkGroups(props, 'bar', 'Bar', dataColor),
         shape: (
           <FormatWidget title="Shape">
-            <ControlRow label="Width">
-              <Slider
+            <ControlRow>
+              <ScrubbableNumber
+                icon={<UnfoldHorizontal size={14} />}
                 label="Bar width"
-                min={8}
                 max={64}
+                min={8}
                 step={2}
+                unit="px"
                 value={bar.barWidth}
                 onValueChange={(barWidth) => {
                   actions.setChartAppearance('bar', 'barWidth', barWidth)
                 }}
               />
-            </ControlRow>
-            <ControlRow label="Radius">
-              <Slider
+              <ScrubbableNumber
+                icon={<SquareRoundCorner size={14} />}
                 label="Corner radius"
-                min={0}
                 max={24}
+                min={0}
                 step={1}
+                unit="px"
                 value={bar.borderRadius}
                 onValueChange={(borderRadius) => {
                   actions.setChartAppearance(
@@ -270,12 +366,14 @@ function getChartTypeGroups(
         shape:
           chart.type === 'donut' ? (
             <FormatWidget title="Shape">
-              <ControlRow label="Inner radius">
-                <Slider
+              <ControlRow>
+                <ScrubbableNumber
+                  icon={<Donut size={14} />}
                   label="Donut inner radius"
-                  min={20}
                   max={60}
+                  min={20}
                   step={2}
+                  unit="%"
                   value={pie.innerRadius}
                   onValueChange={(innerRadius) => {
                     actions.setChartAppearance(
@@ -294,9 +392,10 @@ function getChartTypeGroups(
         dataColor: (
           <FormatWidget title="Line">
             <StrokeStyleControls
+              details={dataColor.details}
               label="Line"
               minWidth={1}
-              seriesColor={dataColor}
+              seriesColor={dataColor.field}
               value={line.stroke}
               onChange={(stroke) => {
                 actions.setChartAppearance('line', 'stroke', stroke)
@@ -304,17 +403,9 @@ function getChartTypeGroups(
             />
           </FormatWidget>
         ),
-        effect: (
-          <FormatWidget title="Effect">
-            <EffectControls
-              label="Line"
-              value={line.effect}
-              onChange={(effect) => {
-                actions.setChartAppearance('line', 'effect', effect)
-              }}
-            />
-          </FormatWidget>
-        ),
+        effect: getEffectGroup('Line', line.effect, (effect) => {
+          actions.setChartAppearance('line', 'effect', effect)
+        }),
         fill: (
           <FormatWidget
             title="Area"
@@ -335,8 +426,20 @@ function getChartTypeGroups(
           </FormatWidget>
         ),
         points: (
-          <FormatWidget title="Points">
-            <ControlRow label="Show">
+          <FormatWidget
+            title="Points"
+            visibility={{
+              visible: line.points !== 'off',
+              onChange: (visible) => {
+                actions.setChartAppearance(
+                  'line',
+                  'points',
+                  visible ? 'auto' : 'off',
+                )
+              },
+            }}
+          >
+            <ControlRow>
               <SegmentedControl
                 label="Line points"
                 options={linePointsOptions}
@@ -350,12 +453,21 @@ function getChartTypeGroups(
         ),
         shape: (
           <FormatWidget title="Shape">
-            <ControlRow label="Smooth">
-              <Toggle
-                label="Smooth line"
-                checked={line.smooth}
-                onCheckedChange={(smooth) => {
-                  actions.setChartAppearance('line', 'smooth', smooth)
+            <ControlRow>
+              <SegmentedControl
+                label="Line curve"
+                options={lineCurveOptions}
+                renderOption={(option) => {
+                  const CurveIcon = lineCurveIcons[option.value]
+                  return <CurveIcon aria-hidden="true" size={14} />
+                }}
+                value={line.smooth ? 'smooth' : 'straight'}
+                onValueChange={(curve) => {
+                  actions.setChartAppearance(
+                    'line',
+                    'smooth',
+                    curve === 'smooth',
+                  )
                 }}
               />
             </ControlRow>
@@ -367,7 +479,7 @@ function getChartTypeGroups(
         ...getFilledMarkGroups(props, 'scatter', 'Point', dataColor),
         shape: (
           <FormatWidget title="Shape">
-            <ControlRow label="Symbol">
+            <ControlRow>
               <SegmentedControl
                 label="Scatter symbol"
                 options={scatterSymbolOptions}
@@ -380,29 +492,14 @@ function getChartTypeGroups(
                   actions.setChartAppearance('scatter', 'symbol', symbol)
                 }}
               />
-            </ControlRow>
-            {chart.spec.data.encoding.size ? (
-              <ControlRow label="Size range">
-                <RangeSlider
-                  label="Point size range"
-                  max={60}
-                  min={2}
-                  value={[scatter.sizeRange.min, scatter.sizeRange.max]}
-                  onValueChange={([min, max]) => {
-                    actions.setChartAppearance('scatter', 'sizeRange', {
-                      max,
-                      min,
-                    })
-                  }}
-                />
-              </ControlRow>
-            ) : (
-              <ControlRow label="Size">
-                <Slider
+              {sizeField ? null : (
+                <ScrubbableNumber
+                  icon={<Scaling size={14} />}
                   label="Point size"
-                  min={4}
                   max={28}
+                  min={4}
                   step={1}
+                  unit="px"
                   value={scatter.pointSize}
                   onValueChange={(pointSize) => {
                     actions.setChartAppearance(
@@ -412,8 +509,42 @@ function getChartTypeGroups(
                     )
                   }}
                 />
+              )}
+            </ControlRow>
+            {sizeField ? (
+              <ControlRow>
+                <ScrubbableNumber
+                  icon={<ArrowDownToLine size={14} />}
+                  label="Smallest point size"
+                  max={scatter.sizeRange.max}
+                  min={2}
+                  step={1}
+                  unit="px"
+                  value={scatter.sizeRange.min}
+                  onValueChange={(min) => {
+                    actions.setChartAppearance('scatter', 'sizeRange', {
+                      ...scatter.sizeRange,
+                      min,
+                    })
+                  }}
+                />
+                <ScrubbableNumber
+                  icon={<ArrowUpToLine size={14} />}
+                  label="Largest point size"
+                  max={60}
+                  min={scatter.sizeRange.min}
+                  step={1}
+                  unit="px"
+                  value={scatter.sizeRange.max}
+                  onValueChange={(max) => {
+                    actions.setChartAppearance('scatter', 'sizeRange', {
+                      ...scatter.sizeRange,
+                      max,
+                    })
+                  }}
+                />
               </ControlRow>
-            )}
+            ) : null}
           </FormatWidget>
         ),
       }
@@ -426,7 +557,7 @@ function getChartTypeGroups(
  * with width and radius for bars. Places a chart type does not have stay
  * empty and drop out of the popover; `MARK_GROUP_ORDER` sets the order.
  * @param formatProps Actions, chart and fields of the chart.
- * @param onElementChange Switches the popover to the tooltip.
+ * @param onElementChange Switches the popover to its labels or tooltip.
  * @returns The groups by place.
  */
 export function getMarkGroups(
@@ -434,16 +565,16 @@ export function getMarkGroups(
   onElementChange: ElementChange,
 ): MarkGroups {
   const { actions, chart } = formatProps
-  const dataColor = getDataColorField(formatProps)
+  const { labels } = chart.spec.appearance
+  const dataColor = getDataColorControls(formatProps)
   return {
     ...getChartTypeGroups(formatProps, dataColor),
-    labels: (
-      <LabelsWidget
-        isRadial={isRadialChartType(chart.type)}
-        value={chart.spec.appearance.labels}
-        onChange={(value) => actions.setAppearance('labels', value)}
-      />
-    ),
+    labels: getElementLinkGroup('Labels', 'labels', onElementChange, {
+      visible: labels.visible,
+      onChange: (visible) => {
+        actions.setAppearance('labels', { ...labels, visible })
+      },
+    }),
     tooltip: getElementLinkGroup('Tooltip', 'tooltip', onElementChange),
   }
 }

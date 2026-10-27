@@ -1,14 +1,15 @@
+import { Ruler } from 'lucide-react'
+
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import RotationDial from '../../shared/ui/RotationDial'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
 import TextInput from '../../shared/ui/TextInput'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
 import { CHART_TEXT_STYLE } from '../createChartInstance'
 
-import type { AxisAppearance, AxisValueType } from '../types'
+import type { AxisAppearance } from '../types'
 
 // ===== TYPES =================================================================
 type AxisOrientation = 'x' | 'y'
@@ -24,26 +25,12 @@ type AxisWidgetProps = {
   value: AxisAppearance
 }
 
-type TickMode = 'auto' | 'custom'
-
-// ===== CONSTANTS =============================================================
-const valueTypeOptions = [
-  { label: 'Number', value: 'number' },
-  { label: 'Date', value: 'date' },
-] satisfies { label: string; value: AxisValueType }[]
-
-const tickModeOptions = [
-  { label: 'Auto', value: 'auto' },
-  { label: 'Custom', value: 'custom' },
-] satisfies { label: string; value: TickMode }[]
-
-const DEFAULT_TICK_COUNT = 5
-
 // ===== FUNCTIONS =============================================================
 /**
  * Groups of one axis part: the title group of the axis element, or the
- * groups of the axis labels element (values, rotation, text and number
- * format). Whether the axis shows is the element toggle in the header.
+ * groups of the axis labels element (ticks, rotation, text and format as
+ * number or date). Whether the axis shows is the element toggle in the
+ * header.
  */
 function AxisWidget({
   defaultTitle,
@@ -54,7 +41,6 @@ function AxisWidget({
 }: AxisWidgetProps) {
   const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
   const { labels } = value
-  const tickMode: TickMode = labels.tickCount === null ? 'auto' : 'custom'
   if (part === 'title') {
     return (
       <FormatWidget
@@ -66,7 +52,7 @@ function AxisWidget({
           },
         }}
       >
-        <ControlRow label="Text">
+        <ControlRow>
           <TextInput
             label={`${title} title`}
             value={value.title.text}
@@ -89,53 +75,22 @@ function AxisWidget({
   }
   return (
     <>
-      <FormatWidget title="Content">
-        <ControlRow label="Type">
-          <SegmentedControl
-            label={`${title} value type`}
-            options={valueTypeOptions}
-            value={labels.valueType}
-            onValueChange={(valueType) => {
-              onChange({ ...value, labels: { ...labels, valueType } })
-            }}
-          />
-        </ControlRow>
-        <ControlRow label="Ticks">
-          <SegmentedControl
-            label={`${title} tick mode`}
-            options={tickModeOptions}
-            value={tickMode}
-            onValueChange={(nextTickMode) => {
-              onChange({
-                ...value,
-                labels: {
-                  ...labels,
-                  tickCount:
-                    nextTickMode === 'auto' ? null : DEFAULT_TICK_COUNT,
-                },
-              })
-            }}
-          />
-        </ControlRow>
-        {labels.tickCount !== null ? (
-          <div className="format-widget-subproperties">
-            <ControlRow label="Tick count">
-              <ScrubbableNumber
-                label={`${title} tick count`}
-                min={2}
-                max={20}
-                step={1}
-                value={labels.tickCount}
-                onValueChange={(tickCount) => {
-                  onChange({ ...value, labels: { ...labels, tickCount } })
-                }}
-              />
-            </ControlRow>
-          </div>
-        ) : null}
-      </FormatWidget>
       <FormatWidget title="Layout">
-        <ControlRow label="Rotation">
+        <ControlRow>
+          <ScrubbableNumber
+            icon={<Ruler size={14} />}
+            label={`${title} tick count`}
+            max={20}
+            min={2}
+            step={1}
+            value={labels.tickCount}
+            onAuto={() => {
+              onChange({ ...value, labels: { ...labels, tickCount: null } })
+            }}
+            onValueChange={(tickCount) => {
+              onChange({ ...value, labels: { ...labels, tickCount } })
+            }}
+          />
           <RotationDial
             label={`${title} label rotation`}
             value={labels.rotation}
@@ -155,17 +110,22 @@ function AxisWidget({
           }
         />
       </FormatWidget>
-      {labels.valueType === 'number' ? (
-        <FormatWidget title="Format">
-          <NumberFormatControls
-            label={title}
-            value={labels.numberFormat}
-            onChange={(numberFormat) => {
-              onChange({ ...value, labels: { ...labels, numberFormat } })
-            }}
-          />
-        </FormatWidget>
-      ) : null}
+      <FormatWidget title="Format">
+        <NumberFormatControls
+          isDate={labels.valueType === 'date'}
+          label={title}
+          value={labels.numberFormat}
+          onChange={(numberFormat) => {
+            onChange({
+              ...value,
+              labels: { ...labels, numberFormat, valueType: 'number' },
+            })
+          }}
+          onDate={() => {
+            onChange({ ...value, labels: { ...labels, valueType: 'date' } })
+          }}
+        />
+      </FormatWidget>
     </>
   )
 }

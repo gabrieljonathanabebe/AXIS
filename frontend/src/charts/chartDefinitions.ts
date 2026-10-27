@@ -6,9 +6,25 @@ import {
   Donut,
 } from 'lucide-react'
 
+import {
+  BarLabelInside,
+  BarLabelTop,
+  PointLabelInside,
+  PointLabelRight,
+  PointLabelTop,
+  SliceLabelInside,
+  SliceLabelOutside,
+} from './chartIcons'
+
 import type { LucideIcon } from 'lucide-react'
 import type { SemanticRole } from '../datasets/types'
-import type { Aggregation, ChartEncoding, ChartType } from './types'
+import type { OptionItem } from '../shared/ui/OptionsMenu'
+import type {
+  Aggregation,
+  ChartEncoding,
+  ChartType,
+  LabelPosition,
+} from './types'
 
 // ===== TYPES =================================================================
 
@@ -19,6 +35,7 @@ export type ChartDataMode = 'aggregated' | 'points'
 export type ChartDefinition = {
   type: ChartType
   label: string
+  labelPositions: OptionItem<LabelPosition>[]
   icon: LucideIcon
   coordinates: ChartCoordinates
   dataMode: ChartDataMode
@@ -57,10 +74,30 @@ const radialEncodings = [
   },
 ] satisfies EncodingDefinition[]
 
+/** Label places on points, e.g. of a line or scatter chart. */
+const pointLabelPositions = [
+  { icon: PointLabelTop, label: 'Top', value: 'top' },
+  { icon: PointLabelRight, label: 'Right', value: 'right' },
+  { icon: PointLabelInside, label: 'Inside', value: 'inside' },
+] satisfies OptionItem<LabelPosition>[]
+
+/** Label places on bars: above the bar or inside it. */
+const barLabelPositions = [
+  { icon: BarLabelTop, label: 'Top', value: 'top' },
+  { icon: BarLabelInside, label: 'Inside', value: 'inside' },
+] satisfies OptionItem<LabelPosition>[]
+
+/** Label places on pie segments; `right` stands for outside. */
+const sliceLabelPositions = [
+  { icon: SliceLabelOutside, label: 'Outside', value: 'right' },
+  { icon: SliceLabelInside, label: 'Inside', value: 'inside' },
+] satisfies OptionItem<LabelPosition>[]
+
 export const chartDefinitions = {
   scatter: {
     type: 'scatter',
     label: 'Scatter',
+    labelPositions: pointLabelPositions,
     icon: ChartScatter,
     coordinates: 'cartesian',
     dataMode: 'points',
@@ -100,6 +137,7 @@ export const chartDefinitions = {
   line: {
     type: 'line',
     label: 'Line',
+    labelPositions: pointLabelPositions,
     icon: ChartLine,
     coordinates: 'cartesian',
     dataMode: 'aggregated',
@@ -132,6 +170,7 @@ export const chartDefinitions = {
   bar: {
     type: 'bar',
     label: 'Bar',
+    labelPositions: barLabelPositions,
     coordinates: 'cartesian',
     dataMode: 'aggregated',
     icon: ChartColumn,
@@ -175,6 +214,7 @@ export const chartDefinitions = {
     encodings: radialEncodings,
     icon: ChartPie,
     label: 'Pie',
+    labelPositions: sliceLabelPositions,
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     type: 'pie',
   },
@@ -185,6 +225,7 @@ export const chartDefinitions = {
     encodings: radialEncodings,
     icon: Donut,
     label: 'Donut',
+    labelPositions: sliceLabelPositions,
     supportedAggregations: ['sum', 'mean', 'median', 'min', 'max', 'count'],
     type: 'donut',
   },

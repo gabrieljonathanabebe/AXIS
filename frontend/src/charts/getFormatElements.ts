@@ -9,6 +9,7 @@ import type { ChartFormatElement, ChartInstance } from './types'
 const chartFormatElements: readonly ObjectFormatElement[] = [
   'colorScale',
   'container',
+  'labels',
   'legend',
   'marks',
   'title',
@@ -22,8 +23,8 @@ const chartFormatElements: readonly ObjectFormatElement[] = [
 /**
  * Tells whether a format element belongs to charts.
  * @param element Element of a format target, or null when none is open.
- * @returns True for container, title, marks, tooltip, axes, axis labels,
- *   legend and color scale.
+ * @returns True for container, title, marks, data labels, tooltip, axes,
+ *   axis labels, legend and color scale.
  */
 export function isChartFormatElement(
   element: ObjectFormatElement | null,
@@ -36,9 +37,9 @@ export function isChartFormatElement(
  * @param chart Chart whose elements are listed.
  * @param fields Dataset fields, which decide whether a legend or a color
  *   scale is relevant.
- * @returns The container, title, marks and tooltip, the axes and their
- *   labels of cartesian charts, a relevant legend and a continuous color
- *   scale.
+ * @returns The container, title, marks with their data labels and tooltip,
+ *   the axes and their labels of cartesian charts, a relevant legend and a
+ *   continuous color scale.
  */
 export function getFormatElements(
   chart: ChartInstance,
@@ -48,6 +49,7 @@ export function getFormatElements(
     'container',
     'title',
     'marks',
+    'labels',
     'tooltip',
   ]
   if (!isRadialChartType(chart.type)) {

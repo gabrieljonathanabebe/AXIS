@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Paintbrush } from 'lucide-react'
+import { Eye, EyeOff, Paintbrush, Plus } from 'lucide-react'
 
 import IconButton from './IconButton'
 
@@ -16,6 +16,7 @@ type FormatWidgetProps = {
   children?: ReactNode
   title?: string
   visibility?: FormatVisibility
+  onAdd?: () => void
   /** Opens the format of another element, e.g. the tooltip. */
   onFormat?: () => void
 }
@@ -24,15 +25,17 @@ type FormatWidgetProps = {
 /**
  * One group of format rows, e.g. in the format popover. The title becomes a
  * small heading; a visibility becomes an eye on its right, which also
- * shows or hides the rows, and `onFormat` a paintbrush that opens another
- * element. Without a title the rows stand alone, e.g. in a section of the
- * build panel.
- * @param props Rows, optional title, visibility and format action.
+ * shows or hides the rows, `onAdd` a plus that adds what the rows edit,
+ * e.g. an effect, and `onFormat` a paintbrush that opens another element.
+ * Without a title the rows stand alone, e.g. in a section of the build
+ * panel.
+ * @param props Rows, optional title, visibility, add and format action.
  */
 function FormatWidget({
   children,
   title,
   visibility,
+  onAdd,
   onFormat,
 }: FormatWidgetProps) {
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
@@ -51,6 +54,16 @@ function FormatWidget({
                 onClick={() => visibility.onChange(!visibility.visible)}
               >
                 {visibility.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+              </IconButton>
+            ) : null}
+            {onAdd ? (
+              <IconButton
+                label={`Add ${title.toLowerCase()}`}
+                size="xs"
+                variant="ghost"
+                onClick={onAdd}
+              >
+                <Plus size={14} />
               </IconButton>
             ) : null}
             {onFormat ? (

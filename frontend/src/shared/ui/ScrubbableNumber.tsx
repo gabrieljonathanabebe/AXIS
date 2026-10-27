@@ -14,13 +14,14 @@ type ScrubbableNumberProps = {
   /** Icon in the field that scrubs the value; without one, a grip. */
   icon?: ReactNode
   label: string
-  value: number
+  value: number | null
   min?: number
   max?: number
   step?: number
   pixelsPerStep?: number
   /** Unit after the value, e.g. `px` or `%`. */
   unit?: string
+  onAuto?: () => void
   onValueChange: (value: number) => void
 }
 
@@ -44,8 +45,10 @@ function normalizeValue(value: number, step: number): number {
 
 /**
  * Number field that changes its value by dragging the icon or grip
- * sideways, by typing or with the arrow keys.
- * @param props Value, bounds, step, optional icon and unit.
+ * sideways, by typing or with the arrow keys. With `onAuto` the value may
+ * be auto: an empty field shows "Auto", emptying it calls `onAuto`, and
+ * dragging or stepping starts from the minimum.
+ * @param props Value, bounds, step, optional icon, unit and auto action.
  */
 function ScrubbableNumber({
   icon,
@@ -56,10 +59,12 @@ function ScrubbableNumber({
   step = 1,
   pixelsPerStep = 6,
   unit,
+  onAuto,
   onValueChange,
 }: ScrubbableNumberProps) {
-  const [draftValue, setDraftValue] = useDraftValue(value)
+  const [draftValue, setDraftValue, resetDraftValue] = useDraftValue(value)
   const dragState = useRef<DragState | null>(null)
+  const baseValue = value ?? min ?? 0
 
   function commitValue(nextValue: number): void {
     const normalizedValue = normalizeValue(nextValue, step)
@@ -69,11 +74,18 @@ function ScrubbableNumber({
     onValueChange(boundedValue)
   }
 
+  /** Commits the typed number; an emptied field turns auto when allowed. */
   function commitDraftValue(): void {
+    if (onAuto && draftValue === '') {
+      if (value !== null) {
+        onAuto()
+      }
+      return
+    }
     const parsedValue = Number(draftValue)
 
     if (!Number.isFinite(parsedValue)) {
-      setDraftValue(String(value))
+      resetDraftValue()
       return
     }
 
@@ -91,7 +103,7 @@ function ScrubbableNumber({
     dragState.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
-      startValue: value,
+      startValue: baseValue,
     }
   }
 
@@ -124,7 +136,7 @@ function ScrubbableNumber({
       event.preventDefault()
       const direction = event.key === 'ArrowUp' ? 1 : -1
       const stepCount = event.shiftKey ? 10 : 1
-      commitValue(value + direction * stepCount * step)
+      commitValue(baseValue + direction * stepCount * step)
     }
 
     if (event.key === 'Enter') {
@@ -133,7 +145,7 @@ function ScrubbableNumber({
     }
 
     if (event.key === 'Escape') {
-      setDraftValue(String(value))
+      resetDraftValue()
       event.currentTarget.blur()
     }
   }
@@ -158,6 +170,7 @@ function ScrubbableNumber({
         min={min}
         max={max}
         step={step}
+        placeholder={onAuto ? 'Auto' : undefined}
         value={draftValue}
         onChange={(event) => {
           setDraftValue(event.currentTarget.value)
@@ -165,7 +178,9 @@ function ScrubbableNumber({
         onBlur={commitDraftValue}
         onKeyDown={handleKeyDown}
       />
-      {unit ? <span className="scrubbable-number-unit">{unit}</span> : null}
+      {unit && value !== null ? (
+        <span className="scrubbable-number-unit">{unit}</span>
+      ) : null}
     </div>
   )
 }

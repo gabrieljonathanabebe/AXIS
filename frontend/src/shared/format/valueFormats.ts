@@ -30,18 +30,10 @@ export const DEFAULT_NUMBER_FORMAT: NumberFormat = {
   suffix: '',
 }
 
-/** Number formats a value can be shown in, as select options. */
-export const VALUE_FORMAT_OPTIONS = [
-  { label: 'Auto', value: 'auto' },
-  { label: 'Number', value: 'number' },
-  { label: 'Percent', value: 'percent' },
-  { label: 'Currency', value: 'currency' },
-] satisfies { label: string; value: ValueFormat }[]
-
-/** Currencies of the currency format, as select options. */
+/** Currencies of the currency format with their symbol, as options. */
 export const CURRENCY_OPTIONS = [
-  { label: 'EUR', value: 'EUR' },
-  { label: 'USD', value: 'USD' },
-  { label: 'GBP', value: 'GBP' },
-  { label: 'JPY', value: 'JPY' },
+  { label: '€ EUR', value: 'EUR' },
+  { label: '$ USD', value: 'USD' },
+  { label: '£ GBP', value: 'GBP' },
+  { label: '¥ JPY', value: 'JPY' },
 ] satisfies { label: string; value: CurrencyCode }[]

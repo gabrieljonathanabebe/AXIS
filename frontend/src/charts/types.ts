@@ -155,7 +155,10 @@ export type ChartEncoding = {
 
 /** Chart elements that can be formatted directly on the chart. */
 export type ChartFormatElement =
-  | keyof Pick<ChartAppearanceSpec, 'legend' | 'title' | 'xAxis' | 'yAxis'>
+  | keyof Pick<
+      ChartAppearanceSpec,
+      'labels' | 'legend' | 'title' | 'xAxis' | 'yAxis'
+    >
   | 'colorScale'
   | ContainerFormatElement
   | 'marks'

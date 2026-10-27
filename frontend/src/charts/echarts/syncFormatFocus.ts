@@ -35,12 +35,12 @@ function createAxisFocus(
 // ===== FUNCTION ==============================================================
 /**
  * Dims the chart content while a format popover is open and lets the
- * formatted part of an axis or the legend glow. ECharts draws both, so they
- * follow layout changes. The glow keeps the text colors, which the popover
- * edits; legend icons inherit the dimmed series opacity, so a formatted
- * legend resets it. Formatted marks keep their opacity without a glow,
- * since the popover edits their colors. The container is the whole chart,
- * so nothing is dimmed.
+ * formatted part of an axis, the legend or the data labels glow. ECharts
+ * draws them, so they follow layout changes. The glow keeps the text
+ * colors, which the popover edits; legend icons inherit the dimmed series
+ * opacity, so a formatted legend resets it. Formatted marks keep their
+ * opacity without a glow, since the popover edits their colors. The
+ * container is the whole chart, so nothing is dimmed.
  * @param instance ECharts instance of the chart.
  * @param formattedElement Element in the popover, or null when it is closed.
  * @param color Accent color of the glow.
@@ -81,7 +81,7 @@ export function syncFormatFocus(
     series: series.map(({ areaStyle }) => ({
       areaStyle: areaStyle ? marksStyle : undefined,
       itemStyle: marksStyle,
-      label: FOCUS_DIMMED_STYLE,
+      label: formattedElement === 'labels' ? textGlow : FOCUS_DIMMED_STYLE,
       lineStyle: marksStyle,
     })),
   })

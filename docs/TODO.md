@@ -123,6 +123,14 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - Achsen-Widgets, Gridlines, Labels-Position und Brush müssen die
   getauschten Achsen berücksichtigen
 - gilt auch für gestapelte Balken
+- Label-Positionen dabei relativ zur Mark statt zum Bildschirm benennen:
+  heute `'top' | 'right' | 'inside'`, beim Pie steht `'right'` für
+  „Outside“, und bei horizontalen Balken würde aus „oben“ „rechts“
+- Vorschlag: Werte je Mark-Art (Balken `outside`, `insideEnd`, `center`,
+  `insideBase`; Punkte z. B. `above`, `right`, `center`; Pie `outside`,
+  `inside`), die erst der Adapter je Ausrichtung auf ECharts übersetzt
+- offen: Labels sind eine Spec pro Chart; Verhalten beim Wechsel des
+  Charttyps klären; Formänderung, daher vor der Persistenz (3.13)
 
 ## Heatmap-Matrix
 
@@ -151,3 +159,18 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   Marge, häufig mit zweiter Y-Achse
 - verbreitet in BI-Dashboards; braucht je Measure einen Mark-Typ und
   eine Achsenzuordnung in der Spec
+
+## Effect: Marks im Format-Modus nicht gedimmt
+
+- ist ein Effect (Glow) an, wirken die Marks nicht gedimmt, während ein
+  anderes Element im Format-Popover offen ist
+- vermutete Ursache: `syncFormatFocus` setzt nur `opacity`; der Schatten
+  bleibt und liegt unter der halbtransparenten Fläche, sodass die Mark
+  kaum blasser wirkt
+- die Auswahl löst das schon so: gedimmte Basis-Serien bekommen keinen
+  Glow (`glowColor` in `createAggregatedSeriesOption`, `shadowBlur: 0`
+  bei Scatter-Punkten)
+- Lösung vermutlich `shadowBlur: 0` im gedimmten Stil der Marks; Pie
+  setzt den Glow je Segment im Datenpunkt, dort greift ein Stil auf
+  Serien-Ebene nicht
+- im Browser für Bar, Line, Scatter und Pie prüfen

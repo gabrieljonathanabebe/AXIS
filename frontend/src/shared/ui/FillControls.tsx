@@ -7,6 +7,7 @@ import type { SeriesFill } from '../fill'
 
 // ===== TYPES =================================================================
 type FillControlsProps<TFill extends SeriesFill> = {
+  details?: ReactNode
   label: string
   /** Field of the series color for a fill without own color. */
   seriesColor?: ReactNode
@@ -16,11 +17,13 @@ type FillControlsProps<TFill extends SeriesFill> = {
 
 // ===== COMPONENT =============================================================
 /**
- * Color row of one solid fill: its color and opacity. Widgets place it
- * next to their own rows; a series fill, e.g. the area below a line or
- * scatter points, shows `seriesColor` in place of an own color.
+ * Color row of one solid fill: its color and opacity, then the gear of
+ * `details`, if given. Widgets place it next to their own rows; a series
+ * fill, e.g. the area below a line or scatter points, shows `seriesColor`
+ * in place of an own color.
  */
 function FillControls<TFill extends SeriesFill>({
+  details,
   label,
   seriesColor,
   value,
@@ -37,6 +40,7 @@ function FillControls<TFill extends SeriesFill>({
             }
           : undefined
       }
+      details={details}
       label={label}
       opacity={value.opacity}
       seriesColor={seriesColor}

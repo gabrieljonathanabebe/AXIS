@@ -1,0 +1,54 @@
+.position-grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--control-height-xs));
+  grid-auto-rows: var(--control-height-xs);
+  width: max-content;
+  padding: 2px;
+  background: var(--color-surface-default);
+  border: var(--border-width-thin) solid;
+  border-color: var(--field-border-color, var(--color-border-subtle));
+  border-radius: var(--radius-sm);
+}
+
+.position-grid-cell.button {
+  padding: 0;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border-color: transparent;
+}
+
+.position-grid-cell.button::before {
+  width: 4px;
+  height: 4px;
+  content: '';
+  background: currentColor;
+  border-radius: var(--radius-pill);
+}
+
+.position-grid-cell.button:hover {
+  background: var(--color-surface-hover);
+  border-color: transparent;
+}
+
+.position-grid-cell.button.is-active {
+  color: var(--color-accent);
+  background: var(--color-surface-active);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.position-grid-cell.button.is-active::before {
+  width: 10px;
+  height: 3px;
+}
+
+.position-grid-cell.button.is-vertical.is-active::before {
+  width: 3px;
+  height: 10px;
+}
+
+.position-grid-plot {
+  margin: 5px;
+  border: var(--border-width-thin) dashed var(--color-border-subtle);
+  border-radius: 3px;
+}

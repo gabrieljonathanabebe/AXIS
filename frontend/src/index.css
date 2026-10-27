@@ -9,6 +9,7 @@
 @import './styles/ui/ColorControl.css';
 @import './styles/ui/ColorField.css';
 @import './styles/ui/ControlRow.css';
+@import './styles/ui/DetailsPopover.css';
 @import './styles/ui/DropdownField.css';
 @import './styles/ui/EditableText.css';
 @import './styles/ui/EmptyState.css';
@@ -22,6 +23,7 @@
 @import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
 @import './styles/ui/Popover.css';
+@import './styles/ui/PositionGrid.css';
 @import './styles/ui/RangeSlider.css';
 @import './styles/ui/RotationDial.css';
 @import './styles/ui/ScrubbableNumber.css';

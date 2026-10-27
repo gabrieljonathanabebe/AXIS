@@ -3,17 +3,21 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUp,
+  Fullscreen,
   MoveHorizontal,
   MoveVertical,
+  Space,
 } from 'lucide-react'
 
 import { isSide } from '../layout'
 import AlignmentControl from './AlignmentControl'
 import ControlRow from './ControlRow'
+import PositionGrid from './PositionGrid'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
 import type { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 import type { Layout, Orientation, Side } from '../layout'
 import type { OptionItem } from './OptionsMenu'
 
@@ -60,12 +64,28 @@ const orientationIcons = {
   vertical: MoveVertical,
 } satisfies Record<Orientation, LucideIcon>
 
+// ===== HELPERS ===============================================================
+/**
+ * Pairs controls into rows of two, the columns of a compact row.
+ * @param controls Controls in their order.
+ * @returns The controls two by two.
+ */
+function pairControls(controls: ReactNode[]): ReactNode[][] {
+  const rows: ReactNode[][] = []
+  for (let index = 0; index < controls.length; index += 2) {
+    rows.push(controls.slice(index, index + 2))
+  }
+  return rows
+}
+
 // ===== COMPONENT =============================================================
 /**
- * Rows for position, orientation, alignment, gap and padding of one
- * element. Shows only the rows whose fields the layout has, e.g. only
- * Alignment for a title. Positions default to the four sides; sides show
- * as arrows, other positions such as "Inside" as text.
+ * Compact rows for position, orientation, alignment, gap and padding of one
+ * element, two controls per row. Shows only the fields the layout has, e.g.
+ * only padding for a container. A layout with a side and an alignment, e.g.
+ * a legend, places both in a `PositionGrid`; other positions are an icon
+ * group showing the icon of each option, by default arrows for sides. A
+ * single position needs no control.
  */
 function LayoutControls<TLayout extends PartialLayout>({
   label,
@@ -75,74 +95,95 @@ function LayoutControls<TLayout extends PartialLayout>({
   value,
   onChange,
 }: LayoutControlsProps<TLayout>) {
-  const showsSideIcons = positions.every((option) => isSide(option.value))
+  const { alignment, position } = value
+  const showsGrid =
+    alignment !== undefined && position !== undefined && isSide(position)
+  const controls = [
+    showsGrid ? (
+      <PositionGrid
+        key="grid"
+        label={`${label} position`}
+        value={{ alignment, position }}
+        onChange={(placement) => onChange({ ...value, ...placement })}
+      />
+    ) : null,
+    !showsGrid && position !== undefined && positions.length > 1 ? (
+      <SegmentedControl
+        className="layout-position-control"
+        key="position"
+        label={`${label} position`}
+        options={positions}
+        renderOption={(option) => {
+          const PositionIcon =
+            option.icon ??
+            (isSide(option.value) ? sideIcons[option.value] : null)
+          return PositionIcon ? (
+            <PositionIcon aria-hidden="true" size={15} />
+          ) : (
+            option.label
+          )
+        }}
+        value={position}
+        onValueChange={(nextPosition) => {
+          onChange({ ...value, position: nextPosition })
+        }}
+      />
+    ) : null,
+    value.orientation !== undefined ? (
+      <SegmentedControl
+        key="orientation"
+        label={`${label} orientation`}
+        options={orientationOptions}
+        renderOption={(option) => {
+          const OrientationIcon = orientationIcons[option.value]
+          return <OrientationIcon aria-hidden="true" size={16} />
+        }}
+        value={value.orientation}
+        onValueChange={(orientation) => onChange({ ...value, orientation })}
+      />
+    ) : null,
+    !showsGrid && alignment !== undefined ? (
+      <AlignmentControl
+        key="alignment"
+        label={`${label} alignment`}
+        value={alignment}
+        onValueChange={(nextAlignment) => {
+          onChange({ ...value, alignment: nextAlignment })
+        }}
+      />
+    ) : null,
+    value.gap !== undefined ? (
+      <ScrubbableNumber
+        icon={<Space size={14} />}
+        key="gap"
+        label={`${label} gap`}
+        max={maxGap}
+        min={0}
+        step={2}
+        unit="px"
+        value={value.gap}
+        onValueChange={(gap) => onChange({ ...value, gap })}
+      />
+    ) : null,
+    value.padding !== undefined ? (
+      <ScrubbableNumber
+        icon={<Fullscreen size={14} />}
+        key="padding"
+        label={`${label} padding`}
+        max={maxPadding}
+        min={0}
+        step={2}
+        unit="px"
+        value={value.padding}
+        onValueChange={(padding) => onChange({ ...value, padding })}
+      />
+    ) : null,
+  ].filter((control) => control !== null)
   return (
     <>
-      {value.position !== undefined ? (
-        <ControlRow label="Position">
-          <SegmentedControl
-            className="layout-position-control"
-            label={`${label} position`}
-            options={positions}
-            renderOption={(option) => {
-              if (!showsSideIcons || !isSide(option.value)) {
-                return option.label
-              }
-              const SideIcon = sideIcons[option.value]
-              return <SideIcon aria-hidden="true" size={15} />
-            }}
-            value={value.position}
-            onValueChange={(position) => onChange({ ...value, position })}
-          />
-        </ControlRow>
-      ) : null}
-      {value.orientation !== undefined ? (
-        <ControlRow label="Orientation">
-          <SegmentedControl
-            label={`${label} orientation`}
-            options={orientationOptions}
-            renderOption={(option) => {
-              const OrientationIcon = orientationIcons[option.value]
-              return <OrientationIcon aria-hidden="true" size={16} />
-            }}
-            value={value.orientation}
-            onValueChange={(orientation) => onChange({ ...value, orientation })}
-          />
-        </ControlRow>
-      ) : null}
-      {value.alignment !== undefined ? (
-        <ControlRow label="Alignment">
-          <AlignmentControl
-            label={`${label} alignment`}
-            value={value.alignment}
-            onValueChange={(alignment) => onChange({ ...value, alignment })}
-          />
-        </ControlRow>
-      ) : null}
-      {value.gap !== undefined ? (
-        <ControlRow label="Gap">
-          <ScrubbableNumber
-            label={`${label} gap`}
-            max={maxGap}
-            min={0}
-            step={2}
-            value={value.gap}
-            onValueChange={(gap) => onChange({ ...value, gap })}
-          />
-        </ControlRow>
-      ) : null}
-      {value.padding !== undefined ? (
-        <ControlRow label="Padding">
-          <ScrubbableNumber
-            label={`${label} padding`}
-            max={maxPadding}
-            min={0}
-            step={2}
-            value={value.padding}
-            onValueChange={(padding) => onChange({ ...value, padding })}
-          />
-        </ControlRow>
-      ) : null}
+      {pairControls(controls).map((row, index) => (
+        <ControlRow key={index}>{row}</ControlRow>
+      ))}
     </>
   )
 }

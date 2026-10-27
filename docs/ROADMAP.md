@@ -92,14 +92,31 @@ Vorgehen:
    (Dropdown mit Vorschau) oder Verlauf im Fill bzw. in der Line, die
    Gruppe Color entfällt, Start- und Endfarbe nicht mehr in Color Scale;
    Tooltip-Link als Pinsel in der Überschrift
-3. Baustein für Baustein: Text (implementiert; Gewicht als Icon-Gruppe,
-   Italic als Icon-Toggle, Ausrichtung des Titels in der Text-Zeile, die
-   Gruppe Layout des Titels entfällt) → Effects (mit ＋) → Number Format (mit
-   ⚙; danach Range der Farbskala als ⚙ an der Farbzeile) →
-   elementspezifische Zeilen (Shape der Marks, Achse, Legende) →
-   `PositionGrid` für die Legende
+3. Baustein für Baustein – implementiert:
+   - Text: Gewicht als Icon-Gruppe, Italic als Icon-Toggle, Ausrichtung
+     des Titels in der Text-Zeile, die Gruppe Layout des Titels entfällt
+   - Effects: ＋ in der Überschrift, − am Ende der Zeile; kein Auge, weil
+     `Effect` keinen ausgeblendeten Zustand kennt; ein Effekt pro Mark,
+     da ECharts je Mark nur einen Schatten zeichnet
+   - Number Format: Währungen im Format-Select, Decimals mit Auto in der
+     Zeile (`ScrubbableNumber` mit `onAuto`), Notation, Prefix und
+     Suffix hinter ⚙ (`DetailsPopover`); an Achsenlabels zusätzlich Date
+     im Select statt eines eigenen Type
+   - Range der Farbskala als ⚙ an der Farbzeile (Slot `details` von
+     `PaintControl`), die Gruppe Range in Color Scale entfällt
+   - Shape der Marks als Felder und Zahlenpaare statt Slider, Smooth als
+     Icon-Gruppe, Points mit Auge und Auto | Always
+   - Data Labels als eigenes Element (Pinsel und Auge in den Marks);
+     Positionen je Charttyp in der Registry mit eigenen Icons
+     (`charts/chartIcons.ts`)
+   - Achse: Titeltext über die volle Breite, Layout mit Ticks (Auto) und
+     Rotation als Feld
+   - `LayoutControls` kompakt, `PositionGrid` (3×3) für die Legende
 4. alle übrigen `Toggle`s im Popover durch Auge, ＋/− oder Icon-Toggle
-   ersetzen
+   ersetzen (Zoom, Legend Interaction, Animation, Popover-Kopf) und die
+   letzten Zeilen mit Label kompakt machen (in Arbeit)
+5. Slice-Ende: Prop-JSDocs dieses Slices entfernen, `DESIGN_SYSTEM.md`
+   nachziehen, Verification
 
 Regeln: keine Formänderung der Spec, alles bleibt undo-fähig über die
 bestehenden Actions; Smoke-Test im Browser nach jedem Baustein (Bar,
@@ -119,6 +136,12 @@ kompakten Stil:
   für die Werte, Fill und Stroke, eigene Format-Region wie die Legende
   (damit wird die Color Scale anklickbar); das Element regelt nur die
   Komponente selbst, ihre Farben gehören zur Datenfarbe der Marks
+  - eigener Platz statt den Plot zu überlappen: Die Farbskala sitzt im
+    Layout neben dem Chart-Canvas (der Canvas schrumpft), nicht darüber
+  - Position über `PositionGrid` wie die Legende (`continuous.layout` als
+    `Pick<Layout, 'alignment' | 'position'>`); `orientation` folgt aus der
+    Position
+  - ob `orientation` dann entfällt, wird vor der Persistenz entschieden
 - Kasten-Modell (`ARCHITECTURE.md`, „Platzierung“): ein gemeinsamer
   Baustein für die Fläche (Fill, Stroke, Radius, Padding) statt je
   Element; Entscheidung, ob die Spec Position und Anordnung trennt (wäre

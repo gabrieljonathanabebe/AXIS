@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
 export type IconButtonSize = 'xs' | 'sm' | 'md'
 
@@ -10,8 +10,13 @@ type IconButtonProps = {
   label: string
   size?: IconButtonSize
   variant?: IconButtonVariant
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'>
+} & Omit<ComponentProps<'button'>, 'aria-label'>
 
+/**
+ * Square button with only an icon, named by `label` for screen readers and
+ * as tooltip; `isActive` marks a pressed toggle. A `ref` reaches the
+ * button, e.g. as the trigger of a popover.
+ */
 function IconButton({
   children,
   className = '',

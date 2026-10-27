@@ -3,9 +3,12 @@ import { Check } from 'lucide-react'
 import Button from './Button'
 import Widget from './Widget'
 
+import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
+/** One choice of a menu or icon group; some controls show its icon. */
 export type OptionItem<TValue extends string> = {
+  icon?: LucideIcon
   label: string
   value: TValue
 }

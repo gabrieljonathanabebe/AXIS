@@ -18,6 +18,10 @@
   min-height: var(--control-height-sm);
 }
 
+.control-row-compact > .text-input:only-child {
+  grid-column: 1 / -1;
+}
+
 .control-row-label {
   min-width: 0;
   color: var(--color-text-secondary);
