@@ -93,7 +93,7 @@ Scope in `docs/ROADMAP.md` übernommen wird.
 - passende Tests für die Frontend-Logik, Test-Framework noch zu
   entscheiden
 - das Backend hat pytest-Tests (`uv run pytest`); die CI-Pipeline ist
-  in `docs/ROADMAP.md` (Alpha, 3.14) geplant
+  in `docs/ROADMAP.md` (Alpha, 3.15) geplant
 
 ## Stacked Area für Linien-Charts
 
@@ -130,7 +130,7 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   `insideBase`; Punkte z. B. `above`, `right`, `center`; Pie `outside`,
   `inside`), die erst der Adapter je Ausrichtung auf ECharts übersetzt
 - offen: Labels sind eine Spec pro Chart; Verhalten beim Wechsel des
-  Charttyps klären; Formänderung, daher vor der Persistenz (3.13)
+  Charttyps klären; Formänderung, daher vor der Persistenz (3.14)
 
 ## Heatmap-Matrix
 

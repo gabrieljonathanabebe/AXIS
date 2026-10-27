@@ -42,16 +42,17 @@ Slices; Abhängigkeiten stehen beim Punkt):
 2. Marks vervollständigen – implementiert
 3. Format-Popover: Gruppen statt Sections – implementiert
 4. Kompakte Controls im Figma-Stil – **in Arbeit**
-5. Legende, Tooltip und Farbskala mit Bausteinen
-6. DateFormat
-7. Theme-Umschalter in der TopBar (provisorisch)
-8. Table-Objekt
-9. Tooltip-Felder
-10. Dashboard-Einstellungen
-11. Ask Cevyn ausbauen
-12. Unabhängigkeit vom App-Namen
-13. Persistenz
-14. Alpha-Infrastruktur und Vollbild
+5. Neutrale Farben, Hintergründe und Verläufe
+6. Legende, Tooltip und Farbskala mit Bausteinen
+7. DateFormat
+8. Theme-Umschalter in der TopBar (provisorisch)
+9. Table-Objekt
+10. Tooltip-Felder
+11. Dashboard-Einstellungen
+12. Ask Cevyn ausbauen
+13. Unabhängigkeit vom App-Namen
+14. Persistenz
+15. Alpha-Infrastruktur und Vollbild
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
@@ -122,9 +123,133 @@ Regeln: keine Formänderung der Spec, alles bleibt undo-fähig über die
 bestehenden Actions; Smoke-Test im Browser nach jedem Baustein (Bar,
 Line, Scatter, Pie, Card; Popover je Element; Undo/Redo; helles Theme).
 
-### 3.5 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
+### 3.5 Neutrale Farben, Hintergründe und Verläufe (geplant)
 
-Direkt nach 3.4; die neuen Zeilen entstehen gleich als Gruppen und im
+Direkt nach 3.4. Hauptziel: Charts und Cards bekommen eine dunkle,
+durchscheinende Fläche ohne Schatten („Frosted“) auf einem lebendigen
+Canvas-Hintergrund. Vorgabe für den Hintergrund der Charts ist der
+Referenz-Screenshot, den der Nutzer zu Beginn des Slices mitschickt
+(nicht im Repo): genau so soll die Fläche aussehen. Dazu trennt der
+Slice die Farben der App von denen des Dashboards, damit ein Dashboard
+mit fremder Markenfarbe nicht gegen ein blaues Editor-UI arbeitet. So
+halten es auch Figma, Power BI und Tableau: neutrales Werkzeug, Farbe
+gehört dem Inhalt.
+
+| Ebene     | Teile                                                    | Farbe                                                               |
+| --------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
+| App       | Rail, TopBar, Canvas-Toolbar, Popover, Controls          | neutral; Akzent nur für Auswahl, Fokus, Primäraktion und Drop-Ziele |
+| Dashboard | Canvas, Container, Auswahl und Brush im Chart, Card-Glow | Canvas-Preset mit eigenem Akzent                                    |
+| Daten     | Chart 1–5, Paletten, Farbskala                           | wie heute                                                           |
+
+Vorgehen:
+
+1. App neutral („grau bis aktiv“): `--color-surface-active` grau statt
+   blau, damit aktive Icon-Toggles grau sind; `--background-ambient` ohne
+   blaues und violettes Leuchten; der Akzent bleibt für Auswahl, Fokus,
+   Primäraktion, Drop-Ziele und den Format-Fokus. Der leichte Kühlstich
+   in Text und Rändern bleibt.
+2. Dashboard-Tokens in eigenem Namensraum (Vorschlag `--dashboard-*`),
+   der nie auf App-Tokens wie `--color-accent` verweist. Sie hängen an
+   der Canvas statt an `:root`, damit ein Canvas-Preset sie setzen kann.
+   Dazu gehören `--canvas-background`, `--chart-fill-blue` und
+   `--chart-fill-violet`, der Akzent und die Fläche der Container.
+   - der `ColorValue`-Token `accent` zeigt auf den Dashboard-Akzent
+     (Standard Blau, sichtbar unverändert)
+   - Card-Glow (`text-shadow` in `CardItem.css`), Auswahl und Brush in
+     den Charts folgen dem Dashboard-Akzent; Format-Fokus, Auswahlring
+     am Objekt und Drop-Slots bleiben beim App-Akzent
+   - `readChartTheme` (`EChartCanvas`) liest heute von
+     `document.documentElement`; künftig vom Chart-Element, mit
+     getrenntem Dashboard- und App-Akzent (`syncFormatFocus` nutzt den
+     App-Akzent)
+3. Canvas-Hintergrund als Preset: `canvas.background` in der
+   `DashboardSpec` (vorgezogen aus 3.11), Auswahl im Dashboard-Popover
+   der Canvas-Toolbar (`DashboardSettingsPopover`), undo-fähig.
+   Vorschlag:
+
+   ```ts
+   type CanvasBackground =
+     | { kind: 'preset'; preset: 'midnight' | 'aurora' | 'plain' }
+     | { kind: 'fill'; fill: Fill } // ab Schritt 7
+   ```
+
+   - `midnight`: der heutige Look (Blau oben, Violett unten rechts),
+     Standard; das Leuchten so kräftig, wie die Frosted-Fläche aus dem
+     Screenshot es braucht
+   - `plain`: neutral (Graphit), für fremde Markenfarben
+   - `aurora`: lebendigeres, mehrfarbiges Leuchten (optional)
+   - jedes Preset setzt die Dashboard-Tokens aus Schritt 2
+
+4. Frosted-Container, das Hauptziel; der Screenshot ist die Vorgabe.
+   Neues Preset `'frosted'` in `ObjectBackgroundPreset`, Klasse
+   `.glass-frosted` in `glass.css`, Zuordnung in `backgroundClassNames`
+   (`ObjectFrame`):
+   - Fläche als diagonaler Verlauf, oben links dichter, unten rechts
+     durchscheinender; Ausgangswert im Dark Theme
+     `linear-gradient(127deg, rgba(6, 11, 40, 0.94) 19%, rgba(10, 14, 35, 0.49) 77%)`
+   - darüber feines Korn (`--frost-grain`, SVG-Rauschen per
+     `feTurbulence`), starker Blur (`--blur-lg` oder neues `--blur-xl`)
+     mit Sättigung um 140 %
+   - kein Schatten (`--object-shadow: none`), keine Lichtkante
+     (`.glass::before`), kein innerer Glanz (`--glass-highlight`); ein
+     Rand höchstens als feine Linie (`--frost-border`)
+   - die Werte sind Dashboard-Tokens je Canvas-Preset: auf `midnight`
+     navy getönt wie im Screenshot, auf `plain` graphit; eigene Werte im
+     hellen Theme
+   - Standard für neue Charts und Cards; Surface, Glass, Blue, Violet
+     und eigene Farbe bleiben wählbar
+   - Hover- und Auswahlring (`chart-item::after`) bleiben;
+     `prefers-reduced-transparency` bekommt eine deckende Fläche wie
+     `.glass`
+5. Verläufe im Fill, als neue Variante ohne Formänderung:
+
+   ```ts
+   type GradientStop = { color: ColorValue; position: number } // 0–1
+
+   type Fill =
+     | { kind: 'solid'; color: ColorValue; opacity: number }
+     | {
+         kind: 'gradient'
+         type: 'linear' | 'radial'
+         angle: number
+         stops: GradientStop[]
+         opacity: number
+       }
+   ```
+
+   - im `PaintControl` Typwahl Solid | Linear | Radial als Icon-Gruppe,
+     Winkel als Feld, Stopps im Details-Popover (⚙)
+   - der Stopp-Editor kommt aus `GradientControl` und wird mit der
+     Farbskala geteilt; die Typen bleiben getrennt, weil die Farbskala
+     Werten Farben zuordnet und der Fill eine Fläche malt
+   - Adapter: ECharts-Verläufe mit `resolveColor`, HTML über eine
+     CSS-Funktion neben `getColorCss`
+   - der Container-Hintergrund `{ kind: 'color' }` wird zu
+     `{ kind: 'fill'; fill: Fill }`; Formänderung, vor der Persistenz
+     zulässig
+
+6. Verlauf für Serien: `SeriesFill` wird ein eigener Union-Typ (heute
+   `Omit<Fill, 'color'>`) aus `{ kind: 'solid'; opacity }` und
+   `{ kind: 'fade'; from; to; angle }` (Deckkraft am Anfang und Ende),
+   z. B. für Flächen unter Linien und Balken, die in der Serienfarbe
+   ausblenden
+7. Canvas mit eigenem Fill (`{ kind: 'fill' }`, einfarbig oder
+   Verlauf); die Dashboard-Tokens folgen dann `plain`
+8. Slice-Ende: `DESIGN_SYSTEM.md` nachziehen (Design Direction: Akzent
+   nur für Zustände, Frosted ohne Schatten statt „Layered Shadows“;
+   Glass-Tabelle; Ist/Soll-Zeile Canvas), `ARCHITECTURE.md` (Farbebenen
+   und Dashboard-Tokens), Verification
+
+Regeln: Das Hauptziel kommt früh, Frosted braucht nur die Schritte 1–3;
+die Verläufe (5–7) bauen darauf auf. Neue Felder und Varianten sind
+migrationsfrei, Formänderungen nur vor der Persistenz; alles undo-fähig
+über Actions. Smoke-Test: jedes Container-Preset auf jedem
+Canvas-Preset, helles Theme, Selection und Brush, Format-Fokus, Blur
+mit vielen Charts (Performance).
+
+### 3.6 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
+
+Direkt nach 3.5; die neuen Zeilen entstehen gleich als Gruppen und im
 kompakten Stil:
 
 - Legende: Fill (Hintergrund), Stroke (Rahmen), Radius; Text ist da
@@ -149,7 +274,7 @@ kompakten Stil:
 - kein Effect; Standard-Optik unverändert
 - neue Felder, keine Formänderung
 
-### 3.6 DateFormat (geplant)
+### 3.7 DateFormat (geplant)
 
 Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
 es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
@@ -172,23 +297,23 @@ Feb 1, 2025“ auch bei Monatsdaten.
   (`TemporalStatistics.granularity`): Monatsdaten „Jan 2025“,
   Jahresdaten „2025“, Tagesdaten „1 Jan 2025“
 - Formatter auf Basis von `Intl.DateTimeFormat` mit der Locale aus
-  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.10);
+  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.11);
   Quartale („Q1 2025“) selbst zusammensetzen
 - `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
   Auto nur die Zeile Format, bei Custom eingerückt Einheit, Monat, Jahr
   und Uhrzeit
 - Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
   im `AxisWidget` unter „Type: Date“ statt bisher nichts), Überschrift
-  des Tooltips bei Datums-X, später die Datums-Spalten der Table (3.8)
+  des Tooltips bei Datums-X, später die Datums-Spalten der Table (3.9)
 - neues Feld, keine Formänderung
 - die neuen Zeilen entstehen direkt in der Gruppen-Struktur aus 3.3 und
   im kompakten Stil aus 3.4
 
-### 3.7 Theme-Umschalter in der TopBar (geplant, provisorisch)
+### 3.8 Theme-Umschalter in der TopBar (geplant, provisorisch)
 
 Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
 prüfen; wird später wieder entfernt oder durch eine echte Einstellung
-ersetzt (Theme in den Dashboard-Einstellungen, 3.10).
+ersetzt (Theme in den Dashboard-Einstellungen, 3.11).
 
 - `IconButton` rechts in der `TopBar` (Sonne/Mond), schaltet
   `data-theme` am `<html>` zwischen `dark` und `light` um; Standard
@@ -201,7 +326,7 @@ ersetzt (Theme in den Dashboard-Einstellungen, 3.10).
 - schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
   provisorisch
 
-### 3.8 Table-Objekt (geplant)
+### 3.9 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
@@ -221,7 +346,7 @@ Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 - zu klären: welche Spalten die Table zeigt (alle, Auswahl per Drop),
   und ob sie wie die Card der Selection folgt
 
-### 3.9 Tooltip-Felder (geplant)
+### 3.10 Tooltip-Felder (geplant)
 
 Direkt nach dem Table-Objekt:
 
@@ -238,28 +363,28 @@ Direkt nach dem Table-Objekt:
 - dieselbe Feldwahl bestimmt auch den Inhalt der Datenlabels (heute fest
   Wert bzw. Anteil), z. B. Kategorie oder ein weiteres Feld
 
-### 3.10 Dashboard-Einstellungen (geplant)
+### 3.11 Dashboard-Einstellungen (geplant)
 
 Im Dashboard-Popover der Canvas-Toolbar, undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
 Persistenz festlegen soll:
 
-- `canvas.background` mit den Presets des Containers (Glass, Surface,
-  None, eigene Farbe)
+- `canvas.background` kommt schon mit 3.5 (Presets und eigener Fill)
 - `layout.padding` (Innenabstand der Canvas)
 - `format.locale` statt der Konstante `LOCALE` in `shared/config.ts`;
   heute zeigt Cevyn `1,234.56` auch für deutsches Publikum
 - `interaction.crossHighlight`: ob ein Klick auf eine Mark die übrigen
   Objekte filtert
-- später: `theme` (Palette, Schrift, Hell/Dunkel), `pageSize` (Voraussetzung
-  für Zoom), `objectDefaults` (Container-Stil für neue Objekte)
+- später: `theme` (Palette, Schrift, Hell/Dunkel; baut auf den
+  Dashboard-Tokens aus 3.5 auf), `pageSize` (Voraussetzung für Zoom),
+  `objectDefaults` (Container-Stil für neue Objekte)
 
-### 3.11 Ask Cevyn ausbauen (geplant)
+### 3.12 Ask Cevyn ausbauen (geplant)
 
 Ziel: Ask Cevyn erstellt eigenständig ganze Dashboards und formatiert
 sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
-3.8 und 3.10, weil die KI nur kann, was es als Action gibt.
+3.9 und 3.11, weil die KI nur kann, was es als Action gibt.
 
 - Action-Schema nur noch einmal beschreiben: Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
@@ -287,7 +412,7 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
   Verschlechterungen bei Prompt-Änderungen zu erkennen; Effort je nach
   Anfrage (ganzes Dashboard höher, kleine Änderungen niedriger)
 
-### 3.12 Unabhängigkeit vom App-Namen (geplant)
+### 3.13 Unabhängigkeit vom App-Namen (geplant)
 
 Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 
@@ -300,7 +425,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - Doku, `AGENTS.md` und `README.md` anpassen
 - der neue Name selbst ist noch offen
 
-### 3.13 Persistenz (geplant)
+### 3.14 Persistenz (geplant)
 
 - `serializeProject()` / `deserializeProject()` über den Workspace State
 - `.cevyn`-Datei (JSON mit Format-Kennung und Version) speichern und
@@ -314,7 +439,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   den Project State, Scroll- und Fokusverhalten beim Laden (siehe
   Abschnitt 7)
 
-### 3.14 Alpha-Infrastruktur und Vollbild (geplant)
+### 3.15 Alpha-Infrastruktur und Vollbild (geplant)
 
 - Docker-Images für Frontend und Backend
 - CI mit GitHub Actions: `npm run format`, `npm run build`,
@@ -384,7 +509,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
   Kästen mit eigener Größe (Kasten-Modell, `ARCHITECTURE.md`)
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
-- Zoom (braucht `pageSize`, siehe 3.10)
+- Zoom (braucht `pageSize`, siehe 3.11)
 
 ### Daten
 
@@ -526,7 +651,7 @@ Entwicklung
 - Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
   eines Projekts darf das nicht ungewollt den Fokus verschieben.
 - Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
-  verloren; sie gehören in den serialisierbaren Project State (3.13).
+  verloren; sie gehören in den serialisierbaren Project State (3.14).
 - `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
   am Tagesrand um einen Tag abweichen.
 - Selection-Werte werden als Strings verglichen. Boolean-Felder
@@ -541,4 +666,4 @@ Entwicklung
 - Große Schrift bei Achsen-Labels kann über den festen Plot-Rand
   (`BASE_GRID`) hinausragen.
 - Das Schema der Cevyn Actions existiert doppelt (Pydantic im Backend,
-  `actionShapes` im Frontend); wird in 3.11 aufgelöst.
+  `actionShapes` im Frontend); wird in 3.12 aufgelöst.
