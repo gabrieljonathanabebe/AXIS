@@ -29,7 +29,7 @@ type AxisWidgetProps = {
 /**
  * Groups of one axis part: the title group of the axis element, or the
  * groups of the axis labels element (ticks, rotation, text and format as
- * number or date). Whether the axis shows is the element toggle in the
+ * number or date). Whether the axis shows is the eye in the popover
  * header.
  */
 function AxisWidget({

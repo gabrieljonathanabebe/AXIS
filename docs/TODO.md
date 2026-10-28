@@ -174,3 +174,13 @@ Scope in `docs/ROADMAP.md` übernommen wird.
   setzt den Glow je Segment im Datenpunkt, dort greift ein Stil auf
   Serien-Ebene nicht
 - im Browser für Bar, Line, Scatter und Pie prüfen
+
+## Legende ohne Interaction keine Format-Region
+
+- bei Interaction Off (`selectedMode: false`) schaltet ECharts die
+  Trefferflächen der Legende stumm (`hitRect.silent` in `LegendView`);
+  kein Hover, kein Format-Stift, nur das Element-Select im Popover-Kopf
+- ECharts sperrt den Klick nur über diese Trefferfläche; ein Fix über
+  Interna (Trefferfläche aktivieren, Klick abfangen) wäre fragil
+- Lösungsweg mit 3.6 prüfen: Legende als HTML wie die Farbskala, mit
+  eigener Format-Region

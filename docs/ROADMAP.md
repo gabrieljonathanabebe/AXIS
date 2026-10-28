@@ -25,7 +25,8 @@ Bearbeitung am Objekt (Format-Popover statt Inspector) sind in einem
 ersten vollständigen Stand. Die Appearance-Specs sind auf gemeinsame
 Bausteine umgestellt (`TextStyle`, `StrokeStyle`, `NumberFormat`,
 `Fill`, `Effect`, `Layout`, `ColorValue` mit Theme-Tokens), das
-Format-Popover zeigt alle Gruppen eines Elements in fester Reihenfolge.
+Format-Popover zeigt alle Gruppen eines Elements in fester Reihenfolge
+und in kompakten Controls im Figma-Stil.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -41,8 +42,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 1. Effect (Glow) für Marks – implementiert
 2. Marks vervollständigen – implementiert
 3. Format-Popover: Gruppen statt Sections – implementiert
-4. Kompakte Controls im Figma-Stil – **in Arbeit**
-5. Neutrale Farben, Hintergründe und Verläufe
+4. Kompakte Controls im Figma-Stil – implementiert
+5. Neutrale Farben, Hintergründe und Verläufe – **nächster Slice**
 6. Legende, Tooltip und Farbskala mit Bausteinen
 7. DateFormat
 8. Theme-Umschalter in der TopBar (provisorisch)
@@ -57,73 +58,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.4 Kompakte Controls im Figma-Stil (in Arbeit)
-
-Das Format-Popover soll aussehen und sich bedienen lassen wie das
-Design-Panel in Figma: dicht, ruhig, Icons statt Text-Labels, eine klare
-Sprache pro Ebene. Modernes Design ist der wichtigste Anspruch an das
-Produkt. Die Regeln stehen in `DESIGN_SYSTEM.md`, Abschnitt 6
-„Kompakte Controls im Figma-Stil“:
-
-- drei Ebenen: Gruppen-Überschrift nur mit Auge oder ＋/− (kein
-  Schalter mehr, auch nicht im Popover-Kopf), Zeilen ohne Text-Label mit
-  Icons im Feld und Icon-Toggles, Seltenes hinter ⚙ im Details-Popover
-- Zeilen-Muster je Baustein: Farbzeile (`PaintControl`: Farbfeld, Hex,
-  Deckkraft), Text, Stroke, Effects mit ＋, Number Format mit ⚙,
-  Zahlenpaare in einer Zeile, `PositionGrid` (3×3) für die Legende
-- Datenfarbe der Marks in der Farbzeile des Paints, der mit ihr
-  gezeichnet wird (Fill bzw. Line), statt in einer eigenen Gruppe Color;
-  Paletten als Dropdown mit Vorschau
-- Dichte: Zeilen 28–32 px, Felder ohne Rahmen bis Hover und Fokus,
-  Tastatur in Zahlenfeldern (Pfeile, Shift, Enter, Escape)
-- jedes Icon ohne Text mit `title` und `aria-label`
-
-Komponenten erweitern vor neu bauen: `ScrubbableNumber` mit `icon` und
-`unit`, `ControlRow` mit optionalem `label` und Zwei-Spalten-Variante,
-`IconButton` mit `isActive` als Icon-Toggle, Überschrift von
-`FormatWidget` mit Auge und ＋/−, eine Hülle um `Popover` für Details;
-neu nur `PaintControl` und `PositionGrid`. `rowLabelPrefix` entfällt.
-
-Vorgehen:
-
-1. Pilot Stroke – implementiert: Breite mit Icon und Einheit,
-   Stil-Icons, Farbzeile (`PaintControl`), Auge in der Überschrift; ohne
-   ⚙, weil `StrokeStyle` ohne Formänderung nichts Seltenes hat
-2. Fill und Datenfarbe in der Farbzeile – implementiert: Farbe, Palette
-   (Dropdown mit Vorschau) oder Verlauf im Fill bzw. in der Line, die
-   Gruppe Color entfällt, Start- und Endfarbe nicht mehr in Color Scale;
-   Tooltip-Link als Pinsel in der Überschrift
-3. Baustein für Baustein – implementiert:
-   - Text: Gewicht als Icon-Gruppe, Italic als Icon-Toggle, Ausrichtung
-     des Titels in der Text-Zeile, die Gruppe Layout des Titels entfällt
-   - Effects: ＋ in der Überschrift, − am Ende der Zeile; kein Auge, weil
-     `Effect` keinen ausgeblendeten Zustand kennt; ein Effekt pro Mark,
-     da ECharts je Mark nur einen Schatten zeichnet
-   - Number Format: Währungen im Format-Select, Decimals mit Auto in der
-     Zeile (`ScrubbableNumber` mit `onAuto`), Notation, Prefix und
-     Suffix hinter ⚙ (`DetailsPopover`); an Achsenlabels zusätzlich Date
-     im Select statt eines eigenen Type
-   - Range der Farbskala als ⚙ an der Farbzeile (Slot `details` von
-     `PaintControl`), die Gruppe Range in Color Scale entfällt
-   - Shape der Marks als Felder und Zahlenpaare statt Slider, Smooth als
-     Icon-Gruppe, Points mit Auge und Auto | Always
-   - Data Labels als eigenes Element (Pinsel und Auge in den Marks);
-     Positionen je Charttyp in der Registry mit eigenen Icons
-     (`charts/chartIcons.ts`)
-   - Achse: Titeltext über die volle Breite, Layout mit Ticks (Auto) und
-     Rotation als Feld
-   - `LayoutControls` kompakt, `PositionGrid` (3×3) für die Legende
-4. alle übrigen `Toggle`s im Popover durch Auge, ＋/− oder Icon-Toggle
-   ersetzen (Zoom, Legend Interaction, Animation, Popover-Kopf) und die
-   letzten Zeilen mit Label kompakt machen (in Arbeit)
-5. Slice-Ende: Prop-JSDocs dieses Slices entfernen, `DESIGN_SYSTEM.md`
-   nachziehen, Verification
-
-Regeln: keine Formänderung der Spec, alles bleibt undo-fähig über die
-bestehenden Actions; Smoke-Test im Browser nach jedem Baustein (Bar,
-Line, Scatter, Pie, Card; Popover je Element; Undo/Redo; helles Theme).
-
-### 3.5 Neutrale Farben, Hintergründe und Verläufe (geplant)
+### 3.5 Neutrale Farben, Hintergründe und Verläufe (geplant, nächster Slice)
 
 Direkt nach 3.4. Hauptziel: Charts und Cards bekommen eine dunkle,
 durchscheinende Fläche ohne Schatten („Frosted“) auf einem lebendigen
@@ -249,10 +184,14 @@ mit vielen Charts (Performance).
 
 ### 3.6 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
 
-Direkt nach 3.5; die neuen Zeilen entstehen gleich als Gruppen und im
-kompakten Stil:
+Direkt nach 3.5; die neuen Zeilen entstehen gleich als Gruppen und nach
+dem Muster aus `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im
+Figma-Stil“ (Farbzeile mit `PaintControl`, Felder mit Icon und Einheit,
+Seltenes hinter ⚙, Auge bzw. ＋/− statt Schaltern, Icon und Wort für
+Verhalten; Icon-Check am Slice-Ende):
 
-- Legende: Fill (Hintergrund), Stroke (Rahmen), Radius; Text ist da
+- Legende: Fill (Hintergrund, Farbzeile), Stroke (Rahmen), Radius als
+  Feld; Text ist da
 - Tooltip: Text, Fill, Stroke, Radius und Zahlenformat
   (`NumberFormatControls` für `interaction.tooltip.numberFormat`, das
   heute ausgewertet wird, aber kein Control hat)
@@ -300,11 +239,12 @@ Feb 1, 2025“ auch bei Monatsdaten.
   `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.11);
   Quartale („Q1 2025“) selbst zusammensetzen
 - `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
-  Auto nur die Zeile Format, bei Custom eingerückt Einheit, Monat, Jahr
-  und Uhrzeit
+  Auto nur das Select, bei Custom Einheit in der Zeile, Monat, Jahr und
+  Uhrzeit hinter ⚙ (`DetailsPopover`)
 - Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
-  im `AxisWidget` unter „Type: Date“ statt bisher nichts), Überschrift
-  des Tooltips bei Datums-X, später die Datums-Spalten der Table (3.9)
+  im `AxisWidget`, sobald im Format-Select Date gewählt ist, statt
+  bisher nichts), Überschrift des Tooltips bei Datums-X, später die
+  Datums-Spalten der Table (3.9)
 - neues Feld, keine Formänderung
 - die neuen Zeilen entstehen direkt in der Gruppen-Struktur aus 3.3 und
   im kompakten Stil aus 3.4
@@ -599,6 +539,20 @@ Bearbeitung am Objekt
   Zeilen-Labels, feste Reihenfolge je Element (Marks über
   `MARK_GROUP_ORDER`); Color der Marks verweist bei kontinuierlicher
   Farbe auf die Color Scale
+- kompakte Controls im Figma-Stil: Zeilen ohne Label mit Icon und
+  Einheit im Feld (`ScrubbableNumber` mit `icon`, `unit`, `onAuto`),
+  Farbzeile (`PaintControl`, `ColorField`) mit der Datenfarbe der Marks
+  samt Palette, Verlauf und Range (⚙), Seltenes hinter ⚙
+  (`DetailsPopover`); Auge, ＋/− und Pinsel statt Schaltern, `Toggle`
+  und `Slider` entfernt
+- Icon-Gruppen mit Icon und Wort über die volle Breite, Optionen mit
+  Icons auch in Selects (`OptionContent`, Aggregationen mit Σ, x̄, x̃),
+  dichtere Menüs; `PositionGrid` für die Legende, `RotationDial` als
+  Feld mit Nadel
+- Data Labels als eigenes Element mit Positionen je Charttyp
+  (`labelPositions`, eigene Icons); Zoom als Toggles Scroll | Slider,
+  Legend Interaction als Off | Multiple | Single, Animation mit Easing
+  und Duration
 
 Style-Bausteine und Farben
 

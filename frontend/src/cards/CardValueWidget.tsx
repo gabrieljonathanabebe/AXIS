@@ -32,8 +32,8 @@ function CardValueWidget({
 }: CardValueWidgetProps) {
   return (
     <>
-      <FormatWidget title="Content">
-        <ControlRow label="Function">
+      <FormatWidget title="Function">
+        <ControlRow>
           <SelectControl
             disabled={aggregations.length < 2}
             label="Value aggregation"

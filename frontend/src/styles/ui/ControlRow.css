@@ -22,6 +22,19 @@
   grid-column: 1 / -1;
 }
 
+/* A segmented control without a field next to it spans both columns,
+   e.g. Points; icon buttons such as a minus still follow it. */
+.control-row-compact
+  > .segmented-control:first-child:not(:has(+ :not(.control))) {
+  grid-column: span 2;
+}
+
+/* An icon button after a single field sits at the end of the row, e.g. a
+   minus after one number field. */
+.control-row-compact > .control {
+  justify-self: end;
+}
+
 .control-row-label {
   min-width: 0;
   color: var(--color-text-secondary);

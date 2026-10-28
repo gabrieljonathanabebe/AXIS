@@ -32,14 +32,12 @@ type PopoverTriggerProps = {
 }
 
 type PopoverProps = {
-  /** Controls in the header before the close button, e.g. a toggle. */
   actions?: ReactNode
   anchor?: VirtualElement
   label: string
   open: boolean
   children: ReactNode
   className?: string
-  /** Selector of elements outside the popover that do not close it. */
   keepOpenOn?: string
   placement?: Placement
   role?: PopoverRole
@@ -167,8 +165,13 @@ function PopoverNode({
   )
 }
 
-// Nested popovers form a tree, so a click inside a child (e.g. a color
-// picker in a chart popover) does not dismiss its parent.
+/**
+ * Floating surface for dropdowns, color pickers and format settings. A
+ * `title` adds a header with `actions` before the close button, e.g. an
+ * eye; `keepOpenOn` is a selector of elements outside whose presses keep
+ * it open. Nested popovers form a tree, so a click inside a child, e.g. a
+ * color picker in a chart popover, does not dismiss its parent.
+ */
 function Popover(props: PopoverProps) {
   const parentId = useFloatingParentNodeId()
   if (parentId) {

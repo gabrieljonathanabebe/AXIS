@@ -12,7 +12,7 @@ type LegendWidgetProps = {
 
 /**
  * Groups of the chart legend: where it sits and how its text looks.
- * Whether it shows is the element toggle in the popover header.
+ * Whether it shows is the eye in the popover header.
  */
 function LegendWidget({ value, onChange }: LegendWidgetProps) {
   return (

@@ -7,7 +7,6 @@ import type { ReactNode } from 'react'
 // ===== TYPES =================================================================
 /** Shows or hides a group or a whole element, e.g. by its eye. */
 export type FormatVisibility = {
-  label?: string
   visible: boolean
   onChange: (visible: boolean) => void
 }
@@ -17,7 +16,6 @@ type FormatWidgetProps = {
   title?: string
   visibility?: FormatVisibility
   onAdd?: () => void
-  /** Opens the format of another element, e.g. the tooltip. */
   onFormat?: () => void
 }
 

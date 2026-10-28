@@ -480,8 +480,8 @@ Textebenen in Figma:
   `align` und `verticalAlign`.
 - Später: frei verschiebbare Kästen mit eigener Größe (Versatz bzw. x/y,
   Breite, Höhe, vertikale Ausrichtung), zusammen mit dem Text-Objekt.
-- In 3.4 ändert sich die Spec nicht; die Text-Ausrichtung des Titels
-  steht dort nur in der Oberfläche beim Text.
+- Seit 3.4 steht die Text-Ausrichtung des Titels in der Oberfläche beim
+  Text; die Spec bleibt `title.layout.alignment`.
 
 ### Darstellung der Marks
 
@@ -650,16 +650,17 @@ beide
   `getFormatFocusClassName` nichts ab.
 - `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
   Elemente eines Charts: Schlüssel von `ChartAppearanceSpec`
-  (`legend | title | xAxis | yAxis`) plus `xAxisLabels | yAxisLabels`
-  für die Tick-Labels unter `xAxis.labels` bzw. `yAxis.labels` und
-  `marks` für Farbe, Palette und die Marks des Charttyps (`color`,
-  `colorScale.categorical`, `scatter`, `line`, `bar`).
-  `ChartFormatPopover` beantwortet pro Element per `switch` zwei Fragen:
-  `getFormatGroups` liefert die Gruppen untereinander, und
-  `getElementVisibility` den Schalter, der das ganze Element ein- oder
-  ausblendet (Titel, Legende, Farbskala, Tooltip, Achse). Achse und
-  Labels teilen `AxisWidget` mit `part` (`title` | `labels`) und
-  dieselbe `AxisAppearance`. `marks` füllt feste Plätze:
+  (`labels`, `legend`, `title`, `xAxis`, `yAxis`) plus `xAxisLabels`
+  und `yAxisLabels` für die Tick-Labels unter `xAxis.labels` bzw.
+  `yAxis.labels`, `marks` für Datenfarbe, Palette und die Marks des
+  Charttyps (`color`, Palette, Farben und Range aus `colorScale`,
+  `scatter`, `line`, `bar`, `pie`) sowie `colorScale`, `tooltip` und
+  `container`. `ChartFormatPopover` beantwortet pro Element per `switch`
+  zwei Fragen: `getFormatGroups` liefert die Gruppen untereinander, und
+  `getElementVisibility` das Auge, das das ganze Element ein- oder
+  ausblendet (Titel, Datenlabels, Legende, Farbskala, Tooltip, Achse).
+  Achse und Labels teilen `AxisWidget` mit `part` (`title` | `labels`)
+  und dieselbe `AxisAppearance`. `marks` füllt feste Plätze:
   `getMarkGroups` (`charts/format/markGroups.tsx`) liefert pro Charttyp
   `Partial<Record<MarkGroupKey, ReactNode>>`, `MARK_GROUP_ORDER` legt
   die Reihenfolge an genau einer Stelle fest. Gruppen gehören zum
@@ -667,9 +668,11 @@ beide
   „Gridlines“ (`AxisAppearance.line` bzw. `.gridLines`, im Adapter
   `axisLine` und `splitLine`), `xAxis` zusätzlich „Zoom“
   (`interaction.zoom`, wirkt auf die X-Achse), `legend` „Interaction“
-  (`interaction.legend`), `marks` „Labels“ (`appearance.labels`,
-  Datenlabels sind kein eigenes Element, weil ein Klick auf ein Label
-  als Serien-Event ohnehin bei den Marks landet).
+  (`interaction.legend`). Die Datenlabels sind ein eigenes Element
+  „Data Labels“ (`appearance.labels`): Ihre Region ist der Text, den
+  ECharts an die Mark hängt (`createFormatHintFromEvent`), und die Marks
+  verlinken sie mit Pinsel und Auge (`getElementLinkGroup`), wie den
+  Tooltip.
 - `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
   Elemente ein Chart hat: Container, Titel, Marks und Tooltip immer,
   Achsen und ihre Labels nur kartesisch, Legende wie `isLegendRelevant`,
@@ -827,6 +830,8 @@ Beschreibt Regeln eines Charttyps.
 Beispiele:
 
 - verfügbare Encodings;
+- Positionen der Datenlabels (`labelPositions`, als `OptionItem` mit
+  eigenem Icon aus `charts/chartIcons.ts`);
 - kompatible Semantic Roles;
 - verfügbare Format-Elemente und -Abschnitte (über `coordinates`);
 - Defaults;
@@ -1017,7 +1022,7 @@ WorkspaceState
 `selectedCard` für das Card-Format-Popover ab.
 
 Format-Popover: Die Hülle `ObjectFormatPopover` (`objects/`) übernimmt
-Position, Offenhalten, Element-Auswahl und Element-Schalter im Kopf für
+Position, Offenhalten, Element-Auswahl und das Auge im Kopf für
 jedes Objekt; die Gruppen pro Typ kommen als `children` und stehen
 untereinander, ohne eigenen UI-Zustand. `ChartFormatPopover`
 (`charts/format/`) und `CardFormatPopover` (`cards/`) liegen in ihrer
@@ -1411,18 +1416,19 @@ Abschnitt zum Element, das es betrifft. Was Daten zuordnet, liegt im
 Build Panel, was das ganze Dashboard betrifft, im Dashboard-Popover der
 Canvas-Toolbar.
 
-| Bereich                            | Ort                                                                   |
-| ---------------------------------- | --------------------------------------------------------------------- |
-| Container, Rahmen                  | Element „Chart“/„Card“ (Klick auf freie Fläche, Pinsel)               |
-| Titel                              | Element „Title“, inline editierbar                                    |
-| Marks, Datenlabels                 | Element „Marks“: Abschnitte Marks \| Labels                           |
-| Tooltip                            | Element „Tooltip“ (Dropdown, Vorschau am größten Wert)                |
-| Achsen, Gridlines, Zoom            | Elemente „X/Y Axis“ (Axis \| Gridlines \| Zoom) und „X/Y Axis Labels“ |
-| Legende, Legend Selection Mode     | Element „Legend“: Abschnitte Legend \| Interaction                    |
-| Color Scale                        | Element „Color Scale“ (Dropdown, bei kontinuierlicher Farbe)          |
-| Charttyp, Encodings, Aggregation   | Build Panel, Abschnitt „Chart data“                                   |
-| Dashboard-Name                     | inline im Canvas-Titel                                                |
-| Layout-Gap, Animation aller Charts | Dashboard-Popover (Zahnrad in der Canvas-Toolbar)                     |
+| Bereich                            | Ort                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| Container, Rahmen                  | Element „Chart“/„Card“ (Klick auf freie Fläche, Pinsel)                  |
+| Titel                              | Element „Title“, inline editierbar                                       |
+| Marks                              | Element „Marks“                                                          |
+| Datenlabels                        | Element „Data Labels“ (Region am Label, Pinsel in den Marks)             |
+| Tooltip                            | Element „Tooltip“ (Dropdown, Vorschau am größten Wert)                   |
+| Achsen, Gridlines, Zoom            | Elemente „X/Y Axis“ (Title, Line, Gridlines, Zoom) und „X/Y Axis Labels“ |
+| Legende, Legend Interaction        | Element „Legend“: Gruppen Layout, Text, Interaction                      |
+| Color Scale                        | Element „Color Scale“ (Dropdown, bei kontinuierlicher Farbe)             |
+| Charttyp, Encodings, Aggregation   | Build Panel, Abschnitt „Chart data“                                      |
+| Dashboard-Name                     | inline im Canvas-Titel                                                   |
+| Layout-Gap, Animation aller Charts | Dashboard-Popover (Zahnrad in der Canvas-Toolbar)                        |
 
 Die Widgets liegen in ihrer Domäne (`charts/format/`, `charts/data/`,
 `cards/`, `objects/`, `workspace/`) und rendern ihre Zeilen über

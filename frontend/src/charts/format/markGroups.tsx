@@ -4,6 +4,8 @@ import {
   ChartLine,
   ChartSpline,
   Circle,
+  CircleDot,
+  CircleDotDashed,
   Diamond,
   Donut,
   Scaling,
@@ -34,6 +36,7 @@ import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Effect } from '../../shared/effect'
 import type { FormatVisibility } from '../../shared/ui/FormatWidget'
+import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type {
   ChartFormatElement,
   ChartFormatProps,
@@ -85,19 +88,14 @@ export const MARK_GROUP_ORDER = [
 ] as const
 
 const lineCurveOptions = [
-  { label: 'Straight', value: 'straight' },
-  { label: 'Smooth', value: 'smooth' },
-] satisfies { label: string; value: LineCurve }[]
-
-const lineCurveIcons = {
-  smooth: ChartSpline,
-  straight: ChartLine,
-} satisfies Record<LineCurve, LucideIcon>
+  { icon: ChartLine, label: 'Straight', value: 'straight' },
+  { icon: ChartSpline, label: 'Smooth', value: 'smooth' },
+] satisfies OptionItem<LineCurve>[]
 
 const linePointsOptions = [
-  { label: 'Auto', value: 'auto' },
-  { label: 'Always', value: 'on' },
-] satisfies { label: string; value: LinePoints }[]
+  { icon: CircleDotDashed, label: 'Auto', value: 'auto' },
+  { icon: CircleDot, label: 'Always', value: 'on' },
+] satisfies OptionItem<LinePoints>[]
 
 const scatterSymbolOptions = [
   { label: 'Circle', value: 'circle' },
@@ -457,10 +455,6 @@ function getChartTypeGroups(
               <SegmentedControl
                 label="Line curve"
                 options={lineCurveOptions}
-                renderOption={(option) => {
-                  const CurveIcon = lineCurveIcons[option.value]
-                  return <CurveIcon aria-hidden="true" size={14} />
-                }}
                 value={line.smooth ? 'smooth' : 'straight'}
                 onValueChange={(curve) => {
                   actions.setChartAppearance(

@@ -9,7 +9,11 @@ import type {
   ChartType,
 } from '../charts/types'
 import type { DashboardObject } from '../objects/types'
-import type { WorkspaceAction, WorkspaceState } from './types'
+import type {
+  DashboardAnimation,
+  WorkspaceAction,
+  WorkspaceState,
+} from './types'
 
 // ===== TYPES =================================================================
 type CardUpdater = (card: CardInstance) => CardInstance
@@ -19,13 +23,16 @@ type ChartUpdater = (chart: ChartInstance) => ChartInstance
 type ObjectUpdater = (object: DashboardObject) => DashboardObject
 
 // ===== CONSTANTS =============================================================
+/** Animation of a new dashboard, also added again by its plus. */
+export const DASHBOARD_ANIMATION: DashboardAnimation = {
+  duration: 500,
+  easing: 'cubicOut',
+  enabled: true,
+}
+
 export const initialWorkspaceState: WorkspaceState = {
   dashboard: {
-    animation: {
-      duration: 500,
-      easing: 'cubicOut',
-      enabled: true,
-    },
+    animation: DASHBOARD_ANIMATION,
     layout: {
       gap: 8,
     },

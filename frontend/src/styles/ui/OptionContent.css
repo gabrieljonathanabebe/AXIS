@@ -1,0 +1,18 @@
+.option-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.option-content svg {
+  flex-shrink: 0;
+}
+
+.option-content-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

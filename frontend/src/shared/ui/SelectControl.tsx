@@ -2,6 +2,7 @@ import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
 import Button from './Button'
+import OptionContent from './OptionContent'
 import OptionsMenu from './OptionsMenu'
 import Popover from './Popover'
 
@@ -16,13 +17,16 @@ type SelectControlProps<TValue extends string> = {
   options: OptionItem<TValue>[]
   value: TValue
   placeholder?: string
-  /** Content of an option and of the button, e.g. a preview. */
   renderOption?: (option: OptionItem<TValue>) => ReactNode
   variant?: SelectControlVariant
   onChange: (value: TValue) => void
 }
 
-/** Picks one option from a menu; the title variant reads as a heading. */
+/**
+ * Picks one option from a menu; options show their icon and label, or what
+ * `renderOption` returns, e.g. a palette preview, in the menu and in the
+ * button. The title variant reads as a heading.
+ */
 function SelectControl<TValue extends string>({
   disabled = false,
   label,
@@ -48,7 +52,11 @@ function SelectControl<TValue extends string>({
     if (!selectedOption) {
       return placeholder ?? value
     }
-    return renderOption?.(selectedOption) ?? selectedOption.label
+    return (
+      renderOption?.(selectedOption) ?? (
+        <OptionContent option={selectedOption} />
+      )
+    )
   }
 
   return (

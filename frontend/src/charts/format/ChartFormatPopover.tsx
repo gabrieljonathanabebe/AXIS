@@ -181,7 +181,7 @@ function getFormatGroups(
 }
 
 /**
- * Toggle that shows or hides a whole chart element; it sits in the popover
+ * Eye that shows or hides a whole chart element; it sits in the popover
  * header.
  * @param element Element selected in the popover.
  * @param formatProps Actions and chart of the chart.
@@ -223,7 +223,6 @@ function getElementVisibility(
       }
     case 'tooltip':
       return {
-        label: 'Enabled',
         visible: tooltip.enabled,
         onChange: (enabled) =>
           actions.setInteraction('tooltip', { ...tooltip, enabled }),

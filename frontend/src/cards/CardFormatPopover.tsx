@@ -103,7 +103,7 @@ function renderFormatWidget(
 }
 
 /**
- * Toggle that shows or hides a whole card element; it sits in the popover
+ * Eye that shows or hides a whole card element; it sits in the popover
  * header.
  * @param element Element in the popover.
  * @param props Card and the actions that change it.

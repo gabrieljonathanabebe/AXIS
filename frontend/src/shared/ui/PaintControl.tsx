@@ -17,12 +17,10 @@ export type PaintColor = {
 }
 
 type PaintControlProps = {
-  /** Own color; a series paint has none. */
   color?: PaintColor
   details?: ReactNode
   label: string
   opacity: number
-  /** Field of the series color for a paint without own color. */
   seriesColor?: ReactNode
   onOpacityChange: (opacity: number) => void
 }

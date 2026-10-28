@@ -19,6 +19,7 @@
 @import './styles/ui/IconButton.css';
 @import './styles/ui/MiniHistogram.css';
 @import './styles/ui/NumberInput.css';
+@import './styles/ui/OptionContent.css';
 @import './styles/ui/OptionsMenu.css';
 @import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
@@ -29,11 +30,9 @@
 @import './styles/ui/ScrubbableNumber.css';
 @import './styles/ui/SelectControl.css';
 @import './styles/ui/SegmentedControl.css';
-@import './styles/ui/Slider.css';
 @import './styles/ui/StatWidget.css';
 @import './styles/ui/StrokeStyleControls.css';
 @import './styles/ui/TextInput.css';
-@import './styles/ui/Toggle.css';
 @import './styles/ui/Widget.css';
 
 @import './styles/field.css';

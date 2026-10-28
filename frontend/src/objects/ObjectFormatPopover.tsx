@@ -1,8 +1,8 @@
-import { Paintbrush } from 'lucide-react'
+import { Eye, EyeOff, Paintbrush } from 'lucide-react'
 
+import IconButton from '../shared/ui/IconButton'
 import Popover from '../shared/ui/Popover'
 import SelectControl from '../shared/ui/SelectControl'
-import Toggle from '../shared/ui/Toggle'
 
 import type { ReactNode } from 'react'
 import type { FormatVisibility } from '../shared/ui/FormatWidget'
@@ -20,7 +20,6 @@ type ObjectFormatPopoverProps<TElement extends ObjectFormatElement> = {
   elementOptions: FormatElementOption<TElement>[]
   label: string
   target: FormatTarget
-  /** Shows or hides the whole element, e.g. the legend. */
   visibility?: FormatVisibility
   onClose: () => void
   onElementChange: (element: TElement) => void
@@ -40,8 +39,8 @@ function getKeepOpenSelector(objectId: string): string {
 /**
  * Shows the format groups of one element next to its object. The element
  * select switches between the elements of the same object. A visibility
- * puts the element's toggle into the header; while the element is hidden,
- * only the header remains.
+ * puts an eye into the header that shows or hides the whole element, e.g.
+ * the legend; while the element is hidden, only the header remains.
  */
 function ObjectFormatPopover<TElement extends ObjectFormatElement>({
   children,
@@ -55,17 +54,20 @@ function ObjectFormatPopover<TElement extends ObjectFormatElement>({
 }: ObjectFormatPopoverProps<TElement>) {
   const elementLabel =
     elementOptions.find((option) => option.value === element)?.label ?? label
-  const visibilityLabel = visibility?.label ?? 'Visible'
+  const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsGroups = visibility?.visible ?? true
   return (
     <Popover
       actions={
         visibility ? (
-          <Toggle
-            checked={visibility.visible}
-            label={`${elementLabel} ${visibilityLabel.toLowerCase()}`}
-            onCheckedChange={visibility.onChange}
-          />
+          <IconButton
+            label={`${visibilityAction} ${elementLabel.toLowerCase()}`}
+            size="xs"
+            variant="ghost"
+            onClick={() => visibility.onChange(!visibility.visible)}
+          >
+            {visibility.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+          </IconButton>
         ) : null
       }
       anchor={target.anchor}

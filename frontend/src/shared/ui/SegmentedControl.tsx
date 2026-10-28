@@ -1,4 +1,5 @@
 import Button from './Button'
+import OptionContent from './OptionContent'
 
 import type { ReactNode } from 'react'
 import type { OptionItem } from './OptionsMenu'
@@ -12,6 +13,11 @@ type SegmentedControlProps<TValue extends string> = {
   onValueChange: (value: TValue) => void
 }
 
+/**
+ * Group of exclusive options; each shows its icon and label, or what
+ * `renderOption` returns, e.g. only an icon that shows the result. When
+ * `renderOption` returns null, the option keeps its icon and label.
+ */
 function SegmentedControl<TValue extends string>({
   label,
   className = '',
@@ -28,7 +34,6 @@ function SegmentedControl<TValue extends string>({
     >
       {options.map((option) => {
         const isActive = option.value === value
-
         return (
           <Button
             className="segmented-control-option"
@@ -39,7 +44,7 @@ function SegmentedControl<TValue extends string>({
             onClick={() => onValueChange(option.value)}
             key={option.value}
           >
-            {renderOption?.(option) ?? option.label}
+            {renderOption?.(option) ?? <OptionContent option={option} />}
           </Button>
         )
       })}

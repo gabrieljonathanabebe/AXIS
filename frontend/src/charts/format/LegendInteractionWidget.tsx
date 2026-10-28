@@ -1,7 +1,10 @@
+import { ListChecks, MousePointerBan, SquareCheck } from 'lucide-react'
+
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 
+import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type { ChartInteractionSpec, LegendSelectionMode } from '../types'
 
 // ===== TYPES =================================================================
@@ -10,39 +13,39 @@ type LegendInteractionWidgetProps = {
   onChange: (value: ChartInteractionSpec['legend']) => void
 }
 
+/** What a click on a legend entry does; off turns the selection off. */
+type SelectionChoice = LegendSelectionMode | 'off'
+
 // ===== GLOBAL CONSTANTS ======================================================
-const selectionModeOptions = [
-  { label: 'Multiple', value: 'multiple' },
-  { label: 'Single', value: 'single' },
-] satisfies {
-  label: string
-  value: LegendSelectionMode
-}[]
+const selectionChoiceOptions = [
+  { icon: MousePointerBan, label: 'Off', value: 'off' },
+  { icon: ListChecks, label: 'Multiple', value: 'multiple' },
+  { icon: SquareCheck, label: 'Single', value: 'single' },
+] satisfies OptionItem<SelectionChoice>[]
 
 // ===== COMPONENT =============================================================
-/** Edits whether legend clicks select series, one or several at a time. */
+/**
+ * Interaction group of the legend: what a click on a legend entry does,
+ * nothing or select one or several series, the three click modes of
+ * ECharts. Off keeps the stored selection mode.
+ */
 function LegendInteractionWidget({
   value,
   onChange,
 }: LegendInteractionWidgetProps) {
   return (
-    <FormatWidget
-      title="Interaction"
-      visibility={{
-        label: 'Enabled',
-        visible: value.enabled,
-        onChange: (enabled) => {
-          onChange({ ...value, enabled })
-        },
-      }}
-    >
-      <ControlRow label="Selection">
+    <FormatWidget title="Interaction">
+      <ControlRow>
         <SegmentedControl
-          label="Legend selection mode"
-          options={selectionModeOptions}
-          value={value.selectionMode}
-          onValueChange={(selectionMode) => {
-            onChange({ ...value, selectionMode })
+          label="Legend click selection"
+          options={selectionChoiceOptions}
+          value={value.enabled ? value.selectionMode : 'off'}
+          onValueChange={(choice) => {
+            onChange(
+              choice === 'off'
+                ? { ...value, enabled: false }
+                : { enabled: true, selectionMode: choice },
+            )
           }}
         />
       </ControlRow>

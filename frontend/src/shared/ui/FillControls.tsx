@@ -9,7 +9,6 @@ import type { SeriesFill } from '../fill'
 type FillControlsProps<TFill extends SeriesFill> = {
   details?: ReactNode
   label: string
-  /** Field of the series color for a fill without own color. */
   seriesColor?: ReactNode
   value: TFill
   onChange: (value: TFill) => void

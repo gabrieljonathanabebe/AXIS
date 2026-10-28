@@ -11,7 +11,6 @@ import type {
 } from 'react'
 
 type ScrubbableNumberProps = {
-  /** Icon in the field that scrubs the value; without one, a grip. */
   icon?: ReactNode
   label: string
   value: number | null
@@ -19,7 +18,6 @@ type ScrubbableNumberProps = {
   max?: number
   step?: number
   pixelsPerStep?: number
-  /** Unit after the value, e.g. `px` or `%`. */
   unit?: string
   onAuto?: () => void
   onValueChange: (value: number) => void

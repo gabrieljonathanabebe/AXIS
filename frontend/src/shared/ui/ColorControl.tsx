@@ -55,9 +55,10 @@ function ColorControl<TPreset extends string = never>({
 }: ColorControlProps<TPreset>) {
   // ===== CONSTANTS ===========================================================
   const valueKey = getValueKey(value)
-  const presetSelected = presets.some(
+  const selectedPreset = presets.find(
     (preset) => getValueKey(preset.value) === valueKey,
   )
+  const presetSelected = selectedPreset !== undefined
   const valueCustomColor =
     typeof value !== 'string' && value.kind === 'custom'
       ? normalizeHex(value.color)
@@ -177,13 +178,19 @@ function ColorControl<TPreset extends string = never>({
           renderTrigger={(triggerProps) => (
             <Button
               {...triggerProps}
-              className="color-control-swatch"
+              className={[
+                'color-control-swatch',
+                selectedPreset?.fill ? 'has-fill' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               type="button"
               aria-label={label}
               title={label}
               style={
                 {
                   '--swatch-color': getSwatchColor(value),
+                  '--swatch-fill': selectedPreset?.fill,
                 } as CSSProperties
               }
               onClick={() => {

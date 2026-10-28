@@ -275,7 +275,7 @@ Canvas Panel (--canvas-background, ohne Panel-Header)
 - Rechts vom Pinsel öffnet das Zahnrad (`Settings2`, `IconButton` `sm`
   `ghost`, gedrückt solange offen) das Popover „Dashboard“ mit
   Einstellungen ohne eigenes Element auf der Canvas: Gap und Animation
-  (Schalter „Animation“, Duration). Gleiche erhöhte Glass-Ebene wie das
+  (＋/−, Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
   Format-Popover. Der Name bleibt inline im Titel, eine Einstellung hat
   genau eine Heimat.
 - Toolbar und Titelzeile sind beide 36 px hoch und liegen auf einer
@@ -478,42 +478,36 @@ Canvas-Toolbar.
 ### Aufbau: Element, Gruppen, Zeilen (implementiert)
 
 ```text
-┌─ 🖌  X Axis ▾                  [on]  × ┐   Kopf: Element + Element-Schalter
-│ TITLE                           [on]   │   Gruppe mit Schalter
-│   Text · Color · Size · Weight · Style │   Zeilen
+┌─ 🖌  X Axis ▾                     👁  × ┐   Kopf: Element + Auge
+│ TITLE                            👁    │   Gruppe mit Auge
+│ [Aa 12 px   ]  [ A  A  A   ]  [I]      │   Zeilen ohne Label
 │ ────────────────────────────────────── │
-│ LINE                            [on]   │
+│ LINE                             👁    │
 │ ────────────────────────────────────── │
-│ GRIDLINES                       [off]  │   aus: nur die Überschrift
+│ GRIDLINES                        ⊘    │   aus: nur die Überschrift
 │ ────────────────────────────────────── │
-│ ZOOM                            [off]  │
+│ ZOOM                                   │
+│ [🖱 Scroll    ]  [▭ Slider    ]         │   Verhalten als Toggles
 └────────────────────────────────────────┘
 ```
 
 - **Element:** Der Kopf zeigt das Element als `SelectControl`
   (`variant="title"`). Lässt sich das ganze Element ausblenden (Titel,
-  Legende, Farbskala, Tooltip, Achse, Card Selection), steht sein
-  Schalter rechts im Kopf (`visibility` an `ObjectFormatPopover`, über
-  den Slot `actions` des `Popover`). Ist das Element aus, bleibt nur der
-  Kopf.
+  Legende, Farbskala, Tooltip, Achse, Datenlabels, Card Selection),
+  steht sein Auge rechts im Kopf (`visibility` an `ObjectFormatPopover`,
+  über den Slot `actions` des `Popover`, benannt „Hide legend“). Ist das
+  Element aus, bleibt nur der Kopf.
 - **Gruppen:** Ein Element zeigt alle seine Gruppen untereinander; es
-  gibt kein Segmented Control und keine Collapsibles im Popover. Die
-  Überschrift ist klein, in Versalien, mit Haarlinie zur vorigen Gruppe,
-  im Stil der plain Sections im Build Panel.
-- **Gruppen-Schalter:** Eine optionale Gruppe hat ihren Schalter rechts
-  in der Überschrift (Title der Achse, Line, Gridlines, Zoom, Area,
-  Labels, Interaction, Animation). Der Schalter ist zugleich das
-  Aufklappen: aus = nur die Überschrift, an = die Zeilen. Gruppen ohne
-  Schalter sind immer offen.
-- **Zeilen:** kurze Labels („Width“ statt „Gridline width“), weil die
-  Gruppe den Kontext gibt. Abhängige Unteroptionen
-  (`.format-widget-subproperties`) sind um `--indent-nested`
-  eingerückt.
+  gibt keine Collapsibles im Popover. Die Überschrift ist klein, in
+  Versalien, mit Haarlinie zur vorigen Gruppe, im Stil der plain
+  Sections im Build Panel.
+- **Überschrift:** rechts höchstens Auge, ＋ oder Pinsel (Regel 1 unter
+  „Kompakte Controls“); ausgeblendet bzw. ohne Eintrag zeigt die Gruppe
+  nur ihre Überschrift. Gruppen ohne Aktion sind immer offen.
+- **Zeilen:** kompakt und ohne Text-Label; den Kontext geben die
+  Gruppe, Icons im Feld und Tooltips. Seltenes steht hinter ⚙.
 - Das Popover ist oben verankert, höchstens 400 px hoch, der Inhalt
   scrollt.
-
-Ab 3.4 ersetzen Auge bzw. ＋/− den Schalter in Kopf und Überschrift
-(siehe „Kompakte Controls“ unten).
 
 ### Feste Reihenfolge (implementiert)
 
@@ -529,18 +523,19 @@ weg, statt leer oder deaktiviert zu erscheinen. Der Platz ist fest, der
 Titel darf zum Element passen (Fill heißt am Container „Background“,
 bei Linien „Area“; Stroke heißt bei Linien „Line“, sonst „Border“).
 
-| Element                 | Gruppen                                                   |
-| ----------------------- | --------------------------------------------------------- |
-| Chart bzw. Card         | Layout (Padding) · Shape (Radius) · Background · Border   |
-| Title                   | Content (Text) · Text (mit Alignment)                     |
-| X Axis, Y Axis          | Title · Line · Gridlines · Zoom (nur X)                   |
-| X Axis Labels, Y Axis … | Content (Type, Ticks) · Layout (Rotation) · Text · Format |
-| Legend                  | Layout (Position, Alignment, Gap) · Text · Interaction    |
-| Color Scale             | Range · Layout (Position, Orientation) · Labels           |
-| Tooltip                 | Behavior (Trigger; nicht bei Pie und Donut)               |
-| Card Value              | Content (Function) · Text · Format                        |
-| Card Selection          | Text                                                      |
-| Dashboard (Toolbar)     | Layout (Gap) · Animation                                  |
+| Element                 | Gruppen                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| Chart bzw. Card         | Layout (Padding) · Shape (Radius) · Background · Border  |
+| Title                   | Content (Text) · Text (mit Alignment)                    |
+| X Axis, Y Axis          | Title · Line · Gridlines · Zoom (nur X)                  |
+| X Axis Labels, Y Axis … | Layout (Ticks, Rotation) · Text · Format (Number, Date)  |
+| Data Labels             | Layout (Position) · Text · Format (nicht bei Pie, Donut) |
+| Legend                  | Layout (Position, Alignment, Gap) · Text · Interaction   |
+| Color Scale             | Layout (Position, Orientation) · Labels                  |
+| Tooltip                 | Behavior (Trigger; nicht bei Pie und Donut)              |
+| Card Value              | Function (Aggregation) · Text · Format                   |
+| Card Selection          | Text                                                     |
+| Dashboard (Toolbar)     | Layout (Gap) · Animation                                 |
 
 Marks haben feste Plätze in `MARK_GROUP_ORDER`
 (`charts/format/markGroups.tsx`), der einzigen Stelle mit ihrer
@@ -549,18 +544,20 @@ Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
 | Platz      | Scatter                                  | Line                   | Bar           | Pie / Donut          |
 | ---------- | ---------------------------------------- | ---------------------- | ------------- | -------------------- |
 | Data color | Fill mit Datenfarbe                      | Line mit Datenfarbe    | wie Scatter   | Fill mit Palette     |
-| Shape      | Symbol, Size bzw. Size range (Size-Feld) | Smooth                 | Width, Radius | Inner radius (Donut) |
+| Shape      | Symbol, Size bzw. Size range (Size-Feld) | Straight \| Smooth     | Width, Radius | Inner radius (Donut) |
 | Fill       | –                                        | Area (Deckkraft, Auge) | –             | –                    |
 | Stroke     | Border                                   | –                      | Border        | Border               |
-| Effect     | Effect                                   | Effect                 | Effect        | Effect               |
-| Points     | –                                        | Show: Auto · On · Off  | –             | –                    |
-| Labels     | Labels                                   | Labels                 | Labels        | Labels               |
+| Effect     | Effect (＋/−)                            | Effect (＋/−)          | Effect (＋/−) | Effect (＋/−)        |
+| Points     | –                                        | Auto \| Always, Auge   | –             | –                    |
+| Labels     | Pinsel und Auge                          | wie Scatter            | wie Scatter   | wie Scatter          |
 | Tooltip    | Pinsel in der Überschrift                | wie Scatter            | wie Scatter   | wie Scatter          |
 
 - Data color ist die Gruppe, die mit der Datenfarbe gezeichnet wird;
   siehe „Datenfarbe in der Farbzeile“ unter „Kompakte Controls“.
-- Der Tooltip ist eine Gruppe ohne Zeilen; ihr Pinsel öffnet das Element
-  Tooltip im selben Popover (`getElementLinkGroup`).
+- Labels und Tooltip sind Gruppen ohne Zeilen; ihr Pinsel öffnet das
+  Element Data Labels bzw. Tooltip im selben Popover
+  (`getElementLinkGroup`), das Auge der Labels blendet die Datenlabels
+  ein oder aus.
 - Welchen Inhalt die Datenlabels zeigen, ist noch fest (Wert bzw. Anteil);
   die Wahl kommt mit „Tooltip-Felder“ (`ROADMAP.md`).
 
@@ -571,58 +568,62 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
 `LegendWidget`; es liefert eine oder mehrere Gruppen.
 
 - `FormatWidget` (`shared/ui`) ist die Gruppe: `title` wird zur
-  Überschrift, `visibility` zum Schalter darin; `children` sind die
-  Zeilen und dürfen fehlen (Gruppe nur mit Schalter). Ohne `title`
-  bleiben nur die Zeilen, z. B. im Build Panel unter „Chart data“.
-  `FormatVisibility` ist der gemeinsame Typ für Gruppen- und
-  Element-Schalter.
-- Schaltet der Schalter Verhalten statt Sichtbarkeit (Zoom, Tooltip,
-  Legend Interaction, Animation), benennt `visibility.label` ihn für
-  Screenreader („Tooltip enabled“).
+  Überschrift, `visibility` zum Auge darin, `onAdd` zum ＋ und
+  `onFormat` zum Pinsel; `children` sind die Zeilen und dürfen fehlen
+  (Gruppe nur mit Aktion). Ohne `title` bleiben nur die Zeilen, z. B. im
+  Build Panel unter „Chart data“. `FormatVisibility` (`visible`,
+  `onChange`) ist der gemeinsame Typ für das Auge in Gruppe und Kopf;
+  sein Name folgt aus dem Titel („Hide gridlines“).
+- Verhalten ohne sichtbaren Teil (Zoom, Legend Interaction, Animation)
+  hat kein Auge, sondern ＋/− oder Toggles in der Zeile (Regel 1 unter
+  „Kompakte Controls“).
 - Die Bausteine (`LayoutControls`, `TextStyleControls`,
   `StrokeStyleControls`, `FillControls`, `EffectControls`,
   `NumberFormatControls`) liefern nur Zeilen; das Widget legt sie in
   seine Gruppen.
 - `AxisWidget` zeigt mit `part` (`title` | `labels`) die Gruppen eines
-  Elements: „X Axis“ die Gruppe Title, „X Axis Labels“ Content, Layout,
-  Text und Format (nur bei Typ Number).
+  Elements: „X Axis“ die Gruppe Title, „X Axis Labels“ Layout, Text und
+  Format.
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
-### Kompakte Controls im Figma-Stil (in Arbeit, 3.4)
+### Kompakte Controls im Figma-Stil (implementiert, 3.4)
 
 Ziel: Das Popover sieht aus und bedient sich wie das Design-Panel in
 Figma: dicht, ruhig, Icons statt Text-Labels, eine klare Sprache pro
-Ebene. Die Spec ändert sich nicht, nur die Darstellung der Controls.
-
-Stand: implementiert sind Stroke, Fill und Text im neuen Stil
-(`ScrubbableNumber` mit `icon` und `unit`, `ControlRow` ohne Label,
-`PaintControl` mit `ColorField`, Italic als Icon-Toggle, Ausrichtung des
-Titels in der Text-Zeile), die Datenfarbe in der Farbzeile sowie Auge
-und Pinsel in der Überschrift von `FormatWidget`; alles Übrige ist
-geplant.
+Ebene. Die Spec hat sich dafür nicht geändert, nur die Darstellung der
+Controls.
 
 **Regel 1: drei Ebenen, jede mit eigener Sprache**
 
-| Ebene                  | Inhalt                           | Erlaubte Controls                                                         |
-| ---------------------- | -------------------------------- | ------------------------------------------------------------------------- |
-| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts nur Auge, ＋ / − oder Pinsel, nie ein Schalter                     |
-| 2. Zeilen              | Werte, kompakt, ohne Text-Label  | Felder mit Icon im Feld, Icon-Gruppen (Segmented mit Icons), Icon-Toggles |
-| 3. Details             | seltene Einstellungen            | hinter ⚙ am Zeilenende, als eigenes kleines Popover                       |
+| Ebene                  | Inhalt                           | Erlaubte Controls                                                                 |
+| ---------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts nur Auge, ＋ oder Pinsel, nie ein Schalter                                 |
+| 2. Zeilen              | Werte, kompakt, ohne Text-Label  | Felder mit Icon im Feld, Icon-Gruppen, Toggles mit Icon und Wort, Icon-Toggles, − |
+| 3. Details             | seltene Einstellungen            | hinter ⚙ am Zeilenende, als eigenes kleines Popover                               |
 
 - **Auge:** blendet einen sichtbaren Teil ein oder aus (Title,
-  Gridlines, Area, Points, Labels, Achsenlinie, Legende); ausgeblendet
-  zeigt die Gruppe nur ihre Überschrift.
-- **＋ / −:** fügt etwas hinzu oder entfernt es (Effects, Zoom, später
-  Referenzlinien); ohne Eintrag zeigt die Gruppe nur Überschrift und ＋.
+  Gridlines, Area, Points, Labels, Achsenlinie; im Kopf das ganze
+  Element, auch den Tooltip); ausgeblendet zeigt die Gruppe nur ihre
+  Überschrift.
+- **＋ / −:** eine Sache mit Art und Parametern, die als Ganzes da ist
+  oder nicht (Effect, Animation, später Referenzlinien). ＋ in der
+  Überschrift setzt einen frischen Standard (`createEffect('glow')`,
+  `DASHBOARD_ANIMATION`), − steht am Ende der Zeile; ohne Eintrag zeigt
+  die Gruppe nur Überschrift und ＋.
+- **Verhalten mit mehreren Wegen:** Toggles mit Icon und Wort in der
+  Zeile; alle aus heißt aus (Zoom: Scroll | Slider, `enabled` folgt
+  `inside || slider`).
+- **Verhalten mit wenigen Modi:** eine Icon-Gruppe mit Wort, die „Off“
+  einschließt (Legend Interaction: Off | Multiple | Single, Off
+  entspricht `enabled: false`).
 - **Pinsel:** öffnet ein anderes Element im selben Popover (`onFormat`
-  an `FormatWidget`), z. B. den Tooltip unter den Marks; dasselbe Icon
-  wie „Format …“ am Chart. Kein ⚙, weil ⚙ nur seltene Einstellungen der
-  eigenen Zeile öffnet, und kein zweites Popover: ein Popover zeigt ein
-  Element, das Select im Kopf ist der Weg zurück.
-- Einzelne An/Aus-Optionen in einer Gruppe (Smooth, Compact, Italic,
-  Legend-Auswahl) sind Icon-Toggles in der Zeile (`IconButton` mit
-  `isActive`). Im Popover gibt es danach keinen `Toggle` mehr.
+  an `FormatWidget`), z. B. Tooltip oder Data Labels unter den Marks;
+  dasselbe Icon wie „Format …“ am Chart. Kein ⚙, weil ⚙ nur seltene
+  Einstellungen der eigenen Zeile öffnet, und kein zweites Popover: ein
+  Popover zeigt ein Element, das Select im Kopf ist der Weg zurück.
+- Einzelne An/Aus-Optionen in einer Zeile (Italic) sind Icon-Toggles
+  (`IconButton` mit `isActive`). Einen `Toggle` gibt es nicht mehr.
 
 **Regel 2: Zeilen-Muster der Bausteine**
 
@@ -638,46 +639,66 @@ STROKE                        👁
 [═ 2 px        ]  [ — ┄ ┈      ]
 [● 94A3B8      ]  [◐ 100 %     ]
 
-EFFECTS                        ＋
-[ Glow ▾ ]  [ ◌ 12 ]   👁   −
+EFFECT                         ＋
+[ Glow ▾       ]  [◌ 12        ]   −
 
-NUMBER FORMAT
-[ Currency        ▾ ]       [⚙]
+FORMAT
+[ Currency ▾   ]  [.0 Auto     ]   ⚙
 
-LEGEND – Position
-[ ⊞ ]   3×3-Raster
+POINTS                        👁
+[ ◌ Auto          |  ⊙ Always        ]
+
+ZOOM
+[🖱 Scroll     ]  [▭ Slider    ]
+
+INTERACTION
+[ ⊘ Off  |  ☑ Multiple  |  ☑ Single ]
+
+ANIMATION                      ＋
+[ Ease out ▾   ]  [⏱ 500 ms    ]   −
 ```
 
+- **Raster der Zeile** (`ControlRow` ohne `label`,
+  `.control-row-compact`): zwei gleich breite Spalten für Felder, danach
+  schmale Spalten für Icon-Buttons (−, ⚙, Italic). Eine Icon-Gruppe ohne
+  Nachbarfeld nutzt beide Spalten (Points, Smooth, Interaction,
+  Trigger); ein Icon-Button nach einem einzelnen Feld rückt ans
+  Zeilenende (`[⏱ 500 ms]          −`).
 - **Farbzeile** (`PaintControl`): links das Farbfeld, rechts die
-  Deckkraft in % (Icon ◐, scrubbable), in den zwei Spalten der Zeile.
-  Eine eigene Farbe zeigt `ColorField`: Swatch und Hex-Wert (direkt
-  editierbar), bei einer Theme-Farbe Swatch und den Namen ihres Presets;
-  das Swatch öffnet den bisherigen Farbwähler mit den Farben des
-  Einsatzorts (`colorPresets`). Bei Serienfarben (`SeriesFill`,
-  `SeriesStrokeStyle`) steht links das Feld der Datenfarbe
-  (`seriesColor`), sofern der Paint sie trägt, sonst nur die Deckkraft.
+  Deckkraft in % (Icon ◐, scrubbable), dahinter optional ⚙
+  (`details`). Eine eigene Farbe zeigt `ColorField` (siehe 9q). Bei
+  Serienfarben (`SeriesFill`, `SeriesStrokeStyle`) steht links das Feld
+  der Datenfarbe (`seriesColor`), sofern der Paint sie trägt, sonst nur
+  die Deckkraft.
 - **Text:** Zeile 1 Größe (Icon Aa, Einheit px) | Gewicht als
   Icon-Gruppe (Light · Medium · Bold; ein Select erst bei mehr
   Schnitten) | Italic (Icon-Toggle); Zeile 2 Farbfeld (`ColorField`,
   `TextStyle` hat keine Deckkraft) | Text-Ausrichtung als Icon-Gruppe,
   wo das Element sie hat (Titel), sonst bleibt die rechte Spalte leer.
-  Der Titel verliert damit seine Gruppe Layout; zur Trennung von
-  Position, Anordnung und Text-Ausrichtung siehe `ARCHITECTURE.md`,
-  „Kasten-Modell“.
+  Zur Trennung von Position, Anordnung und Text-Ausrichtung siehe
+  `ARCHITECTURE.md`, „Kasten-Modell“.
 - **Stroke:** Zeile 1 Breite (Icon ═, Einheit px) | Stil als Icon-Gruppe
   (— ┄ ┈), Zeile 2 Farbzeile. Kein ⚙, solange `StrokeStyle` nichts
   Seltenes hat; Cap, Join oder eigene Strichmuster wären eine
   Formänderung und gelten nicht für CSS-Rahmen.
-- **Effects:** Überschrift mit ＋; jeder Eintrag eine Zeile: Art
-  (Glow ▾) | Stärke (Icon ◌) | Auge | −. Ersetzt None | Glow.
-- **Number Format:** Format-Select | ⚙; Currency, Decimals, Compact,
-  Prefix und Suffix im Details-Popover statt eingerückter Zeilen;
-  DateFormat später nach demselben Muster.
-- **Zahlenpaare** in einer Zeile: Size range (↧ min | ↥ max), Bar width
-  | Radius, Min | Max einer Achse.
-- **Position der Legende** als `PositionGrid` (3×3), ohne Formänderung:
-  obere Reihe `top` mit `alignment` start/center/end, untere Reihe
-  `bottom`, mittlere Reihe `left` | (Mitte deaktiviert) | `right`.
+- **Effect:** Überschrift mit ＋; die Zeile zeigt Art (Glow ▾) | Stärke
+  (Icon ◌) | −. Kein Auge, weil `Effect` keinen ausgeblendeten Zustand
+  kennt; ein Effekt pro Mark, da ECharts je Mark nur einen Schatten
+  zeichnet.
+- **Number Format:** Format-Select (Auto, Number, Percent und die
+  Währungen) | Decimals mit Auto (`onAuto`) | ⚙ mit Notation und
+  Prefix | Suffix; an Achsenlabels zusätzlich Date im Select. DateFormat
+  kommt nach demselben Muster.
+- **Zahlenpaare** in einer Zeile: Size range (⤓ min | ⤒ max), Bar width
+  | Radius, Ticks | Rotation der Achsenlabels.
+- **Icon-Gruppen** (`SegmentedControl`) zeigen Icon und Wort
+  (`OptionContent`, siehe 9s). Nur Icons, die das Ergebnis zeigen,
+  stehen allein (Ausrichtung, Strichstil, Scatter-Symbole, Seiten als
+  Pfeile).
+- **Position der Legende** als `PositionGrid` (siehe 9r); **Positionen
+  der Datenlabels** je Charttyp aus `labelPositions` der Registry mit
+  eigenen Icons (`charts/chartIcons.ts`) und Wort (Top | Right |
+  Inside).
 
 **Datenfarbe in der Farbzeile (implementiert)**
 
@@ -695,9 +716,9 @@ welcher Paint die Datenfarbe trägt:
 Das linke Feld folgt dem Farbmodus (`getColorEncodingMode`):
 
 ```text
-konstant        [● Chart 1         ]  [◐ 90 %]   ColorField
-kategorial      [▬▬ Default       ▾]  [◐ 90 %]   PaletteControl (Dropdown)
-kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]   GradientControl
+konstant        [● Chart 1         ]  [◐ 90 %]      ColorField
+kategorial      [▬▬ Default       ▾]  [◐ 90 %]      PaletteControl (Dropdown)
+kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]  ⚙   GradientControl, Range
 ```
 
 - `getDataColorField` (`markGroups.tsx`) baut das Feld einmal; Fill der
@@ -706,10 +727,9 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]   Gra
   bleiben generisch.
 - Weitere Paints in der Serienfarbe, z. B. die Area der Line, zeigen nur
   ihre Deckkraft; die Datenfarbe hat genau eine Stelle.
-- Start- und Endfarbe der Farbskala sind Datenfarbe und stehen deshalb
-  nicht mehr im Element Color Scale. Range (Min/Max) gehört ebenfalls
-  dazu und kommt später als ⚙-Details an die Farbzeile (geplant); bis
-  dahin bleibt Range in Color Scale.
+- Start- und Endfarbe sowie Range (Min/Max) der Farbskala sind
+  Datenfarbe: Range steht als ⚙ an der Farbzeile (Slot `details`). Das
+  Element Color Scale regelt nur Lage und Labels der Skala.
 - `PaletteControl` ist ein `SelectControl` mit `renderOption`: Button
   und Menü zeigen jede Palette als Farbstreifen mit Namen; Farben ohne
   passende Palette zeigen „Custom“.
@@ -717,91 +737,113 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]   Gra
 
 **Regel 3: Details-Popover statt Einrückung**
 
-- ⚙ öffnet ein kleines Popover neben der Zeile, verschachtelt über den
-  bestehenden `Popover` (`FloatingTree`); höchstens eine Ebene tief,
-  schließt mit Escape und Klick daneben.
-- Ersetzt `.format-widget-subproperties` und die Einrückung ganz.
+- ⚙ (`DetailsPopover`, siehe 9h) öffnet ein kleines Popover neben der
+  Zeile, verschachtelt über den bestehenden `Popover` (`FloatingTree`);
+  höchstens eine Ebene tief, schließt mit Escape und Klick daneben.
+- Es hat `.format-widget-subproperties` und die Einrückung ganz
+  ersetzt.
 
 **Regel 4: Dichte und Ruhe**
 
-- Zeilen ca. 28–32 px statt 36 px, Schrift 11–12 px, einheitlich.
-- Felder ohne Rahmen, feine Kante erst bei Hover und Fokus.
+- Zeilen 28 px (`--control-height-sm`), Schrift 12 px, einheitlich; die
+  Menüs der Selects ebenso, ohne Abstand zwischen den Einträgen.
+- Felder ohne Rahmen, feine Kante erst bei Hover und Fokus: In
+  `.control-row-compact` ist `--field-border-color` transparent, und
+  Felder, Selects, Segmented, `Button` und `IconButton` folgen dieser
+  Variable.
 - Glass nur für die Popover-Fläche, innen flach und ruhig.
 - Kurze Übergänge (ca. 100–150 ms).
-- Zahlenfelder: Pfeile ±1, Shift ±10, Enter übernimmt, Escape verwirft.
+- Zahlenfelder: Pfeile ±1 Schritt, Shift ±10 Schritte, Enter übernimmt,
+  Escape verwirft.
 
 **Regel 5: Icons und Barrierefreiheit**
 
-- Icons aus `lucide-react`, in Feldern einheitlich 14 px.
+- Icons aus `lucide-react`, in Feldern einheitlich 14 px; eigene Icons
+  über `createLucideIcon` im selben Strich (`charts/chartIcons.ts`).
+- Ein Icon steht nur allein, wenn es das Ergebnis zeigt (Ausrichtung,
+  Label-Positionen, `PositionGrid`, Strichstil, Scatter-Symbole) oder
+  eine Konvention ist (B/I, Auge, ＋/−, ⚙, Pinsel). Sonst Icon und Wort
+  oder nur das Wort; Verhalten bekommt immer ein Wort (Scroll, Slider,
+  Off, Item, Axis).
+- Ein Icon hat nie zwei Bedeutungen, und eine Bedeutung hat immer
+  dasselbe Icon, z. B. ⤓ ⤒ für Min und Max bei Size range und
+  Aggregationen, ⌜ für den Radius von Balken und Container.
 - Jedes Icon ohne Text bekommt `title` und `aria-label` (z. B. „Stroke
   width“, „Italic“, „Advanced number format“); ohne Text-Label sind
   Tooltips die einzige Erklärung.
+- Icon-Check vor jedem Slice-Ende: Würde ein neuer Nutzer das Icon ohne
+  Tooltip erraten? Wenn nicht, bekommt es ein Wort.
 
-**Komponenten** (erweitern vor neu bauen):
+**Komponenten** (erweitert statt neu gebaut):
 
-| Bedarf                                  | Umsetzung                                                     |
-| --------------------------------------- | ------------------------------------------------------------- |
-| Zahlenfeld mit Icon und Einheit im Feld | `ScrubbableNumber` mit neuen Props `icon` und `unit`          |
-| Farbzeile                               | neu: `PaintControl` (nutzt `ColorControl` bzw. dessen Picker) |
-| Icon-Toggle                             | `IconButton` mit `isActive` (vorhanden)                       |
-| zwei Felder pro Zeile, Zeile ohne Label | `ControlRow` mit optionalem `label` und Zwei-Spalten-Variante |
-| Header-Aktionen Auge und ＋ / −         | Gruppen-Überschrift (`FormatWidget`) erweitern                |
-| Details-Popover hinter ⚙                | kleine Hülle um den bestehenden `Popover`                     |
-| 3×3-Raster                              | neu: `PositionGrid` in `shared/ui`                            |
+| Bedarf                                  | Umsetzung                                               |
+| --------------------------------------- | ------------------------------------------------------- |
+| Zahlenfeld mit Icon, Einheit und Auto   | `ScrubbableNumber` mit `icon`, `unit` und `onAuto` (8)  |
+| Winkel                                  | `RotationDial`: `ScrubbableNumber` mit Nadel als Icon   |
+| Farbzeile                               | `PaintControl` mit `ColorField` (9q)                    |
+| Icon-Toggle                             | `IconButton` mit `isActive`                             |
+| Toggle mit Icon und Wort                | `Button` mit `isActive` und `aria-pressed` (Zoom)       |
+| Icon und Wort einer Option              | `OptionItem.icon`, gezeigt von `OptionContent` (9s)     |
+| zwei Felder pro Zeile, Zeile ohne Label | `ControlRow` ohne `label`                               |
+| Auge, ＋ und Pinsel in der Überschrift  | `FormatWidget` mit `visibility`, `onAdd` und `onFormat` |
+| Details hinter ⚙                        | `DetailsPopover` (9h)                                   |
+| 3×3-Raster                              | `PositionGrid` (9r)                                     |
 
-Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt wird kompakt,
-dadurch wirkt jeder Schritt auf alle Elemente gleichzeitig.
+Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt ist kompakt,
+dadurch wirkt eine Änderung auf alle Elemente gleichzeitig.
 
 ## 7. Control Mapping
+
+### Visual Visibility
+
+Verwenden:
+
+Auge in der Gruppen-Überschrift bzw. im Popover-Kopf
+(`FormatVisibility`).
+
+Beispiele:
+
+- Gridlines, Achsenlinie
+- Area, Points
+- Legend, Data Labels, Chart Title, X/Y Axis, Tooltip
 
 ### Boolean Feature
 
 Verwenden:
 
-`Toggle`
+- eine Sache mit Art und Parametern: ＋ in der Überschrift, − in der
+  Zeile (Effect, Animation)
+- mehrere unabhängige Wege eines Verhaltens: Toggles mit Icon und Wort
+  (`Button` mit `isActive`), alle aus heißt aus (Zoom: Scroll | Slider)
+- eine einzelne An/Aus-Option in einer Zeile: Icon-Toggle (`IconButton`
+  mit `isActive`, z. B. Italic)
 
-Beispiele:
-
-- Area Fill Enabled
-- Border Enabled
-
-### Visual Visibility
-
-Bevorzugt:
-
-`Icon Toggle Button`
-
-Beispiele:
-
-- Grid
-- Legend
-- Labels
-- Chart Title
-- X/Y Axis
-- Tooltip
-- Zoom
-- Animation
+Einen `Toggle` (Schalter) gibt es nicht mehr; er wurde in 3.4 entfernt.
 
 ### Wenige exklusive Optionen
 
 Verwenden:
 
-`SegmentedControl`
+`SegmentedControl`, ohne Nachbarfeld über die volle Breite der Zeile,
+jede Option mit Icon und Wort (`OptionItem.icon`); nur Icons, die das
+Ergebnis zeigen, stehen allein.
 
 Beispiele:
 
 ```text
-Linear | Log
-Vertical | Horizontal
-Single | Multiple
+Off | Multiple | Single
 Item | Axis
+Auto | Always
+Straight | Smooth
+Top | Right | Inside
 ```
 
 ### Viele Optionen
 
 Verwenden:
 
-`Select`
+`SelectControl`; Optionen mit `icon` zeigen es im Menü und im Button
+(z. B. Σ Sum, x̄ Mean).
 
 ### Color
 
@@ -817,47 +859,49 @@ Darstellungsvarianten:
 - `compact` zeigt einen einzelnen Farbauslöser und öffnet Presets,
   Picker und HEX-Eingabe in einem Popover.
 
+In kompakten Zeilen zeigt `ColorField` den kompakten `ColorControl` mit
+Hex-Wert bzw. Preset-Namen, mit Deckkraft als `PaintControl` (siehe
+9q).
+
 `GradientControl` kombiniert zwei kompakte ColorControls mit einer
 Vorschau des Verlaufs. Es wird für Low-/High-Farben kontinuierlicher
-Farbskalen verwendet und bietet die Daten-Reihe Chart 1–5. Die eigentliche Farbauswahl bleibt vollständig
-im zentralen ColorControl.
+Farbskalen verwendet und bietet die Daten-Reihe Chart 1–5. Die
+eigentliche Farbauswahl bleibt vollständig im zentralen ColorControl.
 
 ### Offener numerischer Wert
 
 Verwenden:
 
-`ScrubbableNumber`
+`ScrubbableNumber` mit Icon und Einheit im Feld (siehe 8)
 
 Beispiele:
 
-- Font Size
-- Item Width
-- Item Height
-- Min
-- Max
+- Font Size, Stroke Width, Bar Width, Radius
+- Gap, Padding
+- Tick Count und Decimals mit Auto (`onAuto`)
 
 ### Begrenzter visueller Wert
 
 Verwenden:
 
-`Slider + ScrubbableNumber`
+ebenfalls `ScrubbableNumber`, begrenzt über `min` und `max`; Winkel als
+`RotationDial`. Im Popover gibt es keine Slider mehr (`Slider` wurde in
+3.4 entfernt).
 
 Beispiele:
 
-- Opacity
-- Point Size
-- Glow Intensity
+- Opacity (%), Point Size, Glow Intensity
+- Animation Duration (ms)
+- Rotation der Achsenlabels (°)
 
 ### Numerisches Intervall
 
 Verwenden:
 
-`Range Slider + Inputs`
-
-Nur verwenden, wenn tatsächlich ein Min-/Max-Intervall editiert wird.
-Umgesetzt als `RangeSlider`: mit Zahlenfeldern links und rechts (Size
-range der Scatter-Punkte), mit `formatValue` beschriftet (Table
-Filter).
+- im Format-Popover ein Zahlenpaar in einer Zeile (Size range: ⤓ min |
+  ⤒ max), die Grenzen gegenseitig begrenzt
+- `RangeSlider` mit Zahlenfeldern, wenn das Intervall über einer Skala
+  gewählt wird, mit `formatValue` beschriftet (Table Filter)
 
 ### Field
 
@@ -887,29 +931,29 @@ folgenden Patterns passt.
 
 Status: `implementiert`, `teilweise`, `geplant`.
 
-| Pattern                      | Beispiel in Cevyn               | Nutzen                                           | Status                                                       |
-| ---------------------------- | ------------------------------- | ------------------------------------------------ | ------------------------------------------------------------ |
-| Scrubbable Number            | Font Size, Radius, Opacity      | Wert direkt ziehen statt eintippen               | implementiert (`ScrubbableNumber`)                           |
-| Modifier Scrubbing           | Shift = grob, Alt = fein        | präzise Einstellung                              | teilweise (Shift rastet `RotationDial` in 15°-Schritten ein) |
-| Visual Position Picker       | Label Position                  | 3×3-Feld statt Dropdown                          | geplant                                                      |
-| XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                      |
-| Rotation Dial                | Axis Label Rotation             | drehen statt Gradzahl eintippen                  | implementiert (`RotationDial`)                               |
-| Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)        |
-| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | implementiert (`EncodingDropSlots`)                          |
-| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)              |
-| Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                      |
-| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | teilweise (`FontWeightControl`, `AlignmentControl`)          |
-| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)                |
-| Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                      |
-| Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                      |
-| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`, Format-Popover am Chart)          |
-| Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                      |
-| Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                      |
-| Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (automatische Achsentitel, Tick Count Auto/Custom) |
+| Pattern                      | Beispiel in Cevyn               | Nutzen                                           | Status                                                     |
+| ---------------------------- | ------------------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| Scrubbable Number            | Font Size, Radius, Opacity      | Wert direkt ziehen statt eintippen               | implementiert (`ScrubbableNumber`)                         |
+| Modifier Scrubbing           | Shift = grob, Alt = fein        | präzise Einstellung                              | teilweise (Shift ×10 bei den Pfeiltasten)                  |
+| Visual Position Picker       | Legend, Label Position          | 3×3-Feld bzw. Icons statt Dropdown               | implementiert (`PositionGrid`, Label-Positionen mit Icons) |
+| XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                    |
+| Rotation Dial                | Axis Label Rotation             | Winkel als Nadel sehen und ziehen                | implementiert (`RotationDial`, Feld mit Nadel)             |
+| Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)      |
+| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | implementiert (`EncodingDropSlots`)                        |
+| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)            |
+| Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                    |
+| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | implementiert (Icon-Gruppen, Paletten mit Farbstreifen)    |
+| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)              |
+| Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                    |
+| Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                    |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`, Format-Popover am Chart)        |
+| Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                    |
+| Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                    |
+| Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (Achsentitel, `onAuto` für Ticks und Decimals)   |
 
 Regeln:
 
-- Ein Pattern wird als wiederverwendbares Control in `components/ui`
+- Ein Pattern wird als wiederverwendbares Control in `shared/ui`
   gebaut und nicht als One-off in einem Widget.
 - Jedes visuelle Control bietet zusätzlich eine präzise Eingabe oder
   Anzeige des Werts.
@@ -920,30 +964,26 @@ Regeln:
 
 `ScrubbableNumber` ist ein wiederverwendbares numerisches Control.
 
-Es eignet sich insbesondere für offene oder datenabhängige numerische
-Werte.
-
-Bereits etablierter Use Case:
+Es ist das eine Zahlenfeld im Format-Popover, für offene und für
+begrenzte Werte:
 
 ```text
-Labels
-→ Font Size
-→ ScrubbableNumber
+[═ 2 px     ]   Icon im Feld, Wert, Einheit
+[⌁ Auto     ]   ohne Wert: Auto
 ```
 
-Weitere geeignete Fälle:
-
-- Axis Min / Max
-- Legend Font Size
-- Legend Item Dimensions
-- Padding
-- Offsets
-
-Ein Slider soll nicht automatisch durch ScrubbableNumber ersetzt
-werden.
-
-Für stark visuelle, begrenzte Werte kann die Kombination aus Slider
-und ScrubbableNumber besser sein.
+- `icon` steht links im Feld und ist der Griff: seitlich ziehen ändert
+  den Wert (`pixelsPerStep`, Standard 6 px je Schritt); ohne `icon`
+  zeigt das Feld einen Griff.
+- `unit` steht hinter dem Wert, z. B. `px`, `%`, `ms` oder `°`.
+- `min`, `max` und `step` begrenzen ziehen, tippen und Pfeiltasten
+  gleich; Pfeile ±1 Schritt, Shift ±10 Schritte, Enter übernimmt,
+  Escape verwirft den Entwurf.
+- `onAuto` erlaubt einen automatischen Wert: `value` ist dann `null`,
+  das leere Feld zeigt „Auto“, Leeren ruft `onAuto`, Ziehen oder Pfeile
+  starten beim Minimum (Tick Count der Achsenlabels, Decimals).
+- `RotationDial` ist ein `ScrubbableNumber` mit einer Nadel als Icon,
+  die den Winkel zeigt.
 
 ## 9. ColorControl
 
@@ -1007,7 +1047,8 @@ Custom Picker kann über `react-colorful` umgesetzt werden.
 
 Die Cevyn-Oberfläche um den Picker bleibt eigenes UI.
 
-Opacity wird zunächst getrennt von Color behandelt.
+Die Deckkraft ist kein Teil von `ColorValue`; sie steht in der
+Farbzeile neben dem Farbfeld (`PaintControl`).
 
 Eigene Presets:
 
@@ -1018,7 +1059,9 @@ Container-Hintergrund. Der Typ der Namen ergibt sich aus `presets`
 (`ColorPreset<TPreset>`), `onChange` liefert dann `ColorValue | TPreset`.
 Solche Presets verwenden im Active State den Electric-Blue-Ring und
 eine feine Kante, damit dunkle oder transparente Flächen sichtbar
-bleiben.
+bleiben. Auch der Auslöser der Variante `compact` zeigt die Fläche des
+gewählten Presets (`--swatch-fill`), z. B. Glass im Feld des
+Container-Hintergrunds.
 
 ## 9a. AlignmentControl
 
@@ -1146,17 +1189,17 @@ und `onValuesChange`.
 `max` mit zwei nativen Range-Inputs auf einer Spur; die Griffe können
 sich nicht überholen.
 
-- Optik wie `Slider`: Thumb in `--color-control-handle` mit
-  Accent-Rand, nur der gewählte Bereich in Electric Blue.
+- Thumb in `--color-control-handle` mit Accent-Rand, nur der gewählte
+  Bereich in Electric Blue.
 - Ohne `formatValue` stehen links und rechts der Spur zwei
-  `NumberInput`s für Start und Ende (wie beim `Slider`); sie begrenzen
-  sich gegenseitig wie die Griffe.
+  `NumberInput`s für Start und Ende; sie begrenzen sich gegenseitig wie
+  die Griffe.
 - Mit `formatValue` stehen Start und Ende formatiert unter der Spur:
   Aufrufer übergeben Positionen (z. B. Indizes von Datums- oder
   Werteschritten), für die ein Zahlenfeld falsch wäre.
-- `NumberInput` (`shared/ui`) ist das kleine Zahlenfeld neben `Slider`
-  und `RangeSlider`: Entwurf bis Enter oder Blur, dann auf `min` und
-  `max` begrenzt.
+- `NumberInput` (`shared/ui`) ist das kleine Zahlenfeld des
+  `RangeSlider`: Entwurf bis Enter oder Blur, dann auf `min` und `max`
+  begrenzt. Genutzt wird es heute nur im Table Filter.
 
 ## 9h. Popover
 
@@ -1172,17 +1215,24 @@ Klick daneben):
   `title` ist ein Slot (`ReactNode`), z. B. Icon plus `SelectControl`
   im Format-Popover. Ohne `title` bleibt das Popover kopflos
   (Dropdowns, Farbwähler). `actions` nimmt Controls vor dem
-  Schließen-Button auf, z. B. den Element-Schalter des Format-Popovers.
+  Schließen-Button auf, z. B. das Auge des Format-Popovers.
 - `SelectControl` hat eine `variant`: `field` (Default, Feld mit
   Rahmen, Menü so breit wie das Feld) und `title` (liest sich als
   Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover in
-  Akzentfarbe, Menü so breit wie nötig).
+  Akzentfarbe, Menü so breit wie nötig). Das Menü (`OptionsMenu`) hat
+  28-px-Zeilen ohne Abstand mit 12-px-Schrift; Optionen zeigen Icon und
+  Wort (`OptionContent`), die gewählte einen Haken.
+- `DetailsPopover` ist die Hülle für das ⚙ am Zeilenende: ein
+  `IconButton` (`Settings2`, `sm`, `ghost`, gedrückt solange offen,
+  benannt „Advanced …“) öffnet ein kleines Popover mit Titel und den
+  seltenen Zeilen, z. B. Notation und Prefix | Suffix des Zahlenformats
+  oder Range der Farbskala. Im Format-Popover ist es verschachtelt.
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
   ein Kind-Popover (z. B. Farbwähler im Format-Popover) schließt das
   Eltern-Popover nicht.
 - `keepOpenOn` (CSS-Selektor) nimmt Bereiche außerhalb vom Schließen
-  per Klick aus, z. B. einen Toggle-Button, der das Popover selbst
-  schließt. Floating UI schließt sonst schon bei `pointerdown`, und der
+  per Klick aus, z. B. den Format-Pinsel der Canvas-Toolbar, der das
+  Popover selbst schließt. Floating UI schließt sonst schon bei `pointerdown`, und der
   folgende Klick würde es wieder öffnen.
 - Das Format-Popover scrollt nicht als Ganzes: Header und Glass-Kante
   (`.glass::before`) bleiben stehen, nur der Inhalt scrollt in
@@ -1221,17 +1271,14 @@ Props, nicht über Sonderkomponenten:
 
 `TextStyleControls` ist der eine Baustein für das Aussehen eines
 Textes (`TextStyle`). Er gibt Zeilen zurück, keinen Rahmen; das Widget
-setzt seine eigenen Zeilen (Ausrichtung, Rotation, Position, Format)
-davor oder dahinter:
+setzt seine eigenen Zeilen davor oder dahinter:
 
-- Color (`ColorControl`), Size (`ScrubbableNumber`), Weight
-  (`FontWeightControl`), Style (`SegmentedControl` Normal/Italic mit
-  „A“-Vorschau)
+- Zeile 1: Size (`ScrubbableNumber`, Icon Aa, px) | Weight
+  (`FontWeightControl`, Icon-Gruppe) | Italic (Icon-Toggle)
+- Zeile 2: Color (`ColorField`) | Ausrichtung (`AlignmentControl`),
+  wenn das Element sie über `alignment` anbietet (Titel)
 - `label` benennt die Controls für Screenreader, z. B. „Legend text“
   → „Legend text color“
-- die Zeilen heißen „Color“, „Size“, „Weight“, „Style“; den Kontext gibt
-  die Gruppe. `rowLabelPrefix` („Title color“) hat seit 3.3 keinen
-  Nutzer mehr und entfällt mit dem Umbau in 3.4
 - `minFontSize`/`maxFontSize` begrenzen die Größe (Standard 9–28), z. B.
   11–20 für Titel im festen Header, 16–96 für den Card-Wert
 - `defaultColor` (Pflicht) ist die Farbe, die der Text bei neuen
@@ -1240,34 +1287,33 @@ davor oder dahinter:
   z. B. `TITLE_TEXT_STYLE.color`
 
 Keine Varianten über Flags: Was ein Element zusätzlich braucht, ist eine
-eigene Zeile im Widget.
+eigene Zeile im Widget oder ein optionaler Teil wie `alignment`.
 
 ## 9k. StrokeStyleControls
 
 `StrokeStyleControls` ist der Baustein für das Aussehen einer Linie oder
 eines Umrisses (`StrokeStyle`), nach demselben Muster wie
-`TextStyleControls`: Zeilen statt Rahmen, `label` für Screenreader,
-`rowLabelPrefix` für die sichtbaren Zeilennamen (`getRowLabel`, von
-beiden geteilt).
+`TextStyleControls`: Zeilen statt Rahmen, `label` für Screenreader.
 
-- Width (`ScrubbableNumber`, `minWidth` bis `maxWidth`, Standard 0–8;
-  0 heißt kein Strich), Style (`SegmentedControl` Solid/Dashed/Dotted
-  mit `.line-style-preview`), Color (`ColorControl`), Opacity (`Slider`)
+- Zeile 1: Width (`ScrubbableNumber`, Icon ═, px, `minWidth` bis
+  `maxWidth`, Standard 0–8; 0 heißt kein Strich) | Style (Icon-Gruppe
+  Solid/Dashed/Dotted mit `.line-style-preview`)
+- Zeile 2: Farbzeile (`PaintControl`, siehe 9q) mit Color und Opacity,
+  dahinter ⚙, wenn `details` gegeben ist
 - generisch über den Wert: Ein `StrokeStyle` hat eine eigene Farbe, ein
-  `SeriesStrokeStyle` nicht, weil sie aus der Serie kommt (Palette oder
-  `appearance.color`); ohne Farbe entfällt die Color-Zeile
-  (`hasStrokeColor`), `onChange` liefert denselben Typ zurück
+  `SeriesStrokeStyle` nicht, weil sie aus der Serie kommt
+  (`hasStrokeColor`); dann zeigt die Farbzeile `seriesColor`, das Feld
+  der Datenfarbe, oder nur die Deckkraft. `onChange` liefert denselben
+  Typ zurück
 - `defaultColor` wie bei `TextStyleControls`, hier optional, weil
-  Serienlinien keine Color-Zeile haben; die Color-Zeile erscheint nur
-  mit Farbe und `defaultColor`
+  Serienlinien keine eigene Farbe haben
 - genutzt vom Rahmen im `ContainerWidget` (Gruppe Border), von
-  Achsenlinie und Gridlines im `AxisStrokeWidget` (Breite 1–4, mit
-  Schalter in der Überschrift; Titel, `label` und `defaultColor` per
-  Prop, damit ein Widget beide Linien einer Achse bedient), von
-  Linien-Marks (Gruppe Line, Breite 1–8, ohne Farbe) und den Rahmen der
-  Balken, Scatter-Punkte und Pie-Segmente (Gruppe Border,
-  `defaultColor` aus `CHART_MARK_BORDER`) in `markGroups.tsx`; später
-  Tables
+  Achsenlinie und Gridlines im `AxisStrokeWidget` (Breite 1–4, Auge in
+  der Überschrift; Titel, `label` und `defaultColor` per Prop, damit ein
+  Widget beide Linien einer Achse bedient), von Linien-Marks (Gruppe
+  Line mit der Datenfarbe, Breite 1–8) und den Rahmen der Balken,
+  Scatter-Punkte und Pie-Segmente (Gruppe Border, `defaultColor` aus
+  `CHART_MARK_BORDER`) in `markGroups.tsx`; später Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -1398,57 +1444,64 @@ Card
 ## 9m. NumberFormatControls
 
 `NumberFormatControls` ist der Baustein für das Zahlenformat eines Werts
-(`NumberFormat`), nach demselben Muster: Zeilen statt Rahmen, `label`
-für Screenreader („Value format“, „Y Axis currency“).
+(`NumberFormat`), nach demselben Muster: eine Zeile statt Rahmen,
+`label` für Screenreader („Value format“).
 
-- Format (`SelectControl` Auto/Number/Percent/Currency); bei Auto
-  entscheidet der Ort, der den Wert zeigt, daher erscheint dann nur
-  diese Zeile
-- bei explizitem Stil eingerückt (`.format-widget-subproperties`):
-  Currency (`SelectControl`, nur bei Currency), Decimals
-  (`SegmentedControl` Auto/Fixed, wie die Ticks der Achse) mit Places
-  (`ScrubbableNumber` 0–6, Start bei 0), Compact (`Toggle`), Prefix und
-  Suffix (`TextInput`)
+```text
+[ Auto ▾      ]
+[ Euro ▾      ]  [.0 Auto    ]   ⚙
+```
+
+- Format-Select mit Auto, Number, Percent und den Währungen; bei Auto
+  entscheidet der Ort, der den Wert zeigt, daher steht dann nur das
+  Select in der Zeile
+- bei explizitem Stil: Decimals (`ScrubbableNumber` 0–6 mit `onAuto`,
+  leer heißt Auto) und ⚙ (`DetailsPopover`) mit Notation
+  (Standard | Compact) und Prefix | Suffix (`TextInput`)
+- an Achsenlabels zusätzlich Date im Select (`isDate`, `onDate`) statt
+  eines eigenen Typ-Selects; bei Date entfallen Decimals und ⚙
 - genutzt vom Card-Wert im `CardValueWidget`, von der Achsenbeschriftung
-  im `AxisWidget` (nur bei Typ Number) und von den Datenlabels im
-  `LabelsWidget` (nicht bei Pie und Donut, die Anteile zeigen)
+  im `AxisWidget` und von den Datenlabels im `LabelsWidget` (nicht bei
+  Pie und Donut, die Anteile zeigen)
 
 ## 9n. FillControls
 
 `FillControls` ist der Baustein für die Füllung einer Fläche (`Fill`),
-nach demselben Muster wie `StrokeStyleControls`: Zeilen statt Rahmen,
-`label` für Screenreader („Area fill color“).
+nach demselben Muster wie `StrokeStyleControls`: eine Farbzeile
+(`PaintControl`, siehe 9q) statt Rahmen, `label` für Screenreader
+(„Area fill color“).
 
-- Color (`ColorControl` mit Chart 1–5), Opacity (`Slider` 0.05–1)
+- Color (`ColorField` mit Chart 1–5) und Opacity (5–100 %), dahinter ⚙,
+  wenn `details` gegeben ist (Range der Farbskala)
 - generisch über den Wert: Ein `Fill` hat eine eigene Farbe, ein
-  `SeriesFill` nicht, weil sie aus der Serie kommt; ohne Farbe entfällt
-  die Color-Zeile (`hasFillColor`)
-- `kind` ist heute immer `solid` und hat keine Zeile; mit einer zweiten
-  Variante (Verlauf, Muster) kommt eine Zeile „Type“ dazu
-- genutzt von der Fläche unter Linien (Gruppe Area mit Schalter), den
-  Balken, den Scatter-Punkten und den Pie-Segmenten (Gruppe Fill) in
-  `markGroups.tsx`; alle sind `SeriesFill` und zeigen nur Opacity
+  `SeriesFill` nicht, weil sie aus der Serie kommt (`hasFillColor`);
+  dann zeigt die Zeile `seriesColor`, das Feld der Datenfarbe, oder nur
+  die Deckkraft
+- `kind` ist heute immer `solid` und hat keine Zeile; Verläufe kommen
+  mit 3.5 als Icon-Gruppe in der Farbzeile
+- genutzt von der Fläche unter Linien (Gruppe Area mit Auge), den
+  Balken, den Scatter-Punkten und den Pie-Segmenten (Gruppe Fill mit der
+  Datenfarbe) in `markGroups.tsx`
 - bei Balken, Punkten und Segmenten ist die Deckkraft die des ganzen
   Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen und
   Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
 
 ## 9o. EffectControls
 
-`EffectControls` ist der Baustein für den Effekt einer Mark (`Effect`),
-nach demselben Muster wie `FillControls`: Zeilen statt Rahmen, `label`
-für Screenreader („Line effect“, „Bar glow intensity“).
+`EffectControls` ist die Zeile des Effekts einer Mark (`Effect`):
+`label` für Screenreader („Bar glow intensity“).
 
-- Type (`SegmentedControl` None/Glow); ein `SegmentedControl` statt
-  `Toggle`, weil `kind` eine Auswahl von Varianten ist und ein späterer
-  Schatten als dritte Option dazukommt
-- bei Glow eingerückt (`.format-widget-subproperties`): Intensity
-  (`ScrubbableNumber` für `blur`, 1–40, Start bei `DEFAULT_GLOW_BLUR`
-  = 12)
-- ein erneuter Klick auf die aktive Variante ändert nichts, damit die
-  Intensität erhalten bleibt
-- keine Color-Zeile, weil Glow die Farbe der Mark nimmt
+- ohne Effekt zeigt die Gruppe Effect nur ihre Überschrift mit ＋, das
+  einen Glow anlegt (`createEffect('glow')`, `blur` 12)
+- mit Effekt: Art (`SelectControl`, heute nur Glow) | Intensity
+  (`ScrubbableNumber` für `blur`, Icon ◌, 1–40) | − (entfernt den
+  Effekt, `kind: 'none'`)
+- ein Effekt pro Mark, weil ECharts je Mark nur einen Schatten zeichnet;
+  ein späterer versetzter Schatten wird eine weitere Art im Select
+- kein Auge, weil `Effect` keinen ausgeblendeten Zustand kennt, und
+  keine Color-Zeile, weil Glow die Farbe der Mark nimmt
 - genutzt von Linien, Balken, Scatter-Punkten und Pie-Segmenten in der
-  Gruppe Effect der Marks, jeweils nach Fill und Stroke
+  Gruppe Effect der Marks
 - Scatter zeichnet den Glow nur bis 500 Punkte (`MAX_GLOW_POINTS` im
   Adapter), weil jeder Punkt seinen eigenen Schatten weichzeichnet;
   darüber bleibt die Einstellung erhalten, ohne zu wirken, und das
@@ -1460,18 +1513,87 @@ für Screenreader („Line effect“, „Bar glow intensity“).
 (`Layout`), nach demselben Muster wie die übrigen Bausteine: Zeilen
 statt Rahmen, `label` für Screenreader („Legend position“).
 
-- Position (`SegmentedControl`), Orientation (Icons vertikal und
-  horizontal), Alignment (`AlignmentControl`), Gap und Padding
-  (`ScrubbableNumber`, Schritt 2, Grenzen über `maxGap` und
-  `maxPadding`)
-- generisch über den Wert: Es erscheinen nur die Zeilen, deren Felder
-  das Layout hat; der Titel zeigt nur Alignment, die Legende Position,
-  Alignment und Gap
-- `positions` schränkt die Positionen ein (Standard: die vier Seiten);
-  Seiten erscheinen als Pfeile (`.layout-position-control`), sobald
-  eine Position keine Seite ist (Labels „Inside“), zeigt die ganze Zeile
-  Text
+- je zwei Controls in einer kompakten Zeile (`pairControls`): Position,
+  Orientation (Pfeil-Icons), Alignment (`AlignmentControl`), Gap (Icon
+  `Space`) und Padding (Icon `Fullscreen`; beide `ScrubbableNumber`,
+  Schritt 2, Grenzen über `maxGap` und `maxPadding`)
+- generisch über den Wert: Es erscheinen nur die Controls, deren Felder
+  das Layout hat; der Container zeigt nur Padding, die Datenlabels nur
+  die Position
+- ein Layout mit Seite und Alignment, z. B. die Legende, zeigt beides
+  in einem `PositionGrid` (siehe 9r)
+- `positions` schränkt die Positionen ein (Standard: die vier Seiten).
+  Seiten erscheinen als Pfeile (`.layout-position-control`); Positionen
+  mit eigenem `icon`, z. B. die `labelPositions` der Registry, zeigen
+  Icon und Wort; eine einzige Position braucht kein Control
 - steht im Popover immer in der Gruppe Layout
+
+## 9q. PaintControl und ColorField
+
+`ColorField` ist das Farbfeld einer kompakten Zeile (`.field`
+`.color-field`): links das Swatch des kompakten `ColorControl`, das den
+Farbwähler mit den Farben des Einsatzorts öffnet, rechts der Hex-Wert
+einer eigenen Farbe (direkt editierbar) oder der Name ihres Presets
+(„Default“, „Chart 2“, „Glass“).
+
+- generisch über benannte Presets wie `ColorControl`
+  (`ColorPreset<TPreset>`), damit auch Flächen ohne Farbe wählbar sind,
+  z. B. der Container-Hintergrund (Surface, Glass, Blue, Violet)
+- genutzt von `TextStyleControls`, `PaintControl`, der Datenfarbe
+  (`getDataColorField`) und dem Container-Hintergrund
+
+`PaintControl` ist die Farbzeile eines Fills oder Strokes: Farbfeld |
+Deckkraft (`ScrubbableNumber`, Icon ◐, %) | optional ⚙ (`details`).
+
+- `color` ist die eigene Farbe mit ihren Presets; ein Serien-Paint hat
+  keine und zeigt stattdessen `seriesColor`, das Feld der Datenfarbe,
+  oder nur die Deckkraft
+- `FillControls` und `StrokeStyleControls` bauen ihre Farbzeile damit;
+  der Container-Hintergrund nutzt bis 3.5 nur `ColorField`, weil
+  `ObjectBackground` keine Deckkraft hat
+
+`.field` (`styles/field.css`) ist die gemeinsame Fläche der Felder:
+Pill-Form, Rahmen über `--field-border-color` (in kompakten Zeilen
+transparent), Akzent-Kante bei Hover und Fokus.
+
+## 9r. PositionGrid
+
+`PositionGrid` wählt Seite und Alignment eines Elements in einem
+3×3-Raster, ohne Formänderung des `Layout`:
+
+```text
+[↖] [↑] [↗]    top: start | center | end
+[←] [ ] [→]    left | (Plot, deaktiviert) | right
+[↙] [↓] [↘]    bottom: start | center | end
+```
+
+- jede Zelle ist ein Button mit Namen („Top left“) und zeigt, wo das
+  Element sitzt; die Mitte steht für den Plot und ist deaktiviert
+- links und rechts nur mittig, weil die Legende dort vertikal läuft
+- genutzt von der Legende über `LayoutControls`; die Farbskala folgt
+  mit 3.6
+
+## 9s. Optionen mit Icons
+
+`OptionItem` (`OptionsMenu.tsx`) ist eine Option von Select, Menü und
+Icon-Gruppe: `label`, `value` und optional `icon` (`LucideIcon`).
+
+- `OptionContent` zeigt Icon und Wort einer Option, gleich in
+  `SegmentedControl`, `OptionsMenu` und im Button von `SelectControl`;
+  lange Wörter enden mit „…“, das Icon schrumpft nicht
+- `renderOption` ersetzt die Darstellung, z. B. nur ein Icon, das das
+  Ergebnis zeigt, oder die Paletten-Vorschau; gibt `renderOption` in
+  einer Icon-Gruppe `null` zurück, bleibt es bei Icon und Wort
+- eigene Icons entstehen mit `createLucideIcon` in
+  `charts/chartIcons.ts`, im Strich von Lucide auf einer 16-px-Fläche:
+  die Label-Positionen je Mark (`BarLabelTop`, `PointLabelRight`, …) und
+  x̄ bzw. x̃ für Mean und Median (`XBar`, `XTilde`)
+- Aggregationen tragen ihr Icon an einer Stelle (`AGGREGATION_ICONS`
+  neben `AGGREGATION_LABELS` in `charts/aggregations.ts`): Σ Sum, x̄
+  Mean, x̃ Median, ⤓ Min, ⤒ Max, # Count; `getAggregationOptions`
+  liefert sie für Card und Build Panel
+- weitere Aggregationen folgen einem System aus Grundzeichen und Zusatz,
+  z. B. ↗ für kumuliert (Cumsum als Σ mit ↗, Π für Product)
 
 ## 10. Legend
 
@@ -1491,10 +1613,10 @@ Legend und ihr interaktives Verhalten gehören zum Element „Legend“ im
 Format-Popover:
 
 ```text
-Legend                [on]
-├── Layout       (Position, Alignment, Gap)
+Legend                👁
+├── Layout       (PositionGrid, Gap)
 ├── Text
-└── Interaction  [on] (Selection Mode)
+└── Interaction  [ Off | Multiple | Single ]
 ```
 
 Die Legend scrollt statt überzulaufen: `overflow` `auto` und `scroll`
@@ -1503,10 +1625,11 @@ Inactive-Farbe, `plain` eine einfache Legend. Pie und Donut rücken zur
 Gegenseite einer sichtbaren Legend (`getPieCenter`); ihre Legend steht
 per Default rechts, Prozent-Labels innerhalb der Segmente.
 
-Die Legend Interaction erscheint nur bei einer relevanten Legend. Der
-Eye-Button aktiviert oder deaktiviert die Auswahl, ohne die sichtbare
-Legend auszublenden. Als Auswahlmodi stehen `Multiple` und `Single`
-zur Verfügung.
+Die Legend Interaction erscheint nur bei einer relevanten Legend. Sie
+legt fest, was ein Klick auf einen Eintrag tut: nichts (Off,
+`enabled: false`), Serien ein- und ausblenden (Multiple) oder nur eine
+Serie zeigen (Single), wie `selectedMode` in ECharts. Bei Off ist die
+Legende keine Format-Region (siehe `TODO.md`).
 
 ## 11. Color Scale
 
@@ -1532,12 +1655,11 @@ ECharts `visualMap` ist ein Renderer-Detail.
 
 Im Cevyn UI heißt das Feature `Color Scale`.
 
-Das Element „Color Scale“ im Format-Popover hat seinen Schalter im
-Kopf und die Gruppen Range (Auto-/Custom-Minimum und -Maximum), Layout
-(Position links oder rechts, vertikal oder horizontal), Colors (Low-
-und High-Farbe über `GradientControl`) und Labels (Schalter für die
-Endlabels). Bei kontinuierlicher Farbe verweist die Gruppe Color der
-Marks mit „Color scale → Edit ›“ hierher.
+Das Element „Color Scale“ im Format-Popover hat sein Auge im Kopf und
+die Gruppen Layout (Position links oder rechts, vertikal oder
+horizontal) und Labels (Auge für die Endlabels). Start- und Endfarbe
+(`GradientControl`) und Range (⚙) stehen als Datenfarbe in der
+Farbzeile der Marks.
 
 ## 12. Chart Tooltips
 
@@ -1665,10 +1787,9 @@ Move und Resize rasten während des Drags live im Canvas-Grid ein.
 Der Container eines Objekts wird im Element „Chart“ bzw. „Card“ des
 Format-Popovers formatiert:
 
-- Background über `ColorControl` mit den Presets Surface (Default),
+- Background über `ColorField` mit den Presets Surface (Default),
   Glass, Blue und Violet sowie eigener Farbe;
-- Padding über `ScrubbableNumber`;
-- Radius über `Slider`;
+- Padding und Radius über `ScrubbableNumber` mit Icon und px;
 - Rahmen über `StrokeStyleControls` (Breite 0 heißt kein Rahmen).
 
 Alle Backgrounds bauen auf `.glass` auf (Lichtkante, Schatten) und
@@ -1718,9 +1839,9 @@ Labels der X- und Y-Achse, Legende, Color Scale):
   einen Rahmen in `--color-border-accent`.
 - Der Kopf ist die Navigation: Pinsel in `--color-accent`, daneben das
   aktuelle Element als `SelectControl` mit `variant="title"`, rechts das
-  X; dazwischen der Element-Schalter, wo es einen gibt.
-- Darunter stehen alle Gruppen des Elements untereinander, mit dem
-  Element-Schalter im Kopf (Aufbau und Reihenfolge siehe Abschnitt 6).
+  X; dazwischen das Auge, wo sich das Element ausblenden lässt.
+- Darunter stehen alle Gruppen des Elements untereinander (Aufbau und
+  Reihenfolge siehe Abschnitt 6).
   Verhalten ohne Element im Chart (z. B. Legend Selection Mode, Zoom)
   ist eine Gruppe des Elements, das es betrifft.
 - Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel,

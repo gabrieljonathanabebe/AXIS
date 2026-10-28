@@ -14,8 +14,7 @@ type ObjectTitleWidgetProps = {
 
 /**
  * Groups of an object title: its text and its text style with the
- * alignment. Whether the title shows is the element toggle in the popover
- * header.
+ * alignment. Whether the title shows is the eye in the popover header.
  */
 function ObjectTitleWidget({
   defaultTitle,

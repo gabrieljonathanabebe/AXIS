@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 
 type ControlRowProps = {
-  /** Name left of the controls; without it, the row is compact. */
   label?: string
   children: ReactNode
 }

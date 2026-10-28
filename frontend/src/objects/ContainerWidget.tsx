@@ -1,8 +1,10 @@
-import ColorControl from '../shared/ui/ColorControl'
+import { SquareRoundCorner } from 'lucide-react'
+
+import ColorField from '../shared/ui/ColorField'
 import ControlRow from '../shared/ui/ControlRow'
 import FormatWidget from '../shared/ui/FormatWidget'
 import LayoutControls from '../shared/ui/LayoutControls'
-import Slider from '../shared/ui/Slider'
+import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
 import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
 import { CONTAINER_BORDER } from './objectDefaults'
 
@@ -66,12 +68,14 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
         />
       </FormatWidget>
       <FormatWidget title="Shape">
-        <ControlRow label="Radius">
-          <Slider
+        <ControlRow>
+          <ScrubbableNumber
+            icon={<SquareRoundCorner size={14} />}
             label="Container radius"
-            min={0}
             max={32}
+            min={0}
             step={2}
+            unit="px"
             value={value.borderRadius}
             onValueChange={(borderRadius) => {
               onChange('borderRadius', borderRadius)
@@ -80,8 +84,8 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
         </ControlRow>
       </FormatWidget>
       <FormatWidget title="Background">
-        <ControlRow label="Color">
-          <ColorControl
+        <ControlRow>
+          <ColorField
             label="Container background"
             presets={backgroundPresets}
             value={toColorValue(value.background)}

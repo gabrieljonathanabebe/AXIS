@@ -18,7 +18,6 @@ type StrokeStyleControlsProps<TStroke extends SeriesStrokeStyle> = {
   label: string
   maxWidth?: number
   minWidth?: number
-  /** Field of the series color for a stroke without own color. */
   seriesColor?: ReactNode
   value: TStroke
   onChange: (value: TStroke) => void

@@ -10,7 +10,11 @@
   height: var(--control-height-sm);
   padding-inline: var(--space-3);
   font-size: var(--field-font-size, var(--font-size-sm));
-  border-color: var(--field-border-color, var(--color-border-subtle));
+}
+
+.select-control-button:disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .select-control-value {

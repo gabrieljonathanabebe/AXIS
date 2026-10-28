@@ -84,8 +84,9 @@ function pairControls(controls: ReactNode[]): ReactNode[][] {
  * element, two controls per row. Shows only the fields the layout has, e.g.
  * only padding for a container. A layout with a side and an alignment, e.g.
  * a legend, places both in a `PositionGrid`; other positions are an icon
- * group showing the icon of each option, by default arrows for sides. A
- * single position needs no control.
+ * group, with icon and word for positions with their own icon, e.g. of the
+ * data labels, and only the arrow for sides. A single position needs no
+ * control.
  */
 function LayoutControls<TLayout extends PartialLayout>({
   label,
@@ -114,14 +115,11 @@ function LayoutControls<TLayout extends PartialLayout>({
         label={`${label} position`}
         options={positions}
         renderOption={(option) => {
-          const PositionIcon =
-            option.icon ??
-            (isSide(option.value) ? sideIcons[option.value] : null)
-          return PositionIcon ? (
-            <PositionIcon aria-hidden="true" size={15} />
-          ) : (
-            option.label
-          )
+          if (option.icon || !isSide(option.value)) {
+            return null
+          }
+          const SideIcon = sideIcons[option.value]
+          return <SideIcon aria-hidden="true" size={15} />
         }}
         value={position}
         onValueChange={(nextPosition) => {

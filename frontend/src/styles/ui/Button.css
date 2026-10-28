@@ -6,7 +6,8 @@
   padding: 0 var(--space-4);
   color: var(--color-text-primary);
   background: var(--color-surface-default);
-  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border: var(--border-width-thin) solid;
+  border-color: var(--field-border-color, var(--color-border-subtle));
   border-radius: var(--radius-pill);
   transition:
     background var(--transition-fast),

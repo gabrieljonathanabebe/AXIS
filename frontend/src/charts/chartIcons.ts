@@ -64,6 +64,12 @@ function labelGlyph(x: number, y: number, width = 6): IconElement {
   ]
 }
 
+/** Letter x, the variable that the mean and median icons mark. */
+const variableGlyph: IconElement = [
+  'path',
+  { d: 'M7 10l10 10M17 10 7 20', key: 'variable' },
+]
+
 // ===== ICONS =================================================================
 export const BarLabelInside = createLucideIcon('bar-label-inside', [
   barGlyph(4),
@@ -98,4 +104,16 @@ export const SliceLabelInside = createLucideIcon('slice-label-inside', [
 export const SliceLabelOutside = createLucideIcon('slice-label-outside', [
   sliceGlyph,
   labelGlyph(18, 5),
+])
+
+/** x̄, the symbol of the mean. */
+export const XBar = createLucideIcon('x-bar', [
+  variableGlyph,
+  ['path', { d: 'M7 5h10', key: 'bar' }],
+])
+
+/** x̃, the symbol of the median. */
+export const XTilde = createLucideIcon('x-tilde', [
+  variableGlyph,
+  ['path', { d: 'M7 6c1.5-1.5 3.5-1.5 5 0s3.5 1.5 5 0', key: 'tilde' }],
 ])

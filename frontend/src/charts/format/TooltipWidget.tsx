@@ -1,7 +1,10 @@
+import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
+
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 
+import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type { ChartInteractionSpec, TooltipTrigger } from '../types'
 
 type TooltipWidgetProps = {
@@ -11,13 +14,14 @@ type TooltipWidgetProps = {
 }
 
 const triggerOptions = [
-  { label: 'Item', value: 'item' },
-  { label: 'Axis', value: 'axis' },
-] satisfies { label: string; value: TooltipTrigger }[]
+  { icon: SquareMousePointer, label: 'Item', value: 'item' },
+  { icon: SeparatorVertical, label: 'Axis', value: 'axis' },
+] satisfies OptionItem<TooltipTrigger>[]
 
 /**
- * Group of the data tooltip: what triggers it. Whether it shows is the
- * element toggle in the popover header; radial charts have no trigger.
+ * Group of the data tooltip: what triggers it, the hovered mark or all
+ * marks at one position of the axis. Whether it shows is the eye in the
+ * popover header; radial charts have no trigger.
  */
 function TooltipWidget({
   onChange,
@@ -29,7 +33,7 @@ function TooltipWidget({
   }
   return (
     <FormatWidget title="Behavior">
-      <ControlRow label="Trigger">
+      <ControlRow>
         <SegmentedControl
           label="Tooltip trigger"
           options={triggerOptions}
