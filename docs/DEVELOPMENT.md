@@ -532,15 +532,15 @@ bleibt in `ROADMAP.md`.
 Jedes Issue trägt genau ein Typ-Label, optional einen Bereich und genau
 eine Priorität (außer `idea`):
 
-| Label                                                      | Farbe         | Bedeutung                       |
-| ---------------------------------------------------------- | ------------- | ------------------------------- |
-| `bug`                                                      | Rot           | funktioniert nicht wie erwartet |
-| `feature`                                                  | Blau          | neue Funktion, entschieden      |
-| `design`                                                   | Teal          | Optik und UX-Feinschliff        |
-| `tech-debt`                                                | Amber         | Aufräumen, Refactoring, Tests   |
-| `idea`                                                     | Violett       | noch nicht entschieden          |
-| `prio:high`, `prio:medium`, `prio:low`                     | dunkel → hell | Priorität, siehe unten          |
-| `area:*`: charts, canvas, format, data, ask-cevyn, backend | hellgrau      | Bereich im Produkt              |
+| Label                                                      | Farbe               | Bedeutung                       |
+| ---------------------------------------------------------- | ------------------- | ------------------------------- |
+| `bug`                                                      | Rot                 | funktioniert nicht wie erwartet |
+| `feature`                                                  | Blau                | neue Funktion, entschieden      |
+| `design`                                                   | Teal                | Optik und UX-Feinschliff        |
+| `tech-debt`                                                | Amber               | Aufräumen, Refactoring, Tests   |
+| `idea`                                                     | Violett             | noch nicht entschieden          |
+| `prio:high`, `prio:medium`, `prio:low`                     | Pink, dunkel → hell | Priorität, siehe unten          |
+| `area:*`: charts, canvas, format, data, ask-cevyn, backend | Lindgrün            | Bereich im Produkt              |
 
 Prioritäten gelten innerhalb des Milestones (`Alpha`, `MVP`; ohne
 Milestone: Backlog):
