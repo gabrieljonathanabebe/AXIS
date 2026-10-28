@@ -521,3 +521,51 @@ angelegte ECharts-Option-Builder.
 Spreads und andere reihenfolgeabhängige Properties dort platzieren, wo das
 beabsichtigte Überschreibungsverhalten erhalten bleibt. Lesbarkeit und
 korrektes Verhalten haben Vorrang vor mechanischer Sortierung.
+
+## 20. Issues und Labels
+
+Punkte außerhalb des aktuellen Slices (Bugs, Features, Aufräumen,
+Ideen) stehen als GitHub Issues im Repository. Die Liste zeigt nur
+Titel und Labels, Details stehen im Issue. Die Reihenfolge der Slices
+bleibt in `ROADMAP.md`.
+
+Jedes Issue trägt genau ein Typ-Label, optional einen Bereich und genau
+eine Priorität (außer `idea`):
+
+| Label                                                      | Farbe               | Bedeutung                       |
+| ---------------------------------------------------------- | ------------------- | ------------------------------- |
+| `bug`                                                      | Rot                 | funktioniert nicht wie erwartet |
+| `feature`                                                  | Blau                | neue Funktion, entschieden      |
+| `design`                                                   | Teal                | Optik und UX-Feinschliff        |
+| `tech-debt`                                                | Amber               | Aufräumen, Refactoring, Tests   |
+| `idea`                                                     | Violett             | noch nicht entschieden          |
+| `prio:high`, `prio:medium`, `prio:low`                     | Pink, dunkel → hell | Priorität, siehe unten          |
+| `area:*`: charts, canvas, format, data, ask-cevyn, backend | Lindgrün            | Bereich im Produkt              |
+
+Prioritäten gelten innerhalb des Milestones (`Alpha`, `MVP`; ohne
+Milestone: Backlog):
+
+- `prio:high`: muss ins Release dieses Milestones; bei Bugs: ein
+  Workflow geht kaputt, Daten werden falsch angezeigt oder ein Tester
+  merkt es sofort
+- `prio:medium`: soll ins Release, wenn Zeit ist; blockiert nichts
+- `prio:low`: kann warten
+
+Neues Issue: kurzer Titel (höchstens etwa 70 Zeichen), zwei bis vier
+Zeilen oder Stichpunkte; bei Bugs **Wo**, **Was passiert**,
+**Erwartet**.
+
+```bash
+gh issue create --title "Line-Labels überlappen bei vielen Punkten" \
+  --label bug,area:charts,prio:medium --body "…"
+gh issue list --label prio:high --milestone Alpha
+```
+
+Umgang:
+
+- `prio:high`: Bugs vor dem nächsten Slice beheben; Kleines als
+  Lückenfüller zwischen zwei Slices; Großes wird ein eigener Slice in
+  `ROADMAP.md`, der auf das Issue verweist
+- ein Commit oder PR mit `Fixes #<nr>` schließt das Issue beim Merge
+- zum Ende eines Slices `is:open milestone:Alpha label:prio:high` und
+  `is:open label:bug` durchsehen

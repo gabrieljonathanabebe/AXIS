@@ -1629,7 +1629,7 @@ Die Legend Interaction erscheint nur bei einer relevanten Legend. Sie
 legt fest, was ein Klick auf einen Eintrag tut: nichts (Off,
 `enabled: false`), Serien ein- und ausblenden (Multiple) oder nur eine
 Serie zeigen (Single), wie `selectedMode` in ECharts. Bei Off ist die
-Legende keine Format-Region (siehe `TODO.md`).
+Legende keine Format-Region (Issue #9).
 
 ## 11. Color Scale
 
