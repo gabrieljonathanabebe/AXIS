@@ -471,7 +471,7 @@ Textebenen in Figma:
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
   und Text; die Gruppen des Format-Popovers folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
-- Einführung mit 3.8 (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
+- Einführung mit 3.9 (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
   Fill, Stroke und Radius bekommen: ein gemeinsamer Baustein für die
   Fläche statt je Element; dort fällt auch die Entscheidung, ob die Spec
   Position und Anordnung trennt.
@@ -578,7 +578,7 @@ Werkzeug, Farbe gehört dem Inhalt.
 - Canvas und Container sind reine Flächen: `Fill` mit Farbe und
   Deckkraft, ohne Presets, Glass, Lichtkante oder Schatten. Rand und
   später Schatten stellt der Nutzer selbst ein; vorgefertigte Looks
-  kommen als Dashboard-Styles (`ROADMAP.md`, 3.7), die beim Anwenden
+  kommen als Dashboard-Styles (`ROADMAP.md`, 3.8), die beim Anwenden
   echte Werte schreiben statt live zu verknüpfen.
 - Beide malen ihren Fill auf einer eigenen Ebene hinter dem Inhalt,
   damit die Deckkraft nur die Fläche ausblendet: `CanvasPanel` setzt

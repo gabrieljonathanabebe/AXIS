@@ -1593,7 +1593,7 @@ transparent), neutrale Kante bei Hover, Akzent-Kante bei Fokus.
   Element sitzt; die Mitte steht für den Plot und ist deaktiviert
 - links und rechts nur mittig, weil die Legende dort vertikal läuft
 - genutzt von der Legende über `LayoutControls`; die Farbskala folgt
-  mit 3.8
+  mit 3.9
 
 ## 9s. Optionen mit Icons
 
@@ -1820,7 +1820,7 @@ und die Deckkraft als `--chart-background-opacity`;
 `.chart-item-background` malt sie auf einer eigenen Ebene hinter dem
 Inhalt, damit die Deckkraft nur die Fläche ausblendet. Das gilt für
 jedes Dashboard-Objekt. Schatten und vorgefertigte Looks kommen mit den
-Dashboard-Styles (`ROADMAP.md`, 3.7).
+Dashboard-Styles (`ROADMAP.md`, 3.8).
 
 Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand
 ist mindestens halb so groß wie der Radius, damit Start- und

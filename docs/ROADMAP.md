@@ -48,28 +48,31 @@ Slices; Abhängigkeiten stehen beim Punkt):
 3. Format-Popover: Gruppen statt Sections – implementiert
 4. Kompakte Controls im Figma-Stil – implementiert
 5. Neutrale Farben und Hintergründe – implementiert
-6. Verläufe im Fill – **nächster Slice**
-7. Dashboard-Styles
-8. Legende, Tooltip und Farbskala mit Bausteinen
-9. DateFormat
-10. Theme-Umschalter in der TopBar (provisorisch)
-11. Table-Objekt
-12. Tooltip-Felder
-13. Dashboard-Einstellungen
-14. Ask Cevyn ausbauen
-15. Unabhängigkeit vom App-Namen
-16. Persistenz
-17. Alpha-Infrastruktur und Vollbild
+6. Verläufe für Flächen und Linien – **nächster Slice**
+7. Schatten als Effect
+8. Dashboard-Styles
+9. Legende, Tooltip und Farbskala mit Bausteinen
+10. DateFormat
+11. Theme-Umschalter in der TopBar (provisorisch)
+12. Table-Objekt
+13. Tooltip-Felder
+14. Dashboard-Einstellungen
+15. Ask Cevyn ausbauen
+16. Unabhängigkeit vom App-Namen
+17. Persistenz
+18. Alpha-Infrastruktur und Vollbild
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.6 Verläufe im Fill (geplant, nächster Slice)
+### 3.6 Verläufe für Flächen und Linien (geplant, nächster Slice)
 
-Verläufe als neue Variante von `Fill`, ohne Formänderung. Seit 3.5 sind
-Canvas und Container reine Flächen (`Fill`); mit Verläufen tragen sie,
-und später die Dashboard-Styles (3.7), Looks wie ein Leuchten auf der
-Canvas oder eine diagonale, durchscheinende Fläche als echte Werte.
+Verläufe in jeder Farbzeile, damit Flächen und Linien, und später die
+Dashboard-Styles (3.8), Looks wie ein Leuchten auf der Canvas oder eine
+diagonale, durchscheinende Fläche als echte Werte tragen. Fill und
+Stroke bekommen einen gemeinsamen Typ für ihre Farbe, weil beide
+dieselbe Farbzeile (`PaintControl`) nutzen; hätte nur eine davon die
+Typwahl, wäre das Control halb fertig.
 
 ```ts
 type GradientStop = {
@@ -78,36 +81,67 @@ type GradientStop = {
   position: number // 0–1
 }
 
-type Fill =
-  | { kind: 'solid'; color: ColorValue; opacity: number }
+type Paint =
+  | { kind: 'solid'; color: ColorValue }
   | {
       kind: 'gradient'
       type: 'linear' | 'radial'
       angle: number
       stops: GradientStop[]
-      opacity: number
     }
+
+type Fill = Paint & { opacity: number } // solid bleibt unverändert
 ```
 
+- `StrokeStyle` trägt seine Farbe ebenfalls als `Paint` (heute
+  `color: ColorValue`); eine Formänderung, vor der Persistenz zulässig;
+  die genaue Form zu Beginn des Slices festlegen
+- Nutzer mit eigener Farbe: Canvas- und Container-Fläche,
+  Container-Rahmen, Achsenlinie, Gridlines, Rahmen von Balken,
+  Scatter-Punkten und Pie-Segmenten
+- Serien: `SeriesFill` und `SeriesStrokeStyle` bekommen `fade`
+  (Deckkraft am Anfang und Ende, Winkel) in der Serienfarbe, z. B. für
+  die Fläche unter der Linie, Balken und die Linie selbst
+- Text bleibt einfarbig: ECharts zeichnet keinen Text mit Verlauf, in
+  HTML ginge es nur über einen CSS-Trick
 - im `PaintControl` Typwahl Solid | Linear | Radial als Icon-Gruppe,
   Winkel als Feld, Stopps im Details-Popover (⚙); beim Radialverlauf
   Mittelpunkt und Größe zu Beginn des Slices klären
 - der Stopp-Editor kommt aus `GradientControl` und wird mit der
   Farbskala geteilt; die Typen bleiben getrennt, weil die Farbskala
-  Werten Farben zuordnet und der Fill eine Fläche malt
+  Werten Farben zuordnet und ein Paint eine Fläche oder Linie malt
 - Adapter: ECharts-Verläufe mit `resolveColor`, HTML über eine
   CSS-Funktion neben `getColorCss`; Canvas und Container malen ihren
   Fill schon auf einer eigenen Ebene (`--canvas-background`,
-  `--chart-background`) und brauchen nur den CSS-Wert
-- Verlauf für Serien: `SeriesFill` wird ein eigener Union-Typ (heute
-  `Omit<Fill, 'color'>`) aus `{ kind: 'solid'; opacity }` und
-  `{ kind: 'fade'; from; to; angle }` (Deckkraft am Anfang und Ende),
-  z. B. für Flächen unter Linien und Balken, die in der Serienfarbe
-  ausblenden
-- neue Varianten sind migrationsfrei; Stellen, die heute `fill.color`
-  lesen, meldet der Typcheck
+  `--chart-background`)
+- Container-Rahmen: CSS-Rahmen können Verlauf, Strichmuster und Radius
+  nicht zusammen; Vorschlag ist ein SVG-Rahmen (`rect` mit Verlauf,
+  `stroke-dasharray` und `rx`) statt `.chart-item-border`
+- Stellen, die heute `.color` lesen, meldet der Typcheck; Icon-Check am
+  Slice-Ende
 
-### 3.7 Dashboard-Styles (geplant)
+### 3.7 Schatten als Effect (geplant)
+
+`Effect` bekommt die Art `shadow` (heute `none` und `glow`), damit Marks
+und Container einen versetzten Schatten tragen; Grundlage für die
+Dashboard-Styles (3.8).
+
+- `{ kind: 'shadow'; offsetX; offsetY; blur; color; opacity }` mit
+  `color` als `ColorValue`
+- Marks: Shadow neben Glow im Select der Gruppe Effect; weiter ein
+  Effekt pro Mark, weil ECharts je Mark nur einen Schatten zeichnet
+- Container: neues Feld `container.effect` mit Gruppe Effect (＋/−) im
+  Element „Chart“ bzw. „Card“, in CSS als `box-shadow` am Rahmen; zu
+  Beginn klären, wie der Schatten am Rand des scrollenden Grids nicht
+  abgeschnitten wird
+- Zeilen: Art | Blur | −; Versatz und Farbe als weitere Zeilen oder
+  hinter ⚙, zu Beginn klären
+- Background Blur am Container als weitere Art, wenn ein Container mit
+  einem Effekt auskommt; sonst später (mehrere Effekte je Element wie
+  in Figma)
+- neue Variante und neues Feld, keine Formänderung
+
+### 3.8 Dashboard-Styles (geplant)
 
 Vorgefertigte Looks für das ganze Dashboard, die ein Klick anwendet.
 Entscheidung aus 3.5: Presets gehören nicht in einzelne Hintergründe,
@@ -120,10 +154,7 @@ echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
   Dashboard-Akzent, als ein Undo-Schritt; danach ist jedes Feld frei
   änderbar, es gibt keine versteckte Kopplung
 - neue Objekte übernehmen den Container des zuletzt gewählten Styles
-  (`objectDefaults` in der `DashboardSpec`, vorgezogen aus 3.13)
-- Container-Effect: Schatten als neue Art von `Effect` mit ＋/− wie bei
-  den Marks, später Background Blur (wie die Effects in Figma); ein Rand
-  mit Verlauf braucht Verläufe im Stroke (zu klären)
+  (`objectDefaults` in der `DashboardSpec`, vorgezogen aus 3.14)
 - eigenes Farbschema je Style (hell oder dunkel), unabhängig vom
   Editor-Theme: Texte, Achsen und Raster (`text`, `textMuted`,
   `gridLine`, `border`) folgen heute App-Tokens und wandern in den
@@ -137,9 +168,9 @@ echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
   ohne Rand und Schatten, blauer Akzent; den finalen Standard zu Beginn
   des Slices festlegen
 - Auswahl im Dashboard-Popover, z. B. als Galerie mit kleiner Vorschau
-- hängt an 3.6; Formänderungen nur vor der Persistenz
+- hängt an 3.6 und 3.7; Formänderungen nur vor der Persistenz
 
-### 3.8 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
+### 3.9 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
 
 Die neuen Zeilen entstehen gleich als Gruppen und nach
 dem Muster aus `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im
@@ -170,7 +201,7 @@ Verhalten; Icon-Check am Slice-Ende):
 - kein Effect; Standard-Optik unverändert
 - neue Felder, keine Formänderung
 
-### 3.9 DateFormat (geplant)
+### 3.10 DateFormat (geplant)
 
 Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
 es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
@@ -193,7 +224,7 @@ Feb 1, 2025“ auch bei Monatsdaten.
   (`TemporalStatistics.granularity`): Monatsdaten „Jan 2025“,
   Jahresdaten „2025“, Tagesdaten „1 Jan 2025“
 - Formatter auf Basis von `Intl.DateTimeFormat` mit der Locale aus
-  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.13);
+  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.14);
   Quartale („Q1 2025“) selbst zusammensetzen
 - `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
   Auto nur das Select, bei Custom Einheit in der Zeile, Monat, Jahr und
@@ -201,17 +232,17 @@ Feb 1, 2025“ auch bei Monatsdaten.
 - Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
   im `AxisWidget`, sobald im Format-Select Date gewählt ist, statt
   bisher nichts), Überschrift des Tooltips bei Datums-X, später die
-  Datums-Spalten der Table (3.11)
+  Datums-Spalten der Table (3.12)
 - neues Feld, keine Formänderung
 - die neuen Zeilen entstehen direkt in der Gruppen-Struktur aus 3.3 und
   im kompakten Stil aus 3.4
 
-### 3.10 Theme-Umschalter in der TopBar (geplant, provisorisch)
+### 3.11 Theme-Umschalter in der TopBar (geplant, provisorisch)
 
 Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
 prüfen; wird später wieder entfernt oder durch eine echte Einstellung
 ersetzt. Das Dashboard folgt dem Editor-Theme nicht: Sein Farbschema
-kommt mit den Dashboard-Styles (3.7).
+kommt mit den Dashboard-Styles (3.8).
 
 - `IconButton` rechts in der `TopBar` (Sonne/Mond), schaltet
   `data-theme` am `<html>` zwischen `dark` und `light` um; Standard
@@ -223,7 +254,7 @@ kommt mit den Dashboard-Styles (3.7).
 - schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
   provisorisch
 
-### 3.11 Table-Objekt (geplant)
+### 3.12 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
@@ -243,7 +274,7 @@ Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 - zu klären: welche Spalten die Table zeigt (alle, Auswahl per Drop),
   und ob sie wie die Card der Selection folgt
 
-### 3.12 Tooltip-Felder (geplant)
+### 3.13 Tooltip-Felder (geplant)
 
 Direkt nach dem Table-Objekt:
 
@@ -260,7 +291,7 @@ Direkt nach dem Table-Objekt:
 - dieselbe Feldwahl bestimmt auch den Inhalt der Datenlabels (heute fest
   Wert bzw. Anteil), z. B. Kategorie oder ein weiteres Feld
 
-### 3.13 Dashboard-Einstellungen (geplant)
+### 3.14 Dashboard-Einstellungen (geplant)
 
 Im Dashboard-Popover der Canvas-Toolbar, undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
@@ -279,14 +310,14 @@ Persistenz festlegen soll:
   heute zeigt Cevyn `1,234.56` auch für deutsches Publikum
 - `interaction.crossHighlight`: ob ein Klick auf eine Mark die übrigen
   Objekte filtert
-- später: Palette und Schrift als Teil der Dashboard-Styles (3.7)
+- später: Palette und Schrift als Teil der Dashboard-Styles (3.8)
 
-### 3.14 Ask Cevyn ausbauen (geplant)
+### 3.15 Ask Cevyn ausbauen (geplant)
 
 Ziel: Ask Cevyn erstellt eigenständig ganze Dashboards und formatiert
 sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
-3.11 und 3.13, weil die KI nur kann, was es als Action gibt.
+3.12 und 3.14, weil die KI nur kann, was es als Action gibt.
 
 - Action-Schema nur noch einmal beschreiben (#30): Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
@@ -314,7 +345,7 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
   Verschlechterungen bei Prompt-Änderungen zu erkennen; Effort je nach
   Anfrage (ganzes Dashboard höher, kleine Änderungen niedriger)
 
-### 3.15 Unabhängigkeit vom App-Namen (geplant)
+### 3.16 Unabhängigkeit vom App-Namen (geplant)
 
 Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 
@@ -327,7 +358,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - Doku, `AGENTS.md` und `README.md` anpassen
 - der neue Name selbst ist noch offen
 
-### 3.16 Persistenz (geplant)
+### 3.17 Persistenz (geplant)
 
 - `serializeProject()` / `deserializeProject()` über den Workspace State
 - `.cevyn`-Datei (JSON mit Format-Kennung und Version) speichern und
@@ -341,7 +372,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   den Project State (#29), Scroll- und Fokusverhalten beim Laden (#27,
   #28)
 
-### 3.17 Alpha-Infrastruktur und Vollbild (geplant)
+### 3.18 Alpha-Infrastruktur und Vollbild (geplant)
 
 - Docker-Images für Frontend und Backend
 - CI mit GitHub Actions: `npm run format`, `npm run build`,
@@ -412,7 +443,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
   Kästen mit eigener Größe (Kasten-Modell, `ARCHITECTURE.md`)
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
-- Zoom (braucht `pageSize`, siehe 3.13)
+- Zoom (braucht `pageSize`, siehe 3.14)
 
 ### Daten
 
