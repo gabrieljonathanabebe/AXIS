@@ -11,8 +11,9 @@ Prioritäten. Sie ist bewusst kompakt:
   etwas umgesetzt ist, beschreiben `ARCHITECTURE.md` und
   `DESIGN_SYSTEM.md`; die Details eines Slices stehen in der
   Git-Historie.
-- Punkte außerhalb der Planung sind GitHub Issues mit Labels und
-  Prioritäten (`DEVELOPMENT.md`, „Issues und Labels“).
+- Punkte außerhalb der Planung, auch Bugs und bekannte technische
+  Schulden, sind GitHub Issues mit Labels und Prioritäten
+  (`DEVELOPMENT.md`, „Issues und Labels“).
 
 Status: Idee · geplant · in Arbeit · implementiert · später. Nur
 tatsächlich implementierte und verifizierte Funktionalität gilt als
@@ -327,7 +328,7 @@ sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
 3.9 und 3.11, weil die KI nur kann, was es als Action gibt.
 
-- Action-Schema nur noch einmal beschreiben: Frontend-Types bzw.
+- Action-Schema nur noch einmal beschreiben (#30): Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
   (heute doppelt in `backend/app/ai/models.py` und
   `frontend/src/actions/parseCevynActions.ts`)
@@ -377,8 +378,8 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - pro Version eine Migration; beim Laden prüfen wie bei
   `parseCevynActions`
 - offene Schulden, die hier fällig werden: Semantic-Role-Overrides in
-  den Project State, Scroll- und Fokusverhalten beim Laden (siehe
-  Abschnitt 7)
+  den Project State (#29), Scroll- und Fokusverhalten beim Laden (#27,
+  #28)
 
 ### 3.15 Alpha-Infrastruktur und Vollbild (geplant)
 
@@ -441,7 +442,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
   Horizontal (#14), Stacked Area (#15), Heatmap (#16), Histogramm
   (#17), Kombi-Chart (#18); danach bei Bedarf Boxplot,
   Treemap, Sankey, Radar, Maps
-- Drill-down, Referenzlinien, Mehrfachauswahl, Range-Selection für Line
+- Drill-down, Referenzlinien, Mehrfachauswahl (#39), Range-Selection für Line
   und Bar
 - kleine Anteile bei Pie und Donut als „Other“ zusammenfassen (Idee)
 
@@ -470,7 +471,8 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
 
 ### Share
 
-- Export: PNG, SVG, PDF, CSV, interaktives HTML
+- Export: PNG, SVG, PDF, CSV, interaktives HTML (Titel und Container
+  selbst zusammensetzen, #38)
 - Publish: Share Link, veröffentlichte Dashboards
 - Collaboration: Accounts, Organisationen, Rechte, Kommentare,
   Versionen; Speichern auf dem Server
@@ -590,36 +592,3 @@ Entwicklung
 
 - Backend nach Domänen, Frontend nach Domänen mit `shared/useQuery`
 - pytest-Tests für Queries, Uploads und API (`uv run pytest`)
-
-## 7. Bekannte technische Schulden
-
-- `npm run lint` meldet eine Warnung (`react-hooks/incompatible-library`)
-  für `useVirtualizer` in `DataTable`; sie kommt aus der Library.
-- Table Filter und Sortierung sind lokaler State der `DataTable` und
-  gehen beim Wechsel auf Profile oder beim Neuladen verloren.
-- Cmd/Ctrl + B schaltet auch im Data-Workspace das ausgeblendete Build
-  Panel von Visualize um.
-- In Safari kann die gesamte App horizontal scrollen, wenn die Inhalte
-  breiter als das Fenster werden. Die Ursache ist noch nicht geklärt.
-- Neue Charts werden beim Mount ins Bild gescrollt. Beim späteren Laden
-  eines Projekts muss dieses Verhalten auf neu hinzugefügte Charts
-  begrenzt werden.
-- Ein ausgewählter Chart fokussiert sich selbst. Beim späteren Laden
-  eines Projekts darf das nicht ungewollt den Fokus verschieben.
-- Semantic-Role-Overrides sind nicht undo-fähig und gehen beim Neuladen
-  verloren; sie gehören in den serialisierbaren Project State (3.14).
-- `formatDate` formatiert in UTC. Datetime-Werte ohne Zeitzone können
-  am Tagesrand um einen Tag abweichen.
-- Selection-Werte werden als Strings verglichen. Boolean-Felder
-  (`True` in Python gegenüber `true` in Polars), Float-Formatierung und
-  leere Kategorien (`''`, `(empty)`, `No category`) treffen daher nicht
-  in allen Charts einheitlich.
-- Die Selection unterstützt nur einen Wert; es gibt keine
-  Mehrfachauswahl.
-- Ein späterer PNG-/SVG-Export über ECharts enthält den HTML-Titel und
-  den Container nicht und muss beides selbst zusammensetzen.
-- ECharts zeichnet mit `sans-serif`, nicht mit Inter.
-- Große Schrift bei Achsen-Labels kann über den festen Plot-Rand
-  (`BASE_GRID`) hinausragen.
-- Das Schema der Cevyn Actions existiert doppelt (Pydantic im Backend,
-  `actionShapes` im Frontend); wird in 3.12 aufgelöst.
