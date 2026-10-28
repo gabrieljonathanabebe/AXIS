@@ -11,7 +11,8 @@ Prioritäten. Sie ist bewusst kompakt:
   etwas umgesetzt ist, beschreiben `ARCHITECTURE.md` und
   `DESIGN_SYSTEM.md`; die Details eines Slices stehen in der
   Git-Historie.
-- Punkte außerhalb der Planung sammelt `TODO.md`.
+- Punkte außerhalb der Planung sind GitHub Issues mit Labels und
+  Prioritäten (`DEVELOPMENT.md`, „Issues und Labels“).
 
 Status: Idee · geplant · in Arbeit · implementiert · später. Nur
 tatsächlich implementierte und verifizierte Funktionalität gilt als
@@ -436,8 +437,9 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
 - Picker für viele Charttypen: Schnellauswahl in der Section „Charts“,
   „More“ als Popover mit Suche und Kategorien nach Zweck; Empfehlungen
   passend zu den gewählten Feldern (Idee)
-- weitere Charttypen und Varianten: siehe `TODO.md` (Stacked, Horizontal,
-  Heatmap, Histogramm, Kombi-Chart); danach bei Bedarf Boxplot,
+- weitere Charttypen und Varianten als Issues: Stacked Bar (#13),
+  Horizontal (#14), Stacked Area (#15), Heatmap (#16), Histogramm
+  (#17), Kombi-Chart (#18); danach bei Bedarf Boxplot,
   Treemap, Sankey, Radar, Maps
 - Drill-down, Referenzlinien, Mehrfachauswahl, Range-Selection für Line
   und Bar

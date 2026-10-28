@@ -42,8 +42,8 @@ Folgende Dateien sind die Source of Truth:
   `docs/DEVELOPMENT.md`
 - Aktueller Entwicklungsstand und Prioritäten:
   `docs/ROADMAP.md`
-- Gesammelte Punkte außerhalb des aktuellen Slices:
-  `docs/TODO.md`
+- Punkte außerhalb des aktuellen Slices: GitHub Issues
+  (Labels und Prioritäten in `docs/DEVELOPMENT.md`, „Issues und Labels“)
 
 Bei einer Aufgabe nur die dafür relevanten Dokumente zusätzlich lesen.
 
@@ -126,17 +126,20 @@ Aktualisieren, wenn:
 - sich Prioritäten wesentlich ändern;
 - ein geplanter Scope hinzugefügt oder entfernt wird.
 
-### `docs/TODO.md`
+### GitHub Issues
 
-Eintragen, wenn der Nutzer einen Punkt ausdrücklich für die To-do
-nennt. Jeder Punkt erhält eine `##`-Überschrift, konkrete Details
-stehen als Stichpunkte darunter.
+Ein Issue anlegen, wenn der Nutzer einen Punkt ausdrücklich für die
+To-do nennt (z. B. „Bug: …“): genau ein Typ-Label, optional ein
+Bereich, genau eine Priorität außer bei `idea`. Nennt der Nutzer keine
+Priorität, `prio:medium` setzen und das erwähnen. Kurzer Titel, zwei
+bis vier Zeilen Text; Regeln in `docs/DEVELOPMENT.md`, „Issues und
+Labels“. Lesen mit `gh issue list` und `gh issue view <nr>`.
 
-Einen Punkt entfernen, wenn er erledigt ist oder als geplanter Scope
-in `docs/ROADMAP.md` übernommen wird.
+Ein erledigtes Issue über `Fixes #<nr>` im Commit oder PR schließen.
+Wird ein Issue als geplanter Scope in `docs/ROADMAP.md` übernommen,
+dort auf das Issue verweisen.
 
-Punkte aus der To-do nicht eigenständig in den aktuellen Slice
-ziehen.
+Issues nicht eigenständig in den aktuellen Slice ziehen.
 
 ### `docs/ARCHITECTURE.md`
 
