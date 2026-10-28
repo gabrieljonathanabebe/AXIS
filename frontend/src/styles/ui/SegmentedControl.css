@@ -31,8 +31,7 @@
 }
 
 .segmented-control-option.is-active {
-  color: var(--color-accent);
+  color: var(--color-text-primary);
   background: var(--color-surface-active);
   border-color: transparent;
-  box-shadow: none;
 }

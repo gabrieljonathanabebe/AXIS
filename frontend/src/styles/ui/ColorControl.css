@@ -45,7 +45,7 @@
 
 .color-control-swatch:hover {
   background: var(--color-surface-hover);
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
   transform: scale(1.08);
 }
 
@@ -133,7 +133,7 @@
 }
 
 .color-control-hex-input:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
 }
 
 .color-control-hex-input:focus {

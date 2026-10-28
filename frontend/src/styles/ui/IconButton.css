@@ -16,17 +16,17 @@
 }
 
 .control:hover:not(:disabled) {
-  color: var(--color-accent-hover);
+  color: var(--color-text-primary);
   background: var(--color-surface-hover);
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
   cursor: pointer;
 }
 
-.control.is-active {
-  color: var(--color-accent);
+.control.is-active,
+.control.is-active:hover:not(:disabled) {
+  color: var(--color-text-primary);
   background: var(--color-surface-active);
-  border-color: var(--color-border-accent);
-  box-shadow: var(--shadow-accent);
+  border-color: transparent;
 }
 
 .control:disabled {
@@ -45,9 +45,7 @@
 }
 
 .control-ghost,
-.control-ghost:hover:not(:disabled),
-.control-ghost.is-active {
+.control-ghost:hover:not(:disabled) {
   background: transparent;
   border-color: transparent;
-  box-shadow: none;
 }

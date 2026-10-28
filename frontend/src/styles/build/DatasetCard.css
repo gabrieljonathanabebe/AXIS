@@ -11,7 +11,7 @@
   flex: 0 0 auto;
   width: var(--control-height-sm);
   height: var(--control-height-sm);
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
 }
 
 .dataset-card-text {

@@ -41,7 +41,7 @@
 }
 
 .select-control.is-title .select-control-button:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-text-secondary);
   background: transparent;
   border-color: transparent;
 }

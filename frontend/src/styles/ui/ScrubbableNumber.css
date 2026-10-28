@@ -26,7 +26,7 @@
 }
 
 .scrubbable-number-handle.button:hover {
-  color: var(--color-accent);
+  color: var(--color-text-primary);
   background: var(--color-surface-hover);
   border-color: var(--color-border-subtle);
   cursor: ew-resize;

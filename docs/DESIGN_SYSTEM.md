@@ -11,7 +11,7 @@ Visuelle Richtung:
 - Glassmorphism mit Zurückhaltung
 - dunkle Graphite- und Near-Black-Flächen
 - neutrale Weiß-/Grau-Verläufe
-- Electric Blue als gezielter Accent
+- Electric Blue nur für Zustände (siehe 2)
 - subtile Borders
 - Layered Shadows
 - Inner Highlights
@@ -28,6 +28,11 @@ Nicht erwünscht:
 
 Daten und Inhalt bleiben visuell dominant.
 
+Die App ist neutral („grau bis aktiv“): Hover und aktive Controls sind
+grau, Farbe gehört dem Dashboard. Glass, Lichtkanten und Schatten
+gehören den Editor-Flächen; Canvas und Container des Dashboards sind
+flache Flächen mit `Fill` (`ARCHITECTURE.md`, „Farbebenen“).
+
 ### Liquid Glass Surfaces
 
 Glasflächen werden zentral über die Klasse `.glass`
@@ -37,16 +42,17 @@ pro Komponente.
 | Stufe   | Klassen              | Verwendung                                                                    | Blur        |
 | ------- | -------------------- | ----------------------------------------------------------------------------- | ----------- |
 | thin    | `glass glass-thin`   | Panels                                                                        | `--blur-md` |
-| regular | `glass`              | Collapsible Sections (Variante `widget`), Charts mit Background Surface       | keiner      |
-| liquid  | `glass glass-liquid` | Charts mit Background Glass                                                   | `--blur-md` |
+| regular | `glass`              | Collapsible Sections (Variante `widget`)                                      | keiner      |
+| liquid  | `glass glass-liquid` | derzeit ohne Nutzer                                                           | `--blur-md` |
 | thick   | `glass glass-thick`  | Dropdowns, Popover, schwebendes Editor-Chrome (Canvas-Toolbar, Ask Cevyn Bar) | `--blur-lg` |
 
 `glass-liquid` ist die durchscheinende Stufe: Füllung ab transparent
 mit einem Hauch Weiß unten (`--glass-fill-liquid`), Blur mit
 Sättigung, hellere Lichtkante (`--glass-border-liquid`) und zwei feine
 Kantenlinien (`--glass-highlight-liquid`), ohne weißen Glanzfleck oder
-inneres Leuchten. Sie wirkt nur auf einem Hintergrund mit Farbverlauf,
-deshalb liegt sie auf der Canvas-Fläche.
+inneres Leuchten. Sie wirkt nur auf einem Hintergrund mit Farbverlauf;
+seit 3.5 nutzt sie kein Element, weil Container des Dashboards keine
+Glass-Flächen mehr sind.
 
 Bestandteile:
 
@@ -59,10 +65,11 @@ Bestandteile:
 - `--glass-fill-elevated`: hellere, fast deckende Füllung für Flächen,
   die über Karten schweben (Popover am Chart); im Dark Theme heller als
   die Karten, weil höhere Ebenen dort heller wirken;
-- `--background-ambient`: weiche Farbflächen hinter der App, damit das
-  Glas sichtbar Licht bricht;
-- `--canvas-background`: eigene, leicht aufgehellte Fläche der Canvas
-  mit Blau oben und Violett unten rechts; Grundlage für Glass-Charts.
+- `--background-ambient`: weiches, neutrales Licht hinter der App (ohne
+  Blau und Violett), damit das Glas sichtbar Licht bricht.
+
+Die Canvas hat keine Glass-Fläche: Ihre Füllung ist `canvas.background`
+(siehe 4, „Canvas“).
 
 Regeln:
 
@@ -84,14 +91,20 @@ verwenden `tabular-nums`.
 
 Electric Blue wird sparsam verwendet für:
 
-- Active State
-- Selection
-- Hover
+- Selection (Auswahlring am Objekt, Auswahl in der Tabelle)
 - Focus
-- Drag Targets
+- Drag- und Drop-Ziele
 - Handles
-- Sliders
-- wichtige aktive Controls
+- Format-Fokus
+- Sliders und Range-Auswahl
+- Primäraktion und tonale Akzent-Buttons (`button-accent`)
+
+Hover und aktive Zustände von Controls sind grau, nicht blau: Hover mit
+`--color-surface-hover` und feiner neutraler Kante
+(`--color-border-default`), aktive Icon-Toggles, Segmente, Menüeinträge
+und die Rail mit `--color-surface-active` und `--color-text-primary`,
+ohne Rand und Glow. Der aktive Zustand bleibt auch beim Hovern
+sichtbar.
 
 Ein Glow kann bestehen aus:
 
@@ -116,6 +129,10 @@ dunklen Fläche geprüft. Im Light Theme ist Amber auf `#B57800`
 abgedunkelt (3,4:1 statt 2,8:1 auf dem Hintergrund); Teal und Violett
 liegen dort bei etwa 3:1. Blau bleibt als eigene Farbe wählbar, ist aber
 kein Feld der Daten-Reihe.
+
+Der Akzent im Inhalt des Dashboards (Token `accent`, z. B. Card-Wert
+und Brush) ist davon getrennt: `--dashboard-accent`, standardmäßig
+neutral hellgrau. Format-Fokus und Auswahlring bleiben beim App-Akzent.
 
 ### Danger
 
@@ -159,8 +176,8 @@ Navigation Rail (`NavigationRail`):
 - enthält ausschließlich Top-Level-Views, keine Settings;
 - nur Icons als `IconButton` mit `variant="ghost"`, Tooltip über das
   Label; keine Cards um die Icons;
-- Hover in Akzentfarbe, aktiver View zusätzlich mit `surface-active`
-  und `aria-current="page"`.
+- Hover und aktiver View grau wie alle Ghost-Toggles (aktiv mit
+  `--color-surface-active`), dazu `aria-current="page"`.
 
 Implementierte Views: Visualize, Data. Geplant: Share; AI eher als Panel
 oder Overlay als als eigener View.
@@ -259,7 +276,7 @@ Werkzeug). Entscheidungsfrage für jedes neue Element:
 | Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Format-Popover, Build       |
 
 ```text
-Canvas Panel (--canvas-background, ohne Panel-Header)
+Canvas Panel (Fill als ::before, ohne Panel-Header)
 ├── .canvas-toolbar     schwebend oben rechts, glass glass-thick
 ├── .dashboard-surface  Titel + ChartGrid, die „Seite“
 └── AskCevynBar         schwebend unten
@@ -267,6 +284,10 @@ Canvas Panel (--canvas-background, ohne Panel-Header)
 
 - Die ganze Fläche rechts der Haarlinie zum Build Panel ist
   die Seite; sie hat keinen eigenen Rahmen und keinen Radius.
+- Ihre Füllung (`canvas.background`) liegt auf `.canvas-panel::before`.
+  Der Workspace schneidet sie auf seine runden Ecken zu
+  (`overflow: hidden`), seine Lichtkante liegt darüber. Das Grid hat
+  keinen Radius, damit jedes Objekt seine Ecken selbst bestimmt.
 - `.dashboard-surface` ist der unsichtbare Rahmen um Titel und Grid.
   Ein späterer Präsentationsmodus zeigt genau dieses Element.
 - Editor-Elemente schweben mit eigenem Z-Index über der Seite. Die
@@ -274,8 +295,8 @@ Canvas Panel (--canvas-background, ohne Panel-Header)
   die einzige Fläche.
 - Rechts vom Pinsel öffnet das Zahnrad (`Settings2`, `IconButton` `sm`
   `ghost`, gedrückt solange offen) das Popover „Dashboard“ mit
-  Einstellungen ohne eigenes Element auf der Canvas: Gap und Animation
-  (＋/−, Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
+  Einstellungen ohne eigenes Element auf der Canvas: Gap, Background
+  (Fill der Canvas) und Animation (＋/−, Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
   Format-Popover. Der Name bleibt inline im Titel, eine Einstellung hat
   genau eine Heimat.
 - Toolbar und Titelzeile sind beide 36 px hoch und liegen auf einer
@@ -1008,12 +1029,12 @@ Grundstruktur:
 
 Reihen je Einsatzort (`shared/ui/colorPresets.ts`):
 
-| Einsatzort                                                     | Reihe                                          |
-| -------------------------------------------------------------- | ---------------------------------------------- |
-| Text (`TextStyleControls`)                                     | Default · Muted · Accent · eigene Farbe        |
-| Linien und Rahmen (`StrokeStyleControls`)                      | Default · Muted · Accent · eigene Farbe        |
-| Marks und Flächen (Markfarbe, `FillControls`), Farbskala-Enden | Chart 1–5 · eigene Farbe                       |
-| Container-Hintergrund (`ContainerWidget`)                      | Surface · Glass · Blue · Violet · eigene Farbe |
+| Einsatzort                                                     | Reihe                                   |
+| -------------------------------------------------------------- | --------------------------------------- |
+| Text (`TextStyleControls`)                                     | Default · Muted · Accent · eigene Farbe |
+| Linien und Rahmen (`StrokeStyleControls`)                      | Default · Muted · Accent · eigene Farbe |
+| Marks und Flächen (Markfarbe, `FillControls`), Farbskala-Enden | Chart 1–5 · eigene Farbe                |
+| Hintergrund von Container und Canvas                           | nur eigene Farbe (keine Felder)         |
 
 - „Default“ steht für die Standardrolle des Elements, z. B. `text` beim
   Titel, `gridLine` bei Gridlines, `border` beim Container-Rahmen,
@@ -1054,14 +1075,13 @@ Eigene Presets:
 
 Ein Preset trägt einen `ColorValue` oder einen eigenen
 Namen, der keine Farbe ist, und zeigt dann über `fill` eine eigene
-Vorschau-Fläche, z. B. Surface, Glass, Blue und Violet beim
-Container-Hintergrund. Der Typ der Namen ergibt sich aus `presets`
+Vorschau-Fläche; derzeit nutzt keine Stelle das (bis 3.5 der
+Container-Hintergrund). Der Typ der Namen ergibt sich aus `presets`
 (`ColorPreset<TPreset>`), `onChange` liefert dann `ColorValue | TPreset`.
 Solche Presets verwenden im Active State den Electric-Blue-Ring und
 eine feine Kante, damit dunkle oder transparente Flächen sichtbar
 bleiben. Auch der Auslöser der Variante `compact` zeigt die Fläche des
-gewählten Presets (`--swatch-fill`), z. B. Glass im Feld des
-Container-Hintergrunds.
+gewählten Presets (`--swatch-fill`).
 
 ## 9a. AlignmentControl
 
@@ -1124,10 +1144,10 @@ So bleiben Button und Shortcut derselbe Befehl.
 `not-allowed` und ohne Hover-Effekt.
 
 `IconButton` bietet `size` (`xs | sm | md`, Standard `md`) und
-`variant` (`default | ghost`, Standard `default`). `ghost` hat keine
-Fläche, keinen Rahmen und keinen Schatten; die Farben für Hover und
-`is-active` kommen weiter aus `.control`. Für ruhige Aktionen in
-Section-Headern.
+`variant` (`default | ghost`, Standard `default`). `ghost` hat in Ruhe
+und beim Hovern keine Fläche und keinen Rahmen; aktiv zeigt er wie
+jedes Control die graue Fläche `--color-surface-active`. Für ruhige
+Aktionen in Section-Headern, der Canvas-Toolbar und der Rail.
 
 `Button` (mit Text) bietet `size` (`sm`: Höhe `--control-height-sm` wie
 die übrigen Controls einer `ControlRow`; ohne `size` bestimmt der
@@ -1218,8 +1238,8 @@ Klick daneben):
   Schließen-Button auf, z. B. das Auge des Format-Popovers.
 - `SelectControl` hat eine `variant`: `field` (Default, Feld mit
   Rahmen, Menü so breit wie das Feld) und `title` (liest sich als
-  Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover in
-  Akzentfarbe, Menü so breit wie nötig). Das Menü (`OptionsMenu`) hat
+  Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover leicht
+  gedimmt, Menü so breit wie nötig). Das Menü (`OptionsMenu`) hat
   28-px-Zeilen ohne Abstand mit 12-px-Schrift; Optionen zeigen Icon und
   Wort (`OptionContent`), die gewählte einen Haken.
 - `DetailsPopover` ist die Hülle für das ⚙ am Zeilenende: ein
@@ -1340,8 +1360,8 @@ Vorhandene Bausteine:
 - `Fill` mit `FillControls` (siehe 9n): Fläche unter Linien
   (`line.area`), Balken (`bar.fill`), Scatter-Punkte (`scatter.fill`)
   und Pie-Segmente (`pie.fill`), alle als `SeriesFill` in der Farbe
-  ihrer Serie; der Container-Hintergrund bleibt `ObjectBackground` mit
-  Presets
+  ihrer Serie; dazu die Hintergründe von Container und Canvas
+  (`container.background`, `canvas.background`) mit eigener Farbe
 - `Effect` mit `EffectControls` (siehe 9o): Glow auf allen Marks
   (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`) in der
   Farbe der Serie bzw. des Segments
@@ -1393,18 +1413,18 @@ der offenen Punkte steht in `ROADMAP.md`.
 
 Dashboard
 
-| Teil      | Form   | Ist          | Soll                        | Status |
-| --------- | ------ | ------------ | --------------------------- | ------ |
-| Canvas    | Fläche | –            | `canvas.background`         | ○      |
-| Abstände  | –      | `layout.gap` | zusätzlich `layout.padding` | ○      |
-| Animation | –      | `animation`  | –                           | ✓      |
+| Teil      | Form   | Ist                 | Soll                        | Status |
+| --------- | ------ | ------------------- | --------------------------- | ------ |
+| Canvas    | Fläche | `canvas.background` | Verlauf (3.6)               | ✓, ○   |
+| Abstände  | –      | `layout.gap`        | zusätzlich `layout.padding` | ○      |
+| Animation | –      | `animation`         | –                           | ✓      |
 
 Objekt (Chart und Card)
 
-| Teil      | Form   | Ist                                                           | Soll                          | Status    |
-| --------- | ------ | ------------------------------------------------------------- | ----------------------------- | --------- |
-| Container | Fläche | `container.background`, `.border`, `.layout`, `.borderRadius` | `container.effect` (Schatten) | ✓, später |
-| Titel     | Text   | `title.textStyle`, `.layout`                                  | –                             | ✓         |
+| Teil      | Form   | Ist                                                           | Soll                               | Status |
+| --------- | ------ | ------------------------------------------------------------- | ---------------------------------- | ------ |
+| Container | Fläche | `container.background`, `.border`, `.layout`, `.borderRadius` | `container.effect` (Schatten, 3.7) | ✓, ○   |
+| Titel     | Text   | `title.textStyle`, `.layout`                                  | –                                  | ✓      |
 
 Chart
 
@@ -1471,17 +1491,21 @@ nach demselben Muster wie `StrokeStyleControls`: eine Farbzeile
 (`PaintControl`, siehe 9q) statt Rahmen, `label` für Screenreader
 („Area fill color“).
 
-- Color (`ColorField` mit Chart 1–5) und Opacity (5–100 %), dahinter ⚙,
-  wenn `details` gegeben ist (Range der Farbskala)
+- Color (`ColorField`) und Opacity (5–100 %), dahinter ⚙, wenn
+  `details` gegeben ist (Range der Farbskala)
+- `presets` sind die Felder, Standard Chart 1–5; die Hintergründe von
+  Container und Canvas übergeben keine (`[]`), der Farbknopf öffnet
+  dann direkt den Picker mit Hex-Feld
 - generisch über den Wert: Ein `Fill` hat eine eigene Farbe, ein
   `SeriesFill` nicht, weil sie aus der Serie kommt (`hasFillColor`);
   dann zeigt die Zeile `seriesColor`, das Feld der Datenfarbe, oder nur
   die Deckkraft
 - `kind` ist heute immer `solid` und hat keine Zeile; Verläufe kommen
-  mit 3.5 als Icon-Gruppe in der Farbzeile
+  mit 3.6 als Icon-Gruppe in der Farbzeile
 - genutzt von der Fläche unter Linien (Gruppe Area mit Auge), den
   Balken, den Scatter-Punkten und den Pie-Segmenten (Gruppe Fill mit der
-  Datenfarbe) in `markGroups.tsx`
+  Datenfarbe) in `markGroups.tsx`, außerdem die Gruppe Background von
+  Container (`ContainerWidget`) und Canvas (Dashboard-Popover)
 - bei Balken, Punkten und Segmenten ist die Deckkraft die des ganzen
   Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen und
   Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
@@ -1534,13 +1558,12 @@ statt Rahmen, `label` für Screenreader („Legend position“).
 `.color-field`): links das Swatch des kompakten `ColorControl`, das den
 Farbwähler mit den Farben des Einsatzorts öffnet, rechts der Hex-Wert
 einer eigenen Farbe (direkt editierbar) oder der Name ihres Presets
-(„Default“, „Chart 2“, „Glass“).
+(„Default“, „Chart 2“).
 
 - generisch über benannte Presets wie `ColorControl`
-  (`ColorPreset<TPreset>`), damit auch Flächen ohne Farbe wählbar sind,
-  z. B. der Container-Hintergrund (Surface, Glass, Blue, Violet)
-- genutzt von `TextStyleControls`, `PaintControl`, der Datenfarbe
-  (`getDataColorField`) und dem Container-Hintergrund
+  (`ColorPreset<TPreset>`), derzeit ohne Nutzer
+- genutzt von `TextStyleControls`, `PaintControl` und der Datenfarbe
+  (`getDataColorField`)
 
 `PaintControl` ist die Farbzeile eines Fills oder Strokes: Farbfeld |
 Deckkraft (`ScrubbableNumber`, Icon ◐, %) | optional ⚙ (`details`).
@@ -1548,13 +1571,12 @@ Deckkraft (`ScrubbableNumber`, Icon ◐, %) | optional ⚙ (`details`).
 - `color` ist die eigene Farbe mit ihren Presets; ein Serien-Paint hat
   keine und zeigt stattdessen `seriesColor`, das Feld der Datenfarbe,
   oder nur die Deckkraft
-- `FillControls` und `StrokeStyleControls` bauen ihre Farbzeile damit;
-  der Container-Hintergrund nutzt bis 3.5 nur `ColorField`, weil
-  `ObjectBackground` keine Deckkraft hat
+- `FillControls` und `StrokeStyleControls` bauen ihre Farbzeile damit,
+  auch für die Hintergründe von Container und Canvas
 
 `.field` (`styles/field.css`) ist die gemeinsame Fläche der Felder:
 Pill-Form, Rahmen über `--field-border-color` (in kompakten Zeilen
-transparent), Akzent-Kante bei Hover und Fokus.
+transparent), neutrale Kante bei Hover, Akzent-Kante bei Fokus.
 
 ## 9r. PositionGrid
 
@@ -1571,7 +1593,7 @@ transparent), Akzent-Kante bei Hover und Fokus.
   Element sitzt; die Mitte steht für den Plot und ist deaktiviert
 - links und rechts nur mittig, weil die Legende dort vertikal läuft
 - genutzt von der Legende über `LayoutControls`; die Farbskala folgt
-  mit 3.6
+  mit 3.8
 
 ## 9s. Optionen mit Icons
 
@@ -1787,17 +1809,18 @@ Move und Resize rasten während des Drags live im Canvas-Grid ein.
 Der Container eines Objekts wird im Element „Chart“ bzw. „Card“ des
 Format-Popovers formatiert:
 
-- Background über `ColorField` mit den Presets Surface (Default),
-  Glass, Blue und Violet sowie eigener Farbe;
+- Background über `FillControls`: eigene Farbe und Deckkraft
+  (Standard `#202226`, 100 %), ohne Felder;
 - Padding und Radius über `ScrubbableNumber` mit Icon und px;
 - Rahmen über `StrokeStyleControls` (Breite 0 heißt kein Rahmen).
 
-Alle Backgrounds bauen auf `.glass` auf (Lichtkante, Schatten) und
-ändern nur die Füllung über `--glass-fill`: Surface ist die
-Standardfüllung, Blue und Violet nutzen `--chart-fill-blue` bzw.
-`--chart-fill-violet` (pro Theme), eigene Farben `--chart-background`.
-Glass nutzt `glass-liquid`. Die Zuordnung Background → Klassen steht
-als `Record` in `ObjectFrame` und gilt damit für jedes Dashboard-Objekt.
+Der Container ist eine flache Fläche: kein Glass, keine Lichtkante,
+kein Schatten. `ObjectFrame` setzt die Farbe als `--chart-background`
+und die Deckkraft als `--chart-background-opacity`;
+`.chart-item-background` malt sie auf einer eigenen Ebene hinter dem
+Inhalt, damit die Deckkraft nur die Fläche ausblendet. Das gilt für
+jedes Dashboard-Objekt. Schatten und vorgefertigte Looks kommen mit den
+Dashboard-Styles (`ROADMAP.md`, 3.7).
 
 Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand
 ist mindestens halb so groß wie der Radius, damit Start- und
@@ -1871,9 +1894,9 @@ Labels der X- und Y-Achse, Legende, Color Scale):
   Vorschau am größten Wert, folgt nicht dem Pointer und zeigt jede
   Änderung sofort; der übrige Chart ist abgeblendet. Kein eigenes
   Vorschaufenster, keine Beispieldaten.
-- Das Objekt als Ganzes hat keine Region, sondern eine Fläche über dem
-  ganzen Frame: Akzent-Schein nach innen plus leichte Akzent-Tönung
-  (`color-mix` mit `--color-accent`). Beim Hover über eine freie Stelle
+- Das Objekt als Ganzes hat keine Region, sondern einen
+  durchgehenden Akzent-Ring innen am Frame (2 px, `--color-accent`),
+  ohne Tönung und Schein. Beim Hover über eine freie Stelle
   erscheint sie halb stark (Vorschau), solange „Chart“/„Card“ bearbeitet
   wird voll; ein Klick auf eine freie Stelle wählt das Objekt. Freie
   Fläche zeigt im Format-Modus `cursor: pointer`, auch über dem

@@ -16,17 +16,16 @@
 }
 
 .button:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-text-primary);
   background: var(--color-surface-hover);
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
   cursor: pointer;
 }
 
 .button.is-active {
-  color: var(--color-accent);
+  color: var(--color-text-primary);
   background: var(--color-surface-active);
-  border-color: var(--color-border-accent);
-  box-shadow: var(--shadow-accent);
+  border-color: transparent;
 }
 
 .button-sm {

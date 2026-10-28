@@ -37,22 +37,6 @@
   justify-content: flex-start;
 }
 
-.collapsible-section.is-plain .collapsible-section-trigger .icon-badge {
-  color: inherit;
-}
-
-.collapsible-section.is-plain .collapsible-section-trigger .icon-badge-icon {
-  color: var(--color-accent);
-}
-
-.collapsible-section.is-plain
-  .collapsible-section-trigger
-  .icon-badge-icon
-  svg {
-  width: 14px;
-  height: 14px;
-}
-
 .collapsible-section-chevron {
   flex: none;
   min-width: var(--control-height-xs);

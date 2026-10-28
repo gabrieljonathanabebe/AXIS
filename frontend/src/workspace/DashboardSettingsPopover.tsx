@@ -1,12 +1,14 @@
 import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 
+import FillControls from '../shared/ui/FillControls'
 import FormatWidget from '../shared/ui/FormatWidget'
 import IconButton from '../shared/ui/IconButton'
 import LayoutControls from '../shared/ui/LayoutControls'
 import Popover from '../shared/ui/Popover'
 import AnimationWidget from './AnimationWidget'
 
+import type { Fill } from '../shared/fill'
 import type { CanvasActions, DashboardSpec } from './types'
 
 // ===== TYPES =================================================================
@@ -18,14 +20,20 @@ type DashboardSettingsPopoverProps = {
 // ===== COMPONENT =============================================================
 /**
  * Toolbar button with the settings of the whole dashboard: the gap between
- * objects and the animation of all charts. The name stays inline on the
- * canvas.
+ * objects, the canvas background and the animation of all charts. The name
+ * stays inline on the canvas.
  */
 function DashboardSettingsPopover({
   actions,
   dashboard,
 }: DashboardSettingsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false)
+
+  /** Changes the canvas background; the other canvas settings stay. */
+  function updateBackground(background: Fill): void {
+    actions.updateDashboard({ canvas: { ...dashboard.canvas, background } })
+  }
+
   return (
     <Popover
       className="format-popover glass glass-thick"
@@ -53,6 +61,14 @@ function DashboardSettingsPopover({
             label="Dashboard"
             value={dashboard.layout}
             onChange={actions.updateDashboardLayout}
+          />
+        </FormatWidget>
+        <FormatWidget title="Background">
+          <FillControls
+            label="Canvas background"
+            presets={[]}
+            value={dashboard.canvas.background}
+            onChange={updateBackground}
           />
         </FormatWidget>
         <AnimationWidget

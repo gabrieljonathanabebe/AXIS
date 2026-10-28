@@ -2,8 +2,8 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --color-background: #05070c;
-  --color-background-subtle: #0a0e16;
+  --color-background: #0e0f12;
+  --color-background-subtle: #16171b;
 
   --color-control-handle: #eef4ff;
 
@@ -11,10 +11,10 @@
   --color-surface-subtle: rgba(255, 255, 255, 0.025);
   --color-surface-default: rgba(255, 255, 255, 0.07);
   --color-surface-strong: rgba(255, 255, 255, 0.34);
-  --color-surface-overlay: rgba(8, 10, 14, 0.7);
+  --color-surface-overlay: rgba(18, 19, 22, 0.7);
 
-  --color-surface-hover: rgba(255, 255, 255, 0.09);
-  --color-surface-active: rgba(79, 156, 255, 0.18);
+  --color-surface-hover: rgba(255, 255, 255, 0.1);
+  --color-surface-active: rgba(255, 255, 255, 0.14);
 
   --color-text-primary: #eef4ff;
   --color-text-secondary: #a7afbd;
@@ -43,27 +43,14 @@
   --background-ambient:
     radial-gradient(
       ellipse 60% 50% at 12% 0%,
-      rgba(23, 139, 255, 0.1),
+      rgba(255, 255, 255, 0.04),
       transparent 70%
     ),
     radial-gradient(
       ellipse 50% 45% at 88% 100%,
-      rgba(139, 92, 246, 0.08),
+      rgba(255, 255, 255, 0.02),
       transparent 70%
     );
-
-  --canvas-background:
-    radial-gradient(
-      ellipse 70% 60% at 35% 0%,
-      rgba(23, 139, 255, 0.14),
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 60% 55% at 90% 100%,
-      rgba(139, 92, 246, 0.12),
-      transparent 70%
-    ),
-    rgba(255, 255, 255, 0.02);
 
   --glass-fill-thin: linear-gradient(
     180deg,
@@ -77,13 +64,13 @@
   );
   --glass-fill-thick: linear-gradient(
     180deg,
-    rgba(22, 26, 34, 0.84),
-    rgba(12, 15, 21, 0.8)
+    rgba(30, 32, 36, 0.84),
+    rgba(22, 24, 28, 0.8)
   );
   --glass-fill-elevated: linear-gradient(
     180deg,
-    rgba(36, 42, 54, 0.94),
-    rgba(26, 31, 41, 0.92)
+    rgba(32, 34, 38, 0.94),
+    rgba(25, 27, 31, 0.92)
   );
 
   --glass-border: linear-gradient(
@@ -111,16 +98,6 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.12),
     inset 0 -1px 1px rgba(255, 255, 255, 0.03);
 
-  --chart-fill-blue: linear-gradient(
-    180deg,
-    rgba(18, 42, 78, 0.86),
-    rgba(10, 26, 50, 0.82)
-  );
-  --chart-fill-violet: linear-gradient(
-    180deg,
-    rgba(44, 28, 78, 0.86),
-    rgba(26, 17, 50, 0.82)
-  );
   --chart-1: #199e8a;
   --chart-2: #d95926;
   --chart-3: #8f80ec;
@@ -146,7 +123,7 @@
   --color-surface-overlay: rgba(250, 253, 255, 0.84);
 
   --color-surface-hover: rgba(255, 255, 255, 0.68);
-  --color-surface-active: rgba(8, 127, 231, 0.13);
+  --color-surface-active: rgba(47, 72, 103, 0.1);
 
   --color-text-primary: #101828;
   --color-text-secondary: #667085;
@@ -175,38 +152,14 @@
   --background-ambient:
     radial-gradient(
       ellipse 60% 50% at 12% 0%,
-      rgba(8, 127, 231, 0.12),
+      rgba(255, 255, 255, 0.6),
       transparent 70%
     ),
     radial-gradient(
       ellipse 50% 45% at 88% 100%,
-      rgba(139, 92, 246, 0.08),
+      rgba(47, 72, 103, 0.06),
       transparent 70%
     );
-
-  --canvas-background:
-    radial-gradient(
-      ellipse 70% 60% at 35% 0%,
-      rgba(8, 127, 231, 0.12),
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 60% 55% at 90% 100%,
-      rgba(139, 92, 246, 0.1),
-      transparent 70%
-    ),
-    rgba(255, 255, 255, 0.3);
-
-  --chart-fill-blue: linear-gradient(
-    180deg,
-    rgba(214, 233, 255, 0.9),
-    rgba(196, 222, 252, 0.86)
-  );
-  --chart-fill-violet: linear-gradient(
-    180deg,
-    rgba(232, 222, 255, 0.9),
-    rgba(218, 205, 252, 0.86)
-  );
 
   --chart-1: #199e8a;
   --chart-2: #d95926;

@@ -2,7 +2,8 @@
 /**
  * Named color of the theme; a value with a token follows theme and
  * branding instead of keeping a fixed color. `chart1`–`chart5` are the
- * data colors of series and marks.
+ * data colors of series and marks, `accent` is the accent of the dashboard,
+ * not of the editor.
  */
 export type ColorToken =
   | 'accent'
@@ -27,7 +28,7 @@ export type ColorValue =
 // ===== CONSTANTS =============================================================
 /** CSS variable that holds each token, read by HTML and the chart theme. */
 export const COLOR_TOKEN_VARIABLES = {
-  accent: '--color-accent',
+  accent: '--dashboard-accent',
   border: '--chart-border',
   chart1: '--chart-1',
   chart2: '--chart-2',

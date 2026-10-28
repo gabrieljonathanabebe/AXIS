@@ -1,7 +1,6 @@
 .format-popover {
-  --glass-border: var(--color-border-accent);
   --glass-fill: var(--glass-fill-elevated);
-  --glass-shadow: var(--shadow-lg), var(--shadow-accent);
+  --glass-shadow: var(--shadow-lg);
 
   z-index: 100;
   display: flex;
@@ -23,5 +22,5 @@
 .format-popover-title {
   --cluster-gap: var(--space-2);
 
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
 }

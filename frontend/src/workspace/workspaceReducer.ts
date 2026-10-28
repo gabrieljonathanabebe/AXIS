@@ -33,6 +33,13 @@ export const DASHBOARD_ANIMATION: DashboardAnimation = {
 export const initialWorkspaceState: WorkspaceState = {
   dashboard: {
     animation: DASHBOARD_ANIMATION,
+    canvas: {
+      background: {
+        color: { kind: 'custom', color: '#141518' },
+        kind: 'solid',
+        opacity: 1,
+      },
+    },
     layout: {
       gap: 8,
     },

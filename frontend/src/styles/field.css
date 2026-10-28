@@ -9,7 +9,7 @@
 }
 
 .field:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
 }
 
 .field:focus-within {

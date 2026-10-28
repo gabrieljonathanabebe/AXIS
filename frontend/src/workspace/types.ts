@@ -16,6 +16,7 @@ import type {
   ObjectContainer,
   ObjectLayout,
 } from '../objects/types'
+import type { Fill } from '../shared/fill'
 import type { Layout } from '../shared/layout'
 
 // ===== STATE =================================================================
@@ -72,7 +73,7 @@ export type WorkspaceAction =
     }
   | {
       type: 'dashboard/update'
-      patch: Partial<Pick<DashboardSpec, 'animation' | 'name'>>
+      patch: Partial<Pick<DashboardSpec, 'animation' | 'canvas' | 'name'>>
     }
   | {
       type: 'dashboard/updateLayout'
@@ -130,7 +131,7 @@ export type CanvasActions = {
     value: ChartAppearanceSpec[TKey],
   ) => void
   updateDashboard: (
-    patch: Partial<Pick<DashboardSpec, 'animation' | 'name'>>,
+    patch: Partial<Pick<DashboardSpec, 'animation' | 'canvas' | 'name'>>,
   ) => void
   updateDashboardLayout: (patch: Partial<DashboardLayout>) => void
   updateObjectContainer: (
@@ -205,8 +206,14 @@ export type DashboardAnimation = {
 /** Spacing of the dashboard canvas, e.g. the gap between objects. */
 export type DashboardLayout = Pick<Layout, 'gap'>
 
+/** Formatting of the canvas the objects are placed on. */
+export type DashboardCanvas = {
+  background: Fill
+}
+
 export type DashboardSpec = {
   animation: DashboardAnimation
+  canvas: DashboardCanvas
   layout: DashboardLayout
   name: string
 }

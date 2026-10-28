@@ -30,13 +30,13 @@
 }
 
 .options-menu-item:hover {
-  color: var(--color-accent);
+  color: var(--color-text-primary);
   background: var(--color-surface-default);
   border-color: transparent;
 }
 
 .options-menu-item.is-active {
-  color: var(--color-accent);
+  color: var(--color-text-primary);
   background: var(--color-surface-active);
   border-color: transparent;
 }

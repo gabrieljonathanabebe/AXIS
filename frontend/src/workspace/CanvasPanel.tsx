@@ -2,12 +2,14 @@ import { LayoutDashboard } from 'lucide-react'
 
 import AskCevynBar from '../ai/AskCevynBar'
 import CommandButton from '../app/CommandButton'
+import { getColorCss } from '../shared/colorValue'
 import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import ChartGrid from './ChartGrid'
 import DashboardSettingsPopover from './DashboardSettingsPopover'
 
+import type { CSSProperties } from 'react'
 import type { AskCevynState } from '../ai/useAskCevyn'
 import type { WorkspaceCommands } from '../app/types'
 import type { DataField, Dataset } from '../datasets/types'
@@ -32,6 +34,15 @@ type CanvasPanelProps = {
   onRenameDashboard: (name: string) => void
 }
 
+type CanvasPanelStyle = CSSProperties & {
+  '--canvas-background': string
+  '--canvas-background-opacity': number
+}
+
+/**
+ * Canvas of the Visualize workspace: toolbar, dashboard name, objects and
+ * Ask Cevyn. Its background fill is painted on a layer behind the objects.
+ */
 function CanvasPanel({
   actions,
   askCevynState,
@@ -48,8 +59,13 @@ function CanvasPanel({
   onFormatElement,
   onRenameDashboard,
 }: CanvasPanelProps) {
+  const { background } = dashboard.canvas
+  const canvasStyle: CanvasPanelStyle = {
+    '--canvas-background': getColorCss(background.color),
+    '--canvas-background-opacity': background.opacity,
+  }
   return (
-    <Panel className="canvas-panel" isEmbedded isFilled>
+    <Panel className="canvas-panel" isEmbedded isFilled style={canvasStyle}>
       <div className="canvas-toolbar glass glass-thick">
         <CommandButton
           command={commands['history.undo']}

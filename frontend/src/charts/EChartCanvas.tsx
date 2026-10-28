@@ -26,6 +26,7 @@ import {
 import { syncFormatFocus } from './echarts/syncFormatFocus'
 import { syncFormatTooltip } from './echarts/syncFormatTooltip'
 import { useChartQuery } from './useChartQuery'
+import { useDocumentTheme } from './useDocumentTheme'
 import { usePointsQuery } from './usePointsQuery'
 
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
@@ -61,12 +62,18 @@ function readToken(styles: CSSStyleDeclaration, name: string): string {
   return styles.getPropertyValue(name).trim()
 }
 
+/**
+ * Reads a size token in pixels. Rem is resolved against the root font
+ * size, because the chart element may have its own.
+ */
 function readNumberToken(styles: CSSStyleDeclaration, name: string): number {
   const value = readToken(styles, name)
   const numericValue = Number.parseFloat(value)
 
   if (value.endsWith('rem')) {
-    const rootFontSize = Number.parseFloat(styles.fontSize)
+    const rootFontSize = Number.parseFloat(
+      getComputedStyle(document.documentElement).fontSize,
+    )
     return numericValue * rootFontSize
   }
 
@@ -75,7 +82,7 @@ function readNumberToken(styles: CSSStyleDeclaration, name: string): number {
 
 /**
  * Reads the current color of each token, so ECharts can resolve tokens.
- * @param styles Computed styles of the document root.
+ * @param styles Computed styles of the chart element.
  * @returns Color per token, e.g. the primary text color for `text`.
  */
 function readColorTokens(
@@ -87,12 +94,19 @@ function readColorTokens(
   return Object.fromEntries(entries) as Record<ColorToken, string>
 }
 
-function readChartTheme(): ChartTheme {
-  const styles = getComputedStyle(document.documentElement)
+/**
+ * Reads colors and sizes from the tokens at the chart element instead of
+ * the document root, so values set by a canvas preset reach the chart.
+ * @param element Container element of the chart.
+ * @returns Theme for the ECharts option and the format focus.
+ */
+function readChartTheme(element: HTMLElement): ChartTheme {
+  const styles = getComputedStyle(element)
   return {
-    accent: readToken(styles, '--color-accent'),
+    accent: readToken(styles, '--dashboard-accent'),
     axis: readToken(styles, '--color-border-strong'),
     colors: readColorTokens(styles),
+    formatFocus: readToken(styles, '--color-accent'),
     text: readToken(styles, '--color-text-primary'),
     textMuted: readToken(styles, '--color-text-secondary'),
     tooltip: {
@@ -131,6 +145,7 @@ function EChartCanvas({
 }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
+  const documentTheme = useDocumentTheme()
   const query = createChartQuery(chart, dataset.fields)
   const { result, isLoading, error } = useChartQuery(datasetId, query)
   const highlightQuery = createHighlightQuery(query, selection)
@@ -243,7 +258,7 @@ function EChartCanvas({
     if (!instance) {
       return
     }
-    const theme = readChartTheme()
+    const theme = readChartTheme(instance.getDom())
     instance.setOption(
       createEChartOption({
         animation,
@@ -260,7 +275,7 @@ function EChartCanvas({
       true,
     )
     syncBrush(instance, chart, selection, formattedElement !== null)
-    syncFormatFocus(instance, formattedElement, theme.accent)
+    syncFormatFocus(instance, formattedElement, theme.formatFocus)
     syncFormatTooltip(
       instance,
       formattedElement,
@@ -271,6 +286,7 @@ function EChartCanvas({
     animation,
     chart,
     dataset,
+    documentTheme,
     editingAxisTitle,
     formattedElement,
     highlightResult,

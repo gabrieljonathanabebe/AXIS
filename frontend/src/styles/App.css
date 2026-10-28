@@ -33,7 +33,13 @@
   grid-template-columns: var(--build-panel-width) minmax(0, 1fr);
   align-items: stretch;
   border-radius: var(--radius-lg);
+  overflow: hidden;
   transition: grid-template-columns var(--transition-fast);
+}
+
+/* The light edge of the workspace glass stays above the canvas fill. */
+.visualize-workspace::before {
+  z-index: 1;
 }
 
 .visualize-workspace.is-build-panel-collapsed {

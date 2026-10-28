@@ -17,7 +17,7 @@
 }
 
 .text-input:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
 }
 
 .text-input:focus {

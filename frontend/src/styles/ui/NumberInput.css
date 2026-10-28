@@ -15,7 +15,7 @@
 }
 
 .number-input:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--color-border-default);
 }
 
 .number-input:focus {

@@ -168,7 +168,7 @@ export function useChartWorkspace({
 
   /** Changes settings of the whole dashboard, e.g. the chart animation. */
   function updateDashboard(
-    patch: Partial<Pick<DashboardSpec, 'animation' | 'name'>>,
+    patch: Partial<Pick<DashboardSpec, 'animation' | 'canvas' | 'name'>>,
   ): void {
     dispatch({ type: 'dashboard/update', patch })
   }

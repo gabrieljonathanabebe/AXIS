@@ -24,12 +24,7 @@ import type {
   DragPayload,
   ObjectLayoutMode,
 } from '../workspace/types'
-import type {
-  DashboardObject,
-  ElementRect,
-  ObjectBackground,
-  ObjectFormatElement,
-} from './types'
+import type { DashboardObject, ElementRect, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
 /** The element under the pointer; in format mode it shows its region. */
@@ -46,7 +41,8 @@ export type ShowFormatHint = (
 
 type ObjectFrameStyle = CSSProperties & {
   '--chart-canvas-inset': string
-  '--chart-background'?: string
+  '--chart-background': string
+  '--chart-background-opacity': number
   '--chart-radius': string
 }
 
@@ -103,14 +99,6 @@ const formatRegionLabels: Record<ObjectFormatElement, string> = {
   xAxisLabels: 'Format X axis labels',
   yAxis: 'Format Y axis',
   yAxisLabels: 'Format Y axis labels',
-}
-
-const backgroundClassNames: Record<ObjectBackground['kind'], string> = {
-  blue: 'glass is-background-blue',
-  color: 'glass is-background-color',
-  glass: 'glass glass-liquid',
-  surface: 'glass',
-  violet: 'glass is-background-violet',
 }
 
 const arrowKeyDeltas: Partial<Record<string, GridDelta>> = {
@@ -189,8 +177,8 @@ function ObjectFrame({
   const frameStyle: ObjectFrameStyle = {
     ...style,
     '--chart-canvas-inset': `${container.layout.padding}px`,
-    '--chart-background':
-      background.kind === 'color' ? getColorCss(background.color) : undefined,
+    '--chart-background': getColorCss(background.color),
+    '--chart-background-opacity': background.opacity,
     '--chart-radius': `${container.borderRadius}px`,
   }
 
@@ -284,9 +272,7 @@ function ObjectFrame({
   return (
     <div
       aria-label={label}
-      className={`chart-item ${backgroundClassNames[background.kind]} ${
-        isSelected ? 'is-selected' : ''
-      }`}
+      className={`chart-item ${isSelected ? 'is-selected' : ''}`}
       data-object-id={object.id}
       ref={frameRef}
       role="group"
@@ -299,6 +285,7 @@ function ObjectFrame({
       onPointerLeave={() => setFormatHint(null)}
       onPointerMove={isFormatMode ? moveFormatLabel : undefined}
     >
+      <span aria-hidden="true" className="chart-item-background" />
       {children(showFormatHint)}
       {container.border.width > 0 ? (
         <span

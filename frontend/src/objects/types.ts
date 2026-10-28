@@ -4,7 +4,7 @@ import type {
   ChartInstance,
   ChartType,
 } from '../charts/types'
-import type { ColorValue } from '../shared/colorValue'
+import type { Fill } from '../shared/fill'
 import type { Layout } from '../shared/layout'
 import type { StrokeStyle } from '../shared/strokeStyle'
 import type { TextStyle } from '../shared/textStyle'
@@ -41,16 +41,11 @@ export type ObjectSize = Pick<ObjectLayout, 'height' | 'width'>
 // ===== CONTAINER =============================================================
 /** Formatting of the container around an object's content. */
 export type ObjectContainer = {
-  background: ObjectBackground
+  background: Fill
   border: StrokeStyle
   layout: Pick<Layout, 'padding'>
   borderRadius: number
 }
-
-export type ObjectBackground =
-  { kind: ObjectBackgroundPreset } | { kind: 'color'; color: ColorValue }
-
-export type ObjectBackgroundPreset = 'surface' | 'glass' | 'blue' | 'violet'
 
 /** Changes one property of a container, e.g. its border. */
 export type SetContainer = <TKey extends keyof ObjectContainer>(

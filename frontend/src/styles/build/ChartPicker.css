@@ -17,7 +17,7 @@
   align-content: center;
   aspect-ratio: 1;
   padding: var(--space-2);
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
   border-radius: var(--radius-sm);
 }
 
@@ -28,10 +28,6 @@
 
 .chart-type-option:hover .chart-type-option-label {
   color: var(--color-text-primary);
-}
-
-.chart-type-more {
-  color: var(--color-text-secondary);
 }
 
 .chart-type-more:disabled:hover {

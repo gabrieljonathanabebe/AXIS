@@ -14,15 +14,14 @@
 .widget.is-interactive:hover {
   --widget-surface: var(--color-surface-hover);
 
-  color: var(--color-accent-hover);
-  border-color: var(--color-border-accent);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
   cursor: pointer;
 }
 
 .widget.is-interactive.is-active {
   --widget-surface: var(--color-surface-active);
 
-  color: var(--color-accent);
-  border-color: var(--color-border-accent);
-  box-shadow: var(--shadow-accent);
+  color: var(--color-text-primary);
+  border-color: transparent;
 }
