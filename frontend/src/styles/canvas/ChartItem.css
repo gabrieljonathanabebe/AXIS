@@ -51,14 +51,17 @@
   outline: none;
 }
 
-/* Border of the container: drawn inside the frame over the content, under
-   regions, handles and the selection ring. Color, style, width and opacity
-   come inline from its stroke style. */
+/* Border of the container as SVG: drawn inside the frame over the content,
+   under regions, handles and the selection ring. The SVG sits half a
+   stroke inside the frame, so the stroke ends at its edge. */
 .chart-item-border {
   position: absolute;
-  inset: 0;
+  top: var(--chart-border-inset);
+  left: var(--chart-border-inset);
   z-index: 2;
-  border-radius: inherit;
+  width: calc(100% - 2 * var(--chart-border-inset));
+  height: calc(100% - 2 * var(--chart-border-inset));
+  overflow: visible;
   pointer-events: none;
 }
 

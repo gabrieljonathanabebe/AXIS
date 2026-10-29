@@ -1,5 +1,6 @@
 import { SquareRoundCorner } from 'lucide-react'
 
+import { getPaintColor } from '../shared/paint'
 import ControlRow from '../shared/ui/ControlRow'
 import FillControls from '../shared/ui/FillControls'
 import FormatWidget from '../shared/ui/FormatWidget'
@@ -55,7 +56,7 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
       </FormatWidget>
       <FormatWidget title="Border">
         <StrokeStyleControls
-          defaultColor={CONTAINER_BORDER.color}
+          defaultColor={getPaintColor(CONTAINER_BORDER.paint)}
           label="Container border"
           value={value.border}
           onChange={(border) => onChange('border', border)}

@@ -1,7 +1,0 @@
-.rotation-dial-needle {
-  display: block;
-  width: 12px;
-  height: 2px;
-  background: currentColor;
-  border-radius: var(--radius-pill);
-}

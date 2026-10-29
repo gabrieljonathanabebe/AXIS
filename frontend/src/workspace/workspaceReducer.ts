@@ -35,9 +35,8 @@ export const initialWorkspaceState: WorkspaceState = {
     animation: DASHBOARD_ANIMATION,
     canvas: {
       background: {
-        color: { kind: 'custom', color: '#141518' },
-        kind: 'solid',
         opacity: 1,
+        paint: { color: { kind: 'custom', color: '#141518' }, kind: 'solid' },
       },
     },
     layout: {

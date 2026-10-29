@@ -1,0 +1,22 @@
+/* Paint type as its own result: a filled square, a fade from left to
+   right or from the center outward. */
+.paint-type-preview {
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: auto;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+}
+
+.paint-type-preview.is-solid {
+  background: currentColor;
+}
+
+.paint-type-preview.is-linear {
+  background: linear-gradient(90deg, currentColor, transparent);
+}
+
+.paint-type-preview.is-radial {
+  background: radial-gradient(closest-side, currentColor, transparent);
+}

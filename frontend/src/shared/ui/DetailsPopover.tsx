@@ -5,24 +5,36 @@ import IconButton from './IconButton'
 import Popover from './Popover'
 
 import type { ReactNode } from 'react'
+import type { IconButtonSize } from './IconButton'
 
 // ===== TYPES =================================================================
 type DetailsPopoverProps = {
+  actions?: ReactNode
   children: ReactNode
   label: string
+  size?: IconButtonSize
 }
 
 // ===== COMPONENT =============================================================
 /**
- * Gear at the end of a row that opens its rare settings in a small popover
- * below it, e.g. prefix and suffix of a number format. Inside the format
+ * Gear that opens rare settings in a small popover below it, e.g. prefix
+ * and suffix of a number format. `actions` stand in its header before the
+ * close button, e.g. a plus that adds a row; `size` fits the gear to its
+ * place, e.g. `xs` in the header of a format widget. Inside the format
  * popover it nests, so a click in the details keeps both open.
- * @param props Rows of the details and their name, e.g. "Number format".
+ * @param props Rows of the details, their name, e.g. "Number format",
+ * header actions and size of the gear.
  */
-function DetailsPopover({ children, label }: DetailsPopoverProps) {
+function DetailsPopover({
+  actions,
+  children,
+  label,
+  size = 'sm',
+}: DetailsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false)
   return (
     <Popover
+      actions={actions}
       label={label}
       open={isOpen}
       className="details-popover glass glass-thick"
@@ -33,7 +45,7 @@ function DetailsPopover({ children, label }: DetailsPopoverProps) {
           {...triggerProps}
           isActive={isOpen}
           label={`Advanced ${label.toLowerCase()}`}
-          size="sm"
+          size={size}
           variant="ghost"
           onClick={() => setIsOpen((currentValue) => !currentValue)}
         >

@@ -1,28 +1,18 @@
-import type { ColorValue } from './colorValue'
+import type { Paint, SeriesPaint } from './paint'
 
 // ===== TYPES =================================================================
 /**
- * How an area is filled with its own color. Only solid exists for now;
- * gradients or patterns become further kinds without changing this one.
+ * How an area is filled: its paint, solid or a gradient, and the opacity
+ * of the whole paint. `TPaint` is a paint with its own color unless the
+ * fill takes the color of its series.
  */
-export type Fill = {
-  color: ColorValue
-  kind: 'solid'
+export type Fill<TPaint extends Paint | SeriesPaint = Paint> = {
   opacity: number
+  paint: TPaint
 }
 
 /**
  * Fill of a data series, e.g. the area below a line or scatter points;
  * its color comes from the series.
  */
-export type SeriesFill = Omit<Fill, 'color'>
-
-// ===== FUNCTIONS =============================================================
-/**
- * Tells a fill with its own color from a series fill.
- * @param fill Fill, e.g. of a line area or of scatter points.
- * @returns True when the fill carries a color.
- */
-export function hasFillColor(fill: SeriesFill): fill is Fill {
-  return 'color' in fill
-}
+export type SeriesFill = Fill<SeriesPaint>

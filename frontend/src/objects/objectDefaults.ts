@@ -13,9 +13,9 @@ export const TITLE_TEXT_STYLE: TextStyle = {
 
 /** Default container border; hidden until the user gives it a width. */
 export const CONTAINER_BORDER: StrokeStyle = {
-  color: { kind: 'token', token: 'border' },
   lineStyle: 'solid',
   opacity: 1,
+  paint: { color: { kind: 'token', token: 'border' }, kind: 'solid' },
   width: 0,
 }
 
@@ -34,9 +34,8 @@ export function createDefaultTitle(): ObjectTitleAppearance {
 export function createDefaultContainer(): ObjectContainer {
   return {
     background: {
-      color: { kind: 'custom', color: '#202226' },
-      kind: 'solid',
       opacity: 1,
+      paint: { color: { kind: 'custom', color: '#202226' }, kind: 'solid' },
     },
     border: CONTAINER_BORDER,
     borderRadius: 24,

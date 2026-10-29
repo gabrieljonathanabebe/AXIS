@@ -1,45 +1,20 @@
-import { getColorCss } from './colorValue'
-
-import type { CSSProperties } from 'react'
-import type { ColorValue } from './colorValue'
+import type { Paint, SeriesPaint } from './paint'
 
 // ===== TYPES =================================================================
-/** How a line is dashed; ECharts and CSS both know these values. */
+/** How a line is dashed; ECharts and SVG both know these values. */
 export type LineStyle = 'solid' | 'dashed' | 'dotted'
 
-/** How a line or outline looks, e.g. the border of a container. */
-export type StrokeStyle = {
-  color: ColorValue
+/**
+ * How a line or outline looks, e.g. the border of a container: its paint
+ * like a fill, its dash and width. `TPaint` is a paint with its own color
+ * unless the stroke takes the color of its series.
+ */
+export type StrokeStyle<TPaint extends Paint | SeriesPaint = Paint> = {
   lineStyle: LineStyle
   opacity: number
+  paint: TPaint
   width: number
 }
 
 /** Stroke of a data series, e.g. a line; its color comes from the series. */
-export type SeriesStrokeStyle = Omit<StrokeStyle, 'color'>
-
-// ===== FUNCTIONS =============================================================
-/**
- * Turns a stroke style into a CSS border for HTML elements.
- * @param style Stroke style, e.g. the border of a container.
- * @returns Color, style and width as border, the opacity as element opacity.
- */
-export function getStrokeBorderCss(style: StrokeStyle): CSSProperties {
-  return {
-    borderColor: getColorCss(style.color),
-    borderStyle: style.lineStyle,
-    borderWidth: style.width,
-    opacity: style.opacity,
-  }
-}
-
-/**
- * Tells a stroke with its own color from a series stroke.
- * @param stroke Stroke style, e.g. of gridlines or a line mark.
- * @returns True when the stroke carries a color.
- */
-export function hasStrokeColor(
-  stroke: SeriesStrokeStyle,
-): stroke is StrokeStyle {
-  return 'color' in stroke
-}
+export type SeriesStrokeStyle = StrokeStyle<SeriesPaint>

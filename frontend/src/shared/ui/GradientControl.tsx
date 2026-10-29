@@ -1,65 +1,76 @@
-import { getColorCss } from '../colorValue'
+import { getGradientStopsCss, getSortedStops } from '../paint'
 import ColorControl from './ColorControl'
 import { DATA_COLOR_PRESETS } from './colorPresets'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '../colorValue'
+import type { GradientStop } from '../paint'
+import type { ColorPreset } from './ColorControl'
 
+// ===== TYPES =================================================================
 type GradientControlProps = {
   label: string
-  startColor: ColorValue
-  endColor: ColorValue
-  onChange: (colors: { startColor: ColorValue; endColor: ColorValue }) => void
+  presets?: ColorPreset[]
+  stops: GradientStop[]
+  onChange: (stops: GradientStop[]) => void
 }
 
 type GradientStyle = CSSProperties & {
-  '--gradient-start': string
-  '--gradient-end': string
+  '--gradient-stops': string
 }
 
+// ===== COMPONENT =============================================================
 /**
- * Two colors with the gradient between them, e.g. of a continuous data
- * color; each end opens the color picker.
- * @param props Name, start and end color and their handler.
+ * Field of a gradient: the colors of its first and last stop with the
+ * gradient between them, e.g. of a continuous data color or a fill. Each
+ * end opens the color picker; stops in between show in the preview.
+ * @param props Name, swatches, stops and their handler.
  */
 function GradientControl({
   label,
-  startColor,
-  endColor,
+  presets = DATA_COLOR_PRESETS,
+  stops,
   onChange,
 }: GradientControlProps) {
   // ===== LOCAL CONSTANTS =====================================================
+  const sortedStops = getSortedStops(stops)
+  const firstStop = sortedStops[0]
+  const lastStop = sortedStops[sortedStops.length - 1]
   const style: GradientStyle = {
-    '--gradient-start': getColorCss(startColor),
-    '--gradient-end': getColorCss(endColor),
+    '--gradient-stops': getGradientStopsCss(stops),
   }
+
+  // ===== FUNCTIONS ===========================================================
+  /**
+   * Changes the color of one stop; the other stops stay.
+   * @param stop Stop whose color changes.
+   * @param color New color of the stop.
+   */
+  function setStopColor(stop: GradientStop, color: ColorValue): void {
+    onChange(
+      stops.map((current) =>
+        current === stop ? { ...current, color } : current,
+      ),
+    )
+  }
+
   // ===== JSX RETURN ==========================================================
   return (
     <div className="field gradient-control" aria-label={label} style={style}>
       <ColorControl
-        label={`${label} low color`}
-        presets={DATA_COLOR_PRESETS}
-        value={startColor}
+        label={`${label} start color`}
+        presets={presets}
+        value={firstStop.color}
         variant="compact"
-        onChange={(nextStartColor) => {
-          onChange({
-            startColor: nextStartColor,
-            endColor,
-          })
-        }}
+        onChange={(color) => setStopColor(firstStop, color)}
       />
       <div className="gradient-control-preview" aria-hidden="true" />
       <ColorControl
-        label={`${label} high color`}
-        presets={DATA_COLOR_PRESETS}
-        value={endColor}
+        label={`${label} end color`}
+        presets={presets}
+        value={lastStop.color}
         variant="compact"
-        onChange={(nextEndColor) => {
-          onChange({
-            startColor,
-            endColor: nextEndColor,
-          })
-        }}
+        onChange={(color) => setStopColor(lastStop, color)}
       />
     </div>
   )

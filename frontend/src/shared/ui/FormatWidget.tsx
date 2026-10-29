@@ -1,5 +1,7 @@
 import { Eye, EyeOff, Paintbrush, Plus } from 'lucide-react'
+import { useState } from 'react'
 
+import { FormatWidgetActionSlot } from './formatWidgetSlot'
 import IconButton from './IconButton'
 
 import type { ReactNode } from 'react'
@@ -25,8 +27,9 @@ type FormatWidgetProps = {
  * small heading; a visibility becomes an eye on its right, which also
  * shows or hides the rows, `onAdd` a plus that adds what the rows edit,
  * e.g. an effect, and `onFormat` a paintbrush that opens another element.
- * Without a title the rows stand alone, e.g. in a section of the build
- * panel.
+ * Rows can put their own action at the right end of the header with
+ * `FormatWidgetAction`, e.g. the gear of a paint. Without a title the rows
+ * stand alone, e.g. in a section of the build panel.
  * @param props Rows, optional title, visibility, add and format action.
  */
 function FormatWidget({
@@ -36,6 +39,7 @@ function FormatWidget({
   onAdd,
   onFormat,
 }: FormatWidgetProps) {
+  const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null)
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsRows = visibility?.visible ?? true
   return (
@@ -74,11 +78,16 @@ function FormatWidget({
                 <Paintbrush size={14} />
               </IconButton>
             ) : null}
+            <span ref={setActionSlot} className="format-widget-actions" />
           </span>
         </div>
       ) : null}
       {showsRows && children ? (
-        <div className="format-widget-content stack">{children}</div>
+        <div className="format-widget-content stack">
+          <FormatWidgetActionSlot value={actionSlot}>
+            {children}
+          </FormatWidgetActionSlot>
+        </div>
       ) : null}
     </div>
   )

@@ -14,6 +14,18 @@
   min-height: 24px;
 }
 
+/* Slot for actions of the rows, e.g. the gear of a paint; its buttons join
+   the cluster as if they were its own. */
+.format-widget-actions {
+  display: contents;
+}
+
+/* Header actions keep the height of an icon button, so a gear that
+   appears, e.g. for a gradient, does not push the rows down. */
+.format-widget-header > .cluster {
+  min-height: var(--control-height-xs);
+}
+
 .format-widget-title {
   color: var(--color-text-secondary);
   font-size: var(--font-size-2xs);

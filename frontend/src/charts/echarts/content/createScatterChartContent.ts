@@ -98,13 +98,12 @@ function createScatterSeries({
       y: 1,
     },
     itemStyle: {
-      ...createFillOption(appearance.scatter.fill, theme),
+      ...createFillOption(appearance.scatter.fill, theme, itemColor),
       ...createBorderOption(appearance.scatter.border, theme),
       ...createEffectOption(
         appearance.scatter.effect,
         canGlow ? itemColor : undefined,
       ),
-      color: itemColor,
     },
     label: createSeriesLabelOption(
       appearance.labels,

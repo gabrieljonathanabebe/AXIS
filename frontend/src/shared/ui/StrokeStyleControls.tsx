@@ -1,6 +1,5 @@
 import { Equal } from 'lucide-react'
 
-import { hasStrokeColor } from '../strokeStyle'
 import { createStyleColorPresets } from './colorPresets'
 import ControlRow from './ControlRow'
 import PaintControl from './PaintControl'
@@ -9,15 +8,19 @@ import SegmentedControl from './SegmentedControl'
 
 import type { ReactNode } from 'react'
 import type { ColorValue } from '../colorValue'
-import type { LineStyle, SeriesStrokeStyle } from '../strokeStyle'
+import type { Paint, PaintType, SeriesPaint } from '../paint'
+import type { LineStyle, StrokeStyle } from '../strokeStyle'
 
 // ===== TYPES =================================================================
-type StrokeStyleControlsProps<TStroke extends SeriesStrokeStyle> = {
+type StrokeStyleControlsProps<
+  TStroke extends StrokeStyle<Paint | SeriesPaint>,
+> = {
   defaultColor?: ColorValue
   details?: ReactNode
   label: string
   maxWidth?: number
   minWidth?: number
+  paintTypes?: PaintType[]
   seriesColor?: ReactNode
   value: TStroke
   onChange: (value: TStroke) => void
@@ -32,18 +35,19 @@ const lineStyleOptions = [
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of one stroke, e.g. a border: width and line style, then color,
- * opacity and the gear of `details`, if given. Widgets place them next to
- * their own rows and pass the color the stroke gets when created as
- * `defaultColor`; a stroke without a color, e.g. a series line, shows
- * `seriesColor` in its place.
+ * Rows of one stroke, e.g. a border: width and line style, then the rows
+ * of its paint (`PaintControl`) with type, color, opacity and the gear of
+ * `details`, if given. Widgets place them next to their own rows and pass
+ * the color the stroke gets when created as `defaultColor`; a stroke in
+ * the series color, e.g. a line mark, shows `seriesColor` in its place.
  */
-function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
+function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
   defaultColor,
   details,
   label,
   maxWidth = 8,
   minWidth = 0,
+  paintTypes,
   seriesColor,
   value,
   onChange,
@@ -76,20 +80,13 @@ function StrokeStyleControls<TStroke extends SeriesStrokeStyle>({
         />
       </ControlRow>
       <PaintControl
-        color={
-          hasStrokeColor(value) && defaultColor
-            ? {
-                presets: createStyleColorPresets(defaultColor),
-                value: value.color,
-                onChange: (color) => onChange({ ...value, color }),
-              }
-            : undefined
-        }
         details={details}
         label={label}
-        opacity={value.opacity}
+        paintTypes={paintTypes}
+        presets={defaultColor ? createStyleColorPresets(defaultColor) : []}
         seriesColor={seriesColor}
-        onOpacityChange={(opacity) => onChange({ ...value, opacity })}
+        value={value}
+        onChange={onChange}
       />
     </>
   )

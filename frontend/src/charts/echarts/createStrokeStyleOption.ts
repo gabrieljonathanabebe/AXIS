@@ -1,6 +1,5 @@
-import { color } from 'echarts'
-
-import { resolveColor } from './resolveColor'
+import { hasOwnColor } from '../../shared/paint'
+import { createPaintColor, createSeriesPaintColor } from './createPaintColor'
 
 import type {
   LineStyle,
@@ -8,18 +7,19 @@ import type {
   StrokeStyle,
 } from '../../shared/strokeStyle'
 import type { ChartTheme } from './chartTheme'
+import type { PaintColor } from './createPaintColor'
 
 // ===== TYPES =================================================================
 /** Border fields of ECharts in the item style of a filled mark. */
 type BorderOption = {
-  borderColor: string
+  borderColor: PaintColor
   borderType: LineStyle
   borderWidth: number
 }
 
 /** Line fields that gridlines and series lines share. */
 type StrokeStyleOption = {
-  color?: string
+  color?: PaintColor
   opacity: number
   type: LineStyle
   width: number
@@ -28,37 +28,39 @@ type StrokeStyleOption = {
 // ===== FUNCTIONS =============================================================
 /**
  * Translates a border of the spec into ECharts item style fields. Item
- * styles have no border opacity, so the opacity goes into the color.
+ * styles have no border opacity, so the opacity goes into the colors.
  * @param border Border of one mark, e.g. of a bar or a pie segment.
  * @param theme Chart theme that resolves a token color.
- * @returns Color with opacity, dash type and width of the border.
+ * @returns Color or gradient with opacity, dash type and width.
  */
 export function createBorderOption(
   border: StrokeStyle,
   theme: ChartTheme,
 ): BorderOption {
   return {
-    borderColor: color.modifyAlpha(
-      resolveColor(border.color, theme),
-      border.opacity,
-    ),
+    borderColor: createPaintColor(border.paint, theme, border.opacity),
     borderType: border.lineStyle,
     borderWidth: border.width,
   }
 }
 
 /**
- * Translates a stroke style of the spec into ECharts line fields.
- * @param style Stroke style of one chart element; a series stroke has no color.
+ * Translates a stroke style of the spec into ECharts line fields; a series
+ * stroke takes the color of its series, solid or as a fade.
+ * @param style Stroke style of one chart element, e.g. gridlines or a line.
  * @param theme Chart theme that resolves a token color.
- * @returns Color, opacity, dash type and width for ECharts.
+ * @param seriesColor Resolved color of the series, for a series stroke.
+ * @returns Color or gradient, opacity, dash type and width for ECharts.
  */
 export function createStrokeStyleOption(
   style: SeriesStrokeStyle | StrokeStyle,
   theme: ChartTheme,
+  seriesColor?: string,
 ): StrokeStyleOption {
   return {
-    color: 'color' in style ? resolveColor(style.color, theme) : undefined,
+    color: hasOwnColor(style.paint)
+      ? createPaintColor(style.paint, theme)
+      : createSeriesPaintColor(style.paint, seriesColor),
     opacity: style.opacity,
     type: style.lineStyle,
     width: style.width,

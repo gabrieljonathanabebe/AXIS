@@ -3,9 +3,9 @@ import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
-import { getColorCss } from '../shared/colorValue'
-import { getStrokeBorderCss } from '../shared/strokeStyle'
+import { getPaintCss } from '../shared/paint'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
+import ContainerBorder from './ContainerBorder'
 import { getRectStyle } from './elementRect'
 import { getObjectDefinition } from './objectDefinitions'
 
@@ -177,7 +177,7 @@ function ObjectFrame({
   const frameStyle: ObjectFrameStyle = {
     ...style,
     '--chart-canvas-inset': `${container.layout.padding}px`,
-    '--chart-background': getColorCss(background.color),
+    '--chart-background': getPaintCss(background.paint),
     '--chart-background-opacity': background.opacity,
     '--chart-radius': `${container.borderRadius}px`,
   }
@@ -288,10 +288,9 @@ function ObjectFrame({
       <span aria-hidden="true" className="chart-item-background" />
       {children(showFormatHint)}
       {container.border.width > 0 ? (
-        <span
-          aria-hidden="true"
-          className="chart-item-border"
-          style={getStrokeBorderCss(container.border)}
+        <ContainerBorder
+          radius={container.borderRadius}
+          stroke={container.border}
         />
       ) : null}
       {isFormatMode && formatHint ? (

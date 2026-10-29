@@ -1,29 +1,34 @@
-import { hasFillColor } from '../../shared/fill'
-import { resolveColor } from './resolveColor'
+import { hasOwnColor } from '../../shared/paint'
+import { createPaintColor, createSeriesPaintColor } from './createPaintColor'
 
 import type { Fill, SeriesFill } from '../../shared/fill'
 import type { ChartTheme } from './chartTheme'
+import type { PaintColor } from './createPaintColor'
 
 /** Fill fields of ECharts, e.g. an area style or the item style of points. */
 type FillOption = {
-  color?: string
+  color?: PaintColor
   opacity: number
 }
 
 // ===== FUNCTION ==============================================================
 /**
- * Translates a fill of the spec into ECharts fields; a series fill has no
- * color, the caller sets the series color.
+ * Translates a fill of the spec into ECharts fields; a series fill takes
+ * the color of its series, solid or as a fade.
  * @param fill Fill of one chart element, e.g. the area below a line.
  * @param theme Chart theme that resolves a token color.
- * @returns Color and opacity for ECharts.
+ * @param seriesColor Resolved color of the series, for a series fill.
+ * @returns Color or gradient and opacity for ECharts.
  */
 export function createFillOption(
   fill: SeriesFill | Fill,
   theme: ChartTheme,
+  seriesColor?: string,
 ): FillOption {
   return {
-    color: hasFillColor(fill) ? resolveColor(fill.color, theme) : undefined,
+    color: hasOwnColor(fill.paint)
+      ? createPaintColor(fill.paint, theme)
+      : createSeriesPaintColor(fill.paint, seriesColor),
     opacity: fill.opacity,
   }
 }

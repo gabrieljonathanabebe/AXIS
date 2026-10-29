@@ -2,7 +2,7 @@ import { LayoutDashboard } from 'lucide-react'
 
 import AskCevynBar from '../ai/AskCevynBar'
 import CommandButton from '../app/CommandButton'
-import { getColorCss } from '../shared/colorValue'
+import { getPaintCss } from '../shared/paint'
 import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
@@ -61,7 +61,7 @@ function CanvasPanel({
 }: CanvasPanelProps) {
   const { background } = dashboard.canvas
   const canvasStyle: CanvasPanelStyle = {
-    '--canvas-background': getColorCss(background.color),
+    '--canvas-background': getPaintCss(background.paint),
     '--canvas-background-opacity': background.opacity,
   }
   return (

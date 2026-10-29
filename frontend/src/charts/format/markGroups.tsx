@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 
 import { createEffect } from '../../shared/effect'
+import { getPaintColor } from '../../shared/paint'
 import ColorField from '../../shared/ui/ColorField'
 import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
 import ControlRow from '../../shared/ui/ControlRow'
@@ -35,6 +36,7 @@ import { getColorEncodingMode } from '../getColorEncodingMode'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Effect } from '../../shared/effect'
+import type { PaintType } from '../../shared/paint'
 import type { FormatVisibility } from '../../shared/ui/FormatWidget'
 import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type {
@@ -62,9 +64,13 @@ type ElementChange = (element: ChartFormatElement) => void
 
 /**
  * Data color of the marks: its field, and for a continuous scale its range
- * behind a gear.
+ * behind a gear and the paint types it allows.
  */
-type DataColorControls = { details?: ReactNode; field: ReactNode }
+type DataColorControls = {
+  details?: ReactNode
+  field: ReactNode
+  paintTypes?: PaintType[]
+}
 
 /** Course of a line between its points: straight or a smooth curve. */
 type LineCurve = 'smooth' | 'straight'
@@ -139,7 +145,8 @@ function getElementLinkGroup(
 /**
  * Data color in the color row of the marks: one color, a palette for
  * categories, or a gradient when a continuous field colors the marks; the
- * gradient brings the range of its scale behind a gear.
+ * gradient brings the range of its scale behind a gear and allows only
+ * solid paints, since its visual map colors every mark itself.
  * @param formatProps Actions, chart and fields of the chart.
  * @returns The field of the color mode and, for a gradient, its details.
  */
@@ -197,7 +204,7 @@ function getDataColorControls({
 
   return {
     details: (
-      <DetailsPopover label="Color range">
+      <DetailsPopover label="Color range" size="xs">
         <ControlRow>
           <ScrubbableNumber
             icon={<ArrowDownToLine size={14} />}
@@ -221,11 +228,16 @@ function getDataColorControls({
     field: (
       <GradientControl
         label="Chart"
-        startColor={continuous.startColor}
-        endColor={continuous.endColor}
-        onChange={setContinuous}
+        stops={[
+          { color: continuous.startColor, opacity: 1, position: 0 },
+          { color: continuous.endColor, opacity: 1, position: 1 },
+        ]}
+        onChange={([start, end]) => {
+          setContinuous({ endColor: end.color, startColor: start.color })
+        }}
       />
     ),
+    paintTypes: ['solid'],
   }
 }
 
@@ -280,6 +292,7 @@ function getFilledMarkGroups(
         <FillControls
           details={dataColor.details}
           label={`${label} fill`}
+          paintTypes={dataColor.paintTypes}
           seriesColor={dataColor.field}
           value={fill}
           onChange={(value) => actions.setChartAppearance(mark, 'fill', value)}
@@ -292,7 +305,7 @@ function getFilledMarkGroups(
     stroke: (
       <FormatWidget title="Border">
         <StrokeStyleControls
-          defaultColor={CHART_MARK_BORDER.color}
+          defaultColor={getPaintColor(CHART_MARK_BORDER.paint)}
           label={`${label} border`}
           value={border}
           onChange={(value) =>
@@ -393,6 +406,7 @@ function getChartTypeGroups(
               details={dataColor.details}
               label="Line"
               minWidth={1}
+              paintTypes={dataColor.paintTypes}
               seriesColor={dataColor.field}
               value={line.stroke}
               onChange={(stroke) => {

@@ -11,10 +11,20 @@
 
 .gradient-control-preview {
   height: 10px;
-  background: linear-gradient(
-    90deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: linear-gradient(90deg, var(--gradient-stops));
   border-radius: var(--radius-pill);
+}
+
+/* Stop list behind the gear of a gradient: swatch | position | opacity | −;
+   the plus in the header of its popover adds a stop. */
+.gradient-stops {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.gradient-stop {
+  display: grid;
+  grid-template-columns: 20px repeat(2, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: var(--space-1);
 }

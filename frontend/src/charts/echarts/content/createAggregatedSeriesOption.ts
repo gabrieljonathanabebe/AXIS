@@ -97,8 +97,7 @@ export function createAggregatedSeriesOption({
     return {
       areaStyle: appearance.line.areaFill
         ? {
-            ...createFillOption(appearance.line.area, theme),
-            color,
+            ...createFillOption(appearance.line.area, theme, color),
             opacity: appearance.line.area.opacity * (opacity ?? 1),
           }
         : undefined,
@@ -109,9 +108,8 @@ export function createAggregatedSeriesOption({
       label,
       labelLayout: { hideOverlap: true },
       lineStyle: {
-        ...createStrokeStyleOption(appearance.line.stroke, theme),
+        ...createStrokeStyleOption(appearance.line.stroke, theme, color),
         ...createEffectOption(appearance.line.effect, glowColor),
-        color,
         opacity: appearance.line.stroke.opacity * (opacity ?? 1),
       },
       name: name ?? undefined,
@@ -135,11 +133,10 @@ export function createAggregatedSeriesOption({
       : undefined,
     id,
     itemStyle: {
-      ...createFillOption(appearance.bar.fill, theme),
+      ...createFillOption(appearance.bar.fill, theme, color),
       ...createBorderOption(appearance.bar.border, theme),
       ...createEffectOption(appearance.bar.effect, glowColor),
       borderRadius: appearance.bar.borderRadius,
-      color,
       opacity: appearance.bar.fill.opacity * (opacity ?? 1),
     },
     label,

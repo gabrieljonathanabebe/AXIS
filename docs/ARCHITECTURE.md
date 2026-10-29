@@ -368,43 +368,114 @@ Ausrichtung und Position liegen im Baustein `layout` (siehe
   steht nur für Interaktion (Tooltip, Zoom, Animation, Legend-Auswahl)
 
 Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
-`src/shared/strokeStyle.ts` (`color`, `lineStyle`, `opacity`, `width`;
+`src/shared/strokeStyle.ts` (`lineStyle`, `opacity`, `paint`, `width`;
 `LineStyle` liegt ebenfalls dort). Ihn nutzen der Rahmen des Containers
 (`ObjectContainer.border`), Achsenlinie und Gridlines jeder Achse
 (`xAxis.line` und `xAxis.gridLines`, beide `AxisStrokeAppearance` mit
 `visible` und `stroke`) und die Rahmen der Flächen-Marks (`bar.border`,
 `scatter.border`, `pie.border`, Standard `CHART_MARK_BORDER` mit Breite
-0). Linien-Marks tragen `SeriesStrokeStyle` (`StrokeStyle` ohne
-`color`), weil ihre Farbe aus der Serie kommt (Palette oder
-`appearance.color`); `hasStrokeColor` unterscheidet beide.
+0). Linien-Marks tragen `SeriesStrokeStyle` (`StrokeStyle<SeriesPaint>`),
+weil ihre Farbe aus der Serie kommt (Palette oder `appearance.color`);
+zur Farbe beider Formen siehe „Paint“.
 
 - ECharts-Linien übersetzt `createStrokeStyleOption` im Adapter; bei
-  Serien setzt der Aufrufer die Serienfarbe und multipliziert die
-  Deckkraft mit dem Dimming der Selection
+  Serien reicht der Aufrufer die Serienfarbe als dritten Parameter
+  hinein und multipliziert die Deckkraft mit dem Dimming der Selection
 - Rahmen von Flächen übersetzt `createBorderOption` in `borderColor`,
   `borderType` und `borderWidth` des `itemStyle`; ECharts kennt dort
   keine Rahmen-Deckkraft, daher geht `opacity` als Alpha in die Farbe
-  (`color.modifyAlpha`)
+  bzw. in jeden Stopp (`createPaintColor`)
 - Achsenlinie und Gridlines folgen der Achse: eine ausgeblendete Achse
   blendet beide aus, die Ticks hängen nur an der Achse
-- HTML-Umrisse setzt `getStrokeBorderCss`
+- Der Container-Rahmen ist ein SVG (`ContainerBorder` in `objects/`),
+  weil CSS-Rahmen Verlauf, Strichmuster und Radius nicht zusammen
+  können: ein `rect` mit `rx`, `stroke-dasharray` (Dashed `4w 2w`,
+  Dotted `w` wie in ECharts) und einem Verlauf in `objectBoundingBox`.
+  Das SVG liegt um die halbe Breite eingerückt (`.chart-item-border`,
+  `--chart-border-inset`), damit der Strich innen am Rand sitzt.
 
-Flächen nutzen `Fill` aus `src/shared/fill.ts` (`kind: 'solid'`,
-`color`, `opacity`); weitere Varianten wie Verläufe kommen als neue
-`kind` hinzu. Die Fläche unter Linien (`line.area`, mit `areaFill` als
+Flächen nutzen `Fill` aus `src/shared/fill.ts` (`opacity`, `paint`).
+Die Fläche unter Linien (`line.area`, mit `areaFill` als
 Sichtbarkeit), Balken (`bar.fill`), Scatter-Punkte (`scatter.fill`) und
-Pie-Segmente (`pie.fill`) tragen `SeriesFill` ohne Farbe: Jede Fläche
-nimmt die Farbe ihrer Serie bzw. ihres Segments (Palette oder
-`appearance.color`), der Adapter setzt sie wie bei der Linie. Bei
+Pie-Segmente (`pie.fill`) tragen `SeriesFill` (`Fill<SeriesPaint>`):
+Jede Fläche nimmt die Farbe ihrer Serie bzw. ihres Segments (Palette
+oder `appearance.color`), der Adapter setzt sie wie bei der Linie. Bei
 Balken, Punkten und Segmenten wirkt die Deckkraft als `itemStyle.opacity`
 auf das ganze Element samt Rahmen und Glow; bei Balken multipliziert sie
 sich mit dem Dimming der Selection. Pie und Donut teilen sich `pie`; der
 Innenradius (`pie.innerRadius`, Prozent der Chartgröße) gilt nur beim
 Donut. `Fill` mit eigener Farbe tragen die Hintergründe von Container
-(`container.background`) und Canvas (`canvas.background`);
-`hasFillColor` unterscheidet beide Formen. ECharts übersetzt
-`createFillOption`, HTML setzt Farbe und Deckkraft als CSS-Variablen
-für eine eigene Ebene (siehe „Farbebenen“).
+(`container.background`) und Canvas (`canvas.background`). ECharts
+übersetzt `createFillOption`, HTML setzt Paint und Deckkraft als
+CSS-Variablen für eine eigene Ebene (siehe „Farbebenen“).
+
+**Paint**
+
+Fill und Stroke tragen ihre Farbe als `paint` aus `src/shared/paint.ts`,
+weil beide dieselbe Farbzeile (`PaintControl`) nutzen. Eigene Farben
+sind `Paint`, Farben der Serie `SeriesPaint`; `Fill` und `StrokeStyle`
+sind generisch über den Paint (`Fill<TPaint>`, Standard `Paint`).
+
+```ts
+type GradientStop = {
+  color: ColorValue
+  opacity: number // 0–1, relativ zur Deckkraft der Zeile
+  position: number // 0–1
+}
+
+type Paint =
+  | { kind: 'solid'; color: ColorValue }
+  | {
+      kind: 'gradient'
+      type: 'linear' | 'radial'
+      angle: number
+      stops: GradientStop[] // mindestens zwei
+    }
+
+type SeriesPaint =
+  | { kind: 'solid' }
+  | {
+      kind: 'fade'
+      type: 'linear' | 'radial'
+      angle: number
+      startOpacity: number
+      endOpacity: number
+    }
+```
+
+- `hasOwnColor` unterscheidet beide Formen; der Guard prüft auf `Paint`,
+  weil ein eigener Solid strukturell auch ein Serien-Solid ist.
+  `getPaintColor` liefert die Farbe, für die ein Paint steht (Solid
+  bzw. erster Stopp), z. B. für das Default-Feld eines Rahmens.
+- Die Deckkraft der Zeile (`opacity`) gilt für den ganzen Paint; Stopps
+  und Fade-Enden sind relativ dazu (wie in Figma). Eine Area mit 25 %
+  und Fade 100 % → 0 % läuft von 25 % an der Linie bis 0 %.
+- Winkel in Grad, 0 = nach rechts, gegen den Uhrzeigersinn wie die
+  Rotation der Achsenlabels, −180 bis 180, Standard −90 (nach unten,
+  `DEFAULT_GRADIENT_ANGLE`). CSS bekommt `90 − angle`,
+  `getLinearGradientPoints` rechnet ihn für ECharts und SVG in
+  Start- und Endpunkt der Bounding Box um.
+- Radial ist fest: Mitte zum Rand, ohne Felder.
+- Ein Typwechsel bleibt in seiner Form (`changePaintType`,
+  `changeSeriesPaintType`): Solid → Verlauf legt zwei deckende Stopps in
+  der bisherigen Farbe an, Verlauf → Solid behält die Farbe des ersten
+  Stopps; ein neuer Fade läuft von 100 % auf 0 %.
+- Adapter: `getPaintCss` für HTML (Stopps als `color-mix` mit
+  `transparent`, radial als `radial-gradient(closest-side, …)`),
+  `createPaintColor` und `createSeriesPaintColor`
+  (`charts/echarts/createPaintColor.ts`) für ECharts mit `resolveColor`
+  und `color.modifyAlpha`, `ContainerBorder` für den SVG-Rahmen.
+- Renderer-Unterschiede, bewusst hingenommen: ECharts zeichnet radial
+  nur Kreise (bis zur näheren Kante), CSS und SVG eine Ellipse bis zu
+  den Kanten; ECharts und SVG normieren den linearen Winkel auf die
+  Bounding Box, CSS nutzt den echten Bildschirmwinkel (gleich bei 0°,
+  ±90° und 180°).
+- Unter einer kontinuierlichen Farbskala färbt die `visualMap` jede
+  Mark selbst, ein Fade wirkt dort nicht; die Farbzeile bietet dann nur
+  Solid an, ein gespeicherter Fade kehrt beim Wechsel auf kategorial
+  zurück.
+- Text bleibt einfarbig (`TextStyle.color`): ECharts zeichnet keinen
+  Text mit Verlauf.
 
 Effekte nutzen `Effect` aus `src/shared/effect.ts`: `{ kind: 'none' }`
 oder `{ kind: 'glow'; blur }`, ein weichgezeichneter Schatten ohne
@@ -512,8 +583,9 @@ Textebenen in Figma:
 Jedes Farbfeld der Specs ist ein `ColorValue` aus
 `src/shared/colorValue.ts`: `{ kind: 'token'; token }` folgt dem Theme,
 `{ kind: 'custom'; color }` ist eine feste Hex-Farbe. Das gilt für
-`TextStyle`, `StrokeStyle`, `Fill` (auch die Hintergründe von
-Container und Canvas), die Chartfarbe (`appearance.color`), die Enden der
+`TextStyle`, die Farben im `Paint` von `StrokeStyle` und `Fill` (Solid
+und jeder Stopp, auch in den Hintergründen von Container und Canvas),
+die Chartfarbe (`appearance.color`), die Enden der
 kontinuierlichen Farbskala und `legend.inactiveColor`. Auch die
 kategorische Palette ist `ColorValue[]`
 (`colorScale.categorical.palette`): „Default“ besteht aus
@@ -541,7 +613,7 @@ festen Farben; `resolvePalette` löst sie im Adapter auf.
   Format-Widgets lesen daraus das „Default“-Feld des Farbwählers, damit
   es dem Ausgangszustand neuer Objekte entspricht
 - HTML löst über `getColorCss` auf (`var(--…)` bzw. Hex); die
-  CSS-Helper `getTextStyleCss` und `getStrokeBorderCss` nutzen ihn
+  CSS-Helper `getTextStyleCss` und `getPaintCss` nutzen ihn
 - ECharts kennt keine CSS-Variablen: `readChartTheme` in
   `EChartCanvas` liest die aktuellen Werte vom Chart-Element
   (`instance.getDom()`) in `ChartTheme.colors`,
@@ -575,17 +647,19 @@ Werkzeug, Farbe gehört dem Inhalt.
   Heute gibt es nur `--dashboard-accent` (der `ColorToken` `accent`,
   standardmäßig neutral); der App-Akzent `--color-accent` bleibt für
   Zustände.
-- Canvas und Container sind reine Flächen: `Fill` mit Farbe und
-  Deckkraft, ohne Presets, Glass, Lichtkante oder Schatten. Rand und
-  später Schatten stellt der Nutzer selbst ein; vorgefertigte Looks
-  kommen als Dashboard-Styles (`ROADMAP.md`, 3.8), die beim Anwenden
-  echte Werte schreiben statt live zu verknüpfen.
+- Canvas und Container sind reine Flächen: `Fill` mit Farbe oder
+  Verlauf und Deckkraft, ohne Presets, Glass, Lichtkante oder Schatten.
+  Rand und später Schatten stellt der Nutzer selbst ein; vorgefertigte
+  Looks kommen als Dashboard-Styles (`ROADMAP.md`, 3.8), die beim
+  Anwenden echte Werte schreiben statt live zu verknüpfen.
 - Beide malen ihren Fill auf einer eigenen Ebene hinter dem Inhalt,
   damit die Deckkraft nur die Fläche ausblendet: `CanvasPanel` setzt
   `--canvas-background` und `--canvas-background-opacity` für
   `.canvas-panel::before`, `ObjectFrame` setzt `--chart-background` und
-  `--chart-background-opacity` für `.chart-item-background`. Verläufe
-  (3.6) brauchen dieselbe Ebene.
+  `--chart-background-opacity` für `.chart-item-background`. Die
+  Variablen tragen `getPaintCss(background.paint)`, also eine Farbe
+  oder einen CSS-Verlauf; deshalb malen die Ebenen mit `background`,
+  nicht `background-color`.
 - Hintergründe sind feste Farben, keine Tokens: Ein Dashboard behält
   seine Farben, wenn der Editor das Theme wechselt. Texte, Achsen und
   Raster folgen heute noch App-Tokens; ein eigenes Farbschema je

@@ -1,6 +1,7 @@
 import { isRadialChartType } from '../../chartDefinitions'
 import { createEffectOption } from '../createEffectOption'
 import { createFillOption } from '../createFillOption'
+import { createSeriesPaintColor } from '../createPaintColor'
 import { createSeriesLabelOption } from '../createSeriesLabelOption'
 import { createBorderOption } from '../createStrokeStyleOption'
 import { getPaletteColor, resolvePalette } from '../resolveColor'
@@ -60,7 +61,10 @@ export function createPieChartContent(
     const color = getPaletteColor(palette, colorIndex)
     return [
       {
-        itemStyle: { ...createEffectOption(pie.effect, color), color },
+        itemStyle: {
+          ...createEffectOption(pie.effect, color),
+          color: createSeriesPaintColor(pie.fill.paint, color),
+        },
         name,
         value: point.value,
       },

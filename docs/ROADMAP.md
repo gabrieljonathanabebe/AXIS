@@ -26,11 +26,12 @@ Multi-Chart-Canvas, Cross-Highlighting, Cards, Ask Cevyn V1 und die
 Bearbeitung am Objekt (Format-Popover statt Inspector) sind in einem
 ersten vollständigen Stand. Die Appearance-Specs sind auf gemeinsame
 Bausteine umgestellt (`TextStyle`, `StrokeStyle`, `NumberFormat`,
-`Fill`, `Effect`, `Layout`, `ColorValue` mit Theme-Tokens), das
+`Fill`, `Paint`, `Effect`, `Layout`, `ColorValue` mit Theme-Tokens), das
 Format-Popover zeigt alle Gruppen eines Elements in fester Reihenfolge
 und in kompakten Controls im Figma-Stil. Die App ist neutral (Akzent nur
 für Zustände), das Dashboard hat eigene Tokens, Canvas und Container
-tragen eine echte Füllung (`Fill`) mit Deckkraft.
+tragen eine echte Füllung (`Fill`) mit Deckkraft. Flächen und Linien
+können Verläufe tragen, Serien einen Fade in ihrer Farbe.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -48,8 +49,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 3. Format-Popover: Gruppen statt Sections – implementiert
 4. Kompakte Controls im Figma-Stil – implementiert
 5. Neutrale Farben und Hintergründe – implementiert
-6. Verläufe für Flächen und Linien – **nächster Slice**
-7. Schatten als Effect
+6. Verläufe für Flächen und Linien – implementiert
+7. Effekte: Schatten, Background Blur und Korn – **nächster Slice**
 8. Dashboard-Styles
 9. Legende, Tooltip und Farbskala mit Bausteinen
 10. DateFormat
@@ -65,81 +66,66 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.6 Verläufe für Flächen und Linien (geplant, nächster Slice)
+### 3.7 Effekte: Schatten, Background Blur und Korn (geplant, nächster Slice)
 
-Verläufe in jeder Farbzeile, damit Flächen und Linien, und später die
-Dashboard-Styles (3.8), Looks wie ein Leuchten auf der Canvas oder eine
-diagonale, durchscheinende Fläche als echte Werte tragen. Fill und
-Stroke bekommen einen gemeinsamen Typ für ihre Farbe, weil beide
-dieselbe Farbzeile (`PaintControl`) nutzen; hätte nur eine davon die
-Typwahl, wäre das Control halb fertig.
+Marks bekommen einen Schatten, Container eine Liste von Effekten wie in
+Figma. Damit lassen sich die Looks der Dashboard-Styles (3.8) aus echten
+Werten bauen: Midnight aus Verlauf, Background Blur und Korn, Glass aus
+Verlauf, Lichtkante, Innenschatten, Blur und Schatten.
 
-```ts
-type GradientStop = {
-  color: ColorValue
-  opacity: number // 0–1, z. B. 94 % → 49 % bei einer Frosted-Fläche
-  position: number // 0–1
-}
-
-type Paint =
-  | { kind: 'solid'; color: ColorValue }
-  | {
-      kind: 'gradient'
-      type: 'linear' | 'radial'
-      angle: number
-      stops: GradientStop[]
+    type Shadow = {
+      offsetX: number
+      offsetY: number
+      blur: number
+      color: ColorValue
+      opacity: number
     }
 
-type Fill = Paint & { opacity: number } // solid bleibt unverändert
-```
+    // Marks: ein Effekt, weil ECharts je Mark nur einen Schatten zeichnet
+    type Effect =
+      | { kind: 'none' }
+      | { kind: 'glow'; blur: number }
+      | ({ kind: 'shadow' } & Shadow)
 
-- `StrokeStyle` trägt seine Farbe ebenfalls als `Paint` (heute
-  `color: ColorValue`); eine Formänderung, vor der Persistenz zulässig;
-  die genaue Form zu Beginn des Slices festlegen
-- Nutzer mit eigener Farbe: Canvas- und Container-Fläche,
-  Container-Rahmen, Achsenlinie, Gridlines, Rahmen von Balken,
-  Scatter-Punkten und Pie-Segmenten
-- Serien: `SeriesFill` und `SeriesStrokeStyle` bekommen `fade`
-  (Deckkraft am Anfang und Ende, Winkel) in der Serienfarbe, z. B. für
-  die Fläche unter der Linie, Balken und die Linie selbst
-- Text bleibt einfarbig: ECharts zeichnet keinen Text mit Verlauf, in
-  HTML ginge es nur über einen CSS-Trick
-- im `PaintControl` Typwahl Solid | Linear | Radial als Icon-Gruppe,
-  Winkel als Feld, Stopps im Details-Popover (⚙); beim Radialverlauf
-  Mittelpunkt und Größe zu Beginn des Slices klären
-- der Stopp-Editor kommt aus `GradientControl` und wird mit der
-  Farbskala geteilt; die Typen bleiben getrennt, weil die Farbskala
-  Werten Farben zuordnet und ein Paint eine Fläche oder Linie malt
-- Adapter: ECharts-Verläufe mit `resolveColor`, HTML über eine
-  CSS-Funktion neben `getColorCss`; Canvas und Container malen ihren
-  Fill schon auf einer eigenen Ebene (`--canvas-background`,
-  `--chart-background`)
-- Container-Rahmen: CSS-Rahmen können Verlauf, Strichmuster und Radius
-  nicht zusammen; Vorschlag ist ein SVG-Rahmen (`rect` mit Verlauf,
-  `stroke-dasharray` und `rx`) statt `.chart-item-border`
-- Stellen, die heute `.color` lesen, meldet der Typcheck; Icon-Check am
-  Slice-Ende
+    // Container: Liste, Reihenfolge = Zeichenreihenfolge
+    type ContainerEffect =
+      | ({ kind: 'shadow' } & Shadow)
+      | ({ kind: 'innerShadow' } & Shadow)
+      | { kind: 'backgroundBlur'; blur: number }
+      | { kind: 'noise'; opacity: number; size: number }
 
-### 3.7 Schatten als Effect (geplant)
+- Marks: Shadow neben Glow im Select der Gruppe Effect; gedimmte Marks
+  und Scatter ab 500 Punkten ohne Schatten, wie beim Glow
+- Container: neues Feld `container.effects: ContainerEffect[]` (leer =
+  keine Effekte); Gruppe Effects im Element „Chart“ bzw. „Card“: ＋ in
+  der Überschrift fügt einen Schatten hinzu, jede Zeile Art | Hauptwert
+  (Blur bzw. Intensität) | ⚙ | −, Versatz, Farbe und Deckkraft hinter ⚙;
+  Background Blur und Korn höchstens einmal je Container, Schatten
+  mehrfach (z. B. Kontakt- und Tiefenschatten)
+- Ebenen im Container, von unten nach oben: Schatten (`box-shadow` am
+  `.chart-item` selbst, weil Kind-Ebenen von `overflow: hidden`
+  abgeschnitten werden) → Background Blur → Fläche
+  (`.chart-item-background`) → Korn → Innenschatten → Inhalt → Rahmen
+  (3.6) → Hover- und Auswahlring (`::after`)
+- Background Blur auf eigener Ebene, nicht auf `.chart-item-background`,
+  deren `opacity` sonst auch den Blur ausblendet; zwischen Canvas und
+  Container darf nichts `opacity`, `filter` oder `mask` tragen, sonst
+  sieht der Blur nur eine leere Fläche
+- Korn als statische Kachel (SVG mit `feTurbulence` als
+  `background-image`), nicht als Live-Filter; Intensität als Deckkraft,
+  Größe als `background-size`
+- Schatten am Rand der scrollenden Canvas (`overflow-y: auto` in
+  `CanvasPanel.css`) werden abgeschnitten: Innenabstand des Grids
+  mindestens so groß wie der Standard-Schatten; zu Beginn klären
+- `prefers-reduced-transparency`: Background Blur und Korn aus;
+  Performance mit etwa 12 Containern prüfen
+- Prüfstein am Slice-Ende: Midnight und der frühere Glass-Look lassen
+  sich nur aus Werten nachbauen
+- neue Varianten und neues Feld, keine Formänderung
 
-`Effect` bekommt die Art `shadow` (heute `none` und `glow`), damit Marks
-und Container einen versetzten Schatten tragen; Grundlage für die
-Dashboard-Styles (3.8).
-
-- `{ kind: 'shadow'; offsetX; offsetY; blur; color; opacity }` mit
-  `color` als `ColorValue`
-- Marks: Shadow neben Glow im Select der Gruppe Effect; weiter ein
-  Effekt pro Mark, weil ECharts je Mark nur einen Schatten zeichnet
-- Container: neues Feld `container.effect` mit Gruppe Effect (＋/−) im
-  Element „Chart“ bzw. „Card“, in CSS als `box-shadow` am Rahmen; zu
-  Beginn klären, wie der Schatten am Rand des scrollenden Grids nicht
-  abgeschnitten wird
-- Zeilen: Art | Blur | −; Versatz und Farbe als weitere Zeilen oder
-  hinter ⚙, zu Beginn klären
-- Background Blur am Container als weitere Art, wenn ein Container mit
-  einem Effekt auskommt; sonst später (mehrere Effekte je Element wie
-  in Figma)
-- neue Variante und neues Feld, keine Formänderung
+Damit nicht ein Element mehr kann als das andere, eine feste Regel:
+Effekte gibt es überall, wo ein Element eine Fläche hat, in dem Umfang,
+den sein Renderer zeichnen kann.
 
 ### 3.8 Dashboard-Styles (geplant)
 
@@ -165,7 +151,8 @@ echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
   Referenz-Screenshot aus 3.5: blaues Leuchten auf der Canvas,
   Container als Verlauf
   `linear-gradient(127deg, rgba(6, 11, 40, 0.94) 19%, rgba(10, 14, 35, 0.49) 77%)`
-  ohne Rand und Schatten, blauer Akzent; den finalen Standard zu Beginn
+  plus Background Blur plus Korn, ohne Rand und Schatten,
+  blauer Akzent; den finalen Standard zu Beginn
   des Slices festlegen
 - Auswahl im Dashboard-Popover, z. B. als Galerie mit kleiner Vorschau
 - hängt an 3.6 und 3.7; Formänderungen nur vor der Persistenz
@@ -198,7 +185,8 @@ Verhalten; Icon-Check am Slice-Ende):
   Baustein für die Fläche (Fill, Stroke, Radius, Padding) statt je
   Element; Entscheidung, ob die Spec Position und Anordnung trennt (wäre
   eine Formänderung)
-- kein Effect; Standard-Optik unverändert
+- Effekte über den gemeinsamen Kasten-Baustein (Fill, Stroke, Radius, Padding, Effects),
+  soweit der Renderer sie zeichnen kann; Standard-Optik unverändert
 - neue Felder, keine Formänderung
 
 ### 3.10 DateFormat (geplant)
@@ -578,6 +566,10 @@ Style-Bausteine und Farben
   getrenntem Dashboard- und App-Akzent; Canvas (`canvas.background`) und
   Container als `Fill` mit Deckkraft auf eigener Ebene, ohne Glass,
   Schatten und Presets; das Objekt im Format-Popover als feiner Ring
+- Verläufe: gemeinsamer `Paint` für Fill und Stroke (Solid, linearer
+  und radialer Verlauf mit Stopps), Fade für Serien-Flächen und -Linien;
+  Typwahl, Winkel und Stopp-Liste (⚙ in der Überschrift) im
+  `PaintControl`; Adapter für ECharts und CSS, Container-Rahmen als SVG
 
 Ask Cevyn V1
 

@@ -31,9 +31,9 @@ export const CHART_TEXT_STYLE: TextStyle = {
 /** Default gridlines; each axis draws its own. */
 export const CHART_GRID_LINES: AxisStrokeAppearance = {
   stroke: {
-    color: { kind: 'token', token: 'gridLine' },
     lineStyle: 'solid',
     opacity: 0.08,
+    paint: { color: { kind: 'token', token: 'gridLine' }, kind: 'solid' },
     width: 1,
   },
   visible: true,
@@ -42,9 +42,9 @@ export const CHART_GRID_LINES: AxisStrokeAppearance = {
 /** Default axis line; each axis draws its own. */
 export const CHART_AXIS_LINE: AxisStrokeAppearance = {
   stroke: {
-    color: { kind: 'token', token: 'border' },
     lineStyle: 'solid',
     opacity: 1,
+    paint: { color: { kind: 'token', token: 'border' }, kind: 'solid' },
     width: 1,
   },
   visible: true,
@@ -52,9 +52,9 @@ export const CHART_AXIS_LINE: AxisStrokeAppearance = {
 
 /** Default border of filled marks: bars, points and pie segments; off. */
 export const CHART_MARK_BORDER: StrokeStyle = {
-  color: { kind: 'token', token: 'border' },
   lineStyle: 'solid',
   opacity: 1,
+  paint: { color: { kind: 'token', token: 'border' }, kind: 'solid' },
   width: 0,
 }
 
@@ -152,17 +152,22 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           min: 6,
           max: 28,
         },
-        fill: { kind: 'solid', opacity: 0.9 },
+        fill: { opacity: 0.9, paint: { kind: 'solid' } },
         symbol: 'circle',
       },
       line: {
-        stroke: { lineStyle: 'solid', opacity: 1, width: 3 },
+        stroke: {
+          lineStyle: 'solid',
+          opacity: 1,
+          paint: { kind: 'solid' },
+          width: 3,
+        },
         smooth: false,
         points: 'auto',
         areaFill: false,
         area: {
-          kind: 'solid',
           opacity: 0.25,
+          paint: { kind: 'solid' },
         },
         effect: { kind: 'none' },
       },
@@ -171,12 +176,12 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         borderRadius: 4,
         barWidth: 24,
         effect: { kind: 'none' },
-        fill: { kind: 'solid', opacity: 1 },
+        fill: { opacity: 1, paint: { kind: 'solid' } },
       },
       pie: {
         border: CHART_MARK_BORDER,
         effect: { kind: 'none' },
-        fill: { kind: 'solid', opacity: 1 },
+        fill: { opacity: 1, paint: { kind: 'solid' } },
         innerRadius: 42,
       },
     },

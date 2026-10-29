@@ -22,12 +22,12 @@
 @import './styles/ui/NumberInput.css';
 @import './styles/ui/OptionContent.css';
 @import './styles/ui/OptionsMenu.css';
+@import './styles/ui/PaintControl.css';
 @import './styles/ui/PaletteControl.css';
 @import './styles/ui/Panel.css';
 @import './styles/ui/Popover.css';
 @import './styles/ui/PositionGrid.css';
 @import './styles/ui/RangeSlider.css';
-@import './styles/ui/RotationDial.css';
 @import './styles/ui/ScrubbableNumber.css';
 @import './styles/ui/SelectControl.css';
 @import './styles/ui/SegmentedControl.css';
