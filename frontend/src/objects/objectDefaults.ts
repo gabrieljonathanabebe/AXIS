@@ -33,10 +33,12 @@ export function createDefaultTitle(): ObjectTitleAppearance {
 /** Creates the container every new object starts with. */
 export function createDefaultContainer(): ObjectContainer {
   return {
-    background: {
-      opacity: 1,
-      paint: { color: { kind: 'custom', color: '#202226' }, kind: 'solid' },
-    },
+    background: [
+      {
+        opacity: 1,
+        paint: { color: { kind: 'custom', color: '#202226' }, kind: 'solid' },
+      },
+    ],
     border: CONTAINER_BORDER,
     effects: [],
     borderRadius: 24,

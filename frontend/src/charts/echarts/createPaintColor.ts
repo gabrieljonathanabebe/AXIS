@@ -1,10 +1,18 @@
 import { color } from 'echarts'
 
-import { getLinearGradientPoints } from '../../shared/paint'
+import {
+  DEFAULT_RADIAL_SHAPE,
+  getLinearGradientPoints,
+} from '../../shared/paint'
 import { resolveColor } from './resolveColor'
 
 import type { LinearGradientObject, RadialGradientObject } from 'echarts'
-import type { GradientType, Paint, SeriesPaint } from '../../shared/paint'
+import type {
+  GradientType,
+  Paint,
+  RadialShape,
+  SeriesPaint,
+} from '../../shared/paint'
 import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
@@ -17,18 +25,27 @@ type ColorStops = LinearGradientObject['colorStops']
 // ===== HELPERS ===============================================================
 /**
  * Builds a gradient that ECharts draws inside the bounds of each shape,
- * e.g. of every bar. A radial one is a circle up to the nearest edge,
- * since ECharts knows no ellipses.
+ * e.g. of every bar. A radial one is a circle around its center, its
+ * radius relative to the shorter side, since ECharts knows no ellipses;
+ * a fade has no shape of its own and runs from the center.
  * @param course Type and angle of the gradient or fade.
  * @param colorStops Resolved colors with their offsets.
+ * @param shape Center and radius of a radial gradient.
  * @returns Linear or radial gradient for ECharts.
  */
 function createGradient(
   { angle, type }: { angle: number; type: GradientType },
   colorStops: ColorStops,
+  shape: RadialShape = DEFAULT_RADIAL_SHAPE,
 ): LinearGradientObject | RadialGradientObject {
   if (type === 'radial') {
-    return { colorStops, r: 0.5, type: 'radial', x: 0.5, y: 0.5 }
+    return {
+      colorStops,
+      r: shape.radius,
+      type: 'radial',
+      x: shape.centerX,
+      y: shape.centerY,
+    }
   }
   return { ...getLinearGradientPoints(angle), colorStops, type: 'linear' }
 }
@@ -59,6 +76,7 @@ export function createPaintColor(
       ),
       offset: stop.position,
     })),
+    paint,
   )
 }
 

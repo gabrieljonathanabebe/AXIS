@@ -1,0 +1,66 @@
+.color-swatch {
+  position: relative;
+  min-width: 0;
+}
+
+.color-swatch-swatch {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 20px;
+  padding: var(--space-1);
+  background: transparent;
+  border-color: transparent;
+  border-radius: var(--radius-pill);
+  box-shadow: none;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.color-swatch-swatch::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--swatch-fill, var(--swatch-color));
+  border-radius: var(--radius-pill);
+}
+
+.color-swatch-swatch:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-default);
+  transform: scale(1.08);
+}
+
+.color-swatch-swatch[aria-checked='true'] {
+  background: color-mix(in srgb, var(--swatch-color) 16%, transparent);
+  border-color: var(--swatch-color);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--swatch-color) 45%, transparent),
+    0 0 14px color-mix(in srgb, var(--swatch-color) 55%, transparent);
+}
+
+/* A swatch whose picker or editor is open keeps a ring in the accent, so
+   it shows which color the popover edits, e.g. one stop of several; in a
+   field the field itself shows it. */
+.color-swatch-swatch[aria-expanded='true']:not(.color-field *) {
+  border-color: var(--color-accent);
+}
+
+.color-swatch-popover {
+  z-index: 100;
+  width: min(250px, calc(100vw - 32px));
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+/* The swatch of the current color keeps a thin ring, so a color close to
+   the surface, e.g. a graphite background, stays visible; preset fills
+   get it as well. */
+.color-swatch > .color-swatch-swatch::before,
+.color-swatch-swatch.has-fill::before {
+  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-border-default);
+}

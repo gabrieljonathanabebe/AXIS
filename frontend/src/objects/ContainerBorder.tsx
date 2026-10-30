@@ -31,8 +31,8 @@ function getDashArray({ lineStyle, width }: StrokeStyle): string | undefined {
 }
 
 /**
- * SVG gradient the border paints with; like in ECharts it runs inside the
- * bounds of the shape, a radial one from the center to the edges.
+ * SVG gradient the border paints with, inside the bounds of the shape; a
+ * radial one is an ellipse around its center like in CSS.
  * @param id Id the rect refers to.
  * @param paint Paint of the border.
  * @returns Linear or radial gradient, or nothing for a solid color.
@@ -49,7 +49,16 @@ function getGradientElement(id: string, paint: Paint): ReactNode {
     />
   ))
   if (paint.type === 'radial') {
-    return <radialGradient id={id}>{stops}</radialGradient>
+    return (
+      <radialGradient
+        cx={paint.centerX}
+        cy={paint.centerY}
+        id={id}
+        r={paint.radius}
+      >
+        {stops}
+      </radialGradient>
+    )
   }
   const { x, x2, y, y2 } = getLinearGradientPoints(paint.angle)
   return (

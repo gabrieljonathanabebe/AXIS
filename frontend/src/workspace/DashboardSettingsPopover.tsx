@@ -1,7 +1,8 @@
 import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 
-import FillControls from '../shared/ui/FillControls'
+import { addFill } from '../shared/fill'
+import FillListControls from '../shared/ui/FillListControls'
 import FormatWidget from '../shared/ui/FormatWidget'
 import IconButton from '../shared/ui/IconButton'
 import LayoutControls from '../shared/ui/LayoutControls'
@@ -29,8 +30,8 @@ function DashboardSettingsPopover({
 }: DashboardSettingsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false)
 
-  /** Changes the canvas background; the other canvas settings stay. */
-  function updateBackground(background: Fill): void {
+  /** Changes the canvas fills; the other canvas settings stay. */
+  function updateBackground(background: Fill[]): void {
     actions.updateDashboard({ canvas: { ...dashboard.canvas, background } })
   }
 
@@ -63,10 +64,12 @@ function DashboardSettingsPopover({
             onChange={actions.updateDashboardLayout}
           />
         </FormatWidget>
-        <FormatWidget title="Background">
-          <FillControls
-            label="Canvas background"
-            presets={[]}
+        <FormatWidget
+          title="Background"
+          onAdd={() => updateBackground(addFill(dashboard.canvas.background))}
+        >
+          <FillListControls
+            label="Canvas"
             value={dashboard.canvas.background}
             onChange={updateBackground}
           />

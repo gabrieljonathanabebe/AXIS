@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
 import { getShadowsCss } from '../shared/effect'
-import { getPaintCss } from '../shared/paint'
+import { getFillsCss } from '../shared/fill'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import ContainerBorder from './ContainerBorder'
 import { getRectStyle } from './elementRect'
@@ -44,7 +44,6 @@ type ObjectFrameStyle = CSSProperties & {
   '--chart-canvas-inset': string
   '--chart-backdrop-blur': string
   '--chart-background': string
-  '--chart-background-opacity': number
   '--chart-inner-shadow': string
   '--chart-noise-opacity': number
   '--chart-noise-size': string
@@ -192,8 +191,7 @@ function ObjectFrame({
     ...style,
     '--chart-canvas-inset': `${container.layout.padding}px`,
     '--chart-backdrop-blur': `${backgroundBlur?.blur ?? 0}px`,
-    '--chart-background': getPaintCss(background.paint),
-    '--chart-background-opacity': background.opacity,
+    '--chart-background': getFillsCss(background),
     '--chart-inner-shadow': getShadowsCss(innerShadows, true),
     '--chart-noise-opacity': noise?.opacity ?? 0,
     '--chart-noise-size': `${noise?.size ?? 0}px`,

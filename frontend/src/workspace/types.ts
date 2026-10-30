@@ -208,7 +208,7 @@ export type DashboardLayout = Pick<Layout, 'gap'>
 
 /** Formatting of the canvas the objects are placed on. */
 export type DashboardCanvas = {
-  background: Fill
+  background: Fill[]
 }
 
 export type DashboardSpec = {

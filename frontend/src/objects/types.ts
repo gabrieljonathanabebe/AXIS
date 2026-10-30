@@ -42,7 +42,7 @@ export type ObjectSize = Pick<ObjectLayout, 'height' | 'width'>
 // ===== CONTAINER =============================================================
 /** Formatting of the container around an object's content. */
 export type ObjectContainer = {
-  background: Fill
+  background: Fill[]
   border: StrokeStyle
   effects: ContainerEffect[]
   layout: Pick<Layout, 'padding'>

@@ -1,11 +1,11 @@
 import { getGradientStopsCss, getSortedStops } from '../paint'
-import ColorControl from './ColorControl'
 import { DATA_COLOR_PRESETS } from './colorPresets'
+import ColorSwatch from './ColorSwatch'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '../colorValue'
 import type { GradientStop } from '../paint'
-import type { ColorPreset } from './ColorControl'
+import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================
 type GradientControlProps = {
@@ -57,19 +57,17 @@ function GradientControl({
   // ===== JSX RETURN ==========================================================
   return (
     <div className="field gradient-control" aria-label={label} style={style}>
-      <ColorControl
+      <ColorSwatch
         label={`${label} start color`}
         presets={presets}
         value={firstStop.color}
-        variant="compact"
         onChange={(color) => setStopColor(firstStop, color)}
       />
       <div className="gradient-control-preview" aria-hidden="true" />
-      <ColorControl
+      <ColorSwatch
         label={`${label} end color`}
         presets={presets}
         value={lastStop.color}
-        variant="compact"
         onChange={(color) => setStopColor(lastStop, color)}
       />
     </div>

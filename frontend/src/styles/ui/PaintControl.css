@@ -2,6 +2,7 @@
    right or from the center outward. */
 .paint-type-preview {
   display: block;
+  flex-shrink: 0;
   width: 12px;
   height: 12px;
   margin: auto;

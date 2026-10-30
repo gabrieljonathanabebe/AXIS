@@ -22,9 +22,9 @@ import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
 import ControlRow from '../../shared/ui/ControlRow'
 import DetailsPopover from '../../shared/ui/DetailsPopover'
 import EffectControls from '../../shared/ui/EffectControls'
-import FillControls from '../../shared/ui/FillControls'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import GradientControl from '../../shared/ui/GradientControl'
+import PaintControl from '../../shared/ui/PaintControl'
 import PaletteControl from '../../shared/ui/PaletteControl'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
@@ -289,7 +289,7 @@ function getFilledMarkGroups(
   return {
     dataColor: (
       <FormatWidget title="Fill">
-        <FillControls
+        <PaintControl
           details={dataColor.details}
           label={`${label} fill`}
           paintTypes={dataColor.paintTypes}
@@ -428,7 +428,7 @@ function getChartTypeGroups(
               },
             }}
           >
-            <FillControls
+            <PaintControl
               label="Area fill"
               value={line.area}
               onChange={(area) => {

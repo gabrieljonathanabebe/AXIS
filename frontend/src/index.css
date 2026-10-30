@@ -7,7 +7,8 @@
 @import './styles/ui/Chip.css';
 @import './styles/ui/CheckList.css';
 @import './styles/ui/CollapsibleSection.css';
-@import './styles/ui/ColorControl.css';
+@import './styles/ui/ColorPicker.css';
+@import './styles/ui/ColorSwatch.css';
 @import './styles/ui/ColorField.css';
 @import './styles/ui/ControlRow.css';
 @import './styles/ui/DetailsPopover.css';

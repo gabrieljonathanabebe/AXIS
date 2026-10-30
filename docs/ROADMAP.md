@@ -53,7 +53,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 5. Neutrale Farben und Hintergründe – implementiert
 6. Verläufe für Flächen und Linien – implementiert
 7. Effekte: Schatten, Background Blur und Korn – implementiert
-8. Dashboard-Styles – **nächster Slice**
+8. Dashboard-Styles – **in Arbeit**
 9. Legende, Tooltip und Farbskala mit Bausteinen
 10. DateFormat
 11. Theme-Umschalter in der TopBar (provisorisch)
@@ -68,7 +68,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.8 Dashboard-Styles (geplant, nächster Slice)
+### 3.8 Dashboard-Styles (in Arbeit)
 
 Vorgefertigte Looks für das ganze Dashboard, die ein Klick anwendet.
 Entscheidung aus 3.5: Presets gehören nicht in einzelne Hintergründe,
@@ -98,22 +98,28 @@ echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
 - Auswahl im Dashboard-Popover, z. B. als Galerie mit kleiner Vorschau
 - hängt an 3.6 und 3.7; Formänderungen nur vor der Persistenz
 
-Vorbereitung, vor den Styles: Prüfstein aus 3.7 war Midnight. Der
-Container-Look entsteht nur aus Werten, das Leuchten aber nicht: Es
-gehört auf die Canvas, und eine Fläche trägt heute nur einen Verlauf,
-radial immer aus der Mitte. Unterschiedliche Winkel je Container
+Vorbereitung, vor den Styles (implementiert): Prüfstein aus 3.7 war
+Midnight. Der Container-Look entsteht nur aus Werten, das Leuchten aber
+nicht: Es gehört auf die Canvas. Unterschiedliche Winkel je Container
 verworfen, weil sie an Anzahl und Lage der Objekte hängen.
 
 - Flächen als Liste wie in Figma: Canvas und Container tragen
-  `background: Fill[]` statt eines `Fill` (Formänderung, vor der
-  Persistenz zulässig); jede Fläche eine eigene Ebene mit eigener
-  Deckkraft, die oberste Zeile liegt oben; Gruppe Fill mit ＋ und − wie
-  die Effekte; Marks behalten eine Fläche, weil ECharts je Mark nur eine
-  zeichnet
-- Radialverlauf mit Mittelpunkt und Größe (`centerX`, `centerY`,
-  `radius`, je 0–1 relativ zur Fläche) hinter ⚙ der Farbzeile, in CSS
-  (`ellipse … at x y`) und im SVG-Rahmen gleich; ECharts bleibt bei
-  Kreisen
+  `background: Fill[]`, die oberste Zeile liegt oben (Index 0); Gruppe
+  Background mit ＋ und −, ＋ öffnet den Editor der neuen Fläche; Marks
+  behalten eine Fläche, weil ECharts je Mark nur eine zeichnet
+- Radialverlauf mit Mittelpunkt und Größe (`RadialShape`: `centerX`,
+  `centerY`, `radius`, relativ zur Fläche), in CSS und im SVG-Rahmen
+  gleich; ECharts bleibt bei Kreisen
+- Farbzeile neu: eine Zeile pro Farbe (`PaintControl` mit
+  `PaintField`), der Swatch öffnet den Editor (Typ, Angle bzw. Shape,
+  Stops oder Picker); der Picker ist ein eigener Baustein
+  (`ColorPicker`), `ColorControl` heißt `ColorSwatch`, `FillControls`
+  entfällt; im Stroke steht die Farbzeile oben
+
+Offen in 3.8: Farbschema des Dashboards, Styles Standard (heutiger
+Look) und Midnight (Startwerte, iterativ feinjustiert), Anwenden als
+ein Undo-Schritt, `objectDefaults`, Galerie im Dashboard-Popover.
+
 - Midnight: Canvas aus Grundfarbe und mehreren radialen Leuchtflächen;
   alle Container mit demselben Verlauf, Background Blur und Korn; die
   Unterschiede zwischen den Containern entstehen durch das Leuchten

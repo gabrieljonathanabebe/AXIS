@@ -44,9 +44,12 @@
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
 }
 
+/* The slot always takes the last column, also after a single field, so
+   its buttons end at the same edge as the actions of a widget header. */
 .control-row-actions {
   --cluster-gap: var(--space-1);
 
+  grid-column: -2;
   justify-content: flex-end;
   min-width: calc(2 * var(--control-height-xs) + var(--space-1));
 }

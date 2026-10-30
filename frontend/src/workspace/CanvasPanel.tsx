@@ -2,7 +2,7 @@ import { LayoutDashboard } from 'lucide-react'
 
 import AskCevynBar from '../ai/AskCevynBar'
 import CommandButton from '../app/CommandButton'
-import { getPaintCss } from '../shared/paint'
+import { getFillsCss } from '../shared/fill'
 import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
@@ -36,12 +36,11 @@ type CanvasPanelProps = {
 
 type CanvasPanelStyle = CSSProperties & {
   '--canvas-background': string
-  '--canvas-background-opacity': number
 }
 
 /**
  * Canvas of the Visualize workspace: toolbar, dashboard name, objects and
- * Ask Cevyn. Its background fill is painted on a layer behind the objects.
+ * Ask Cevyn. Its fills are painted on a layer behind the objects.
  */
 function CanvasPanel({
   actions,
@@ -61,8 +60,7 @@ function CanvasPanel({
 }: CanvasPanelProps) {
   const { background } = dashboard.canvas
   const canvasStyle: CanvasPanelStyle = {
-    '--canvas-background': getPaintCss(background.paint),
-    '--canvas-background-opacity': background.opacity,
+    '--canvas-background': getFillsCss(background),
   }
   return (
     <Panel className="canvas-panel" isEmbedded isFilled style={canvasStyle}>

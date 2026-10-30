@@ -1,10 +1,11 @@
 import { SquareRoundCorner } from 'lucide-react'
 
 import { createContainerEffect, sortContainerEffects } from '../shared/effect'
+import { addFill } from '../shared/fill'
 import { getPaintColor } from '../shared/paint'
 import ContainerEffectsControls from '../shared/ui/ContainerEffectsControls'
 import ControlRow from '../shared/ui/ControlRow'
-import FillControls from '../shared/ui/FillControls'
+import FillListControls from '../shared/ui/FillListControls'
 import FormatWidget from '../shared/ui/FormatWidget'
 import LayoutControls from '../shared/ui/LayoutControls'
 import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
@@ -48,10 +49,12 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
           />
         </ControlRow>
       </FormatWidget>
-      <FormatWidget title="Background">
-        <FillControls
-          label="Container background"
-          presets={[]}
+      <FormatWidget
+        title="Background"
+        onAdd={() => onChange('background', addFill(value.background))}
+      >
+        <FillListControls
+          label="Container"
           value={value.background}
           onChange={(background) => onChange('background', background)}
         />

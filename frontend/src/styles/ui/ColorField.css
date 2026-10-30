@@ -27,3 +27,10 @@
   border: 0;
   outline: none;
 }
+
+/* While its picker or editor is open, the field keeps its focus look,
+   since the focus moves into the popover outside of it. */
+.color-field:has(.color-swatch-swatch[aria-expanded='true']) {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-accent);
+}

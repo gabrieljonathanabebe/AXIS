@@ -34,10 +34,12 @@ export const initialWorkspaceState: WorkspaceState = {
   dashboard: {
     animation: DASHBOARD_ANIMATION,
     canvas: {
-      background: {
-        opacity: 1,
-        paint: { color: { kind: 'custom', color: '#141518' }, kind: 'solid' },
-      },
+      background: [
+        {
+          opacity: 1,
+          paint: { color: { kind: 'custom', color: '#141518' }, kind: 'solid' },
+        },
+      ],
     },
     layout: {
       gap: 8,

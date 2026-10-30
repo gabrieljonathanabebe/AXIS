@@ -1,11 +1,11 @@
 import { Blend, Minus, MoveHorizontal } from 'lucide-react'
 
-import ColorControl from './ColorControl'
+import ColorSwatch from './ColorSwatch'
 import IconButton from './IconButton'
 import ScrubbableNumber from './ScrubbableNumber'
 
 import type { GradientStop } from '../paint'
-import type { ColorPreset } from './ColorControl'
+import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================
 type GradientStopsControlProps = {
@@ -62,11 +62,10 @@ function GradientStopsControl({
         const stopLabel = `${label} stop ${index + 1}`
         return (
           <div className="gradient-stop" key={index}>
-            <ColorControl
+            <ColorSwatch
               label={`${stopLabel} color`}
               presets={presets}
               value={stop.color}
-              variant="compact"
               onChange={(color) => updateStop(index, { color })}
             />
             <ScrubbableNumber

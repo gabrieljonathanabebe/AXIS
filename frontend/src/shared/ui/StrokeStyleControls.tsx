@@ -35,11 +35,12 @@ const lineStyleOptions = [
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of one stroke, e.g. a border: width and line style, then the rows
- * of its paint (`PaintControl`) with type, color, opacity and the gear of
- * `details`, if given. Widgets place them next to their own rows and pass
- * the color the stroke gets when created as `defaultColor`; a stroke in
- * the series color, e.g. a line mark, shows `seriesColor` in its place.
+ * Rows of one stroke, e.g. a border: first the row of its paint
+ * (`PaintControl`) with color and opacity, its type behind the swatch or
+ * the gear of `details`, then width and line style. Every group thus
+ * starts with its color row. Widgets pass the color the stroke gets when
+ * created as `defaultColor`; a stroke in the series color, e.g. a line
+ * mark, shows `seriesColor` in its place.
  */
 function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
   defaultColor,
@@ -54,6 +55,15 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
 }: StrokeStyleControlsProps<TStroke>) {
   return (
     <>
+      <PaintControl
+        details={details}
+        label={label}
+        paintTypes={paintTypes}
+        presets={defaultColor ? createStyleColorPresets(defaultColor) : []}
+        seriesColor={seriesColor}
+        value={value}
+        onChange={onChange}
+      />
       <ControlRow>
         <ScrubbableNumber
           icon={<Equal size={14} />}
@@ -79,15 +89,6 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
           onValueChange={(lineStyle) => onChange({ ...value, lineStyle })}
         />
       </ControlRow>
-      <PaintControl
-        details={details}
-        label={label}
-        paintTypes={paintTypes}
-        presets={defaultColor ? createStyleColorPresets(defaultColor) : []}
-        seriesColor={seriesColor}
-        value={value}
-        onChange={onChange}
-      />
     </>
   )
 }

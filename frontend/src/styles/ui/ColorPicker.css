@@ -1,0 +1,71 @@
+/* Picker of one color: preset swatches, color area with hue slider and
+   hex value; in the popover of a swatch or in place in a paint editor. */
+.color-picker {
+  --stack-gap: var(--space-3);
+}
+
+.color-picker-presets {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.color-picker .react-colorful {
+  width: 100%;
+  height: 164px;
+}
+
+.color-picker .react-colorful__saturation {
+  border-bottom: 0;
+  border-radius: var(--radius-sm);
+}
+
+.color-picker .react-colorful__hue {
+  height: 12px;
+  margin-top: var(--space-3);
+  border-radius: var(--radius-pill);
+}
+
+.color-picker .react-colorful__pointer {
+  width: 18px;
+  height: 18px;
+  border: var(--border-width-medium) solid var(--color-text-primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.color-picker-hex-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.color-picker-hex-field span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.color-picker-hex-input {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height-sm);
+  padding: 0 var(--space-2);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  background: var(--color-surface-default);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  outline: none;
+}
+
+.color-picker-hex-input:hover {
+  border-color: var(--color-border-default);
+}
+
+.color-picker-hex-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-accent);
+}

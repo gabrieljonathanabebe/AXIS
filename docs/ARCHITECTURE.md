@@ -404,10 +404,12 @@ Balken, Punkten und Segmenten wirkt die Deckkraft als `itemStyle.opacity`
 auf das ganze Element samt Rahmen und Glow; bei Balken multipliziert sie
 sich mit dem Dimming der Selection. Pie und Donut teilen sich `pie`; der
 Innenradius (`pie.innerRadius`, Prozent der Chartgröße) gilt nur beim
-Donut. `Fill` mit eigener Farbe tragen die Hintergründe von Container
-(`container.background`) und Canvas (`canvas.background`). ECharts
-übersetzt `createFillOption`, HTML setzt Paint und Deckkraft als
-CSS-Variablen für eine eigene Ebene (siehe „Farbebenen“).
+Donut. Die Hintergründe von Container (`container.background`) und
+Canvas (`canvas.background`) sind eine Liste `Fill[]` mit eigener Farbe,
+die oberste Fläche zuerst (Index 0 liegt oben); Marks behalten eine
+Fläche, weil ECharts je Mark nur eine zeichnet. ECharts übersetzt
+`createFillOption`, HTML malt die Liste als einen CSS-Hintergrund auf
+einer eigenen Ebene (siehe „Farbebenen“).
 
 **Paint**
 
@@ -423,14 +425,20 @@ type GradientStop = {
   position: number // 0–1
 }
 
+type RadialShape = {
+  centerX: number // 0–1, relativ zur Breite
+  centerY: number // 0–1, relativ zur Höhe
+  radius: number // 0–1, relativ zu Breite und Höhe
+}
+
 type Paint =
   | { kind: 'solid'; color: ColorValue }
-  | {
+  | ({
       kind: 'gradient'
       type: 'linear' | 'radial'
       angle: number
       stops: GradientStop[] // mindestens zwei
-    }
+    } & RadialShape)
 
 type SeriesPaint =
   | { kind: 'solid' }
@@ -455,21 +463,30 @@ type SeriesPaint =
   `DEFAULT_GRADIENT_ANGLE`). CSS bekommt `90 − angle`,
   `getLinearGradientPoints` rechnet ihn für ECharts und SVG in
   Start- und Endpunkt der Bounding Box um.
-- Radial ist fest: Mitte zum Rand, ohne Felder.
+- Radial läuft vom Mittelpunkt (`centerX`, `centerY`) nach außen; der
+  `radius` ist relativ zu Breite und Höhe, die Form also eine Ellipse
+  im Seitenverhältnis der Fläche. Standard ist die Mitte mit 0,5
+  (`DEFAULT_RADIAL_SHAPE`), also bis an die Kanten. Der Mittelpunkt darf
+  außerhalb der Fläche liegen (−50 bis 150 %), z. B. für ein Leuchten,
+  das von oben hereinfällt. Jeder Verlauf trägt Winkel und Shape; ein
+  Wechsel zwischen linear und radial behält beide. Der Fade
+  (`SeriesPaint`) hat keine Shape und läuft radial aus der Mitte.
 - Ein Typwechsel bleibt in seiner Form (`changePaintType`,
   `changeSeriesPaintType`): Solid → Verlauf legt zwei deckende Stopps in
   der bisherigen Farbe an, Verlauf → Solid behält die Farbe des ersten
   Stopps; ein neuer Fade läuft von 100 % auf 0 %.
-- Adapter: `getPaintCss` für HTML (Stopps als `color-mix` mit
-  `transparent`, radial als `radial-gradient(closest-side, …)`),
-  `createPaintColor` und `createSeriesPaintColor`
-  (`charts/echarts/createPaintColor.ts`) für ECharts mit `resolveColor`
-  und `color.modifyAlpha`, `ContainerBorder` für den SVG-Rahmen.
+- Adapter: `getPaintCss(paint, opacity)` für HTML (Stopps als
+  `color-mix` mit `transparent`, die Deckkraft eingerechnet; radial als
+  `radial-gradient(r% r% at x% y%, …)`), `createPaintColor` und
+  `createSeriesPaintColor` (`charts/echarts/createPaintColor.ts`) für
+  ECharts mit `resolveColor` und `color.modifyAlpha`, `ContainerBorder`
+  für den SVG-Rahmen (`radialGradient` mit `cx`, `cy`, `r` in Einheiten
+  der Bounding Box).
 - Renderer-Unterschiede, bewusst hingenommen: ECharts zeichnet radial
-  nur Kreise (bis zur näheren Kante), CSS und SVG eine Ellipse bis zu
-  den Kanten; ECharts und SVG normieren den linearen Winkel auf die
-  Bounding Box, CSS nutzt den echten Bildschirmwinkel (gleich bei 0°,
-  ±90° und 180°).
+  nur Kreise (Radius relativ zur kürzeren Seite, 0,5 also bis zur
+  näheren Kante), CSS und SVG dieselbe Ellipse; ECharts und SVG
+  normieren den linearen Winkel auf die Bounding Box, CSS nutzt den
+  echten Bildschirmwinkel (gleich bei 0°, ±90° und 180°).
 - Unter einer kontinuierlichen Farbskala färbt die `visualMap` jede
   Mark selbst, ein Fade wirkt dort nicht; die Farbzeile bietet dann nur
   Solid an, ein gespeicherter Fade kehrt beim Wechsel auf kategorial
@@ -723,20 +740,22 @@ Werkzeug, Farbe gehört dem Inhalt.
   Heute gibt es nur `--dashboard-accent` (der `ColorToken` `accent`,
   standardmäßig neutral); der App-Akzent `--color-accent` bleibt für
   Zustände.
-- Canvas und Container sind Flächen aus echten Werten: `Fill` mit Farbe
-  oder Verlauf und Deckkraft, ohne Presets oder Glass. Rand und Effekte
+- Canvas und Container sind Flächen aus echten Werten: eine Liste von
+  `Fill` mit Farbe oder Verlauf und Deckkraft, ohne Presets oder Glass,
+  z. B. Grundfarbe plus radiale Leuchtflächen. Rand und Effekte
   (Schatten, Lichtkante als Innenschatten, Blur, Korn; siehe „Effect“)
   stellt der Nutzer selbst ein; vorgefertigte
   Looks kommen als Dashboard-Styles (`ROADMAP.md`, 3.8), die beim
   Anwenden echte Werte schreiben statt live zu verknüpfen.
-- Beide malen ihren Fill auf einer eigenen Ebene hinter dem Inhalt,
-  damit die Deckkraft nur die Fläche ausblendet: `CanvasPanel` setzt
-  `--canvas-background` und `--canvas-background-opacity` für
-  `.canvas-panel::before`, `ObjectFrame` setzt `--chart-background` und
-  `--chart-background-opacity` für `.chart-item-background`. Die
-  Variablen tragen `getPaintCss(background.paint)`, also eine Farbe
-  oder einen CSS-Verlauf; deshalb malen die Ebenen mit `background`,
-  nicht `background-color`.
+- Beide malen ihre Flächen auf einer eigenen Ebene hinter dem Inhalt:
+  `CanvasPanel` setzt `--canvas-background` für `.canvas-panel::before`,
+  `ObjectFrame` setzt `--chart-background` für `.chart-item-background`
+  (über dem Background Blur). `getFillsCss` (`shared/fill.ts`) baut
+  daraus einen CSS-Hintergrund mit einer Schicht je Fläche, die erste
+  oben wie die Zeilen der Gruppe. CSS kennt keine Deckkraft je Schicht,
+  deshalb trägt jede Schicht ihre Deckkraft in den Farben; eine
+  Solid-Fläche wird ein gleichmäßiger Verlauf, weil nur die unterste
+  Schicht eine reine Farbe sein darf. Eine leere Liste ist `none`.
 - Hintergründe sind feste Farben, keine Tokens: Ein Dashboard behält
   seine Farben, wenn der Editor das Theme wechselt. Texte, Achsen und
   Raster folgen heute noch App-Tokens; ein eigenes Farbschema je
@@ -1167,7 +1186,8 @@ type DashboardObject = ChartInstance | CardInstance // später | Table | …
   die Auswahl im Popover entsprechend.
 - `container` beschreibt die Formatierung des Containers und ist bewusst
   nicht Teil des Inhalts (siehe Abschnitt 6, Container vs. Content). Der
-  Hintergrund ist ein `Fill` (Standard `#202226`, 100 %), Effekte sind
+  Hintergrund ist eine Liste `Fill[]` (Standard eine Fläche `#202226`,
+  100 %), Effekte sind
   eine Liste `effects` (Standard leer, siehe „Effect“).
 - `findChart(objects, id)` (`objects/findChart.ts`) liefert ein Objekt
   nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Format-Popover,
@@ -1241,9 +1261,9 @@ type DashboardSpec = {
 ```
 
 `DashboardSpec` beschreibt Einstellungen, die für das ganze Dashboard
-gelten (`src/workspace/types.ts`). `canvas.background` ist die Füllung
-der Canvas (Standard `#141518`, 100 %), im Dashboard-Popover die Gruppe
-Background. `layout.gap` ist der Abstand in Pixeln zwischen den
+gelten (`src/workspace/types.ts`). `canvas.background` sind die Flächen
+der Canvas (Standard eine Fläche `#141518`, 100 %), im Dashboard-Popover
+die Gruppe Background. `layout.gap` ist der Abstand in Pixeln zwischen den
 Grid-Zellen. `animation` gilt für alle Charts: Sie ist
 keine Chart-Eigenschaft mehr (`ChartInteractionSpec` hat kein
 `animation`), sondern läuft als Domain-Wert `CanvasPanel` → `ChartGrid`

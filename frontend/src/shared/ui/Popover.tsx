@@ -25,7 +25,7 @@ import type { ReactNode, RefCallback } from 'react'
 
 type PopoverRole = 'dialog' | 'listbox'
 
-type PopoverTriggerProps = {
+export type PopoverTriggerProps = {
   ref: RefCallback<HTMLButtonElement>
   'aria-expanded': boolean
   'aria-haspopup': PopoverRole

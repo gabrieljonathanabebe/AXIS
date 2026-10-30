@@ -28,15 +28,14 @@
   isolation: isolate;
 }
 
-/* The canvas fill on its own layer, so its opacity does not fade the
-   objects on top. */
+/* The canvas fills on their own layer behind the objects; each fill
+   carries its opacity in its colors. */
 .canvas-panel::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   background: var(--canvas-background);
-  opacity: var(--canvas-background-opacity, 1);
   pointer-events: none;
 }
 

@@ -17,15 +17,14 @@
   isolation: isolate;
 }
 
-/* Fill of the container on its own layer, so its opacity fades the fill
-   and not the content. */
+/* Fills of the container on their own layer above the background blur;
+   each fill carries its opacity in its colors. */
 .chart-item-background {
   position: absolute;
   inset: 0;
   z-index: -1;
   background: var(--chart-background);
   border-radius: inherit;
-  opacity: var(--chart-background-opacity, 1);
   pointer-events: none;
 }
 

@@ -14,19 +14,32 @@ export type GradientStop = {
 }
 
 /**
+ * Center and size of a radial gradient, each from 0 to 1 relative to the
+ * width and height of its area. The radius is relative too, so the
+ * gradient is an ellipse in the proportions of the area; 0.5 from the
+ * center reaches the edges.
+ */
+export type RadialShape = {
+  centerX: number
+  centerY: number
+  radius: number
+}
+
+/**
  * Color of an area or line with its own color: solid, or a gradient
  * between its stops. A linear gradient runs toward its angle in degrees, 0
  * to the right and counterclockwise like the rotation of axis labels; a
- * radial one ignores the angle and runs from the center to the edge.
+ * radial one runs from its center outward and ignores the angle. Each
+ * type keeps the fields of the other, so switching back restores them.
  */
 export type Paint =
   | { color: ColorValue; kind: 'solid' }
-  | {
+  | ({
       angle: number
       kind: 'gradient'
       stops: GradientStop[]
       type: GradientType
-    }
+    } & RadialShape)
 
 /**
  * Color of an area or line in the color of its series: solid, or a fade
@@ -50,6 +63,13 @@ export type PaintType = 'solid' | GradientType
 // ===== CONSTANTS =============================================================
 /** Angle a new gradient or fade starts with: downward, toward the axis. */
 export const DEFAULT_GRADIENT_ANGLE = -90
+
+/** Shape a new radial gradient starts with: from the center to the edges. */
+export const DEFAULT_RADIAL_SHAPE: RadialShape = {
+  centerX: 0.5,
+  centerY: 0.5,
+  radius: 0.5,
+}
 
 // ===== FUNCTIONS =============================================================
 /**
@@ -105,6 +125,7 @@ export function changePaintType(paint: Paint, type: PaintType): Paint {
     return { ...paint, type }
   }
   return {
+    ...DEFAULT_RADIAL_SHAPE,
     angle: DEFAULT_GRADIENT_ANGLE,
     kind: 'gradient',
     stops: [
@@ -155,31 +176,41 @@ export function getSortedStops(stops: GradientStop[]): GradientStop[] {
  * Turns the stops of a gradient into a CSS color stop list, e.g. for the
  * preview of a gradient field.
  * @param stops Stops of a gradient.
+ * @param opacity Opacity folded into every stop, 1 for none.
  * @returns Comma-separated color stops for a CSS gradient.
  */
-export function getGradientStopsCss(stops: GradientStop[]): string {
+export function getGradientStopsCss(
+  stops: GradientStop[],
+  opacity = 1,
+): string {
   return getSortedStops(stops)
     .map((stop) => {
-      return `${getColorCss(stop.color, stop.opacity)} ${stop.position * 100}%`
+      const color = getColorCss(stop.color, stop.opacity * opacity)
+      return `${color} ${stop.position * 100}%`
     })
     .join(', ')
 }
 
 /**
- * Turns a paint into a CSS background, e.g. of the canvas or a container.
- * A radial gradient reaches the edges from the center; a linear one turns
- * its angle into CSS, where 0 points up and angles run clockwise.
+ * Turns a paint into a CSS background, e.g. one layer of the canvas or a
+ * container. A radial gradient is an ellipse around its center whose
+ * radii are relative to the width and height; a linear one turns its
+ * angle into CSS, where 0 points up and angles run clockwise.
  * @param paint Paint with its own color.
+ * @param opacity Opacity folded into every color, 1 for none.
  * @returns A CSS color or gradient.
  */
-export function getPaintCss(paint: Paint): string {
+export function getPaintCss(paint: Paint, opacity = 1): string {
   if (paint.kind === 'solid') {
-    return getColorCss(paint.color)
+    return getColorCss(paint.color, opacity)
   }
-  const stops = getGradientStopsCss(paint.stops)
-  return paint.type === 'radial'
-    ? `radial-gradient(closest-side, ${stops})`
-    : `linear-gradient(${90 - paint.angle}deg, ${stops})`
+  const stops = getGradientStopsCss(paint.stops, opacity)
+  if (paint.type === 'linear') {
+    return `linear-gradient(${90 - paint.angle}deg, ${stops})`
+  }
+  const size = `${paint.radius * 100}% ${paint.radius * 100}%`
+  const center = `${paint.centerX * 100}% ${paint.centerY * 100}%`
+  return `radial-gradient(${size} at ${center}, ${stops})`
 }
 
 /**

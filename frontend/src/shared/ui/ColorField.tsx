@@ -1,15 +1,17 @@
 import { HexColorInput } from 'react-colorful'
 
 import { getColorValueKey, normalizeHex } from '../colorValue'
-import ColorControl from './ColorControl'
+import ColorSwatch from './ColorSwatch'
 
+import type { ReactNode } from 'react'
 import type { ColorValue } from '../colorValue'
-import type { ColorPreset } from './ColorControl'
+import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================
 type ColorFieldProps<TPreset extends string = never> = {
   label: string
   presets: ColorPreset<TPreset>[]
+  swatch?: ReactNode
   value: ColorValue | NoInfer<TPreset>
   onChange: (value: ColorValue | NoInfer<TPreset>) => void
 }
@@ -38,24 +40,27 @@ function getSwatchLabel(
 /**
  * Field of one color: swatch with the color picker, then the hex value of
  * an own color or the swatch name of a theme color or named preset, e.g.
- * the glass background of a container.
- * @param props Name of the paint, swatches, color and its handler.
+ * the glass background of a container. A given `swatch` takes the place
+ * of the picker, e.g. the swatch of a paint that opens its editor.
+ * @param props Name of the paint, swatches, color, swatch and handler.
  */
 function ColorField<TPreset extends string = never>({
   label,
   presets,
+  swatch,
   value,
   onChange,
 }: ColorFieldProps<TPreset>) {
   return (
     <div className="field color-field">
-      <ColorControl
-        label={`${label} color`}
-        presets={presets}
-        value={value}
-        variant="compact"
-        onChange={onChange}
-      />
+      {swatch ?? (
+        <ColorSwatch
+          label={`${label} color`}
+          presets={presets}
+          value={value}
+          onChange={onChange}
+        />
+      )}
       {typeof value !== 'string' && value.kind === 'custom' ? (
         <HexColorInput
           className="color-field-hex"

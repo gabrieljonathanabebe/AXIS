@@ -610,9 +610,9 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
   hat kein Auge, sondern ＋/− oder Toggles in der Zeile (Regel 1 unter
   „Kompakte Controls“).
 - Die Bausteine (`LayoutControls`, `TextStyleControls`,
-  `StrokeStyleControls`, `FillControls`, `EffectControls`,
-  `NumberFormatControls`) liefern nur Zeilen; das Widget legt sie in
-  seine Gruppen.
+  `StrokeStyleControls`, `PaintControl`, `FillListControls`,
+  `EffectControls`, `NumberFormatControls`) liefern nur Zeilen; das
+  Widget legt sie in seine Gruppen.
 - `AxisWidget` zeigt mit `part` (`title` | `labels`) die Gruppen eines
   Elements: „X Axis“ die Gruppe Title, „X Axis Labels“ Layout, Text und
   Format.
@@ -709,16 +709,21 @@ ANIMATION                      ＋
   4 px Abstand, wie die Aktionen einer Überschrift. Die Gruppe ist immer
   so breit wie zwei Buttons, damit Felder in einer Liste untereinander
   stehen, auch wenn eine Zeile kein ⚙ hat; die Felder teilen sich den
-  Rest 2 : 1 (Art | kurzer Wert). Selects in kompakten Zeilen rücken den
-  Chevron näher an den Text (`--spread-gap` 4 px, rechts 8 px).
-- **Farbzeile** (`PaintControl`, siehe 9q): eine Zeile mit dem Typ
-  Solid | Linear | Radial als Icon-Gruppe, beim linearen Verlauf
-  rechts der Winkel (`RotationDial`); darunter links das Farbfeld,
-  rechts die Deckkraft in % (Icon ◐, scrubbable). Das ⚙ steht in der
-  Überschrift (Regel 1). Eine eigene Farbe zeigt `ColorField`, ein
-  Verlauf `GradientControl`. Bei Serienfarben (`SeriesFill`,
-  `SeriesStrokeStyle`) steht links das Feld der Datenfarbe
-  (`seriesColor`), sofern der Paint sie trägt, sonst nur die Deckkraft.
+  Rest 2 : 1 (Art | kurzer Wert). Die Gruppe sitzt immer in der letzten
+  Spalte (`grid-column: -2`), auch nach einem einzelnen Feld, damit ihre
+  Buttons an derselben Kante enden wie die Aktionen der Überschrift.
+  Selects in kompakten Zeilen rücken den Chevron näher an den Text
+  (`--spread-gap` 4 px, rechts 8 px).
+- **Farbzeile** (`PaintControl`, siehe 9q): eine Zeile pro Farbe,
+  überall gleich: links das Feld (`PaintField`), rechts die Deckkraft in
+  % (Icon ◐, scrubbable). Der Swatch einer eigenen Farbe öffnet den
+  Editor mit Typ, Winkel bzw. Mittelpunkt und Größe, Stopps oder
+  Picker. Bei Serienfarben (`SeriesFill`, `SeriesStrokeStyle`) steht
+  links das Feld der Datenfarbe (`seriesColor`), sofern der Paint sie
+  trägt, sonst nur die Deckkraft; ihr Editor (Typ, Fade) liegt hinter
+  dem ⚙ in der Überschrift (Regel 1). Mehrere Farben einer Fläche
+  (Hintergründe von Canvas und Container) sind mehrere Farbzeilen mit
+  ＋ in der Überschrift und − am Zeilenende (`FillListControls`, 9n).
 - **Text:** Zeile 1 Größe (Icon Aa, Einheit px) | Gewicht als
   Icon-Gruppe (Light · Medium · Bold; ein Select erst bei mehr
   Schnitten) | Italic (Icon-Toggle); Zeile 2 Farbfeld (`ColorField`,
@@ -726,10 +731,11 @@ ANIMATION                      ＋
   wo das Element sie hat (Titel), sonst bleibt die rechte Spalte leer.
   Zur Trennung von Position, Anordnung und Text-Ausrichtung siehe
   `ARCHITECTURE.md`, „Kasten-Modell“.
-- **Stroke:** Zeile 1 Breite (Icon ═, Einheit px) | Stil als Icon-Gruppe
-  (— ┄ ┈), danach die Farbzeile. Ein eigenes ⚙ gibt es nur für den
-  Verlauf des Paints; Cap, Join oder eigene Strichmuster wären eine
-  Formänderung.
+- **Stroke:** zuerst die Farbzeile, darunter Breite (Icon ═, Einheit
+  px) | Stil als Icon-Gruppe (— ┄ ┈); jede Gruppe beginnt so mit ihrer
+  Farbe. Ein Stroke hat genau eine Farbe: Mehrere Farben übereinander
+  wirken auf einer Linie kaum, und ECharts zeichnet je Mark eine. Cap,
+  Join oder eigene Strichmuster wären eine Formänderung.
 - **Effect:** Überschrift mit ＋; die Zeile zeigt Art (Glow ▾ bzw.
   Shadow ▾) | Blur (Icon ◌) | ⚙ | −. Kein Auge, weil `Effect` keinen
   ausgeblendeten Zustand kennt; ein Effekt pro Mark, da ECharts je Mark
@@ -773,7 +779,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 
 - `getDataColorField` (`markGroups.tsx`) baut das Feld einmal; Fill der
   gefüllten Marks bzw. die Line reichen es als `seriesColor` an
-  `FillControls` bzw. `StrokeStyleControls` weiter. Die Bausteine
+  `PaintControl` bzw. `StrokeStyleControls` weiter. Die Bausteine
   bleiben generisch.
 - Weitere Paints in der Serienfarbe, z. B. die Area der Line, zeigen nur
   ihre Deckkraft; die Datenfarbe hat genau eine Stelle.
@@ -797,6 +803,12 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
   Color des Schattens. Der Body übernimmt dann den Abstand des
   Format-Popovers (12 px); einzelne Zeilen wie Fade bleiben ohne
   Überschrift.
+- Der Editor einer Farbe öffnet sich am Swatch statt am ⚙ und hat
+  keinen Kopf (`hasHeader={false}`): Seine Zeilen sagen, was er
+  bearbeitet, wie beim Picker des Swatches.
+- Solange ein Swatch seinen Picker oder Editor offen hat
+  (`aria-expanded`), zeigt sein Feld den Fokus-Look; ein Swatch ohne
+  Feld, z. B. ein Stopp, einen Ring im App-Akzent.
 
 **Regel 4: Dichte und Ruhe**
 
@@ -835,7 +847,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 | --------------------------------------- | ------------------------------------------------------- |
 | Zahlenfeld mit Icon, Einheit und Auto   | `ScrubbableNumber` mit `icon`, `unit` und `onAuto` (8)  |
 | Winkel                                  | `RotationDial`: `ScrubbableNumber` mit Pfeil als Icon   |
-| Farbzeile                               | `PaintControl` mit `ColorField` (9q)                    |
+| Farbzeile                               | `PaintControl` mit `PaintField` (9q)                    |
 | Icon-Toggle                             | `IconButton` mit `isActive`                             |
 | Toggle mit Icon und Wort                | `Button` mit `isActive` und `aria-pressed` (Zoom)       |
 | Icon und Wort einer Option              | `OptionItem.icon`, gezeigt von `OptionContent` (9s)     |
@@ -902,40 +914,41 @@ Verwenden:
 
 ### Color
 
-Verwenden:
+Die Bausteine rund um Farbe bilden eine Leiter; jede Stufe baut auf der
+vorigen auf, keine Stufe gibt es doppelt. Der Name sagt die Größe:
+Swatch ist ein Punkt, Field ein Feld, Control eine Zeile, Controls eine
+Gruppe aus Zeilen.
 
-`ColorControl`
+| Stufe    | Baustein              | Aufgabe                                                                   |
+| -------- | --------------------- | ------------------------------------------------------------------------- |
+| Inhalt   | `ColorPicker`         | Presets, Farbfläche mit Hue, Hex-Feld einer Farbe                         |
+| Swatch   | `ColorSwatch`         | Punkt einer Farbe, öffnet den `ColorPicker` im Popover                    |
+| Field    | `ColorField`          | eine Farbe: Swatch + Hex bzw. Preset-Name                                 |
+| Field    | `PaintField`          | ein Paint: bei Solid das `ColorField`, bei Verlauf Vorschau + Typ; Editor |
+| Control  | `PaintControl`        | eine Farbzeile: Feld + Deckkraft + `actions`                              |
+| Controls | `FillListControls`    | mehrere Farbzeilen einer Fläche, oberste zuerst                           |
+| Controls | `StrokeStyleControls` | Farbzeile + Breite + Stil                                                 |
 
-Keine neuen spezialisierten Color Picker erzeugen.
+Keine neuen spezialisierten Color Picker erzeugen; jede Farbauswahl
+läuft über den einen `ColorPicker`, im Popover des Swatches oder direkt
+im Editor einer Solid-Farbe.
 
-Darstellungsvarianten:
+`GradientControl` kombiniert zwei `ColorSwatch` mit einer Vorschau des
+Verlaufs. Es arbeitet auf `GradientStop[]`: Die Swatches zeigen den
+ersten und letzten Stopp nach Position, die Vorschau alle Stopps samt
+Deckkraft. Genutzt nur noch für die Enden der kontinuierlichen
+Farbskala (Chart 1–5), weil dort Anfang und Ende direkt klickbar sein
+sollen; ob sie ein `PaintField` wird, klärt 3.9.
 
-- `inline` zeigt Preset-Farben direkt in der Zeile;
-- `compact` zeigt einen einzelnen Farbauslöser und öffnet Presets,
-  Picker und HEX-Eingabe in einem Popover.
-
-In kompakten Zeilen zeigt `ColorField` den kompakten `ColorControl` mit
-Hex-Wert bzw. Preset-Namen, mit Deckkraft als `PaintControl` (siehe
-9q).
-
-`GradientControl` kombiniert zwei kompakte ColorControls mit einer
-Vorschau des Verlaufs. Es arbeitet auf `GradientStop[]`: Die Swatches
-zeigen den ersten und letzten Stopp nach Position, die Vorschau alle
-Stopps samt Deckkraft. Genutzt für die Enden der kontinuierlichen
-Farbskala (Chart 1–5) und als Farbfeld eines Verlaufs im
-`PaintControl`. Die eigentliche Farbauswahl bleibt vollständig im
-zentralen ColorControl.
-
-`GradientStopsControl` ist die Stopp-Liste hinter dem ⚙ eines
-Verlaufs: je Stopp Swatch | Position (%) | Deckkraft (%) | −, ＋ im
-Kopf des Popovers legt einen deckenden Stopp in der Mitte an
+`GradientStopsControl` ist die Stopp-Liste im Editor eines Verlaufs
+(Section Stops): je Stopp Swatch | Position (%) | Deckkraft (%) | −, ＋
+im Kopf der Section legt einen deckenden Stopp in der Mitte an
 (`addGradientStop`). Mindestens zwei Stopps bleiben; die Zeilen
 behalten ihre Reihenfolge, damit eine Zeile beim Ziehen der Position
 nicht springt. Es hängt nur an `GradientStop` und kann später eine
 Farbskala mit mehr als zwei Farben tragen.
 
-Das Swatch der aktuellen Farbe im kompakten Auslöser hat immer einen
-dünnen neutralen Ring, damit eine Farbe nah an der Fläche sichtbar
+Das Swatch der aktuellen Farbe hat immer einen dünnen neutralen Ring, damit eine Farbe nah an der Fläche sichtbar
 bleibt, z. B. ein Graphit-Hintergrund; der Leuchtring bleibt der
 Auswahl im Picker vorbehalten.
 
@@ -1017,7 +1030,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)              |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                    |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                    |
-| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorControl`, Format-Popover am Chart)        |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorSwatch`, Format-Popover am Chart)         |
 | Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                    |
 | Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                    |
 | Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (Achsentitel, `onAuto` für Ticks und Decimals)   |
@@ -1058,15 +1071,16 @@ begrenzte Werte:
   `min` und `max` sind optional, Standard ±90 (Achsenlabels); der
   Verlauf nutzt ±180.
 
-## 9. ColorControl
+## 9. ColorSwatch und ColorPicker
 
-Zentrale wiederverwendbare Komponente:
+`ColorPicker` ist die eine Farbauswahl: oben die Preset-Swatches des
+Einsatzorts, darunter die Farbfläche mit Hue (`react-colorful`) und das
+Hex-Feld. `ColorSwatch` ist der Punkt einer Farbe, der den Picker in
+einem Popover ohne Kopf öffnet (Schließen per Klick daneben oder
+Escape); der Editor einer Solid-Farbe zeigt ihn direkt.
 
 ```tsx
-<ColorControl
-  value={color}
-  onChange={...}
-/>
+<ColorSwatch label="Title" presets={presets} value={color} onChange={...} />
 ```
 
 Wert und Rückgabe sind ein `ColorValue` (siehe ARCHITECTURE,
@@ -1075,18 +1089,19 @@ Farbwerte): ein Theme-Token oder eine feste Farbe.
 Grundstruktur:
 
 - eine Reihe Preset-Swatches, die der Aufrufer über `presets` setzt
-  (Pflicht); Theme-Swatches zeigen die aktuelle Theme-Farbe und
-  speichern den Token;
-- ein Custom Swatch für eine feste Farbe.
+  (Pflicht, `ColorPreset` in `colorPresets.ts`); Theme-Swatches zeigen
+  die aktuelle Theme-Farbe und speichern den Token; ohne Presets
+  entfällt die Reihe;
+- Farbfläche und Hex-Feld für eine feste Farbe.
 
 Reihen je Einsatzort (`shared/ui/colorPresets.ts`):
 
-| Einsatzort                                                     | Reihe                                   |
-| -------------------------------------------------------------- | --------------------------------------- |
-| Text (`TextStyleControls`)                                     | Default · Muted · Accent · eigene Farbe |
-| Linien und Rahmen (`StrokeStyleControls`)                      | Default · Muted · Accent · eigene Farbe |
-| Marks und Flächen (Markfarbe, `FillControls`), Farbskala-Enden | Chart 1–5 · eigene Farbe                |
-| Hintergrund von Container und Canvas                           | nur eigene Farbe (keine Felder)         |
+| Einsatzort                                                      | Reihe                                   |
+| --------------------------------------------------------------- | --------------------------------------- |
+| Text (`TextStyleControls`)                                      | Default · Muted · Accent · eigene Farbe |
+| Linien und Rahmen (`StrokeStyleControls`)                       | Default · Muted · Accent · eigene Farbe |
+| Marks und Flächen (Datenfarbe, Fill der Marks), Farbskala-Enden | Chart 1–5 · eigene Farbe                |
+| Hintergrund von Container und Canvas                            | nur eigene Farbe (keine Felder)         |
 
 - „Default“ steht für die Standardrolle des Elements, z. B. `text` beim
   Titel, `gridLine` bei Gridlines, `border` beim Container-Rahmen,
@@ -1099,22 +1114,18 @@ Reihen je Einsatzort (`shared/ui/colorPresets.ts`):
   (`DATA_COLOR_PRESETS`).
 - Das Label eines Presets ist zugleich sein Hover-Titel.
 
-Vor Auswahl einer Custom Color zeigt der Custom Swatch einen
-Farbverlauf.
+Die Farbfläche zeigt die aktuelle eigene Farbe; ist ein Token oder
+Preset gewählt, startet sie bei einer festen Startfarbe. Farbfläche und
+Hex-Feld liefern immer eine feste Farbe. Ein Klick auf einen Preset
+lässt den Picker offen.
 
-Nach Auswahl zeigt er die zuletzt gewählte Custom Color.
-
-Die Custom Color bleibt erhalten, auch wenn anschließend ein Swatch
-ausgewählt wird. Der Farbwähler liefert immer eine feste Farbe.
-
-Active State:
+Active State eines Presets:
 
 - Electric Blue Ring;
 - subtiler Glow;
 - nicht nur Farbe als Zustandsindikator.
 
-Ein Token ohne eigenen Swatch markiert weder einen Swatch noch den
-Custom Swatch.
+Ein Token ohne eigenen Swatch markiert keinen Swatch.
 
 Custom Picker kann über `react-colorful` umgesetzt werden.
 
@@ -1132,8 +1143,9 @@ Container-Hintergrund). Der Typ der Namen ergibt sich aus `presets`
 (`ColorPreset<TPreset>`), `onChange` liefert dann `ColorValue | TPreset`.
 Solche Presets verwenden im Active State den Electric-Blue-Ring und
 eine feine Kante, damit dunkle oder transparente Flächen sichtbar
-bleiben. Auch der Auslöser der Variante `compact` zeigt die Fläche des
-gewählten Presets (`--swatch-fill`).
+bleiben. Auch der `ColorSwatch` zeigt die Fläche des gewählten Presets
+(`--swatch-fill`); dieselbe Variable nimmt beim `PaintField` einen
+Verlauf auf.
 
 ## 9a. AlignmentControl
 
@@ -1296,15 +1308,18 @@ Klick daneben):
   Wort (`OptionContent`), die gewählte einen Haken. Eine Option mit
   `disabled` (`OptionItem`) bleibt sichtbar, aber gedimmt und nicht
   wählbar, z. B. ein zweiter Background Blur.
-- `DetailsPopover` ist die Hülle für das ⚙: ein `IconButton`
-  (`Settings2`, `ghost`, gedrückt solange offen, benannt „Advanced …“)
-  öffnet ein kleines Popover mit Titel und den seltenen Zeilen, z. B.
-  Notation und Prefix | Suffix des Zahlenformats, Range der Farbskala
-  oder die Stopps eines Verlaufs. `size` ist am Zeilenende `sm`
-  (Standard), in der Überschrift und im `actions`-Slot einer
-  `ControlRow` `xs`; `actions` stehen im Kopf vor dem
-  Schließen-Button, z. B. das ＋ der Stopp-Liste. Im Format-Popover ist
-  es verschachtelt.
+- `DetailsPopover` ist die Hülle für Details: Standard-Auslöser ist
+  ein `IconButton` (`Settings2`, `ghost`, gedrückt solange offen,
+  benannt „Advanced …“), der ein kleines Popover mit Titel und den
+  seltenen Zeilen öffnet, z. B. Notation und Prefix | Suffix des
+  Zahlenformats, Range der Farbskala oder Typ und Fade einer
+  Serienfarbe. `size` ist am Zeilenende `sm` (Standard), in der
+  Überschrift und im `actions`-Slot einer `ControlRow` `xs`; `actions`
+  stehen im Kopf vor dem Schließen-Button. `renderTrigger` ersetzt das
+  ⚙, z. B. durch den Swatch eines `PaintField`; `hasHeader={false}`
+  lässt den Kopf weg; `open` und `onOpenChange` lassen den Aufrufer es
+  steuern, z. B. nach ＋ in einer Liste. Im Format-Popover ist es
+  verschachtelt.
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
   ein Kind-Popover (z. B. Farbwähler im Format-Popover) schließt das
   Eltern-Popover nicht.
@@ -1373,11 +1388,11 @@ eigene Zeile im Widget oder ein optionaler Teil wie `alignment`.
 eines Umrisses (`StrokeStyle`), nach demselben Muster wie
 `TextStyleControls`: Zeilen statt Rahmen, `label` für Screenreader.
 
-- Zeile 1: Width (`ScrubbableNumber`, Icon ═, px, `minWidth` bis
+- zuerst die Farbzeile (`PaintControl`, siehe 9q): Feld und Opacity,
+  Typ und Verlauf im Editor hinter dem Swatch bzw. dem ⚙
+- darunter Width (`ScrubbableNumber`, Icon ═, px, `minWidth` bis
   `maxWidth`, Standard 0–8; 0 heißt kein Strich) | Style (Icon-Gruppe
   Solid/Dashed/Dotted mit `.line-style-preview`)
-- danach die Zeilen des Paints (`PaintControl`, siehe 9q): Typ und
-  Winkel, Color und Opacity, das ⚙ in der Überschrift
 - generisch über den Wert (`StrokeStyle<Paint | SeriesPaint>`): Ein
   `StrokeStyle` hat eine eigene Farbe, ein `SeriesStrokeStyle` nimmt
   sie aus der Serie; dann zeigt die Farbzeile `seriesColor`, das Feld
@@ -1417,11 +1432,12 @@ Vorhandene Bausteine:
   Achsenbeschriftung (`AxisLabelsAppearance.numberFormat`), Card-Wert,
   Datenlabels und Tooltip (`interaction.tooltip.numberFormat`, ohne
   Control)
-- `Fill` mit `FillControls` (siehe 9n): Fläche unter Linien
+- `Fill` mit `PaintControl` (siehe 9q): Fläche unter Linien
   (`line.area`), Balken (`bar.fill`), Scatter-Punkte (`scatter.fill`)
   und Pie-Segmente (`pie.fill`), alle als `SeriesFill` in der Farbe
-  ihrer Serie (Solid oder Fade); dazu die Hintergründe von Container
-  und Canvas (`container.background`, `canvas.background`) mit eigener
+  ihrer Serie (Solid oder Fade); dazu als Liste `Fill[]` mit
+  `FillListControls` (siehe 9n) die Hintergründe von Container und
+  Canvas (`container.background`, `canvas.background`) mit eigener
   Farbe oder Verlauf. Fill und Stroke teilen den `Paint` (siehe 9q)
 - `Effect` mit `EffectControls` (siehe 9o): Glow in der Farbe der Serie
   bzw. des Segments oder Schatten mit eigener Farbe auf allen Marks
@@ -1436,8 +1452,8 @@ Vorhandene Bausteine:
 
 Schatten von Marks und Container teilen `Shadow` und `ShadowControls`.
 
-Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Color-Zeile
-nutzt `ColorControl` mit der Reihe ihres Einsatzorts (siehe 9).
+Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Farbauswahl
+nutzt `ColorPicker` mit der Reihe ihres Einsatzorts (siehe 9).
 
 Ein neuer Baustein lohnt sich erst, wenn mindestens zwei Elemente ihn
 tatsächlich nutzen oder der zweite Nutzer konkret geplant ist.
@@ -1547,31 +1563,31 @@ Card
   im `AxisWidget` und von den Datenlabels im `LabelsWidget` (nicht bei
   Pie und Donut, die Anteile zeigen)
 
-## 9n. FillControls
+## 9n. FillListControls
 
-`FillControls` ist der Baustein für die Füllung einer Fläche (`Fill`),
-nach demselben Muster wie `StrokeStyleControls`: eine Farbzeile
-(`PaintControl`, siehe 9q) statt Rahmen, `label` für Screenreader
-(„Area fill color“).
+Eine Fläche einer Mark ist eine einzelne Farbzeile (`PaintControl`,
+siehe 9q); `FillListControls` sind die Flächen eines Hintergrunds
+(`Fill[]`), wie in Figma die oberste Ebene zuerst:
 
-- die Zeilen des Paints: Typ und Winkel, Color (`ColorField` bzw.
-  `GradientControl`) und Opacity (5–100 %), das ⚙ in der Überschrift
-  (Stopps, Fade-Enden oder, als `details`, Range der Farbskala)
-- `presets` sind die Felder, Standard Chart 1–5; die Hintergründe von
-  Container und Canvas übergeben keine (`[]`), der Farbknopf öffnet
-  dann direkt den Picker mit Hex-Feld
-- generisch über den Wert (`Fill<Paint | SeriesPaint>`): Ein `Fill`
-  hat eine eigene Farbe, ein `SeriesFill` nimmt sie aus der Serie; dann
-  zeigt die Zeile `seriesColor`, das Feld der Datenfarbe, oder nur die
-  Deckkraft. `paintTypes` schränkt die Typen ein wie bei
-  `StrokeStyleControls`
-- genutzt von der Fläche unter Linien (Gruppe Area mit Auge), den
-  Balken, den Scatter-Punkten und den Pie-Segmenten (Gruppe Fill mit der
-  Datenfarbe) in `markGroups.tsx`, außerdem die Gruppe Background von
-  Container (`ContainerWidget`) und Canvas (Dashboard-Popover)
-- bei Balken, Punkten und Segmenten ist die Deckkraft die des ganzen
-  Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen und
-  Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
+```text
+BACKGROUND                         ＋
+[◎ Radial          ] [◐  55 %]     −
+[● 060B26          ] [◐ 100 %]     −
+```
+
+- je Fläche eine Zeile: `PaintField` | Deckkraft | − im
+  `actions`-Slot; Hintergründe haben keine Presets (`[]`)
+- ＋ in der Überschrift legt oben eine Fläche an (`addFill`: Weiß 10 %)
+  und öffnet sofort ihren Editor: Die Liste merkt sich die offene Zeile
+  (höchstens eine) und öffnet die oberste, wenn sie wächst; beim
+  Entfernen schließt sie den Editor, weil die Zeilen nachrücken. Auch
+  Undo eines Entfernens öffnet daher die oberste Zeile.
+- die Liste darf leer sein, die Fläche ist dann transparent
+- genutzt von der Gruppe Background von Container (`ContainerWidget`)
+  und Canvas (Dashboard-Popover)
+- bei Balken, Punkten und Segmenten ist die Deckkraft der Fläche die des
+  ganzen Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen
+  und Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
 
 ## 9o. EffectControls und ContainerEffectsControls
 
@@ -1635,39 +1651,54 @@ statt Rahmen, `label` für Screenreader („Legend position“).
   Icon und Wort; eine einzige Position braucht kein Control
 - steht im Popover immer in der Gruppe Layout
 
-## 9q. PaintControl und ColorField
+## 9q. PaintControl, PaintField und ColorField
 
 `ColorField` ist das Farbfeld einer kompakten Zeile (`.field`
-`.color-field`): links das Swatch des kompakten `ColorControl`, das den
-Farbwähler mit den Farben des Einsatzorts öffnet, rechts der Hex-Wert
-einer eigenen Farbe (direkt editierbar) oder der Name ihres Presets
-(„Default“, „Chart 2“).
+`.color-field`): links ein `ColorSwatch`, der den Picker mit den Farben
+des Einsatzorts öffnet, rechts der Hex-Wert einer eigenen Farbe (direkt
+editierbar) oder der Name ihres Presets („Default“, „Chart 2“).
 
-- generisch über benannte Presets wie `ColorControl`
-  (`ColorPreset<TPreset>`), derzeit ohne Nutzer
-- genutzt von `TextStyleControls`, `PaintControl` und der Datenfarbe
-  (`getDataColorField`)
+- `swatch` ersetzt den Swatch, z. B. durch den eines `PaintField`, der
+  den Editor öffnet; Hex-Feld und Preset-Name bleiben
+- generisch über benannte Presets (`ColorPreset<TPreset>`), derzeit ohne
+  Nutzer
+- genutzt von `TextStyleControls`, `ShadowControls`, `PaintField` und
+  der Datenfarbe (`getDataColorField`)
 
-`PaintControl` sind die Zeilen des Paints eines Fills oder Strokes
-(`paint` und `opacity`, siehe `ARCHITECTURE.md`, „Paint“):
+`PaintField` ist das Feld eines Paints mit eigener Farbe. Sein Swatch
+zeigt den Paint selbst, auch einen Verlauf (`--swatch-fill`); daneben
+steht der Hex-Wert einer Solid-Farbe oder der Typ eines Verlaufs
+(„Linear“, „Radial“):
 
-- Typ: Solid | Linear | Radial als Icon-Gruppe mit kleinen Vorschauen
-  (`.paint-type-preview`), beim linearen Verlauf bzw. Fade rechts der
-  Winkel (`RotationDial`, ±180°). Mit nur einem der `paintTypes`
-  entfällt die Zeile, z. B. unter einer kontinuierlichen Farbskala.
-- Farbe: Farbfeld | Deckkraft (`ScrubbableNumber`, Icon ◐, 5–100 %).
-  Eine eigene Farbe zeigt `ColorField`, ein eigener Verlauf
-  `GradientControl`, ein Serien-Paint `seriesColor`, das Feld der
-  Datenfarbe, oder nur die Deckkraft.
-- ⚙ über `FormatWidgetAction` in der Überschrift der Gruppe: beim
-  Verlauf die Stopp-Liste (`GradientStopsControl`, ＋ im Popover-Kopf),
-  beim Fade Start | Ende der Deckkraft (0–100 %, relativ zur Zeile);
-  gegebene `details` haben Vorrang (Range der Farbskala). Ohne
-  betitelte Gruppe bleibt das ⚙ am Ende der Farbzeile.
+- mit `children` öffnet der Swatch sie als Editor (`DetailsPopover` mit
+  eigenem Auslöser, ohne Kopf); ohne `children` ist der Paint Solid und
+  das Feld ein `ColorField` mit Picker
+- es hält den Offen-Zustand selbst, damit der Editor beim Wechsel
+  zwischen Solid und Verlauf offen bleibt; `open` und `onOpenChange`
+  geben ihn an eine Liste ab
+
+`PaintControl` ist die Farbzeile eines Fills oder Strokes (`paint` und
+`opacity`, siehe `ARCHITECTURE.md`, „Paint“): Feld | Deckkraft
+(`ScrubbableNumber`, Icon ◐, 5–100 %) | `actions`.
+
+- Eigene Farbe: `PaintField`, sein Editor (`getEditor`) zeigt oben den
+  Typ Solid | Linear | Radial als Icon-Gruppe mit Wort über die ganze
+  Breite (`.paint-type-preview`), darunter eine Section je Typ: Color
+  mit dem `ColorPicker`; Angle (`RotationDial`, ±180°) bzw. Shape (X, Y
+  −50 bis 150 %, Radius 1–200 %) und Stops (`GradientStopsControl`, ＋
+  im Kopf der Section).
+- Serienfarbe: links `seriesColor`, das Feld der Datenfarbe, oder nur
+  die Deckkraft; derselbe Editor (Typ, Fade Start | Ende, 0–100 %
+  relativ zur Zeile) liegt hinter dem ⚙ in der Überschrift
+  (`FormatWidgetAction`), weil das Feld der Datenfarbe ihn nicht öffnen
+  kann. Gegebene `details` haben Vorrang (Range der Farbskala).
+- Mit nur einem der `paintTypes` gibt es keinen Typ zu wählen, z. B.
+  unter einer kontinuierlichen Farbskala; eine eigene Solid-Farbe ist
+  dann ein reines `ColorField`.
 - Ein Typwechsel bleibt in der Form des Werts: eigene Farbe bleibt
   eigen, ein Serien-Paint bleibt in der Serienfarbe.
-- `FillControls` und `StrokeStyleControls` bauen ihre Farbe damit,
-  auch für die Hintergründe von Container und Canvas
+- `StrokeStyleControls`, `FillListControls` und die Fill-Gruppen der
+  Marks bauen ihre Farbe damit
 
 `.field` (`styles/field.css`) ist die gemeinsame Fläche der Felder:
 Pill-Form, Rahmen über `--field-border-color` (in kompakten Zeilen
@@ -1904,8 +1935,9 @@ Move und Resize rasten während des Drags live im Canvas-Grid ein.
 Der Container eines Objekts wird im Element „Chart“ bzw. „Card“ des
 Format-Popovers formatiert:
 
-- Background über `FillControls`: eigene Farbe oder Verlauf und
-  Deckkraft (Standard `#202226`, 100 %), ohne Felder;
+- Background über `FillListControls`: eine oder mehrere Flächen mit
+  eigener Farbe oder Verlauf und Deckkraft (Standard eine Fläche
+  `#202226`, 100 %), ohne Felder;
 - Padding und Radius über `ScrubbableNumber` mit Icon und px;
 - Rahmen über `StrokeStyleControls` (Breite 0 heißt kein Rahmen), als
   SVG gezeichnet (`ContainerBorder`), damit Verlauf, Strichmuster und
