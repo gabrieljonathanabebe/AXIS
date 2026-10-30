@@ -1,5 +1,5 @@
 import { Eye, EyeOff, Paintbrush, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { FormatWidgetActionSlot } from './formatWidgetSlot'
 import IconButton from './IconButton'
@@ -42,8 +42,29 @@ function FormatWidget({
   const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null)
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsRows = visibility?.visible ?? true
+  const widgetRef = useRef<HTMLDivElement | null>(null)
+  const revealsAdded = useRef(false)
+
+  useEffect(() => {
+    if (revealsAdded.current) {
+      revealsAdded.current = false
+      widgetRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+    }
+  })
+
+  /**
+   * Adds what the rows edit and scrolls the group into view once the new
+   * row is rendered, e.g. an effect at the bottom of the popover.
+   */
+  function handleAdd(): void {
+    revealsAdded.current = true
+    onAdd?.()
+  }
   return (
-    <div className="format-widget stack">
+    <div ref={widgetRef} className="format-widget stack">
       {title ? (
         <div className="format-widget-header spread">
           <span className="format-widget-title">{title}</span>
@@ -63,7 +84,7 @@ function FormatWidget({
                 label={`Add ${title.toLowerCase()}`}
                 size="xs"
                 variant="ghost"
-                onClick={onAdd}
+                onClick={handleAdd}
               >
                 <Plus size={14} />
               </IconButton>

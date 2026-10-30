@@ -3,6 +3,7 @@ import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
+import { getShadowsCss } from '../shared/effect'
 import { getPaintCss } from '../shared/paint'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import ContainerBorder from './ContainerBorder'
@@ -41,9 +42,14 @@ export type ShowFormatHint = (
 
 type ObjectFrameStyle = CSSProperties & {
   '--chart-canvas-inset': string
+  '--chart-backdrop-blur': string
   '--chart-background': string
   '--chart-background-opacity': number
+  '--chart-inner-shadow': string
+  '--chart-noise-opacity': number
+  '--chart-noise-size': string
   '--chart-radius': string
+  '--chart-shadow': string
 }
 
 type ObjectFrameProps = {
@@ -172,14 +178,27 @@ function ObjectFrame({
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
   const { container } = object
   const definition = getObjectDefinition(object.kind)
-  const { background } = container
+  const { background, effects } = container
+  const shadows = effects.filter((effect) => effect.kind === 'shadow')
+  const innerShadows = effects.filter((effect) => {
+    return effect.kind === 'innerShadow'
+  })
+  const backgroundBlur = effects.find((effect) => {
+    return effect.kind === 'backgroundBlur'
+  })
+  const noise = effects.find((effect) => effect.kind === 'noise')
   const isFormatMode = formattedElement !== null
   const frameStyle: ObjectFrameStyle = {
     ...style,
     '--chart-canvas-inset': `${container.layout.padding}px`,
+    '--chart-backdrop-blur': `${backgroundBlur?.blur ?? 0}px`,
     '--chart-background': getPaintCss(background.paint),
     '--chart-background-opacity': background.opacity,
+    '--chart-inner-shadow': getShadowsCss(innerShadows, true),
+    '--chart-noise-opacity': noise?.opacity ?? 0,
+    '--chart-noise-size': `${noise?.size ?? 0}px`,
     '--chart-radius': `${container.borderRadius}px`,
+    '--chart-shadow': getShadowsCss(shadows),
   }
 
   useEffect(() => {
@@ -285,7 +304,14 @@ function ObjectFrame({
       onPointerLeave={() => setFormatHint(null)}
       onPointerMove={isFormatMode ? moveFormatLabel : undefined}
     >
+      {backgroundBlur ? (
+        <span aria-hidden="true" className="chart-item-backdrop" />
+      ) : null}
       <span aria-hidden="true" className="chart-item-background" />
+      {noise ? <span aria-hidden="true" className="chart-item-noise" /> : null}
+      {innerShadows.length > 0 ? (
+        <span aria-hidden="true" className="chart-item-inner-shadow" />
+      ) : null}
       {children(showFormatHint)}
       {container.border.width > 0 ? (
         <ContainerBorder

@@ -31,7 +31,8 @@ Daten und Inhalt bleiben visuell dominant.
 Die App ist neutral („grau bis aktiv“): Hover und aktive Controls sind
 grau, Farbe gehört dem Dashboard. Glass, Lichtkanten und Schatten
 gehören den Editor-Flächen; Canvas und Container des Dashboards sind
-flache Flächen mit `Fill` (`ARCHITECTURE.md`, „Farbebenen“).
+Flächen mit `Fill`, Container dazu mit Effekten aus echten Werten
+(`ARCHITECTURE.md`, „Farbebenen“ und „Effect“).
 
 ### Liquid Glass Surfaces
 
@@ -591,7 +592,9 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
 - `FormatWidget` (`shared/ui`) ist die Gruppe: `title` wird zur
   Überschrift, `visibility` zum Auge darin, `onAdd` zum ＋ und
   `onFormat` zum Pinsel; `children` sind die Zeilen und dürfen fehlen
-  (Gruppe nur mit Aktion). Ohne `title` bleiben nur die Zeilen, z. B. im
+  (Gruppe nur mit Aktion). Nach ＋ scrollt die Gruppe ins Bild, sobald
+  die neue Zeile gerendert ist (`scrollIntoView`, `nearest`), damit sie
+  am unteren Rand des Popovers nicht übersehen wird. Ohne `title` bleiben nur die Zeilen, z. B. im
   Build Panel unter „Chart data“. `FormatVisibility` (`visible`,
   `onChange`) ist der gemeinsame Typ für das Auge in Gruppe und Kopf;
   sein Name folgt aus dem Titel („Hide gridlines“).
@@ -701,6 +704,13 @@ ANIMATION                      ＋
   Nachbarfeld nutzt beide Spalten (Points, Smooth, Interaction,
   Trigger); ein Icon-Button nach einem einzelnen Feld rückt ans
   Zeilenende (`[⏱ 500 ms]          −`).
+- **Zeilen mit `actions`** (`ControlRow` mit `actions`, z. B. Effekte):
+  ⚙ und − stehen rechts in einer eigenen Gruppe aus `xs`-Buttons mit
+  4 px Abstand, wie die Aktionen einer Überschrift. Die Gruppe ist immer
+  so breit wie zwei Buttons, damit Felder in einer Liste untereinander
+  stehen, auch wenn eine Zeile kein ⚙ hat; die Felder teilen sich den
+  Rest 2 : 1 (Art | kurzer Wert). Selects in kompakten Zeilen rücken den
+  Chevron näher an den Text (`--spread-gap` 4 px, rechts 8 px).
 - **Farbzeile** (`PaintControl`, siehe 9q): eine Zeile mit dem Typ
   Solid | Linear | Radial als Icon-Gruppe, beim linearen Verlauf
   rechts der Winkel (`RotationDial`); darunter links das Farbfeld,
@@ -720,10 +730,11 @@ ANIMATION                      ＋
   (— ┄ ┈), danach die Farbzeile. Ein eigenes ⚙ gibt es nur für den
   Verlauf des Paints; Cap, Join oder eigene Strichmuster wären eine
   Formänderung.
-- **Effect:** Überschrift mit ＋; die Zeile zeigt Art (Glow ▾) | Stärke
-  (Icon ◌) | −. Kein Auge, weil `Effect` keinen ausgeblendeten Zustand
-  kennt; ein Effekt pro Mark, da ECharts je Mark nur einen Schatten
-  zeichnet.
+- **Effect:** Überschrift mit ＋; die Zeile zeigt Art (Glow ▾ bzw.
+  Shadow ▾) | Blur (Icon ◌) | ⚙ | −. Kein Auge, weil `Effect` keinen
+  ausgeblendeten Zustand kennt; ein Effekt pro Mark, da ECharts je Mark
+  nur einen Schatten zeichnet. Am Container heißt die Gruppe Effects und
+  zeigt eine Zeile pro Effekt (siehe 9o).
 - **Number Format:** Format-Select (Auto, Number, Percent und die
   Währungen) | Decimals mit Auto (`onAuto`) | ⚙ mit Notation und
   Prefix | Suffix; an Achsenlabels zusätzlich Date im Select. DateFormat
@@ -781,6 +792,11 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
   höchstens eine Ebene tief, schließt mit Escape und Klick daneben.
 - Es hat `.format-widget-subproperties` und die Einrückung ganz
   ersetzt.
+- Ab zwei inhaltlich verschiedenen Gruppen bekommt das Popover
+  Sections: `FormatWidget`s mit Titel direkt im Body, z. B. Offset und
+  Color des Schattens. Der Body übernimmt dann den Abstand des
+  Format-Popovers (12 px); einzelne Zeilen wie Fade bleiben ohne
+  Überschrift.
 
 **Regel 4: Dichte und Ruhe**
 
@@ -1277,13 +1293,16 @@ Klick daneben):
   Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover leicht
   gedimmt, Menü so breit wie nötig). Das Menü (`OptionsMenu`) hat
   28-px-Zeilen ohne Abstand mit 12-px-Schrift; Optionen zeigen Icon und
-  Wort (`OptionContent`), die gewählte einen Haken.
+  Wort (`OptionContent`), die gewählte einen Haken. Eine Option mit
+  `disabled` (`OptionItem`) bleibt sichtbar, aber gedimmt und nicht
+  wählbar, z. B. ein zweiter Background Blur.
 - `DetailsPopover` ist die Hülle für das ⚙: ein `IconButton`
   (`Settings2`, `ghost`, gedrückt solange offen, benannt „Advanced …“)
   öffnet ein kleines Popover mit Titel und den seltenen Zeilen, z. B.
   Notation und Prefix | Suffix des Zahlenformats, Range der Farbskala
   oder die Stopps eines Verlaufs. `size` ist am Zeilenende `sm`
-  (Standard), in der Überschrift `xs`; `actions` stehen im Kopf vor dem
+  (Standard), in der Überschrift und im `actions`-Slot einer
+  `ControlRow` `xs`; `actions` stehen im Kopf vor dem
   Schließen-Button, z. B. das ＋ der Stopp-Liste. Im Format-Popover ist
   es verschachtelt.
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
@@ -1404,16 +1423,18 @@ Vorhandene Bausteine:
   ihrer Serie (Solid oder Fade); dazu die Hintergründe von Container
   und Canvas (`container.background`, `canvas.background`) mit eigener
   Farbe oder Verlauf. Fill und Stroke teilen den `Paint` (siehe 9q)
-- `Effect` mit `EffectControls` (siehe 9o): Glow auf allen Marks
-  (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`) in der
-  Farbe der Serie bzw. des Segments
+- `Effect` mit `EffectControls` (siehe 9o): Glow in der Farbe der Serie
+  bzw. des Segments oder Schatten mit eigener Farbe auf allen Marks
+  (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`)
+- `ContainerEffect[]` mit `ContainerEffectsControls` (siehe 9o):
+  Schatten, Innenschatten, Background Blur und Korn am Container
+  (`container.effects`)
 - `Layout` mit `LayoutControls` (siehe 9p): Titel (`title.layout`),
   Container (`container.layout`), Dashboard (`dashboard.layout`),
   Legende (`legend.layout`), Farbskala (`continuous.layout`) und
   Datenlabels (`labels.layout`)
 
-Ein versetzter Schatten kommt später als weitere Variante von `Effect`
-hinzu, z. B. für den Container.
+Schatten von Marks und Container teilen `Shadow` und `ShadowControls`.
 
 Jedes Farbfeld dieser Bausteine ist ein `ColorValue`; die Color-Zeile
 nutzt `ColorControl` mit der Reihe ihres Einsatzorts (siehe 9).
@@ -1463,10 +1484,10 @@ Dashboard
 
 Objekt (Chart und Card)
 
-| Teil      | Form   | Ist                                                           | Soll                               | Status |
-| --------- | ------ | ------------------------------------------------------------- | ---------------------------------- | ------ |
-| Container | Fläche | `container.background`, `.border`, `.layout`, `.borderRadius` | `container.effect` (Schatten, 3.7) | ✓, ○   |
-| Titel     | Text   | `title.textStyle`, `.layout`                                  | –                                  | ✓      |
+| Teil      | Form   | Ist                                                                       | Soll | Status |
+| --------- | ------ | ------------------------------------------------------------------------- | ---- | ------ |
+| Container | Fläche | `container.background`, `.border`, `.layout`, `.borderRadius`, `.effects` | –    | ✓      |
+| Titel     | Text   | `title.textStyle`, `.layout`                                              | –    | ✓      |
 
 Chart
 
@@ -1552,26 +1573,46 @@ nach demselben Muster wie `StrokeStyleControls`: eine Farbzeile
   Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen und
   Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
 
-## 9o. EffectControls
+## 9o. EffectControls und ContainerEffectsControls
 
 `EffectControls` ist die Zeile des Effekts einer Mark (`Effect`):
-`label` für Screenreader („Bar glow intensity“).
+`label` für Screenreader („Bar shadow blur“).
 
 - ohne Effekt zeigt die Gruppe Effect nur ihre Überschrift mit ＋, das
   einen Glow anlegt (`createEffect('glow')`, `blur` 12)
-- mit Effekt: Art (`SelectControl`, heute nur Glow) | Intensity
-  (`ScrubbableNumber` für `blur`, Icon ◌, 1–40) | − (entfernt den
-  Effekt, `kind: 'none'`)
-- ein Effekt pro Mark, weil ECharts je Mark nur einen Schatten zeichnet;
-  ein späterer versetzter Schatten wird eine weitere Art im Select
-- kein Auge, weil `Effect` keinen ausgeblendeten Zustand kennt, und
-  keine Color-Zeile, weil Glow die Farbe der Mark nimmt
+- mit Effekt eine `ControlRow` mit `actions`: Art (`SelectControl`,
+  Glow | Shadow) | Blur (`ScrubbableNumber`, Icon ◌, Glow 1–40, Shadow
+  0–40) | ⚙ nur beim Shadow | − (entfernt den Effekt, `kind: 'none'`)
+- ein Wechsel der Art legt den neuen Effekt mit Standardwerten an
+  (`createEffect`)
+- ein Effekt pro Mark, weil ECharts je Mark nur einen Schatten zeichnet
+- kein Auge, weil `Effect` keinen ausgeblendeten Zustand kennt; Glow hat
+  kein ⚙, weil er die Farbe der Mark nimmt
 - genutzt von Linien, Balken, Scatter-Punkten und Pie-Segmenten in der
   Gruppe Effect der Marks
-- Scatter zeichnet den Glow nur bis 500 Punkte (`MAX_GLOW_POINTS` im
+- Scatter zeichnet Effekte nur bis 500 Punkte (`MAX_GLOW_POINTS` im
   Adapter), weil jeder Punkt seinen eigenen Schatten weichzeichnet;
   darüber bleibt die Einstellung erhalten, ohne zu wirken, und das
   Control zeigt keinen Hinweis
+
+`ContainerEffectsControls` sind die Zeilen der Gruppe Effects am
+Container (`ContainerEffect[]`), im Element „Chart“ bzw. „Card“:
+
+- ＋ in der Überschrift hängt immer einen Schatten an; ohne Effekte zeigt
+  die Gruppe nur die Überschrift
+- jede Zeile Art | Hauptwert | ⚙ | −: Art Shadow, Inner shadow, Blur
+  (Background Blur) oder Noise; Hauptwert Blur (Icon ◌, 0–64), beim
+  Korn die Intensität (Icon ◐, %); ⚙ bei Schatten und Innenschatten
+  `ShadowControls`, beim Korn die Größe (Icon ⤡, px); Blur ohne ⚙
+- die Zeilen stehen nach Ebenen sortiert, ohne Drag; ein Wechsel der Art
+  legt Standardwerte an und sortiert neu
+- Blur und Noise sind gesperrt (`disabled` im Menü), wenn eine andere
+  Zeile sie schon hat
+
+`ShadowControls` ist der Inhalt hinter dem ⚙ eines Schattens, für Marks
+und Container gleich: Section Offset mit X | Y (Buchstaben als Icon,
+−40 bis 40 px) und Section Color mit `ColorField` | Deckkraft. Generisch
+über den Wert, damit `kind` beim Ändern erhalten bleibt.
 
 ## 9p. LayoutControls
 
@@ -1870,14 +1911,16 @@ Format-Popovers formatiert:
   SVG gezeichnet (`ContainerBorder`), damit Verlauf, Strichmuster und
   Radius zusammen gehen.
 
-Der Container ist eine flache Fläche: kein Glass, keine Lichtkante,
-kein Schatten. `ObjectFrame` setzt den Paint als `--chart-background`
-und die Deckkraft als `--chart-background-opacity`;
-`.chart-item-background` malt sie auf einer eigenen Ebene hinter dem
-Inhalt, damit die Deckkraft nur die Fläche ausblendet. Das gilt für
-jedes Dashboard-Objekt. Schatten kommen mit den Effekten
-(`ROADMAP.md`, 3.7), vorgefertigte Looks mit den Dashboard-Styles
-(3.8).
+Der Container hat kein Glass und keine festen Lichtkanten oder
+Schatten; was er davon trägt, kommt aus seinen Werten. `ObjectFrame`
+setzt den Paint als `--chart-background` und die Deckkraft als
+`--chart-background-opacity`; `.chart-item-background` malt sie auf
+einer eigenen Ebene hinter dem Inhalt, damit die Deckkraft nur die
+Fläche ausblendet. Effekte (Gruppe Effects) liegen auf festen Ebenen um
+die Fläche (`ARCHITECTURE.md`, „Effect“). Das gilt für jedes
+Dashboard-Objekt. Vorgefertigte Looks kommen mit den Dashboard-Styles
+(`ROADMAP.md`, 3.8). Die Canvas hat 16 px Innenabstand, damit der
+Standard-Schatten am Rand nicht abgeschnitten wird.
 
 Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand
 ist mindestens halb so groß wie der Radius, damit Start- und

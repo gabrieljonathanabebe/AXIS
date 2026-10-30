@@ -12,6 +12,14 @@
   font-size: var(--field-font-size, var(--font-size-sm));
 }
 
+/* In a compact row the text is small, so the chevron moves closer and the
+   value keeps more room, e.g. "Inner shadow" next to its blur. */
+.control-row-compact .select-control-button {
+  --spread-gap: var(--space-1);
+
+  padding-inline-end: var(--space-2);
+}
+
 .select-control-button:disabled {
   opacity: 0.45;
   pointer-events: none;

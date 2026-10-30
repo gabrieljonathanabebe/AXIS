@@ -4,6 +4,7 @@ import type {
   ChartInstance,
   ChartType,
 } from '../charts/types'
+import type { ContainerEffect } from '../shared/effect'
 import type { Fill } from '../shared/fill'
 import type { Layout } from '../shared/layout'
 import type { StrokeStyle } from '../shared/strokeStyle'
@@ -43,6 +44,7 @@ export type ObjectSize = Pick<ObjectLayout, 'height' | 'width'>
 export type ObjectContainer = {
   background: Fill
   border: StrokeStyle
+  effects: ContainerEffect[]
   layout: Pick<Layout, 'padding'>
   borderRadius: number
 }

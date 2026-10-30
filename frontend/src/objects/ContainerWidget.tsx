@@ -1,6 +1,8 @@
 import { SquareRoundCorner } from 'lucide-react'
 
+import { createContainerEffect, sortContainerEffects } from '../shared/effect'
 import { getPaintColor } from '../shared/paint'
+import ContainerEffectsControls from '../shared/ui/ContainerEffectsControls'
 import ControlRow from '../shared/ui/ControlRow'
 import FillControls from '../shared/ui/FillControls'
 import FormatWidget from '../shared/ui/FormatWidget'
@@ -17,8 +19,8 @@ type ContainerWidgetProps = {
 }
 
 /**
- * Groups of a container: padding, corner radius, background and border,
- * in the fixed order Layout → Shape → Fill → Stroke.
+ * Groups of a container: padding, corner radius, background, border and
+ * effects, in the fixed order Layout → Shape → Fill → Stroke → Effects.
  */
 function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
   return (
@@ -61,6 +63,26 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
           value={value.border}
           onChange={(border) => onChange('border', border)}
         />
+      </FormatWidget>
+      <FormatWidget
+        title="Effects"
+        onAdd={() => {
+          onChange(
+            'effects',
+            sortContainerEffects([
+              ...value.effects,
+              createContainerEffect('shadow'),
+            ]),
+          )
+        }}
+      >
+        {value.effects.length > 0 ? (
+          <ContainerEffectsControls
+            label="Container"
+            value={value.effects}
+            onChange={(effects) => onChange('effects', effects)}
+          />
+        ) : null}
       </FormatWidget>
     </>
   )

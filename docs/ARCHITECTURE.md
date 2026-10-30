@@ -477,20 +477,64 @@ type SeriesPaint =
 - Text bleibt einfarbig (`TextStyle.color`): ECharts zeichnet keinen
   Text mit Verlauf.
 
-Effekte nutzen `Effect` aus `src/shared/effect.ts`: `{ kind: 'none' }`
-oder `{ kind: 'glow'; blur }`, ein weichgezeichneter Schatten ohne
-Versatz. Glow hat keine eigene Farbe, er nimmt immer die Farbe der Mark;
-ein versetzter Schatten kommt später als weitere `kind` hinzu. Alle
-Marks tragen ihn: `line.effect`, `bar.effect`, `scatter.effect` und
-`pie.effect` (Standard `none`).
+**Effect**
 
-- ECharts übersetzt `createEffectOption` in `shadowBlur` und
-  `shadowColor` auf `lineStyle` bzw. `itemStyle`
-- ohne Serienfarbe (kontinuierliche Farbskala, die Visual Map färbt pro
-  Wert) bleibt der Glow aus, weil ECharts sonst schwarz zeichnet
+Effekte stehen in `src/shared/effect.ts`. Feste Regel: Effekte gibt es
+überall, wo ein Element eine Fläche hat, in dem Umfang, den sein
+Renderer zeichnen kann. Marks (ECharts) haben deshalb einen Effekt,
+HTML-Flächen eine Liste.
+
+```ts
+type Shadow = {
+  blur: number
+  color: ColorValue
+  offsetX: number
+  offsetY: number
+  opacity: number
+}
+
+type Effect =
+  // Marks
+  | { kind: 'none' }
+  | { kind: 'glow'; blur: number }
+  | ({ kind: 'shadow' } & Shadow)
+
+type ContainerEffect =
+  // Container, Liste
+  | ({ kind: 'shadow' } & Shadow)
+  | ({ kind: 'innerShadow' } & Shadow)
+  | { kind: 'backgroundBlur'; blur: number }
+  | { kind: 'noise'; opacity: number; size: number }
+```
+
+- Glow ist ein Schatten ohne Versatz in der Farbe der Mark, Shadow hat
+  eigene Farbe und Deckkraft. Alle Marks tragen einen Effekt:
+  `line.effect`, `bar.effect`, `scatter.effect` und `pie.effect`
+  (Standard `none`).
+- Container tragen `container.effects` (Standard leer). Die Art legt
+  die Ebene fest, die Liste bleibt nach Ebenen sortiert
+  (`sortContainerEffects`); Background Blur und Korn höchstens einmal
+  (`isContainerEffectTaken`), Schatten und Innenschatten mehrfach, z. B.
+  Kontakt- und Tiefenschatten.
+- Standardwerte an einer Stelle (`createEffect`,
+  `createContainerEffect`): Schatten x 0, y 4, Blur 12, Schwarz 25 %;
+  Innenschatten x 0, y 1, Blur 0, Weiß 8 %; Background Blur 16; Korn
+  8 %, 100 px. Schattenfarben sind feste Farben, keine Tokens.
+
+Marks in ECharts:
+
+- `createEffectOption` übersetzt beide Arten in `shadowBlur`,
+  `shadowColor` und beim Shadow `shadowOffsetX/Y` auf `lineStyle` bzw.
+  `itemStyle`; die Farbe des Shadow über `resolveColor` und
+  `color.modifyAlpha`
+- die Serienfarbe ist zugleich das Signal, dass Effekte erlaubt sind:
+  ohne sie (kontinuierliche Farbskala, die Visual Map färbt pro Wert)
+  bleiben Glow und Shadow aus, weil ECharts sonst schwarz zeichnet
 - Basis-Serien, die eine Selection abblendet, leuchten nicht; nur die
   hervorgehobene Serie leuchtet. Beim Scatter sind abgeblendete Punkte
-  einzelne Datenpunkte; ihr eigener `itemStyle` setzt `shadowBlur: 0`.
+  einzelne Datenpunkte; ihr eigener `itemStyle` setzt
+  `shadowColor: 'transparent'`, weil sie Versatz und Farbe sonst vom
+  Serien-`itemStyle` erben.
   Pie und Donut zeigen bei einer Selection nur die hervorgehobenen
   Werte. Der Format-Fokus setzt nur `opacity` und dimmt den Glow
   dadurch mit
@@ -501,6 +545,38 @@ Marks tragen ihn: `line.effect`, `bar.effect`, `scatter.effect` und
   `createEffectOption`, die Spec bleibt unverändert
 - der Glow ist im hellen und dunklen Theme gleich stark; `ChartTheme`
   schwächt ihn bewusst nicht ab, damit derselbe Wert gleich wirkt
+
+Container in HTML (`ObjectFrame`, `styles/canvas/ChartItem.css`), von
+unten nach oben:
+
+| Ebene           | Umsetzung                                                  |
+| --------------- | ---------------------------------------------------------- |
+| Schatten        | `box-shadow` am `.chart-item` selbst (`--chart-shadow`)    |
+| Background Blur | `.chart-item-backdrop`, `backdrop-filter: blur(…)`         |
+| Fläche          | `.chart-item-background` (Fill mit Deckkraft)              |
+| Korn            | `.chart-item-noise`, statische SVG-Kachel (`feTurbulence`) |
+| Innenschatten   | `.chart-item-inner-shadow`, `box-shadow: inset …`          |
+| Inhalt, Rahmen  | Content, dann `ContainerBorder` (SVG)                      |
+| Ring            | Hover und Auswahl über `::after`                           |
+
+- Schatten am Frame selbst, weil `overflow: hidden` Kind-Ebenen
+  abschneidet, den eigenen `box-shadow` aber nicht.
+- Blur, Korn und Innenschatten haben eigene Ebenen mit `z-index: -1`;
+  die DOM-Reihenfolge legt sie übereinander. Blur und Korn werden nur
+  gerendert, wenn es sie gibt, weil schon `blur(0)` eine eigene
+  Compositing-Ebene kostet.
+- Der Blur sieht nur, was zwischen ihm und dem nächsten Backdrop Root
+  liegt: Zwischen Canvas und Container darf nichts `opacity`, `filter`
+  oder `mask` tragen.
+- `getShadowsCss` (in `effect.ts`, neben dem Typ wie `getPaintCss`)
+  baut die `box-shadow`-Liste, `getColorCss(value, opacity)` mischt die
+  Deckkraft mit `transparent`.
+- Korn ist eine Kachel statt eines Live-Filters; die Größe skaliert die
+  Kachel (`background-size`), die Intensität ist ihre Deckkraft.
+- `prefers-reduced-transparency`: Blur und Korn entfallen.
+- Das Grid der Canvas (`.chart-grid`) hat 16 px Innenabstand, so weit
+  wie der Standard-Schatten reicht; `getGridStep` zieht ihn von der
+  Breite ab. Größere Schatten dürfen am Rand abgeschnitten werden.
 
 ### Platzierung
 
@@ -647,9 +723,10 @@ Werkzeug, Farbe gehört dem Inhalt.
   Heute gibt es nur `--dashboard-accent` (der `ColorToken` `accent`,
   standardmäßig neutral); der App-Akzent `--color-accent` bleibt für
   Zustände.
-- Canvas und Container sind reine Flächen: `Fill` mit Farbe oder
-  Verlauf und Deckkraft, ohne Presets, Glass, Lichtkante oder Schatten.
-  Rand und später Schatten stellt der Nutzer selbst ein; vorgefertigte
+- Canvas und Container sind Flächen aus echten Werten: `Fill` mit Farbe
+  oder Verlauf und Deckkraft, ohne Presets oder Glass. Rand und Effekte
+  (Schatten, Lichtkante als Innenschatten, Blur, Korn; siehe „Effect“)
+  stellt der Nutzer selbst ein; vorgefertigte
   Looks kommen als Dashboard-Styles (`ROADMAP.md`, 3.8), die beim
   Anwenden echte Werte schreiben statt live zu verknüpfen.
 - Beide malen ihren Fill auf einer eigenen Ebene hinter dem Inhalt,
@@ -1090,9 +1167,8 @@ type DashboardObject = ChartInstance | CardInstance // später | Table | …
   die Auswahl im Popover entsprechend.
 - `container` beschreibt die Formatierung des Containers und ist bewusst
   nicht Teil des Inhalts (siehe Abschnitt 6, Container vs. Content). Der
-  Hintergrund ist ein `Fill` (Standard `#202226`, 100 %); einen
-  Schatten bekommt der Container später als `effect` (siehe
-  „Farbebenen“).
+  Hintergrund ist ein `Fill` (Standard `#202226`, 100 %), Effekte sind
+  eine Liste `effects` (Standard leer, siehe „Effect“).
 - `findChart(objects, id)` (`objects/findChart.ts`) liefert ein Objekt
   nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Format-Popover,
   Ask-Cevyn-Validierung, `chart/setTitle`), sucht darüber.

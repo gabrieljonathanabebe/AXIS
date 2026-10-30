@@ -31,7 +31,9 @@ Format-Popover zeigt alle Gruppen eines Elements in fester Reihenfolge
 und in kompakten Controls im Figma-Stil. Die App ist neutral (Akzent nur
 für Zustände), das Dashboard hat eigene Tokens, Canvas und Container
 tragen eine echte Füllung (`Fill`) mit Deckkraft. Flächen und Linien
-können Verläufe tragen, Serien einen Fade in ihrer Farbe.
+können Verläufe tragen, Serien einen Fade in ihrer Farbe. Marks haben
+Glow oder Schatten, Container eine Liste von Effekten (Schatten,
+Innenschatten, Background Blur, Korn).
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -50,8 +52,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 4. Kompakte Controls im Figma-Stil – implementiert
 5. Neutrale Farben und Hintergründe – implementiert
 6. Verläufe für Flächen und Linien – implementiert
-7. Effekte: Schatten, Background Blur und Korn – **nächster Slice**
-8. Dashboard-Styles
+7. Effekte: Schatten, Background Blur und Korn – implementiert
+8. Dashboard-Styles – **nächster Slice**
 9. Legende, Tooltip und Farbskala mit Bausteinen
 10. DateFormat
 11. Theme-Umschalter in der TopBar (provisorisch)
@@ -66,68 +68,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.7 Effekte: Schatten, Background Blur und Korn (geplant, nächster Slice)
-
-Marks bekommen einen Schatten, Container eine Liste von Effekten wie in
-Figma. Damit lassen sich die Looks der Dashboard-Styles (3.8) aus echten
-Werten bauen: Midnight aus Verlauf, Background Blur und Korn, Glass aus
-Verlauf, Lichtkante, Innenschatten, Blur und Schatten.
-
-    type Shadow = {
-      offsetX: number
-      offsetY: number
-      blur: number
-      color: ColorValue
-      opacity: number
-    }
-
-    // Marks: ein Effekt, weil ECharts je Mark nur einen Schatten zeichnet
-    type Effect =
-      | { kind: 'none' }
-      | { kind: 'glow'; blur: number }
-      | ({ kind: 'shadow' } & Shadow)
-
-    // Container: Liste, Reihenfolge = Zeichenreihenfolge
-    type ContainerEffect =
-      | ({ kind: 'shadow' } & Shadow)
-      | ({ kind: 'innerShadow' } & Shadow)
-      | { kind: 'backgroundBlur'; blur: number }
-      | { kind: 'noise'; opacity: number; size: number }
-
-- Marks: Shadow neben Glow im Select der Gruppe Effect; gedimmte Marks
-  und Scatter ab 500 Punkten ohne Schatten, wie beim Glow
-- Container: neues Feld `container.effects: ContainerEffect[]` (leer =
-  keine Effekte); Gruppe Effects im Element „Chart“ bzw. „Card“: ＋ in
-  der Überschrift fügt einen Schatten hinzu, jede Zeile Art | Hauptwert
-  (Blur bzw. Intensität) | ⚙ | −, Versatz, Farbe und Deckkraft hinter ⚙;
-  Background Blur und Korn höchstens einmal je Container, Schatten
-  mehrfach (z. B. Kontakt- und Tiefenschatten)
-- Ebenen im Container, von unten nach oben: Schatten (`box-shadow` am
-  `.chart-item` selbst, weil Kind-Ebenen von `overflow: hidden`
-  abgeschnitten werden) → Background Blur → Fläche
-  (`.chart-item-background`) → Korn → Innenschatten → Inhalt → Rahmen
-  (3.6) → Hover- und Auswahlring (`::after`)
-- Background Blur auf eigener Ebene, nicht auf `.chart-item-background`,
-  deren `opacity` sonst auch den Blur ausblendet; zwischen Canvas und
-  Container darf nichts `opacity`, `filter` oder `mask` tragen, sonst
-  sieht der Blur nur eine leere Fläche
-- Korn als statische Kachel (SVG mit `feTurbulence` als
-  `background-image`), nicht als Live-Filter; Intensität als Deckkraft,
-  Größe als `background-size`
-- Schatten am Rand der scrollenden Canvas (`overflow-y: auto` in
-  `CanvasPanel.css`) werden abgeschnitten: Innenabstand des Grids
-  mindestens so groß wie der Standard-Schatten; zu Beginn klären
-- `prefers-reduced-transparency`: Background Blur und Korn aus;
-  Performance mit etwa 12 Containern prüfen
-- Prüfstein am Slice-Ende: Midnight und der frühere Glass-Look lassen
-  sich nur aus Werten nachbauen
-- neue Varianten und neues Feld, keine Formänderung
-
-Damit nicht ein Element mehr kann als das andere, eine feste Regel:
-Effekte gibt es überall, wo ein Element eine Fläche hat, in dem Umfang,
-den sein Renderer zeichnen kann.
-
-### 3.8 Dashboard-Styles (geplant)
+### 3.8 Dashboard-Styles (geplant, nächster Slice)
 
 Vorgefertigte Looks für das ganze Dashboard, die ein Klick anwendet.
 Entscheidung aus 3.5: Presets gehören nicht in einzelne Hintergründe,
@@ -136,7 +77,7 @@ echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
 (Themes) und Canva (Templates).
 
 - Anwenden statt Verknüpfen: Ein Style schreibt echte Werte in Canvas
-  und alle Container (Fill, Border, Radius, Effect) und setzt den
+  und alle Container (Fill, Border, Radius, Effects) und setzt den
   Dashboard-Akzent, als ein Undo-Schritt; danach ist jedes Feld frei
   änderbar, es gibt keine versteckte Kopplung
 - neue Objekte übernehmen den Container des zuletzt gewählten Styles
@@ -156,6 +97,27 @@ echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
   des Slices festlegen
 - Auswahl im Dashboard-Popover, z. B. als Galerie mit kleiner Vorschau
 - hängt an 3.6 und 3.7; Formänderungen nur vor der Persistenz
+
+Vorbereitung, vor den Styles: Prüfstein aus 3.7 war Midnight. Der
+Container-Look entsteht nur aus Werten, das Leuchten aber nicht: Es
+gehört auf die Canvas, und eine Fläche trägt heute nur einen Verlauf,
+radial immer aus der Mitte. Unterschiedliche Winkel je Container
+verworfen, weil sie an Anzahl und Lage der Objekte hängen.
+
+- Flächen als Liste wie in Figma: Canvas und Container tragen
+  `background: Fill[]` statt eines `Fill` (Formänderung, vor der
+  Persistenz zulässig); jede Fläche eine eigene Ebene mit eigener
+  Deckkraft, die oberste Zeile liegt oben; Gruppe Fill mit ＋ und − wie
+  die Effekte; Marks behalten eine Fläche, weil ECharts je Mark nur eine
+  zeichnet
+- Radialverlauf mit Mittelpunkt und Größe (`centerX`, `centerY`,
+  `radius`, je 0–1 relativ zur Fläche) hinter ⚙ der Farbzeile, in CSS
+  (`ellipse … at x y`) und im SVG-Rahmen gleich; ECharts bleibt bei
+  Kreisen
+- Midnight: Canvas aus Grundfarbe und mehreren radialen Leuchtflächen;
+  alle Container mit demselben Verlauf, Background Blur und Korn; die
+  Unterschiede zwischen den Containern entstehen durch das Leuchten
+  hinter dem Blur, nicht durch eigene Winkel
 
 ### 3.9 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
 
@@ -570,6 +532,11 @@ Style-Bausteine und Farben
   und radialer Verlauf mit Stopps), Fade für Serien-Flächen und -Linien;
   Typwahl, Winkel und Stopp-Liste (⚙ in der Überschrift) im
   `PaintControl`; Adapter für ECharts und CSS, Container-Rahmen als SVG
+- Effekte: Schatten neben Glow für Marks (Versatz, Farbe und Deckkraft
+  hinter ⚙); Container mit einer Liste `container.effects` aus
+  Schatten, Innenschatten, Background Blur und Korn auf festen Ebenen;
+  Gruppe Effects mit ＋ und Zeilen Art | Hauptwert | ⚙ | −; 16 px
+  Innenabstand der Canvas gegen abgeschnittene Schatten
 
 Ask Cevyn V1
 

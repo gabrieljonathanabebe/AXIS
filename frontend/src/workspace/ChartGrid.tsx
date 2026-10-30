@@ -79,8 +79,11 @@ function getGridStep(grid: HTMLElement): GridDelta {
   const styles = getComputedStyle(grid)
   const columnGap = Number.parseFloat(styles.columnGap)
   const rowGap = Number.parseFloat(styles.rowGap)
+  const padding =
+    Number.parseFloat(styles.paddingLeft) +
+    Number.parseFloat(styles.paddingRight)
   const columnWidth =
-    (grid.clientWidth - columnGap * (CHART_GRID.columns - 1)) /
+    (grid.clientWidth - padding - columnGap * (CHART_GRID.columns - 1)) /
     CHART_GRID.columns
   return {
     x: columnWidth + columnGap,

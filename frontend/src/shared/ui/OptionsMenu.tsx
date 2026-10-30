@@ -9,6 +9,7 @@ import type { ReactNode } from 'react'
 
 /** One choice of a menu or icon group; some controls show its icon. */
 export type OptionItem<TValue extends string> = {
+  disabled?: boolean
   icon?: LucideIcon
   label: string
   value: TValue
@@ -43,6 +44,7 @@ function OptionsMenu<TValue extends string>({
             role="option"
             aria-selected={isSelected}
             isActive={isSelected}
+            disabled={option.disabled}
             onClick={() => onChange(option.value)}
             key={option.value}
           >

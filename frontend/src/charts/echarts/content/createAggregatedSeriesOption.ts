@@ -109,7 +109,7 @@ export function createAggregatedSeriesOption({
       labelLayout: { hideOverlap: true },
       lineStyle: {
         ...createStrokeStyleOption(appearance.line.stroke, theme, color),
-        ...createEffectOption(appearance.line.effect, glowColor),
+        ...createEffectOption(appearance.line.effect, theme, glowColor),
         opacity: appearance.line.stroke.opacity * (opacity ?? 1),
       },
       name: name ?? undefined,
@@ -135,7 +135,7 @@ export function createAggregatedSeriesOption({
     itemStyle: {
       ...createFillOption(appearance.bar.fill, theme, color),
       ...createBorderOption(appearance.bar.border, theme),
-      ...createEffectOption(appearance.bar.effect, glowColor),
+      ...createEffectOption(appearance.bar.effect, theme, glowColor),
       borderRadius: appearance.bar.borderRadius,
       opacity: appearance.bar.fill.opacity * (opacity ?? 1),
     },

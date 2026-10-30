@@ -51,19 +51,6 @@ export type PaintType = 'solid' | GradientType
 /** Angle a new gradient or fade starts with: downward, toward the axis. */
 export const DEFAULT_GRADIENT_ANGLE = -90
 
-// ===== HELPERS ===============================================================
-/**
- * CSS color of one gradient stop: its color at its opacity, e.g. a theme
- * token at 49 %.
- * @param stop Stop of a gradient.
- * @returns The color mixed with transparent.
- */
-function getStopColorCss(stop: GradientStop): string {
-  const color = getColorCss(stop.color)
-  const percent = stop.opacity * 100
-  return `color-mix(in srgb, ${color} ${percent}%, transparent)`
-}
-
 // ===== FUNCTIONS =============================================================
 /**
  * Tells a paint with its own color from a paint in the series color.
@@ -172,7 +159,9 @@ export function getSortedStops(stops: GradientStop[]): GradientStop[] {
  */
 export function getGradientStopsCss(stops: GradientStop[]): string {
   return getSortedStops(stops)
-    .map((stop) => `${getStopColorCss(stop)} ${stop.position * 100}%`)
+    .map((stop) => {
+      return `${getColorCss(stop.color, stop.opacity)} ${stop.position * 100}%`
+    })
     .join(', ')
 }
 

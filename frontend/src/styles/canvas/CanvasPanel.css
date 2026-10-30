@@ -1,9 +1,12 @@
+/* The padding keeps the default shadow of a container (16px below it)
+   inside the scrolling canvas; wider shadows may be clipped at the edge. */
 .chart-grid {
   position: relative;
   flex: 1;
   display: grid;
   align-content: start;
   min-height: 0;
+  padding: var(--space-4);
   overflow-y: auto;
 }
 

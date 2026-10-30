@@ -11,3 +11,9 @@
   --field-width: 100%;
   --stack-gap: var(--space-1);
 }
+
+/* Sections of the details, e.g. Offset and Color of a shadow, are format
+   widgets and keep the spacing between them of the format popover. */
+.details-popover-body:has(> .format-widget) {
+  --stack-gap: var(--space-3);
+}

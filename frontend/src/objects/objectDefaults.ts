@@ -38,6 +38,7 @@ export function createDefaultContainer(): ObjectContainer {
       paint: { color: { kind: 'custom', color: '#202226' }, kind: 'solid' },
     },
     border: CONTAINER_BORDER,
+    effects: [],
     borderRadius: 24,
     layout: { padding: 4 },
   }

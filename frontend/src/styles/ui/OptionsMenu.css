@@ -29,10 +29,16 @@
   white-space: nowrap;
 }
 
-.options-menu-item:hover {
+.options-menu-item:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: var(--color-surface-default);
   border-color: transparent;
+}
+
+/* An option the control cannot take now, e.g. a second background blur. */
+.options-menu-item:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .options-menu-item.is-active {

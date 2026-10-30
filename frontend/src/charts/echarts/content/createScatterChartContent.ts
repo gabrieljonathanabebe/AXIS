@@ -22,7 +22,7 @@ import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
 type ScatterData = Array<{
-  itemStyle: { opacity: number; shadowBlur: number } | undefined
+  itemStyle: { opacity: number; shadowColor: string } | undefined
   value: DataValue[]
 }>
 
@@ -102,6 +102,7 @@ function createScatterSeries({
       ...createBorderOption(appearance.scatter.border, theme),
       ...createEffectOption(
         appearance.scatter.effect,
+        theme,
         canGlow ? itemColor : undefined,
       ),
     },
@@ -144,7 +145,7 @@ export function createScatterChartContent(
   const data = rows.map((row) => ({
     itemStyle: isRowInSelection(row, selection)
       ? undefined
-      : { opacity: DIMMED_OPACITY, shadowBlur: 0 },
+      : { opacity: DIMMED_OPACITY, shadowColor: 'transparent' },
     value: [
       getValue(row, encoding.x),
       getValue(row, encoding.y),

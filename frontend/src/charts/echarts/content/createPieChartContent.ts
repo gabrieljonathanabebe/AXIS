@@ -62,7 +62,7 @@ export function createPieChartContent(
     return [
       {
         itemStyle: {
-          ...createEffectOption(pie.effect, color),
+          ...createEffectOption(pie.effect, theme, color),
           color: createSeriesPaintColor(pie.fill.paint, color),
         },
         name,

@@ -43,14 +43,21 @@ export const COLOR_TOKEN_VARIABLES = {
 
 // ===== FUNCTIONS =============================================================
 /**
- * Turns a color value into CSS for elements rendered as HTML.
+ * Turns a color value into CSS for elements rendered as HTML; below full
+ * opacity the color is mixed with transparent, e.g. a shadow at 25 %.
  * @param value Color value, e.g. of a title.
- * @returns The token's CSS variable or the custom color.
+ * @param opacity Opacity of the color, from 0 to 1.
+ * @returns The token's CSS variable or the custom color, mixed with
+ *   transparent below full opacity.
  */
-export function getColorCss(value: ColorValue): string {
-  return value.kind === 'token'
-    ? `var(${COLOR_TOKEN_VARIABLES[value.token]})`
-    : value.color
+export function getColorCss(value: ColorValue, opacity = 1): string {
+  const color =
+    value.kind === 'token'
+      ? `var(${COLOR_TOKEN_VARIABLES[value.token]})`
+      : value.color
+  return opacity < 1
+    ? `color-mix(in srgb, ${color} ${opacity * 100}%, transparent)`
+    : color
 }
 
 /**

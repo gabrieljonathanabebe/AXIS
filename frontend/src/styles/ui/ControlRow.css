@@ -35,6 +35,22 @@
   justify-self: end;
 }
 
+/* Icon buttons at the end of a row, e.g. gear and minus of an effect. The
+   slot keeps the width of two buttons, so the fields of a list line up
+   whether a row shows its gear or not; the first field gets twice the
+   room of the second, so kind names such as "Inner shadow" stay readable
+   next to a short value. */
+.control-row-compact:has(> .control-row-actions) {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+}
+
+.control-row-actions {
+  --cluster-gap: var(--space-1);
+
+  justify-content: flex-end;
+  min-width: calc(2 * var(--control-height-xs) + var(--space-1));
+}
+
 .control-row-label {
   min-width: 0;
   color: var(--color-text-secondary);
