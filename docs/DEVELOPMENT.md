@@ -351,6 +351,20 @@ erzeugen.
 Nicht jede einzelne Zeile als eigenen Schritt behandeln. Gleichzeitig
 nicht den gesamten Slice in einem einzigen großen Schritt umsetzen.
 
+Am Slice-Anfang zuerst entscheiden, dann vertiefen:
+
+- nur die Doku und die relevanten Abschnitte der genannten Dateien
+  lesen, keine ganzen Dateien;
+- danach sofort einen kurzen Plan und die offenen Entscheidungen
+  gesammelt als Fragen stellen, je mit Empfehlung; Varianten nicht
+  lange intern durchspielen, bei echter Unklarheit fragen;
+- Library-Quellcode und Detailprüfungen erst in dem Block, dessen Code
+  davon abhängt;
+- je Block nur die Dateiabschnitte lesen, die er braucht;
+- Reasoning-Stufe: extra high nur für die Entscheidungen am Anfang,
+  für die Blöcke reicht high; dem Nutzer sagen, wenn die Entscheidungen
+  getroffen sind und er umstellen kann.
+
 Wenn der Nutzer den Anwendungscode selbst eingibt:
 
 - pro Block konkrete Dateipfade und zusammenhängenden Code angeben;
