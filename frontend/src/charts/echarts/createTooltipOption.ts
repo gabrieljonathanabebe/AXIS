@@ -42,6 +42,8 @@ export function createTooltipOption({
     backgroundColor: 'transparent',
     borderWidth: 0,
     extraCssText: [
+      `--chart-tooltip-text: ${colors.text}`,
+      `--chart-tooltip-text-muted: ${colors.textMuted}`,
       `backdrop-filter: blur(${tooltipStyle.blur}px)`,
       `background: ${getFillsCss([tooltipStyle.background])}`,
       `border: ${border.width}px ${border.lineStyle} ${borderColor}`,

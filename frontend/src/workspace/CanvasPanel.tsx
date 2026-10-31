@@ -38,6 +38,7 @@ type CanvasPanelProps = {
 
 type CanvasPanelStyle = CSSProperties & {
   '--canvas-background': string
+  '--canvas-text': string
 }
 
 /**
@@ -64,6 +65,7 @@ function CanvasPanel({
   const { background } = dashboard.canvas
   const canvasStyle: CanvasPanelStyle = {
     '--canvas-background': getFillsCss(background),
+    '--canvas-text': style.colors.text,
   }
   return (
     <Panel className="canvas-panel" isEmbedded isFilled style={canvasStyle}>

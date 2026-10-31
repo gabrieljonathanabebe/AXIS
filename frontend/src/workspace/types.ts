@@ -74,7 +74,9 @@ export type WorkspaceAction =
     }
   | {
       type: 'dashboard/update'
-      patch: Partial<Pick<DashboardSpec, 'animation' | 'canvas' | 'name'>>
+      patch: Partial<
+        Pick<DashboardSpec, 'animation' | 'canvas' | 'name' | 'style'>
+      >
     }
   | {
       type: 'dashboard/updateLayout'

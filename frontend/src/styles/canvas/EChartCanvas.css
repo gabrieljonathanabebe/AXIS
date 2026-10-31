@@ -19,7 +19,7 @@
 
 .chart-tooltip-heading {
   margin-bottom: var(--space-2);
-  color: var(--color-text-primary);
+  color: var(--chart-tooltip-text);
   font-weight: var(--font-weight-semibold);
 }
 
@@ -29,7 +29,7 @@
   align-items: center;
   gap: var(--space-4);
   min-width: 160px;
-  color: var(--color-text-secondary);
+  color: var(--chart-tooltip-text-muted);
 }
 
 .chart-tooltip-row + .chart-tooltip-row {
@@ -43,7 +43,7 @@
 }
 
 .chart-tooltip-row strong {
-  color: var(--color-text-primary);
+  color: var(--chart-tooltip-text);
   font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
 }

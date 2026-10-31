@@ -16,6 +16,23 @@ export function createColorValue(color: string): ColorValue {
 }
 
 /**
+ * Tells a color value from any other value of a spec, e.g. while walking
+ * a whole appearance.
+ * @param value Any value of a spec.
+ * @returns True for a color value.
+ */
+export function isColorValue(value: unknown): value is ColorValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'kind' in value &&
+    value.kind === 'custom' &&
+    'color' in value &&
+    typeof value.color === 'string'
+  )
+}
+
+/**
  * Turns a color value into CSS for elements rendered as HTML; below full
  * opacity the color is mixed with transparent, e.g. a shadow at 25 %.
  * @param value Color value, e.g. of a title.

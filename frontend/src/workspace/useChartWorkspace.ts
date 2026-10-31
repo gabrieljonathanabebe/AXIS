@@ -2,6 +2,7 @@ import { useEffect, useMemo, useReducer } from 'react'
 
 import { parseCevynActions } from '../actions/parseCevynActions'
 import { translateCevynActions } from '../actions/translateCevynActions'
+import { createApplyStyleActions } from '../dashboardStyle/applyDashboardStyle'
 import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
 import { createObject } from '../objects/createObject'
 import { findChart } from '../objects/findChart'
@@ -14,6 +15,7 @@ import {
 import type { CevynActionResult } from '../actions/types'
 import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type { ChartAppearanceSpec } from '../charts/types'
+import type { StyleRecipe } from '../dashboardStyle/types'
 import type { Dataset } from '../datasets/types'
 import type {
   ObjectContainer,
@@ -88,10 +90,23 @@ export function useChartWorkspace({
     return result
   }
 
-  // Dev only: run Cevyn Actions from the console via `cevyn.run(...)`.
+  /**
+   * Applies a style to the whole dashboard: canvas, containers and the
+   * colors of every object, as one undo step.
+   * @param recipe Recipe of the style.
+   */
+  function applyStyle(recipe: StyleRecipe): void {
+    dispatchHistory({
+      type: 'history/applyBatch',
+      actions: createApplyStyleActions(history.present, recipe),
+      timestamp: Date.now(),
+    })
+  }
+
+  // Dev only: `cevyn.run(...)` and `cevyn.applyStyle(...)` in the console.
   useEffect(() => {
     if (import.meta.env.DEV) {
-      Object.assign(window, { cevyn: { run: runActions } })
+      Object.assign(window, { cevyn: { applyStyle, run: runActions } })
     }
   })
 

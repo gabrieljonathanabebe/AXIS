@@ -180,9 +180,19 @@ Vorgehen:
    `dashboardStyle/`; die `DashboardSpec` speichert das Rezept des
    aktuellen Styles (Graphite), die Werte entstehen daraus
    (`DashboardStyle`)
-2. Defaults aus dem Style; `kind: 'token'` entfällt samt Token-Feldern
-   und „Default“ im Farbwähler; Chart-Theme aus der Spec
-3. Anwenden als ein Undo-Schritt
+2. Defaults aus dem Style (implementiert): Objekte, Charts und Cards
+   entstehen im aktuellen Style; `kind: 'token'` entfällt samt
+   Token-Feldern, „Default“ im Farbwähler und den CSS-Variablen der
+   Daten- und Dashboard-Farben; die Palette „Style“ ersetzt „Default“;
+   Tooltip, Brush und Dimmen kommen aus dem Style, `readChartTheme` liest
+   nur noch den Format-Fokus
+3. Anwenden als ein Undo-Schritt (implementiert):
+   `createApplyStyleActions` schreibt Rezept und Canvas, Container aus
+   dem Material und die Farben jedes Objekts als ein Batch;
+   `takeStyleColors` übernimmt generisch jede Farbe der Style-Defaults,
+   ein anderer `kind` bleibt (z. B. Glow); Dashboard-Titel und
+   Tooltip-Texte folgen dem Style; bis zur Galerie per
+   `cevyn.applyStyle(…)` in der Dev-Konsole
 4. Graphite und Midnight, dann Daylight (Prüfstein: helles Dashboard im
    dunklen Editor und umgekehrt), dann Bloom, optional Indigo
 5. Schnellauswahl der Style-Farben im Farbwähler
