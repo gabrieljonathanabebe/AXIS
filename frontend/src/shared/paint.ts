@@ -110,6 +110,20 @@ export function addGradientStop(stops: GradientStop[]): GradientStop[] {
 }
 
 /**
+ * Creates the stops of a gradient in one color, e.g. a surface that fades
+ * from 94 % to 49 % or a glow that fades out.
+ * @param color Color of every stop.
+ * @param stops Opacity and position of each stop.
+ * @returns The stops in that color.
+ */
+export function createColorStops(
+  color: ColorValue,
+  stops: Omit<GradientStop, 'color'>[],
+): GradientStop[] {
+  return stops.map((stop) => ({ ...stop, color }))
+}
+
+/**
  * Switches a paint with its own color to another type. A new gradient
  * runs opaque from the solid color to itself until an end color is
  * picked; back to solid keeps the first stop's color.

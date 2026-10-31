@@ -9,6 +9,7 @@ import type {
   ChartSpec,
   ChartType,
 } from '../charts/types'
+import type { StyleRecipe } from '../dashboardStyle/types'
 import type { DataField, DataValue } from '../datasets/types'
 import type { ObjectPickerOption } from '../objects/objectDefinitions'
 import type {
@@ -216,6 +217,7 @@ export type DashboardSpec = {
   canvas: DashboardCanvas
   layout: DashboardLayout
   name: string
+  style: StyleRecipe
 }
 
 export type ObjectLayoutMode = 'move' | ObjectResizeDirection

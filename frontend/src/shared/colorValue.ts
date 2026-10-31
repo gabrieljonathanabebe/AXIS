@@ -43,6 +43,15 @@ export const COLOR_TOKEN_VARIABLES = {
 
 // ===== FUNCTIONS =============================================================
 /**
+ * Wraps a hex color into a color value of the spec, e.g. a style color.
+ * @param color Hex color.
+ * @returns A fixed custom color.
+ */
+export function createColorValue(color: string): ColorValue {
+  return { color, kind: 'custom' }
+}
+
+/**
  * Turns a color value into CSS for elements rendered as HTML; below full
  * opacity the color is mixed with transparent, e.g. a shadow at 25 %.
  * @param value Color value, e.g. of a title.

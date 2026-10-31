@@ -173,9 +173,11 @@ Containern aus `glass`.
 
 Vorgehen:
 
-1. Rezept, Rollen und Materialien: `StyleRecipe`, `createDashboardStyle`,
-   `solid`, `frosted`, `glass`; die `DashboardSpec` speichert den
-   aktuellen Style
+1. Rezept, Rollen und Materialien (implementiert): `StyleRecipe`,
+   `createDashboardStyle`, `solid`, `frosted`, `glass` in
+   `dashboardStyle/`; die `DashboardSpec` speichert das Rezept des
+   aktuellen Styles (Graphite), die Werte entstehen daraus
+   (`DashboardStyle`)
 2. Defaults aus dem Style; `kind: 'token'` entfällt samt Token-Feldern
    und „Default“ im Farbwähler; Chart-Theme aus der Spec
 3. Anwenden als ein Undo-Schritt

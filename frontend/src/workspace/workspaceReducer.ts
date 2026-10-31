@@ -1,4 +1,6 @@
 import { getChartDefinition } from '../charts/chartDefinitions'
+import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
+import { GRAPHITE } from '../dashboardStyle/styleRecipes'
 import { findFreeLayout, findNeighborObjectId } from './chartLayout'
 
 import type { CardInstance } from '../cards/types'
@@ -33,18 +35,12 @@ export const DASHBOARD_ANIMATION: DashboardAnimation = {
 export const initialWorkspaceState: WorkspaceState = {
   dashboard: {
     animation: DASHBOARD_ANIMATION,
-    canvas: {
-      background: [
-        {
-          opacity: 1,
-          paint: { color: { kind: 'custom', color: '#141518' }, kind: 'solid' },
-        },
-      ],
-    },
+    canvas: createDashboardStyle(GRAPHITE).canvas,
     layout: {
       gap: 8,
     },
     name: 'Untitled dashboard',
+    style: GRAPHITE,
   },
   objects: [],
   selectedObjectId: null,
