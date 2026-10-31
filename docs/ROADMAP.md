@@ -70,33 +70,11 @@ Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
 ### 3.8 Dashboard-Styles (in Arbeit)
 
-Vorgefertigte Looks für das ganze Dashboard, die ein Klick anwendet.
-Entscheidung aus 3.5: Presets gehören nicht in einzelne Hintergründe,
-sondern als Style zum Dashboard; Canvas und Container tragen überall
-echte Farben (`Fill`). So halten es auch Power BI (Themes), Keynote
-(Themes) und Canva (Templates).
-
-- Anwenden statt Verknüpfen: Ein Style schreibt echte Werte in Canvas
-  und alle Container (Fill, Border, Radius, Effects) und setzt den
-  Dashboard-Akzent, als ein Undo-Schritt; danach ist jedes Feld frei
-  änderbar, es gibt keine versteckte Kopplung
-- neue Objekte übernehmen den Container des zuletzt gewählten Styles
-  (`objectDefaults` in der `DashboardSpec`, vorgezogen aus 3.14)
-- eigenes Farbschema je Style (hell oder dunkel), unabhängig vom
-  Editor-Theme: Texte, Achsen und Raster (`text`, `textMuted`,
-  `gridLine`, `border`) folgen heute App-Tokens und wandern in den
-  Dashboard-Namensraum, damit ein dunkles Dashboard in einem hellen
-  Editor lesbar bleibt
-- erste Styles: der ruhige Standard von heute (Canvas `#141518`,
-  Container `#202226`, neutraler Akzent) und Midnight nach dem
-  Referenz-Screenshot aus 3.5: blaues Leuchten auf der Canvas,
-  Container als Verlauf
-  `linear-gradient(127deg, rgba(6, 11, 40, 0.94) 19%, rgba(10, 14, 35, 0.49) 77%)`
-  plus Background Blur plus Korn, ohne Rand und Schatten,
-  blauer Akzent; den finalen Standard zu Beginn
-  des Slices festlegen
-- Auswahl im Dashboard-Popover, z. B. als Galerie mit kleiner Vorschau
-- hängt an 3.6 und 3.7; Formänderungen nur vor der Persistenz
+Vorgefertigte Looks für das ganze Dashboard, die ein Klick anwendet. So
+halten es auch Power BI (Themes), Keynote (Themes) und Canva
+(Templates). Entscheidung aus 3.5: Presets gehören nicht in einzelne
+Hintergründe, sondern als Style zum Dashboard; Canvas und Container
+tragen überall echte Farben (`Fill`).
 
 Vorbereitung, vor den Styles (implementiert): Prüfstein aus 3.7 war
 Midnight. Der Container-Look entsteht nur aus Werten, das Leuchten aber
@@ -116,14 +94,114 @@ verworfen, weil sie an Anzahl und Lage der Objekte hängen.
   (`ColorPicker`), `ColorControl` heißt `ColorSwatch`, `FillControls`
   entfällt; im Stroke steht die Farbzeile oben
 
-Offen in 3.8: Farbschema des Dashboards, Styles Standard (heutiger
-Look) und Midnight (Startwerte, iterativ feinjustiert), Anwenden als
-ein Undo-Schritt, `objectDefaults`, Galerie im Dashboard-Popover.
+Entscheidungen:
 
-- Midnight: Canvas aus Grundfarbe und mehreren radialen Leuchtflächen;
-  alle Container mit demselben Verlauf, Background Blur und Korn; die
-  Unterschiede zwischen den Containern entstehen durch das Leuchten
-  hinter dem Blur, nicht durch eigene Winkel
+- Anwenden statt Verknüpfen: Ein Style schreibt echte Werte, als ein
+  Undo-Schritt; danach ist jedes Feld frei änderbar, es gibt keine
+  versteckte Kopplung
+- keine Tokens mehr in Spec und Farbwähler: `ColorValue` verliert
+  `kind: 'token'` und bleibt eine Union mit `custom` (später `rule` für
+  bedingte Farben); der Farbwähler zeigt nur echte Farben, ohne
+  Token-Felder (`colorPresets.ts`) und ohne „Default“; als
+  Schnellauswahl zeigt er die Farben des aktuellen Styles, als reine
+  Werte ohne Verknüpfung (wie „Document colors“ in Figma)
+- Rollennamen (`text`, `textMuted`, `axis`, `gridLine`, `border`,
+  `inactive`, `accent`, `palette`) gibt es nur noch in der
+  Style-Definition, der Single Source of Truth
+- ein Style ist der Eingabewert der Default-Funktionen:
+  `createChartInstance` und `createCardInstance` bauen ihre Farben aus
+  dem Style; die `DashboardSpec` speichert den aktuellen Style, neue
+  Objekte entstehen in ihm (statt `objectDefaults`)
+- Anwenden: Canvas und Container kommen komplett aus dem Style; in allen
+  Objekten werden aus den Defaults des Styles alle Farbwerte übernommen
+  (Texte, Achsen, Raster, Rahmen, Paletten, Labels, Card-Werte), Größen,
+  Breiten und Texte bleiben; ein neues Element ist abgedeckt, sobald
+  seine Default-Farbe aus dem Style kommt, eine zweite Liste gibt es
+  nicht
+- dashboard-weite Farben (Auswahl und Brush, Dimmen, Tooltip) sind Werte
+  des Styles in der Spec; `readChartTheme` liest aus CSS nur noch den
+  Format-Fokus der App, ein Wechsel des Styles zeichnet die Charts über
+  die Spec neu
+- in Kauf genommen: Ein erneut angewendeter Style überschreibt auch von
+  Hand geänderte Farben (Undo fängt es auf); Ask Cevyn arbeitet mit
+  echten Farben (3.15); der Theme-Umschalter (3.11) betrifft nur die App
+
+Rezept und Materialien: Ein Style ist ein kleines Rezept, aus dem
+`createDashboardStyle` alle Werte erzeugt. Die Detailarbeit steckt
+einmal in den Materialien; ein neuer Style ist ein Material plus wenige
+Farben.
+
+```ts
+type StyleRecipe = {
+  name: string
+  scheme: 'dark' | 'light'
+  material: 'solid' | 'frosted' | 'glass'
+  surface: string // Grundton der Container
+  canvas: {
+    base: string
+    glows: {
+      color: string
+      centerX: number
+      centerY: number
+      radius: number
+    }[]
+  }
+  accent: string
+}
+```
+
+| Material  | erzeugt                                                                                           |
+| --------- | ------------------------------------------------------------------------------------------------- |
+| `solid`   | eine Fläche aus `surface`, feiner Rand; im hellen Schema ein weicher Schatten                     |
+| `frosted` | Verlauf 127° aus `surface` (94 % → 49 %), Background Blur, Korn; kein Rand, kein Schatten         |
+| `glass`   | Verlauf, Lichtkante als Verlaufsrand, Innenschatten, Background Blur, Kontakt- und Tiefenschatten |
+
+- Texte, Achsen, Raster, Rahmen und Dimmen folgen aus `scheme`
+- Datenpalette: die geteilte, auf Farbsehschwäche geprüfte Palette in
+  einer hellen und einer dunklen Variante nach `scheme`; eigene
+  Paletten je Style später
+
+Styles, als Spektrum aus hell und dunkel, neutral und farbig:
+
+|            | neutral                                                             | farbig                                                                                                                                                                         |
+| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **dunkel** | Graphite (Standard): `solid`, Canvas `#141518`, Container `#202226` | Midnight: `frosted`, Navy, blaues und violettes Leuchten nach dem Referenz-Screenshot aus 3.5, blauer Akzent; die Container unterscheiden sich nur durch das Leuchten dahinter |
+| **hell**   | Daylight: `solid`, weiße Container, heller Canvas, weicher Schatten | Bloom: `frosted` hell, Pastell-Leuchten (Pfirsich, Flieder, Mint) auf hellem Canvas                                                                                            |
+
+Optional ein fünfter Style: Indigo, ein kräftig farbiger Canvas mit
+Containern aus `glass`.
+
+Vorgehen:
+
+1. Rezept, Rollen und Materialien: `StyleRecipe`, `createDashboardStyle`,
+   `solid`, `frosted`, `glass`; die `DashboardSpec` speichert den
+   aktuellen Style
+2. Defaults aus dem Style; `kind: 'token'` entfällt samt Token-Feldern
+   und „Default“ im Farbwähler; Chart-Theme aus der Spec
+3. Anwenden als ein Undo-Schritt
+4. Graphite und Midnight, dann Daylight (Prüfstein: helles Dashboard im
+   dunklen Editor und umgekehrt), dann Bloom, optional Indigo
+5. Schnellauswahl der Style-Farben im Farbwähler
+6. Galerie im Dashboard-Popover, die Vorschau live aus dem Rezept
+   gezeichnet statt aus Screenshots
+7. Slice-Ende: `ARCHITECTURE.md` (`ColorValue` ohne Token, Style als
+   Eingabe der Defaults) und `DESIGN_SYSTEM.md` (Farbwähler, Materialien,
+   Styles) nachziehen
+
+Regeln gegen das Verzetteln:
+
+- ein festes Test-Dashboard (Demo-Daten mit Bar, Line, Scatter, Pie und
+  einer Card), an dem jeder Style beurteilt wird
+- pro Style ein Referenzbild und etwa eine Stunde Feintuning; was danach
+  nicht passt, wird im Material gelöst, nicht im Style
+- Styles ändern Canvas, Container und Farben, keine Glow-Einstellungen
+  der Marks und keine Achsen-Details; Format zwischen Objekten
+  übertragen ist #41
+- KI als Werkzeug: Varianten des Rezepts von Claude erzeugen lassen und
+  im Browser prüfen; später erzeugt Ask Cevyn ein Rezept aus
+  Markenfarben (Idee)
+- Kontrast der Datenfarben in Bloom und Indigo prüfen
+- Formänderungen nur vor der Persistenz
 
 ### 3.9 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
 
@@ -197,15 +275,16 @@ Feb 1, 2025“ auch bei Monatsdaten.
 
 Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
 prüfen; wird später wieder entfernt oder durch eine echte Einstellung
-ersetzt. Das Dashboard folgt dem Editor-Theme nicht: Sein Farbschema
-kommt mit den Dashboard-Styles (3.8).
+ersetzt. Das Dashboard folgt dem Editor-Theme nicht: Seine Farben
+stehen seit den Dashboard-Styles (3.8) als echte Werte in der Spec.
 
 - `IconButton` rechts in der `TopBar` (Sonne/Mond), schaltet
   `data-theme` am `<html>` zwischen `dark` und `light` um; Standard
   bleibt `dark` aus `index.html`
-- HTML-Teile folgen den CSS-Variablen von selbst; die Charts lesen das
-  Theme nur beim Zeichnen (`readChartTheme`), `useDocumentTheme`
-  (`charts/`) beobachtet `data-theme` und zeichnet sie dann neu
+- die App folgt den CSS-Variablen von selbst; die Charts lesen aus dem
+  Editor-Theme nur noch den Format-Fokus (`readChartTheme`),
+  `useDocumentTheme` (`charts/`) beobachtet `data-theme` und zeichnet
+  sie dann neu
 - keine Persistenz, kein Platz in der `DashboardSpec`, kein Undo
 - schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
   provisorisch
@@ -284,8 +363,8 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
   - Layout über Reihenfolge und Größenklassen (z. B. klein, halb,
     volle Breite); der Code berechnet die Grid-Positionen
   - Formatierung über die Bausteine („Element + Baustein“, z. B.
-    `numberFormat` der Y-Achsenbeschriftung), Farben als Theme-Tokens
-  - Dashboard-Einstellungen
+    `numberFormat` der Y-Achsenbeschriftung), Farben als echte Werte
+  - Dashboard-Styles anwenden (3.8) und Dashboard-Einstellungen
   - Verweise innerhalb eines Batches: neue Objekte bekommen einen
     eigenen Namen (`ref`), damit spätere Actions im selben Aufruf sie
     ansprechen können
