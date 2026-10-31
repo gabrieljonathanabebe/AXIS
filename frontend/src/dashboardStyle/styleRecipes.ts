@@ -31,3 +31,19 @@ export const MIDNIGHT: StyleRecipe = {
   scheme: 'dark',
   surface: '#060B28',
 }
+
+/**
+ * Light and neutral: white solid containers with a fine border and a soft
+ * shadow on a cool light grey canvas.
+ */
+export const DAYLIGHT: StyleRecipe = {
+  accent: '#344054',
+  canvas: {
+    base: '#E4E8EE',
+    glows: [],
+  },
+  material: 'solid',
+  name: 'Daylight',
+  scheme: 'light',
+  surface: '#FFFFFF',
+}
