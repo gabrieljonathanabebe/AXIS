@@ -21,10 +21,14 @@ import type {
   ChartType,
 } from './types'
 
-/** Default look of the texts drawn by ECharts: axes, legend, labels. */
-function createChartTextStyle(style: DashboardStyle): TextStyle {
+/**
+ * Default look of a text drawn by ECharts, e.g. axis labels or legend.
+ * @param color Hex color of the role the text takes.
+ * @returns Text style in that color.
+ */
+function createChartTextStyle(color: string): TextStyle {
   return {
-    color: createColorValue(style.colors.text),
+    color: createColorValue(color),
     fontSize: 12,
     fontStyle: 'normal',
     fontWeight: 'medium',
@@ -36,7 +40,7 @@ function createGridLines(style: DashboardStyle): AxisStrokeAppearance {
   return {
     stroke: {
       lineStyle: 'solid',
-      opacity: 0.08,
+      opacity: 0.1,
       paint: { color: createColorValue(style.colors.gridLine), kind: 'solid' },
       width: 1,
     },
@@ -88,7 +92,8 @@ export function createDefaultChartSpec(
   const isRadialChart = isRadialChartType(type)
   // Points and radial charts have no category axis; marks are single items.
   const hasItemMarks = isPointsChartType(type) || isRadialChart
-  const textStyle = createChartTextStyle(style)
+  const textStyle = createChartTextStyle(style.colors.text)
+  const axisTextStyle = createChartTextStyle(style.colors.textMuted)
   const gridLines = createGridLines(style)
   const axisLine = createAxisLine(style)
   const markBorder = createMarkBorder(style)
@@ -117,14 +122,14 @@ export function createDefaultChartSpec(
       title: createDefaultTitle(style),
       xAxis: {
         visible: true,
-        title: { text: '', textStyle: textStyle, visible: true },
+        title: { text: '', textStyle: axisTextStyle, visible: true },
         min: null,
         max: null,
         gridLines: gridLines,
         labels: {
           numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
-          textStyle: textStyle,
+          textStyle: axisTextStyle,
           tickCount: null,
           valueType: 'number',
         },
@@ -132,14 +137,14 @@ export function createDefaultChartSpec(
       },
       yAxis: {
         visible: true,
-        title: { text: '', textStyle: textStyle, visible: true },
+        title: { text: '', textStyle: axisTextStyle, visible: true },
         min: null,
         max: null,
         gridLines: gridLines,
         labels: {
           numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
-          textStyle: textStyle,
+          textStyle: axisTextStyle,
           tickCount: null,
           valueType: 'number',
         },
@@ -153,7 +158,7 @@ export function createDefaultChartSpec(
           position: isRadialChart ? 'right' : 'bottom',
         },
         symbol: 'auto',
-        textStyle: textStyle,
+        textStyle,
         overflow: 'auto',
         itemWidth: 24,
         itemHeight: 14,
@@ -165,7 +170,7 @@ export function createDefaultChartSpec(
         layout: {
           position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
         },
-        textStyle: textStyle,
+        textStyle,
       },
       scatter: {
         border: markBorder,

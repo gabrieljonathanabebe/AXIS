@@ -20,7 +20,7 @@ const SCHEME_COLORS: Record<ColorScheme, Omit<StyleColors, 'accent'>> = {
   dark: {
     axis: '#94A3B8',
     border: '#94A3B8',
-    gridLine: '#334155',
+    gridLine: '#E2E8F0',
     inactive: '#8B95A7',
     text: '#EEF4FF',
     textMuted: '#A7AFBD',
@@ -28,7 +28,7 @@ const SCHEME_COLORS: Record<ColorScheme, Omit<StyleColors, 'accent'>> = {
   light: {
     axis: '#64748B',
     border: '#64748B',
-    gridLine: '#64748B',
+    gridLine: '#334155',
     inactive: '#98A2B3',
     text: '#101828',
     textMuted: '#667085',

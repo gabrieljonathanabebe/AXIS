@@ -68,3 +68,11 @@ export const BLOOM: StyleRecipe = {
   scheme: 'light',
   surface: '#FFFFFF',
 }
+
+/** Styles the gallery offers, in its order. */
+export const STYLE_RECIPES: StyleRecipe[] = [
+  GRAPHITE,
+  MIDNIGHT,
+  DAYLIGHT,
+  BLOOM,
+]

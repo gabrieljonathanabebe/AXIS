@@ -4,6 +4,7 @@ import { parseCevynActions } from '../actions/parseCevynActions'
 import { translateCevynActions } from '../actions/translateCevynActions'
 import { createApplyStyleActions } from '../dashboardStyle/applyDashboardStyle'
 import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
+import { STYLE_RECIPES } from '../dashboardStyle/styleRecipes'
 import { createObject } from '../objects/createObject'
 import { findChart } from '../objects/findChart'
 import { useWorkspaceDnd } from './useWorkspaceDnd'
@@ -103,10 +104,13 @@ export function useChartWorkspace({
     })
   }
 
-  // Dev only: `cevyn.run(...)` and `cevyn.applyStyle(...)` in the console.
+  // Dev only: `cevyn.run(...)` and `cevyn.applyStyle(cevyn.styles.Bloom)`.
   useEffect(() => {
     if (import.meta.env.DEV) {
-      Object.assign(window, { cevyn: { applyStyle, run: runActions } })
+      const styles = Object.fromEntries(
+        STYLE_RECIPES.map((recipe) => [recipe.name, recipe]),
+      )
+      Object.assign(window, { cevyn: { applyStyle, run: runActions, styles } })
     }
   })
 
