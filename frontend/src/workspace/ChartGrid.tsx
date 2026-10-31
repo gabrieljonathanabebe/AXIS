@@ -17,6 +17,7 @@ import {
 import type { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import type { WorkspaceCommands } from '../app/types'
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type {
@@ -49,6 +50,7 @@ type ChartGridProps = {
   objects: DashboardObject[]
   selectedObjectId: string | null
   selection: DataSelection | null
+  style: DashboardStyle
   onFormatElement: (target: FormatTarget) => void
 }
 
@@ -147,6 +149,7 @@ function ChartGrid({
   objects,
   selectedObjectId,
   selection,
+  style,
   onFormatElement,
 }: ChartGridProps) {
   const [layoutPreview, setLayoutPreview] = useState<LayoutPreview | null>(null)
@@ -230,6 +233,7 @@ function ChartGrid({
               isChartFormatElement(formattedElement) ? formattedElement : null
             }
             selection={selection}
+            style={style}
             onFormatHint={showFormatHint}
           />
         )

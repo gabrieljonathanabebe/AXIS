@@ -2,6 +2,7 @@ import {
   createChartInstance,
   createDefaultChartSpec,
 } from '../charts/createChartInstance'
+import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
 import { findChart } from '../objects/findChart'
 import { objectDefinitions } from '../objects/objectDefinitions'
 import { findFreeLayout } from '../workspace/chartLayout'
@@ -20,6 +21,7 @@ function createChart(
 ): WorkspaceAction {
   const chart = createChartInstance({
     layout: findFreeLayout(state.objects, objectDefinitions.chart.defaultSize),
+    style: createDashboardStyle(state.dashboard.style),
     type: action.chartType,
   })
   const { data } = chart.spec
@@ -64,7 +66,10 @@ function translateCevynAction(
         type: 'chart/setType',
         chartId: action.chartId,
         chartType: action.chartType,
-        defaultSpec: createDefaultChartSpec(action.chartType),
+        defaultSpec: createDefaultChartSpec(
+          action.chartType,
+          createDashboardStyle(state.dashboard.style),
+        ),
       }
     case 'chart/updateAggregation':
       return {

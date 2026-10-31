@@ -2,14 +2,15 @@ import {
   createDefaultContainer,
   createDefaultTitle,
 } from '../objects/objectDefaults'
+import { createColorValue } from '../shared/colorValue'
 import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
 import {
   getChartDefinition,
   isPointsChartType,
   isRadialChartType,
 } from './chartDefinitions'
-import { DEFAULT_CATEGORICAL_PALETTE } from './colorPalettes'
 
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { ObjectLayout } from '../objects/types'
 import type { StrokeStyle } from '../shared/strokeStyle'
 import type { TextStyle } from '../shared/textStyle'
@@ -21,54 +22,76 @@ import type {
 } from './types'
 
 /** Default look of the texts drawn by ECharts: axes, legend, labels. */
-export const CHART_TEXT_STYLE: TextStyle = {
-  color: { kind: 'token', token: 'text' },
-  fontSize: 12,
-  fontStyle: 'normal',
-  fontWeight: 'medium',
+function createChartTextStyle(style: DashboardStyle): TextStyle {
+  return {
+    color: createColorValue(style.colors.text),
+    fontSize: 12,
+    fontStyle: 'normal',
+    fontWeight: 'medium',
+  }
 }
 
 /** Default gridlines; each axis draws its own. */
-export const CHART_GRID_LINES: AxisStrokeAppearance = {
-  stroke: {
-    lineStyle: 'solid',
-    opacity: 0.08,
-    paint: { color: { kind: 'token', token: 'gridLine' }, kind: 'solid' },
-    width: 1,
-  },
-  visible: true,
+function createGridLines(style: DashboardStyle): AxisStrokeAppearance {
+  return {
+    stroke: {
+      lineStyle: 'solid',
+      opacity: 0.08,
+      paint: { color: createColorValue(style.colors.gridLine), kind: 'solid' },
+      width: 1,
+    },
+    visible: true,
+  }
 }
 
 /** Default axis line; each axis draws its own. */
-export const CHART_AXIS_LINE: AxisStrokeAppearance = {
-  stroke: {
-    lineStyle: 'solid',
-    opacity: 1,
-    paint: { color: { kind: 'token', token: 'border' }, kind: 'solid' },
-    width: 1,
-  },
-  visible: true,
+function createAxisLine(style: DashboardStyle): AxisStrokeAppearance {
+  return {
+    stroke: {
+      lineStyle: 'solid',
+      opacity: 1,
+      paint: { color: createColorValue(style.colors.axis), kind: 'solid' },
+      width: 1,
+    },
+    visible: true,
+  }
 }
 
 /** Default border of filled marks: bars, points and pie segments; off. */
-export const CHART_MARK_BORDER: StrokeStyle = {
-  lineStyle: 'solid',
-  opacity: 1,
-  paint: { color: { kind: 'token', token: 'border' }, kind: 'solid' },
-  width: 0,
+function createMarkBorder(style: DashboardStyle): StrokeStyle {
+  return {
+    lineStyle: 'solid',
+    opacity: 1,
+    paint: { color: createColorValue(style.colors.border), kind: 'solid' },
+    width: 0,
+  }
 }
 
 type CreateChartInstanceParams = {
   type: ChartType
   layout: ObjectLayout
+  style: DashboardStyle
   id?: string
 }
 
-export function createDefaultChartSpec(type: ChartType): ChartSpec {
+/**
+ * Creates the spec of a new chart; every color comes from the style.
+ * @param type Chart type, decides axes, legend and label positions.
+ * @param style Current dashboard style.
+ * @returns Spec of a new chart of that type.
+ */
+export function createDefaultChartSpec(
+  type: ChartType,
+  style: DashboardStyle,
+): ChartSpec {
   const definition = getChartDefinition(type)
   const isRadialChart = isRadialChartType(type)
   // Points and radial charts have no category axis; marks are single items.
   const hasItemMarks = isPointsChartType(type) || isRadialChart
+  const textStyle = createChartTextStyle(style)
+  const gridLines = createGridLines(style)
+  const axisLine = createAxisLine(style)
+  const markBorder = createMarkBorder(style)
   return {
     data: {
       encoding: {},
@@ -76,10 +99,10 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
       colorAggregation: 'mean',
     },
     appearance: {
-      color: { kind: 'token', token: 'chart1' },
+      color: createColorValue(style.palette[0]),
       colorScale: {
         categorical: {
-          palette: [...DEFAULT_CATEGORICAL_PALETTE],
+          palette: style.palette.map(createColorValue),
         },
         continuous: {
           startColor: { kind: 'custom', color: '#fe0314' },
@@ -91,36 +114,36 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           labels: true,
         },
       },
-      title: createDefaultTitle(),
+      title: createDefaultTitle(style),
       xAxis: {
         visible: true,
-        title: { text: '', textStyle: CHART_TEXT_STYLE, visible: true },
+        title: { text: '', textStyle: textStyle, visible: true },
         min: null,
         max: null,
-        gridLines: CHART_GRID_LINES,
+        gridLines: gridLines,
         labels: {
           numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
-          textStyle: CHART_TEXT_STYLE,
+          textStyle: textStyle,
           tickCount: null,
           valueType: 'number',
         },
-        line: CHART_AXIS_LINE,
+        line: axisLine,
       },
       yAxis: {
         visible: true,
-        title: { text: '', textStyle: CHART_TEXT_STYLE, visible: true },
+        title: { text: '', textStyle: textStyle, visible: true },
         min: null,
         max: null,
-        gridLines: CHART_GRID_LINES,
+        gridLines: gridLines,
         labels: {
           numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
-          textStyle: CHART_TEXT_STYLE,
+          textStyle: textStyle,
           tickCount: null,
           valueType: 'number',
         },
-        line: CHART_AXIS_LINE,
+        line: axisLine,
       },
       legend: {
         visible: true,
@@ -130,11 +153,11 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
           position: isRadialChart ? 'right' : 'bottom',
         },
         symbol: 'auto',
-        textStyle: CHART_TEXT_STYLE,
+        textStyle: textStyle,
         overflow: 'auto',
         itemWidth: 24,
         itemHeight: 14,
-        inactiveColor: { kind: 'token', token: 'inactive' },
+        inactiveColor: createColorValue(style.colors.inactive),
       },
       labels: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
@@ -142,10 +165,10 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         layout: {
           position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
         },
-        textStyle: CHART_TEXT_STYLE,
+        textStyle: textStyle,
       },
       scatter: {
-        border: CHART_MARK_BORDER,
+        border: markBorder,
         effect: { kind: 'none' },
         pointSize: 10,
         sizeRange: {
@@ -172,14 +195,14 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
         effect: { kind: 'none' },
       },
       bar: {
-        border: CHART_MARK_BORDER,
+        border: markBorder,
         borderRadius: 4,
         barWidth: 24,
         effect: { kind: 'none' },
         fill: { opacity: 1, paint: { kind: 'solid' } },
       },
       pie: {
-        border: CHART_MARK_BORDER,
+        border: markBorder,
         effect: { kind: 'none' },
         fill: { opacity: 1, paint: { kind: 'solid' } },
         innerRadius: 42,
@@ -206,18 +229,23 @@ export function createDefaultChartSpec(type: ChartType): ChartSpec {
   }
 }
 
-/** Creates a chart object with the default spec and container of its type. */
+/**
+ * Creates a chart object with the default spec and container of its type.
+ * @param params Chart type, layout, current style and an optional ID.
+ * @returns A new chart in the current style.
+ */
 export function createChartInstance({
   type,
   layout,
+  style,
   id = crypto.randomUUID(),
 }: CreateChartInstanceParams): ChartInstance {
   return {
     id,
     kind: 'chart',
     type,
-    spec: createDefaultChartSpec(type),
+    spec: createDefaultChartSpec(type, style),
     layout,
-    container: createDefaultContainer(),
+    container: createDefaultContainer(style),
   }
 }

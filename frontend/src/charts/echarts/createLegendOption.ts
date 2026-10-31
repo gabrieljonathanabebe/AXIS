@@ -5,14 +5,12 @@ import type { LegendComponentOption } from 'echarts'
 import type { Side } from '../../shared/layout'
 import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartInteractionSpec, LegendAppearance } from '../types'
-import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 type CreateLegendOptionParams = {
   appearance: LegendAppearance
   interaction: ChartInteractionSpec['legend']
   colorEncodingMode: ColorEncodingMode
-  theme: ChartTheme
 }
 
 type LegendPlacement = Pick<
@@ -70,9 +68,8 @@ export function createLegendOption({
   appearance,
   interaction,
   colorEncodingMode,
-  theme,
 }: CreateLegendOptionParams): LegendComponentOption {
-  const textColor = resolveColor(appearance.textStyle.color, theme)
+  const textColor = resolveColor(appearance.textStyle.color)
   return {
     itemGap: appearance.layout.gap,
     orient:
@@ -81,11 +78,11 @@ export function createLegendOption({
         ? 'vertical'
         : 'horizontal',
     pageIconColor: textColor,
-    pageIconInactiveColor: resolveColor(appearance.inactiveColor, theme),
+    pageIconInactiveColor: resolveColor(appearance.inactiveColor),
     pageTextStyle: { color: textColor },
     selectedMode: interaction.enabled ? interaction.selectionMode : false,
     show: appearance.visible && colorEncodingMode === 'categorical',
-    textStyle: createTextStyleOption(appearance.textStyle, theme),
+    textStyle: createTextStyleOption(appearance.textStyle),
     triggerEvent: true,
     // Scrolls instead of overflowing when items exceed the chart width.
     type: appearance.overflow === 'plain' ? 'plain' : 'scroll',

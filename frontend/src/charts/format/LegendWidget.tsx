@@ -1,7 +1,6 @@
 import FormatWidget from '../../shared/ui/FormatWidget'
 import LayoutControls from '../../shared/ui/LayoutControls'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import { CHART_TEXT_STYLE } from '../createChartInstance'
 
 import type { LegendAppearance } from '../types'
 
@@ -27,7 +26,6 @@ function LegendWidget({ value, onChange }: LegendWidgetProps) {
       </FormatWidget>
       <FormatWidget title="Text">
         <TextStyleControls
-          defaultColor={CHART_TEXT_STYLE.color}
           label="Legend text"
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}

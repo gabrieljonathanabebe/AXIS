@@ -16,9 +16,7 @@ import {
 } from 'lucide-react'
 
 import { createEffect } from '../../shared/effect'
-import { getPaintColor } from '../../shared/paint'
 import ColorField from '../../shared/ui/ColorField'
-import { DATA_COLOR_PRESETS } from '../../shared/ui/colorPresets'
 import ControlRow from '../../shared/ui/ControlRow'
 import DetailsPopover from '../../shared/ui/DetailsPopover'
 import EffectControls from '../../shared/ui/EffectControls'
@@ -29,8 +27,7 @@ import PaletteControl from '../../shared/ui/PaletteControl'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
-import { categoricalColorPalettes } from '../colorPalettes'
-import { CHART_MARK_BORDER } from '../createChartInstance'
+import { getCategoricalPalettes } from '../colorPalettes'
 import { getColorEncodingMode } from '../getColorEncodingMode'
 
 import type { LucideIcon } from 'lucide-react'
@@ -147,13 +144,14 @@ function getElementLinkGroup(
  * categories, or a gradient when a continuous field colors the marks; the
  * gradient brings the range of its scale behind a gear and allows only
  * solid paints, since its visual map colors every mark itself.
- * @param formatProps Actions, chart and fields of the chart.
+ * @param formatProps Actions, chart, fields and style of the chart.
  * @returns The field of the color mode and, for a gradient, its details.
  */
 function getDataColorControls({
   actions,
   chart,
   fields,
+  style,
 }: ChartFormatProps): DataColorControls {
   const { appearance } = chart.spec
   const colorEncodingMode = getColorEncodingMode(
@@ -166,7 +164,7 @@ function getDataColorControls({
       field: (
         <ColorField
           label="Chart"
-          presets={DATA_COLOR_PRESETS}
+          presets={[]}
           value={appearance.color}
           onChange={(color) => actions.setAppearance('color', color)}
         />
@@ -178,7 +176,7 @@ function getDataColorControls({
       field: (
         <PaletteControl
           label="Categorical color palette"
-          palettes={categoricalColorPalettes}
+          palettes={getCategoricalPalettes(style)}
           value={appearance.colorScale.categorical.palette}
           onChange={(palette) => {
             actions.setAppearance('colorScale', {
@@ -305,7 +303,6 @@ function getFilledMarkGroups(
     stroke: (
       <FormatWidget title="Border">
         <StrokeStyleControls
-          defaultColor={getPaintColor(CHART_MARK_BORDER.paint)}
           label={`${label} border`}
           value={border}
           onChange={(value) =>

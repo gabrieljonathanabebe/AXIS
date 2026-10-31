@@ -1,46 +1,40 @@
-import type { StrokeStyle } from '../shared/strokeStyle'
-import type { TextStyle } from '../shared/textStyle'
+import { createColorValue } from '../shared/colorValue'
+
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { ObjectContainer, ObjectTitleAppearance } from './types'
 
-// ===== CONSTANTS =============================================================
-/** Default look of an object title, of charts and cards alike. */
-export const TITLE_TEXT_STYLE: TextStyle = {
-  color: { kind: 'token', token: 'text' },
-  fontSize: 14,
-  fontStyle: 'normal',
-  fontWeight: 'medium',
-}
-
-/** Default container border; hidden until the user gives it a width. */
-export const CONTAINER_BORDER: StrokeStyle = {
-  lineStyle: 'solid',
-  opacity: 1,
-  paint: { color: { kind: 'token', token: 'border' }, kind: 'solid' },
-  width: 0,
-}
-
 // ===== FUNCTIONS =============================================================
-/** Creates the title every new object starts with; its text is empty. */
-export function createDefaultTitle(): ObjectTitleAppearance {
+/**
+ * Creates the title every new object starts with; its text is empty and
+ * its color comes from the style.
+ * @param style Current dashboard style.
+ * @returns Visible empty title.
+ */
+export function createDefaultTitle(
+  style: DashboardStyle,
+): ObjectTitleAppearance {
   return {
     layout: { alignment: 'start' },
     text: '',
-    textStyle: TITLE_TEXT_STYLE,
+    textStyle: {
+      color: createColorValue(style.colors.text),
+      fontSize: 14,
+      fontStyle: 'normal',
+      fontWeight: 'medium',
+    },
     visible: true,
   }
 }
 
-/** Creates the container every new object starts with. */
-export function createDefaultContainer(): ObjectContainer {
+/**
+ * Creates the container every new object starts with: background, border
+ * and effects from the material of the style, radius and padding fixed.
+ * @param style Current dashboard style.
+ * @returns Container of a new object.
+ */
+export function createDefaultContainer(style: DashboardStyle): ObjectContainer {
   return {
-    background: [
-      {
-        opacity: 1,
-        paint: { color: { kind: 'custom', color: '#202226' }, kind: 'solid' },
-      },
-    ],
-    border: CONTAINER_BORDER,
-    effects: [],
+    ...style.container,
     borderRadius: 24,
     layout: { padding: 4 },
   }

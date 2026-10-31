@@ -1,24 +1,11 @@
-import type { ColorToken } from '../../shared/colorValue'
+import type { DashboardStyle } from '../../dashboardStyle/types'
 
 /**
- * Colors and sizes a chart reads from the CSS tokens at its element.
- * `accent` is the dashboard accent of the brush, `formatFocus` the app
- * accent that marks the element in the format popover.
+ * What a chart draws with besides its spec: the dashboard style for brush,
+ * dimming and tooltip, and the app accent that marks the element in the
+ * format popover.
  */
 export type ChartTheme = {
-  accent: string
-  axis: string
-  colors: Record<ColorToken, string>
   formatFocus: string
-  text: string
-  textMuted: string
-  tooltip: {
-    background: string
-    borderColor: string
-    borderWidth: number
-    fontSize: number
-    blur: string
-    radius: string
-    shadow: string
-  }
+  style: DashboardStyle
 }

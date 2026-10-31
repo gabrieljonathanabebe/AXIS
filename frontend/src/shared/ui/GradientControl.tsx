@@ -1,5 +1,4 @@
 import { getGradientStopsCss, getSortedStops } from '../paint'
-import { DATA_COLOR_PRESETS } from './colorPresets'
 import ColorSwatch from './ColorSwatch'
 
 import type { CSSProperties } from 'react'
@@ -28,7 +27,7 @@ type GradientStyle = CSSProperties & {
  */
 function GradientControl({
   label,
-  presets = DATA_COLOR_PRESETS,
+  presets = [],
   stops,
   onChange,
 }: GradientControlProps) {

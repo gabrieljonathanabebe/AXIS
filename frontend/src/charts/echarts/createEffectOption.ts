@@ -3,7 +3,6 @@ import { color } from 'echarts'
 import { resolveColor } from './resolveColor'
 
 import type { Effect } from '../../shared/effect'
-import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 /** Shadow fields of ECharts, e.g. in a line style or the item style of bars. */
@@ -21,13 +20,11 @@ type EffectOption = {
  * a mark color, e.g. for dimmed marks or under a continuous color scale,
  * both stay off, since ECharts would draw a black glow there.
  * @param effect Effect of one mark, e.g. a line.
- * @param theme Chart theme that resolves a token color of the shadow.
  * @param markColor Resolved series color, or undefined without effects.
  * @returns Shadow fields, or no fields without an effect.
  */
 export function createEffectOption(
   effect: Effect,
-  theme: ChartTheme,
   markColor: string | undefined,
 ): EffectOption {
   if (effect.kind === 'none' || !markColor) {
@@ -38,10 +35,7 @@ export function createEffectOption(
   }
   return {
     shadowBlur: effect.blur,
-    shadowColor: color.modifyAlpha(
-      resolveColor(effect.color, theme),
-      effect.opacity,
-    ),
+    shadowColor: color.modifyAlpha(resolveColor(effect.color), effect.opacity),
     shadowOffsetX: effect.offsetX,
     shadowOffsetY: effect.offsetY,
   }

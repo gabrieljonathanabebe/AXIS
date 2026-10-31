@@ -1,3 +1,4 @@
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField } from '../datasets/types'
 import type {
   ContainerFormatElement,
@@ -62,6 +63,7 @@ export type ChartFormatProps = {
   actions: ChartActions
   chart: ChartInstance
   fields: DataField[]
+  style: DashboardStyle
 }
 
 // ===== AGGREGATION ===========================================================

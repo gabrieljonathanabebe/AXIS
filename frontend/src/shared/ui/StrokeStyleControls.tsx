@@ -1,13 +1,11 @@
 import { Equal } from 'lucide-react'
 
-import { createStyleColorPresets } from './colorPresets'
 import ControlRow from './ControlRow'
 import PaintControl from './PaintControl'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
 import type { ReactNode } from 'react'
-import type { ColorValue } from '../colorValue'
 import type { Paint, PaintType, SeriesPaint } from '../paint'
 import type { LineStyle, StrokeStyle } from '../strokeStyle'
 
@@ -15,7 +13,6 @@ import type { LineStyle, StrokeStyle } from '../strokeStyle'
 type StrokeStyleControlsProps<
   TStroke extends StrokeStyle<Paint | SeriesPaint>,
 > = {
-  defaultColor?: ColorValue
   details?: ReactNode
   label: string
   maxWidth?: number
@@ -38,12 +35,10 @@ const lineStyleOptions = [
  * Rows of one stroke, e.g. a border: first the row of its paint
  * (`PaintControl`) with color and opacity, its type behind the swatch or
  * the gear of `details`, then width and line style. Every group thus
- * starts with its color row. Widgets pass the color the stroke gets when
- * created as `defaultColor`; a stroke in the series color, e.g. a line
+ * starts with its color row. A stroke in the series color, e.g. a line
  * mark, shows `seriesColor` in its place.
  */
 function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
-  defaultColor,
   details,
   label,
   maxWidth = 8,
@@ -59,7 +54,6 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
         details={details}
         label={label}
         paintTypes={paintTypes}
-        presets={defaultColor ? createStyleColorPresets(defaultColor) : []}
         seriesColor={seriesColor}
         value={value}
         onChange={onChange}

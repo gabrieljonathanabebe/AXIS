@@ -44,9 +44,9 @@ export function createBrushOption(
   return {
     brushMode: 'single',
     brushStyle: {
-      borderColor: theme.accent,
+      borderColor: theme.style.colors.accent,
       borderWidth: 1,
-      color: color.modifyAlpha(theme.accent, 0.12),
+      color: color.modifyAlpha(theme.style.colors.accent, 0.12),
     },
     outOfBrush: { colorAlpha: 1 },
     throttleType: 'debounce',

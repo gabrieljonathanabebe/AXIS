@@ -1,7 +1,8 @@
-import { useEffect, useReducer } from 'react'
+import { useEffect, useMemo, useReducer } from 'react'
 
 import { parseCevynActions } from '../actions/parseCevynActions'
 import { translateCevynActions } from '../actions/translateCevynActions'
+import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
 import { createObject } from '../objects/createObject'
 import { findChart } from '../objects/findChart'
 import { useWorkspaceDnd } from './useWorkspaceDnd'
@@ -46,6 +47,9 @@ export function useChartWorkspace({
     initialWorkspaceHistory,
   )
   const { dashboard, objects, selectedObjectId, selection } = history.present
+  const style = useMemo(() => {
+    return createDashboardStyle(dashboard.style)
+  }, [dashboard.style])
   const canRedo = history.future.length > 0
   const canUndo = history.past.length > 0
   const charts = objects.filter((object) => object.kind === 'chart')
@@ -93,7 +97,10 @@ export function useChartWorkspace({
 
   /** Adds the object of a picker option in the first free spot. */
   function addObject(template: ObjectTemplate): void {
-    dispatch({ type: 'object/add', object: createObject(template, objects) })
+    dispatch({
+      type: 'object/add',
+      object: createObject(template, objects, style),
+    })
   }
 
   /** Copies an object; the copy gets a new ID and is selected. */
@@ -214,6 +221,7 @@ export function useChartWorkspace({
     selectedChart,
     selectedObjectId,
     selection,
+    style,
     undo,
   }
 }

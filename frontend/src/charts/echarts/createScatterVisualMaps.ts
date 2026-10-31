@@ -4,14 +4,12 @@ import type { VisualMapComponentOption } from 'echarts'
 import type { DataRow } from '../../datasets/types'
 import type { ColorEncodingMode } from '../getColorEncodingMode'
 import type { ChartAppearanceSpec, ChartEncoding } from '../types'
-import type { ChartTheme } from './chartTheme'
 
 type CreateScatterVisualMapsParams = {
   rows: DataRow[]
   encoding: ChartEncoding
   appearance: ChartAppearanceSpec
   colorEncodingMode: ColorEncodingMode
-  theme: ChartTheme
 }
 
 /**
@@ -23,7 +21,6 @@ function createColorVisualMap({
   colorEncodingMode,
   encoding,
   rows,
-  theme,
 }: CreateScatterVisualMapsParams): VisualMapComponentOption | null {
   const colorFieldName = encoding.color
   if (colorEncodingMode !== 'continuous' || !colorFieldName) {
@@ -36,7 +33,6 @@ function createColorVisualMap({
   return createContinuousColorVisualMap({
     appearance: appearance.colorScale.continuous,
     dimension: 3,
-    theme,
     values,
   })
 }
@@ -44,7 +40,7 @@ function createColorVisualMap({
 /**
  * Creates the color scale of a scatter chart; point sizes come from the
  * series, so they stay true to area.
- * @param params Points, fields, appearance and theme of the chart.
+ * @param params Points, fields and appearance of the chart.
  * @returns Visual maps that apply to the chart.
  */
 export function createScatterVisualMaps(

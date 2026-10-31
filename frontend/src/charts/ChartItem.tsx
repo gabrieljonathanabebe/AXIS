@@ -11,6 +11,7 @@ import EncodingDropSlots from './EncodingDropSlots'
 import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
 
 import type { CSSProperties } from 'react'
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type {
@@ -29,6 +30,7 @@ type ChartItemProps = {
   draggedField: DataField | null
   formattedElement: ChartFormatElement | null
   selection: DataSelection | null
+  style: DashboardStyle
   onFormatHint: ShowFormatHint
 }
 
@@ -52,6 +54,7 @@ function ChartItem({
   draggedField,
   formattedElement,
   selection,
+  style,
   onFormatHint,
 }: ChartItemProps) {
   const [axisTitleEdit, setAxisTitleEdit] = useState<AxisTitleEdit | null>(null)
@@ -122,6 +125,7 @@ function ChartItem({
         onHoverAxisTitle={handleHoverAxisTitle}
         onHoverElement={onFormatHint}
         selection={selection}
+        style={style}
       />
       {title.visible ? (
         <div

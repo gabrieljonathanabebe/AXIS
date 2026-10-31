@@ -3,9 +3,7 @@ import { Fragment } from 'react'
 import ContainerWidget from '../../objects/ContainerWidget'
 import ObjectFormatPopover from '../../objects/ObjectFormatPopover'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
-import { getPaintColor } from '../../shared/paint'
 import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
-import { CHART_AXIS_LINE, CHART_GRID_LINES } from '../createChartInstance'
 import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
 import AxisStrokeWidget from './AxisStrokeWidget'
@@ -57,7 +55,7 @@ const elementTitles: Record<ChartFormatElement, string> = {
  */
 function getFormatGroups(
   element: ChartFormatElement,
-  { actions, chart, fields }: ChartFormatProps,
+  { actions, chart, fields, style }: ChartFormatProps,
   onElementChange: (element: ChartFormatElement) => void,
 ): ReactNode {
   const { appearance, interaction } = chart.spec
@@ -104,7 +102,10 @@ function getFormatGroups(
         </>
       )
     case 'marks': {
-      const groups = getMarkGroups({ actions, chart, fields }, onElementChange)
+      const groups = getMarkGroups(
+        { actions, chart, fields, style },
+        onElementChange,
+      )
       return MARK_GROUP_ORDER.map((key) => (
         <Fragment key={key}>{groups[key]}</Fragment>
       ))
@@ -149,7 +150,6 @@ function getFormatGroups(
         <>
           {axisWidget}
           <AxisStrokeWidget
-            defaultColor={getPaintColor(CHART_AXIS_LINE.stroke.paint)}
             label="Axis line"
             title="Line"
             value={axisAppearance.line}
@@ -158,7 +158,6 @@ function getFormatGroups(
             }
           />
           <AxisStrokeWidget
-            defaultColor={getPaintColor(CHART_GRID_LINES.stroke.paint)}
             label="Grid"
             title="Gridlines"
             value={axisAppearance.gridLines}

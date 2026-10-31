@@ -1,5 +1,6 @@
 import { createDefaultChartSpec } from './createChartInstance'
 
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { WorkspaceAction } from '../workspace/types'
 import type { ChartActions } from './types'
 
@@ -7,13 +8,19 @@ import type { ChartActions } from './types'
 type ChartActionsParams = {
   dispatch: (action: WorkspaceAction) => void
   selectedChartId: string | null
+  style: DashboardStyle
 }
 
 // ===== FUNCTION ==============================================================
-/** Turns format and Build panel edits into actions on the selected chart. */
+/**
+ * Turns format and Build panel edits into actions on the selected chart.
+ * @param params Dispatch, selected chart and the current style.
+ * @returns Actions of the selected chart.
+ */
 export function createChartActions({
   dispatch,
   selectedChartId,
+  style,
 }: ChartActionsParams): ChartActions {
   function dispatchForChart(
     createAction: (chartId: string) => WorkspaceAction,
@@ -51,7 +58,7 @@ export function createChartActions({
         type: 'chart/setType',
         chartId,
         chartType: type,
-        defaultSpec: createDefaultChartSpec(type),
+        defaultSpec: createDefaultChartSpec(type, style),
       }))
     },
     setContainer: (key, value) => {

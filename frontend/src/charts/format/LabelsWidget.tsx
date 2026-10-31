@@ -2,7 +2,6 @@ import FormatWidget from '../../shared/ui/FormatWidget'
 import LayoutControls from '../../shared/ui/LayoutControls'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import { CHART_TEXT_STYLE } from '../createChartInstance'
 
 import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type { LabelPosition, LabelsAppearance } from '../types'
@@ -41,7 +40,6 @@ function LabelsWidget({
       </FormatWidget>
       <FormatWidget title="Text">
         <TextStyleControls
-          defaultColor={CHART_TEXT_STYLE.color}
           label="Label"
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}

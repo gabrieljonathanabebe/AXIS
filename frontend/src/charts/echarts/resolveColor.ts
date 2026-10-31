@@ -1,7 +1,6 @@
 import { color } from 'echarts'
 
 import type { ColorValue } from '../../shared/colorValue'
-import type { ChartTheme } from './chartTheme'
 
 // ===== CONSTANTS =============================================================
 /**
@@ -13,26 +12,22 @@ const PALETTE_ROUND_SHIFTS = [0, 0.4, -0.35, 0.65, -0.55]
 
 // ===== FUNCTIONS =============================================================
 /**
- * Resolves a color value of the spec into a color ECharts can draw.
+ * Resolves a color value of the spec into a color ECharts can draw;
+ * conditional colors will add their case here.
  * @param value Color value of one chart element.
- * @param theme Chart theme with the current color of each token.
- * @returns The token's current color or the custom color.
+ * @returns The custom color.
  */
-export function resolveColor(value: ColorValue, theme: ChartTheme): string {
-  return value.kind === 'token' ? theme.colors[value.token] : value.color
+export function resolveColor(value: ColorValue): string {
+  return value.color
 }
 
 /**
  * Resolves a palette of the spec into colors ECharts can draw.
  * @param palette Categorical palette, e.g. of the color scale.
- * @param theme Chart theme with the current color of each token.
  * @returns One color per palette entry.
  */
-export function resolvePalette(
-  palette: ColorValue[],
-  theme: ChartTheme,
-): string[] {
-  return palette.map((value) => resolveColor(value, theme))
+export function resolvePalette(palette: ColorValue[]): string[] {
+  return palette.map(resolveColor)
 }
 
 /**

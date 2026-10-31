@@ -4,12 +4,10 @@ import { resolveColor } from './resolveColor'
 
 import type { ContinuousVisualMapComponentOption } from 'echarts'
 import type { ColorScaleAppearance } from '../types'
-import type { ChartTheme } from './chartTheme'
 
 type CreateContinuousColorVisualMapParams = {
   appearance: ColorScaleAppearance['continuous']
   dimension: number
-  theme: ChartTheme
   values: Array<number | null | undefined>
 }
 
@@ -22,7 +20,6 @@ type ContinuousColorVisualMap = ContinuousVisualMapComponentOption | null
 export function createContinuousColorVisualMap({
   appearance,
   dimension,
-  theme,
   values,
 }: CreateContinuousColorVisualMapParams): ContinuousColorVisualMap {
   const domain = getNumericDomain(values)
@@ -40,8 +37,8 @@ export function createContinuousColorVisualMap({
     dimension,
     inRange: {
       color: [
-        resolveColor(appearance.startColor, theme),
-        resolveColor(appearance.endColor, theme),
+        resolveColor(appearance.startColor),
+        resolveColor(appearance.endColor),
       ],
     },
     left: appearance.layout.position === 'left' ? 16 : undefined,

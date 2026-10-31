@@ -7,7 +7,6 @@ import RotationDial from '../../shared/ui/RotationDial'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import TextInput from '../../shared/ui/TextInput'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
-import { CHART_TEXT_STYLE } from '../createChartInstance'
 
 import type { AxisAppearance } from '../types'
 
@@ -63,7 +62,6 @@ function AxisWidget({
           />
         </ControlRow>
         <TextStyleControls
-          defaultColor={CHART_TEXT_STYLE.color}
           label={`${title} title`}
           value={value.title.textStyle}
           onChange={(textStyle) =>
@@ -102,7 +100,6 @@ function AxisWidget({
       </FormatWidget>
       <FormatWidget title="Text">
         <TextStyleControls
-          defaultColor={CHART_TEXT_STYLE.color}
           label={`${title} label`}
           value={labels.textStyle}
           onChange={(textStyle) =>

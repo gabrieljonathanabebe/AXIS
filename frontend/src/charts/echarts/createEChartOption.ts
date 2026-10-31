@@ -40,7 +40,6 @@ export function createEChartOption(
     appearance: appearance.legend,
     colorEncodingMode,
     interaction: interaction.legend,
-    theme,
   })
 
   // ===== RETURN ==============================================================
@@ -53,8 +52,8 @@ export function createEChartOption(
 
     color:
       colorEncodingMode === 'categorical'
-        ? resolvePalette(appearance.colorScale.categorical.palette, theme)
-        : [resolveColor(appearance.color, theme)],
+        ? resolvePalette(appearance.colorScale.categorical.palette)
+        : [resolveColor(appearance.color)],
     dataZoom: isRadialChart
       ? undefined
       : createDataZoomOption(interaction.zoom),

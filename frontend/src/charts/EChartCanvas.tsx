@@ -2,7 +2,6 @@ import * as echarts from 'echarts'
 import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
-import { COLOR_TOKEN_VARIABLES } from '../shared/colorValue'
 import EmptyState from '../shared/ui/EmptyState'
 import { isSameSelection } from '../workspace/dataSelection'
 import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
@@ -30,9 +29,9 @@ import { useDocumentTheme } from './useDocumentTheme'
 import { usePointsQuery } from './usePointsQuery'
 
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataRow, Dataset } from '../datasets/types'
 import type { ElementRect } from '../objects/types'
-import type { ColorToken } from '../shared/colorValue'
 import type {
   CanvasActions,
   DashboardAnimation,
@@ -56,6 +55,7 @@ type EChartCanvasProps = {
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
   onHoverElement: (element: ChartFormatElement, rect: ElementRect) => void
   selection: DataSelection | null
+  style: DashboardStyle
 }
 
 function readToken(styles: CSSStyleDeclaration, name: string): string {
@@ -63,61 +63,20 @@ function readToken(styles: CSSStyleDeclaration, name: string): string {
 }
 
 /**
- * Reads a size token in pixels. Rem is resolved against the root font
- * size, because the chart element may have its own.
- */
-function readNumberToken(styles: CSSStyleDeclaration, name: string): number {
-  const value = readToken(styles, name)
-  const numericValue = Number.parseFloat(value)
-
-  if (value.endsWith('rem')) {
-    const rootFontSize = Number.parseFloat(
-      getComputedStyle(document.documentElement).fontSize,
-    )
-    return numericValue * rootFontSize
-  }
-
-  return numericValue
-}
-
-/**
- * Reads the current color of each token, so ECharts can resolve tokens.
- * @param styles Computed styles of the chart element.
- * @returns Color per token, e.g. the primary text color for `text`.
- */
-function readColorTokens(
-  styles: CSSStyleDeclaration,
-): Record<ColorToken, string> {
-  const entries = Object.entries(COLOR_TOKEN_VARIABLES).map(
-    ([token, variable]) => [token, readToken(styles, variable)],
-  )
-  return Object.fromEntries(entries) as Record<ColorToken, string>
-}
-
-/**
- * Reads colors and sizes from the tokens at the chart element instead of
- * the document root, so values set by a canvas preset reach the chart.
+ * Reads the app accent at the chart element, which marks the formatted
+ * element; all other colors come from the spec and the dashboard style.
  * @param element Container element of the chart.
+ * @param style Current dashboard style.
  * @returns Theme for the ECharts option and the format focus.
  */
-function readChartTheme(element: HTMLElement): ChartTheme {
+function readChartTheme(
+  element: HTMLElement,
+  style: DashboardStyle,
+): ChartTheme {
   const styles = getComputedStyle(element)
   return {
-    accent: readToken(styles, '--dashboard-accent'),
-    axis: readToken(styles, '--color-border-strong'),
-    colors: readColorTokens(styles),
     formatFocus: readToken(styles, '--color-accent'),
-    text: readToken(styles, '--color-text-primary'),
-    textMuted: readToken(styles, '--color-text-secondary'),
-    tooltip: {
-      background: readToken(styles, '--color-surface-overlay'),
-      borderColor: readToken(styles, '--color-border-accent'),
-      borderWidth: readNumberToken(styles, '--border-width-thin'),
-      fontSize: readNumberToken(styles, '--font-size-sm'),
-      blur: readToken(styles, '--blur-sm'),
-      radius: readToken(styles, '--radius-md'),
-      shadow: readToken(styles, '--shadow-md'),
-    },
+    style,
   }
 }
 
@@ -142,6 +101,7 @@ function EChartCanvas({
   onHoverAxisTitle,
   onHoverElement,
   selection,
+  style,
 }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
@@ -258,7 +218,7 @@ function EChartCanvas({
     if (!instance) {
       return
     }
-    const theme = readChartTheme(instance.getDom())
+    const theme = readChartTheme(instance.getDom(), style)
     instance.setOption(
       createEChartOption({
         animation,
@@ -293,6 +253,7 @@ function EChartCanvas({
     points,
     result,
     selection,
+    style,
   ])
 
   useEffect(() => {

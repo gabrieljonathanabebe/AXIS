@@ -1,3 +1,7 @@
+import { getColorCss } from '../../shared/colorValue'
+import { getShadowsCss } from '../../shared/effect'
+import { getFillsCss } from '../../shared/fill'
+import { getPaintColor } from '../../shared/paint'
 import { isRadialChartType } from '../chartDefinitions'
 import { createTooltipFormatter } from './createTooltipFormatter'
 
@@ -17,6 +21,10 @@ type CreateTooltipOptionsParams = {
 }
 
 // ===== FUNCTION ==============================================================
+/**
+ * Creates the tooltip of a chart: content from the spec, look from the
+ * dashboard style, drawn as HTML with CSS of the shared building blocks.
+ */
 export function createTooltipOption({
   chartType,
   isSelectionSource,
@@ -26,15 +34,19 @@ export function createTooltipOption({
   valueLabel,
 }: CreateTooltipOptionsParams): TooltipComponentOption {
   const { tooltip } = spec.interaction
+  const { colors, tooltip: tooltipStyle } = theme.style
+  const { border } = tooltipStyle
+  const borderColor = getColorCss(getPaintColor(border.paint), border.opacity)
   return {
     appendTo: 'body',
-    backgroundColor: theme.tooltip.background,
-    borderColor: theme.tooltip.borderColor,
-    borderWidth: theme.tooltip.borderWidth,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
     extraCssText: [
-      `backdrop-filter: blur(${theme.tooltip.blur})`,
-      `border-radius: ${theme.tooltip.radius}`,
-      `box-shadow: ${theme.tooltip.shadow}`,
+      `backdrop-filter: blur(${tooltipStyle.blur}px)`,
+      `background: ${getFillsCss([tooltipStyle.background])}`,
+      `border: ${border.width}px ${border.lineStyle} ${borderColor}`,
+      `border-radius: ${tooltipStyle.radius}px`,
+      `box-shadow: ${getShadowsCss([tooltipStyle.shadow])}`,
     ].join(';'),
     formatter: createTooltipFormatter({
       chartType,
@@ -46,8 +58,8 @@ export function createTooltipOption({
     show: tooltip.enabled,
     showDelay: tooltip.delay,
     textStyle: {
-      color: theme.text,
-      fontSize: theme.tooltip.fontSize,
+      color: colors.text,
+      fontSize: tooltipStyle.fontSize,
     },
     trigger: isRadialChartType(chartType) ? 'item' : tooltip.trigger,
   }

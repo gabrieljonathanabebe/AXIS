@@ -57,12 +57,14 @@ function App() {
     selectedObjectId,
     selection,
     sensors,
+    style,
     undo,
   } = useChartWorkspace({ dataset: uploadedDataset })
 
   const chartActions = createChartActions({
     dispatch,
     selectedChartId: selectedChart?.id ?? null,
+    style,
   })
   // Format popovers belong to the selected object and close when it changes.
   const [formatTarget, setFormatTarget] = useState<FormatTarget | null>(null)
@@ -160,6 +162,7 @@ function App() {
               objects={objects}
               selectedObjectId={selectedObjectId}
               selection={selection}
+              style={style}
               onAskCevyn={askCevyn}
               onFormatElement={setFormatTarget}
               onRenameDashboard={renameDashboard}
@@ -172,6 +175,7 @@ function App() {
                 chart={selectedChart}
                 element={activeFormatTarget.element}
                 fields={dataset.fields}
+                style={style}
                 target={activeFormatTarget}
                 onClose={() => setFormatTarget(null)}
                 onElementChange={(element) =>

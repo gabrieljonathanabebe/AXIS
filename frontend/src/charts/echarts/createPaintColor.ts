@@ -13,7 +13,6 @@ import type {
   RadialShape,
   SeriesPaint,
 } from '../../shared/paint'
-import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 /** Color ECharts paints a shape with: one color or a gradient. */
@@ -55,23 +54,18 @@ function createGradient(
  * Resolves a paint with its own color into an ECharts color. Item styles
  * have no border opacity, so a border passes its opacity into the colors.
  * @param paint Paint of one chart element, e.g. gridlines or a bar border.
- * @param theme Chart theme that resolves a token color.
  * @param opacity Opacity folded into every color, 1 for none.
  * @returns A color or a gradient.
  */
-export function createPaintColor(
-  paint: Paint,
-  theme: ChartTheme,
-  opacity = 1,
-): PaintColor {
+export function createPaintColor(paint: Paint, opacity = 1): PaintColor {
   if (paint.kind === 'solid') {
-    return color.modifyAlpha(resolveColor(paint.color, theme), opacity)
+    return color.modifyAlpha(resolveColor(paint.color), opacity)
   }
   return createGradient(
     paint,
     paint.stops.map((stop) => ({
       color: color.modifyAlpha(
-        resolveColor(stop.color, theme),
+        resolveColor(stop.color),
         stop.opacity * opacity,
       ),
       offset: stop.position,

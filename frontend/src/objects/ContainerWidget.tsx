@@ -2,7 +2,6 @@ import { SquareRoundCorner } from 'lucide-react'
 
 import { createContainerEffect, sortContainerEffects } from '../shared/effect'
 import { addFill } from '../shared/fill'
-import { getPaintColor } from '../shared/paint'
 import ContainerEffectsControls from '../shared/ui/ContainerEffectsControls'
 import ControlRow from '../shared/ui/ControlRow'
 import FillListControls from '../shared/ui/FillListControls'
@@ -10,7 +9,6 @@ import FormatWidget from '../shared/ui/FormatWidget'
 import LayoutControls from '../shared/ui/LayoutControls'
 import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
 import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
-import { CONTAINER_BORDER } from './objectDefaults'
 
 import type { ObjectContainer, SetContainer } from './types'
 
@@ -61,7 +59,6 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
       </FormatWidget>
       <FormatWidget title="Border">
         <StrokeStyleControls
-          defaultColor={getPaintColor(CONTAINER_BORDER.paint)}
           label="Container border"
           value={value.border}
           onChange={(border) => onChange('border', border)}

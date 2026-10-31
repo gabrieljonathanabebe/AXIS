@@ -30,7 +30,7 @@ function getPieCenter(legend: LegendAppearance): [string, string] {
 /**
  * Builds the single series of a pie or donut chart. Every segment takes its
  * palette color and glows in it; fill opacity and border apply to all.
- * @param context Spec, theme, query results and selection of the chart.
+ * @param context Spec, query results and selection of the chart.
  * @returns Pie series; radial charts have no axes.
  */
 export function createPieChartContent(
@@ -41,14 +41,10 @@ export function createPieChartContent(
   }
 
   // ===== CONSTANTS ===========================================================
-  const { chartType, highlightResult, queryResult, selection, spec, theme } =
-    context
-  const label = createSeriesLabelOption(spec.appearance.labels, theme)
+  const { chartType, highlightResult, queryResult, selection, spec } = context
+  const label = createSeriesLabelOption(spec.appearance.labels)
   const { pie } = spec.appearance
-  const palette = resolvePalette(
-    spec.appearance.colorScale.categorical.palette,
-    theme,
-  )
+  const palette = resolvePalette(spec.appearance.colorScale.categorical.palette)
   const basePoints = queryResult?.points ?? []
   const points = selection ? (highlightResult?.points ?? []) : basePoints
   const categories = basePoints.map((point) => point.x ?? 'No category')
@@ -62,7 +58,7 @@ export function createPieChartContent(
     return [
       {
         itemStyle: {
-          ...createEffectOption(pie.effect, theme, color),
+          ...createEffectOption(pie.effect, color),
           color: createSeriesPaintColor(pie.fill.paint, color),
         },
         name,
@@ -76,8 +72,8 @@ export function createPieChartContent(
     center: getPieCenter(spec.appearance.legend),
     data,
     itemStyle: {
-      ...createFillOption(pie.fill, theme),
-      ...createBorderOption(pie.border, theme),
+      ...createFillOption(pie.fill),
+      ...createBorderOption(pie.border),
     },
     label: {
       ...label,

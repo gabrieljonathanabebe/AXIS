@@ -97,15 +97,6 @@
   --glass-highlight-liquid:
     inset 0 1px 1px rgba(255, 255, 255, 0.12),
     inset 0 -1px 1px rgba(255, 255, 255, 0.03);
-
-  --chart-1: #199e8a;
-  --chart-2: #d95926;
-  --chart-3: #8f80ec;
-  --chart-4: #c98500;
-  --chart-5: #d55181;
-  --chart-border: #94a3b8;
-  --chart-grid-line: #334155;
-  --chart-inactive: #8b95a7;
 }
 
 [data-theme='light'] {
@@ -160,15 +151,6 @@
       rgba(47, 72, 103, 0.06),
       transparent 70%
     );
-
-  --chart-1: #199e8a;
-  --chart-2: #d95926;
-  --chart-3: #8f80ec;
-  --chart-4: #b57800;
-  --chart-5: #d55181;
-  --chart-border: #64748b;
-  --chart-grid-line: #64748b;
-  --chart-inactive: #98a2b3;
 
   --glass-fill-thin: linear-gradient(
     180deg,

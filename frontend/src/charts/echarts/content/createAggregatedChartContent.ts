@@ -5,7 +5,6 @@ import { createAxesOptions } from '../createAxesOptions'
 import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
 import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
 import { createAggregatedSeriesOption } from './createAggregatedSeriesOption'
-import { DIMMED_OPACITY } from './selectionStyle'
 
 import type { ChartQueryPoint } from '../../chartsApi'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
@@ -64,10 +63,7 @@ export function createAggregatedChartContent(
   const hasColorValue =
     hasAggregatedColor(chartType, encoding) &&
     colorEncodingMode === 'continuous'
-  const palette = resolvePalette(
-    appearance.colorScale.categorical.palette,
-    theme,
-  )
+  const palette = resolvePalette(appearance.colorScale.categorical.palette)
   const seriesNames = encoding.series
     ? Array.from(new Set(points.map((point) => point.series)))
     : [null]
@@ -80,7 +76,7 @@ export function createAggregatedChartContent(
    */
   function getSeriesColor(index: number): string | undefined {
     if (colorEncodingMode === 'constant') {
-      return resolveColor(appearance.color, theme)
+      return resolveColor(appearance.color)
     }
     if (colorEncodingMode === 'categorical') {
       return getPaletteColor(palette, index)
@@ -97,8 +93,7 @@ export function createAggregatedChartContent(
       hasColorValue,
       isHighlight: false,
       name,
-      opacity: highlightPoints ? DIMMED_OPACITY : undefined,
-      theme,
+      opacity: highlightPoints ? theme.style.dimmedOpacity : undefined,
       xAxisIndex: 0,
     })
   })
@@ -119,7 +114,6 @@ export function createAggregatedChartContent(
           isHighlight: true,
           name,
           opacity: undefined,
-          theme,
           xAxisIndex: 1,
         })
       })
@@ -129,7 +123,6 @@ export function createAggregatedChartContent(
     ? createContinuousColorVisualMap({
         appearance: appearance.colorScale.continuous,
         dimension: 2,
-        theme,
         values: points.map((point) => {
           return point.color_value
         }),
@@ -141,7 +134,6 @@ export function createAggregatedChartContent(
     categories,
     chartType,
     encoding,
-    theme,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

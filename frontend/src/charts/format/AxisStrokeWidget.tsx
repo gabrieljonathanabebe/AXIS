@@ -1,11 +1,9 @@
 import FormatWidget from '../../shared/ui/FormatWidget'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
 
-import type { ColorValue } from '../../shared/colorValue'
 import type { AxisStrokeAppearance } from '../types'
 
 type AxisStrokeWidgetProps = {
-  defaultColor: ColorValue
   label: string
   title: string
   value: AxisStrokeAppearance
@@ -17,7 +15,6 @@ type AxisStrokeWidgetProps = {
  * width, line style, color and opacity.
  */
 function AxisStrokeWidget({
-  defaultColor,
   label,
   title,
   value,
@@ -34,7 +31,6 @@ function AxisStrokeWidget({
       }}
     >
       <StrokeStyleControls
-        defaultColor={defaultColor}
         label={label}
         maxWidth={4}
         minWidth={1}

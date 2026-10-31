@@ -1,3 +1,6 @@
+import { createColorValue } from '../shared/colorValue'
+
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { ColorValue } from '../shared/colorValue'
 
 export type CategoricalColorPalette = {
@@ -6,33 +9,16 @@ export type CategoricalColorPalette = {
 }
 
 /**
- * Default series colors as theme tokens; their values live in
- * `styles/themes.css`. Led by teal so data never looks like the blue
- * accent of selection, brush and format focus. Checked for color blindness
- * on the dark surface.
- */
-export const DEFAULT_CATEGORICAL_PALETTE: ColorValue[] = [
-  { kind: 'token', token: 'chart1' },
-  { kind: 'token', token: 'chart2' },
-  { kind: 'token', token: 'chart3' },
-  { kind: 'token', token: 'chart4' },
-  { kind: 'token', token: 'chart5' },
-]
-
-/**
  * Turns hex colors into fixed color values, e.g. of a preset palette.
  * @param colors Hex colors of the palette.
  * @returns One custom color value per hex color.
  */
 function createCustomColors(colors: string[]): ColorValue[] {
-  return colors.map((color): ColorValue => ({ kind: 'custom', color }))
+  return colors.map(createColorValue)
 }
 
-export const categoricalColorPalettes = [
-  {
-    label: 'Default',
-    colors: DEFAULT_CATEGORICAL_PALETTE,
-  },
+/** Fixed palettes the palette control offers after the style palette. */
+const presetPalettes = [
   {
     label: 'Vivid',
     colors: createCustomColors([
@@ -64,3 +50,18 @@ export const categoricalColorPalettes = [
     ]),
   },
 ] satisfies CategoricalColorPalette[]
+
+/**
+ * Palettes of the palette control: first the palette of the current style,
+ * then the fixed presets. Picking one writes its colors as fixed values.
+ * @param style Current dashboard style.
+ * @returns Style palette and presets.
+ */
+export function getCategoricalPalettes(
+  style: DashboardStyle,
+): CategoricalColorPalette[] {
+  return [
+    { colors: style.palette.map(createColorValue), label: 'Style' },
+    ...presetPalettes,
+  ]
+}

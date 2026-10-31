@@ -2,13 +2,11 @@ import { ALargeSmall, Italic } from 'lucide-react'
 
 import AlignmentControl from './AlignmentControl'
 import ColorField from './ColorField'
-import { createStyleColorPresets } from './colorPresets'
 import ControlRow from './ControlRow'
 import FontWeightControl from './FontWeightControl'
 import IconButton from './IconButton'
 import ScrubbableNumber from './ScrubbableNumber'
 
-import type { ColorValue } from '../colorValue'
 import type { HorizontalAlignment } from '../layout'
 import type { TextStyle } from '../textStyle'
 
@@ -21,7 +19,6 @@ type TextAlignment = {
 
 type TextStyleControlsProps = {
   alignment?: TextAlignment
-  defaultColor: ColorValue
   label: string
   maxFontSize?: number
   minFontSize?: number
@@ -33,12 +30,11 @@ type TextStyleControlsProps = {
 /**
  * Rows of one text: size, weight and italic, then color and, if the
  * element has one, its alignment. Widgets place them next to their own
- * rows and pass the color the text gets when created as `defaultColor`.
+ * rows.
  * @param props Text style, its bounds and optional alignment.
  */
 function TextStyleControls({
   alignment,
-  defaultColor,
   label,
   maxFontSize = 28,
   minFontSize = 9,
@@ -79,7 +75,7 @@ function TextStyleControls({
       <ControlRow>
         <ColorField
           label={label}
-          presets={createStyleColorPresets(defaultColor)}
+          presets={[]}
           value={value.color}
           onChange={(color) => onChange({ ...value, color })}
         />

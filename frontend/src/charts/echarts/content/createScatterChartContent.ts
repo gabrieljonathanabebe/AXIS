@@ -12,12 +12,10 @@ import {
 import { createBorderOption } from '../createStrokeStyleOption'
 import { getNumericDomain } from '../getNumericDomain'
 import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
-import { DIMMED_OPACITY } from './selectionStyle'
 
 import type { ScatterSeriesOption } from 'echarts'
 import type { DataRow, DataValue } from '../../../datasets/types'
 import type { ChartAppearanceSpec, ScatterSizeRange } from '../../types'
-import type { ChartTheme } from '../chartTheme'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
@@ -36,7 +34,6 @@ type CreateScatterSeriesParams = {
   itemColor: string | undefined
   name?: string
   symbolSize: ScatterSymbolSize
-  theme: ChartTheme
 }
 
 // ===== CONSTANTS =============================================================
@@ -89,7 +86,6 @@ function createScatterSeries({
   itemColor,
   name,
   symbolSize,
-  theme,
 }: CreateScatterSeriesParams): ScatterSeriesOption {
   return {
     data,
@@ -98,17 +94,15 @@ function createScatterSeries({
       y: 1,
     },
     itemStyle: {
-      ...createFillOption(appearance.scatter.fill, theme, itemColor),
-      ...createBorderOption(appearance.scatter.border, theme),
+      ...createFillOption(appearance.scatter.fill, itemColor),
+      ...createBorderOption(appearance.scatter.border),
       ...createEffectOption(
         appearance.scatter.effect,
-        theme,
         canGlow ? itemColor : undefined,
       ),
     },
     label: createSeriesLabelOption(
       appearance.labels,
-      theme,
       createLabelNumberFormatter(appearance),
     ),
     labelLayout: { hideOverlap: true },
@@ -145,7 +139,7 @@ export function createScatterChartContent(
   const data = rows.map((row) => ({
     itemStyle: isRowInSelection(row, selection)
       ? undefined
-      : { opacity: DIMMED_OPACITY, shadowColor: 'transparent' },
+      : { opacity: theme.style.dimmedOpacity, shadowColor: 'transparent' },
     value: [
       getValue(row, encoding.x),
       getValue(row, encoding.y),
@@ -166,10 +160,7 @@ export function createScatterChartContent(
         ),
       )
     : []
-  const palette = resolvePalette(
-    appearance.colorScale.categorical.palette,
-    theme,
-  )
+  const palette = resolvePalette(appearance.colorScale.categorical.palette)
 
   let series: ScatterSeriesOption[]
 
@@ -186,7 +177,6 @@ export function createScatterChartContent(
         itemColor: getPaletteColor(palette, index),
         name,
         symbolSize,
-        theme,
       })
     })
   } else {
@@ -195,11 +185,8 @@ export function createScatterChartContent(
         appearance,
         canGlow,
         data,
-        itemColor: colorFieldName
-          ? undefined
-          : resolveColor(appearance.color, theme),
+        itemColor: colorFieldName ? undefined : resolveColor(appearance.color),
         symbolSize,
-        theme,
       }),
     ]
   }
@@ -209,7 +196,6 @@ export function createScatterChartContent(
     categories: [],
     chartType,
     encoding,
-    theme,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 
@@ -220,7 +206,6 @@ export function createScatterChartContent(
       colorEncodingMode,
       encoding,
       rows,
-      theme,
     }),
     xAxis,
     yAxis,

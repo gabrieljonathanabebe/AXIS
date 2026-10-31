@@ -4,7 +4,6 @@ import ObjectTitleWidget from '../objects/ObjectTitleWidget'
 import FormatWidget from '../shared/ui/FormatWidget'
 import TextStyleControls from '../shared/ui/TextStyleControls'
 import CardValueWidget from './CardValueWidget'
-import { CARD_SELECTION_LABEL_TEXT_STYLE } from './createCardInstance'
 import { getCardAggregations } from './getCardAggregations'
 import { getDefaultCardTitle } from './getCardTitle'
 
@@ -61,7 +60,6 @@ function renderFormatWidget(
       return (
         <FormatWidget title="Text">
           <TextStyleControls
-            defaultColor={CARD_SELECTION_LABEL_TEXT_STYLE.color}
             label="Selection"
             value={appearance.selectionLabel.textStyle}
             onChange={(textStyle) =>

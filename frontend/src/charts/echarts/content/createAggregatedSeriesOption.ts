@@ -12,7 +12,6 @@ import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
 
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
 import type { ChartAppearanceSpec, LinePoints } from '../../types'
-import type { ChartTheme } from '../chartTheme'
 
 // ===== TYPES =================================================================
 export type AggregatedSeriesData = Array<
@@ -30,7 +29,6 @@ type CreateAggregatedSeriesOptionParams = {
   isHighlight: boolean
   name: string | null
   opacity: number | undefined
-  theme: ChartTheme
   xAxisIndex: number
 }
 
@@ -75,14 +73,12 @@ export function createAggregatedSeriesOption({
   isHighlight,
   name,
   opacity,
-  theme,
   xAxisIndex,
 }: CreateAggregatedSeriesOptionParams): AggregatedSeriesOption {
   // ===== CONSTANTS ===========================================================
   const label = {
     ...createSeriesLabelOption(
       appearance.labels,
-      theme,
       createLabelNumberFormatter(appearance),
     ),
     show: opacity === undefined && appearance.labels.visible,
@@ -97,7 +93,7 @@ export function createAggregatedSeriesOption({
     return {
       areaStyle: appearance.line.areaFill
         ? {
-            ...createFillOption(appearance.line.area, theme, color),
+            ...createFillOption(appearance.line.area, color),
             opacity: appearance.line.area.opacity * (opacity ?? 1),
           }
         : undefined,
@@ -108,8 +104,8 @@ export function createAggregatedSeriesOption({
       label,
       labelLayout: { hideOverlap: true },
       lineStyle: {
-        ...createStrokeStyleOption(appearance.line.stroke, theme, color),
-        ...createEffectOption(appearance.line.effect, theme, glowColor),
+        ...createStrokeStyleOption(appearance.line.stroke, color),
+        ...createEffectOption(appearance.line.effect, glowColor),
         opacity: appearance.line.stroke.opacity * (opacity ?? 1),
       },
       name: name ?? undefined,
@@ -133,9 +129,9 @@ export function createAggregatedSeriesOption({
       : undefined,
     id,
     itemStyle: {
-      ...createFillOption(appearance.bar.fill, theme, color),
-      ...createBorderOption(appearance.bar.border, theme),
-      ...createEffectOption(appearance.bar.effect, theme, glowColor),
+      ...createFillOption(appearance.bar.fill, color),
+      ...createBorderOption(appearance.bar.border),
+      ...createEffectOption(appearance.bar.effect, glowColor),
       borderRadius: appearance.bar.borderRadius,
       opacity: appearance.bar.fill.opacity * (opacity ?? 1),
     },

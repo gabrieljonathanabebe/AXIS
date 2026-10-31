@@ -12,6 +12,7 @@ import DashboardSettingsPopover from './DashboardSettingsPopover'
 import type { CSSProperties } from 'react'
 import type { AskCevynState } from '../ai/useAskCevyn'
 import type { WorkspaceCommands } from '../app/types'
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField, Dataset } from '../datasets/types'
 import type { DashboardObject, FormatTarget } from '../objects/types'
 import type { CanvasActions, DashboardSpec, DataSelection } from './types'
@@ -29,6 +30,7 @@ type CanvasPanelProps = {
   recoverFocus?: boolean
   selectedObjectId: string | null
   selection: DataSelection | null
+  style: DashboardStyle
   onAskCevyn: (prompt: string) => void
   onFormatElement: (target: FormatTarget) => void
   onRenameDashboard: (name: string) => void
@@ -54,6 +56,7 @@ function CanvasPanel({
   objects,
   selectedObjectId,
   selection,
+  style,
   onAskCevyn,
   onFormatElement,
   onRenameDashboard,
@@ -104,6 +107,7 @@ function CanvasPanel({
           objects={objects}
           selectedObjectId={selectedObjectId}
           selection={selection}
+          style={style}
           onFormatElement={onFormatElement}
         >
           {objects.length === 0 ? (

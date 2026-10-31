@@ -2,36 +2,26 @@ import {
   createDefaultContainer,
   createDefaultTitle,
 } from '../objects/objectDefaults'
+import { createColorValue } from '../shared/colorValue'
 import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
 
+import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField } from '../datasets/types'
 import type { ObjectLayout } from '../objects/types'
-import type { TextStyle } from '../shared/textStyle'
 import type { CardDataSpec, CardInstance, CardSpec } from './types'
-
-/** Default look of the card value, the large number. */
-export const CARD_VALUE_TEXT_STYLE: TextStyle = {
-  color: { kind: 'token', token: 'text' },
-  fontSize: 40,
-  fontStyle: 'normal',
-  fontWeight: 'bold',
-}
-
-/** Default look of the label that names the active selection. */
-export const CARD_SELECTION_LABEL_TEXT_STYLE: TextStyle = {
-  color: { kind: 'token', token: 'accent' },
-  fontSize: 13,
-  fontStyle: 'normal',
-  fontWeight: 'medium',
-}
 
 type CreateCardInstanceParams = {
   layout: ObjectLayout
+  style: DashboardStyle
   id?: string
 }
 
-/** Creates the spec of an empty card, which counts all rows. */
-export function createDefaultCardSpec(): CardSpec {
+/**
+ * Creates the spec of an empty card, which counts all rows.
+ * @param style Current dashboard style, source of the text colors.
+ * @returns Spec of a new card.
+ */
+export function createDefaultCardSpec(style: DashboardStyle): CardSpec {
   return {
     data: {
       field: null,
@@ -39,13 +29,23 @@ export function createDefaultCardSpec(): CardSpec {
     },
     appearance: {
       selectionLabel: {
-        textStyle: CARD_SELECTION_LABEL_TEXT_STYLE,
+        textStyle: {
+          color: createColorValue(style.colors.accent),
+          fontSize: 13,
+          fontStyle: 'normal',
+          fontWeight: 'medium',
+        },
         visible: true,
       },
-      title: createDefaultTitle(),
+      title: createDefaultTitle(style),
       value: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
-        textStyle: CARD_VALUE_TEXT_STYLE,
+        textStyle: {
+          color: createColorValue(style.colors.text),
+          fontSize: 40,
+          fontStyle: 'normal',
+          fontWeight: 'bold',
+        },
       },
     },
   }
@@ -63,16 +63,21 @@ export function createCardData(field: DataField): CardDataSpec {
   }
 }
 
-/** Creates a card object with the default spec and the shared container. */
+/**
+ * Creates a card object with the default spec and the shared container.
+ * @param params Layout, current style and an optional ID.
+ * @returns A new card in the current style.
+ */
 export function createCardInstance({
   layout,
+  style,
   id = crypto.randomUUID(),
 }: CreateCardInstanceParams): CardInstance {
   return {
     id,
     kind: 'card',
-    spec: createDefaultCardSpec(),
+    spec: createDefaultCardSpec(style),
     layout,
-    container: createDefaultContainer(),
+    container: createDefaultContainer(style),
   }
 }

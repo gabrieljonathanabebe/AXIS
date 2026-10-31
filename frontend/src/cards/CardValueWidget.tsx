@@ -4,7 +4,6 @@ import FormatWidget from '../shared/ui/FormatWidget'
 import NumberFormatControls from '../shared/ui/NumberFormatControls'
 import SelectControl from '../shared/ui/SelectControl'
 import TextStyleControls from '../shared/ui/TextStyleControls'
-import { CARD_VALUE_TEXT_STYLE } from './createCardInstance'
 
 import type { GroupAggregation } from '../charts/types'
 import type { CardValueAppearance } from './types'
@@ -45,7 +44,6 @@ function CardValueWidget({
       </FormatWidget>
       <FormatWidget title="Text">
         <TextStyleControls
-          defaultColor={CARD_VALUE_TEXT_STYLE.color}
           label="Value"
           maxFontSize={96}
           minFontSize={16}
