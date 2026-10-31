@@ -47,3 +47,24 @@ export const DAYLIGHT: StyleRecipe = {
   scheme: 'light',
   surface: '#FFFFFF',
 }
+
+/**
+ * Light and playful: frosted white containers over a rosé canvas with
+ * pastel glows of peach, lilac, mint and rose blending into each other.
+ */
+export const BLOOM: StyleRecipe = {
+  accent: '#7C5CC4',
+  canvas: {
+    base: '#EADCE6',
+    glows: [
+      { centerX: 0.05, centerY: 0.08, color: '#FFC4A3', radius: 0.55 },
+      { centerX: 0.55, centerY: -0.05, color: '#D4BEFF', radius: 0.55 },
+      { centerX: 0.88, centerY: 0.5, color: '#AEEFD8', radius: 0.58 },
+      { centerX: 0.35, centerY: 1.05, color: '#FFBFD9', radius: 0.5 },
+    ],
+  },
+  material: 'frosted',
+  name: 'Bloom',
+  scheme: 'light',
+  surface: '#FFFFFF',
+}
