@@ -567,7 +567,8 @@ Milestone: Backlog):
 
 Neues Issue: kurzer Titel (höchstens etwa 70 Zeichen), zwei bis vier
 Zeilen oder Stichpunkte; bei Bugs **Wo**, **Was passiert**,
-**Erwartet**.
+**Erwartet**. Auf Slices der Roadmap mit ihrem Namen verweisen, nicht
+mit der Nummer, weil sich die Nummern beim Einfügen verschieben.
 
 ```bash
 gh issue create --title "Line-Labels überlappen bei vielen Punkten" \

@@ -54,16 +54,18 @@ Slices; Abhängigkeiten stehen beim Punkt):
 6. Verläufe für Flächen und Linien – implementiert
 7. Effekte: Schatten, Background Blur und Korn – implementiert
 8. Dashboard-Styles – **in Arbeit**
-9. Legende, Tooltip und Farbskala mit Bausteinen
-10. DateFormat
-11. Theme-Umschalter in der TopBar (provisorisch)
-12. Table-Objekt
-13. Tooltip-Felder
-14. Dashboard-Einstellungen
-15. Ask Cevyn ausbauen
-16. Unabhängigkeit vom App-Namen
-17. Persistenz
-18. Alpha-Infrastruktur und Vollbild
+9. Format-Panel und Objekt-Layout
+10. Legende, Tooltip und Farbskala mit Bausteinen
+11. DateFormat
+12. Sortierung und Top N
+13. Theme-Umschalter in der TopBar (provisorisch)
+14. Table-Objekt
+15. Tooltip-Felder
+16. Dashboard-Einstellungen
+17. Ask Cevyn ausbauen
+18. Unabhängigkeit vom App-Namen
+19. Persistenz
+20. Alpha-Infrastruktur und Vollbild
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
@@ -124,7 +126,7 @@ Entscheidungen:
   die Spec neu
 - in Kauf genommen: Ein erneut angewendeter Style überschreibt auch von
   Hand geänderte Farben (Undo fängt es auf); Ask Cevyn arbeitet mit
-  echten Farben (3.15); der Theme-Umschalter (3.11) betrifft nur die App
+  echten Farben (3.17); der Theme-Umschalter (3.13) betrifft nur die App
 
 Rezept und Materialien: Ein Style ist ein kleines Rezept, aus dem
 `createDashboardStyle` alle Werte erzeugt. Die Detailarbeit steckt
@@ -205,10 +207,39 @@ Regeln gegen das Verzetteln:
 - Kontrast der Datenfarben in Bloom und Indigo prüfen
 - Formänderungen nur vor der Persistenz
 
-### 3.9 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
+### 3.9 Format-Panel und Objekt-Layout (geplant)
 
-Die neuen Zeilen entstehen gleich als Gruppen und nach
-dem Muster aus `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im
+Das Format-Popover hängt heute am Objekt (`ObjectFormatPopover` mit
+`anchor` und `placement="right-start"`). Es springt beim Ziehen, und
+mit Feldern für Position und Größe liefe es beim Scrubben unter der
+Maus weg, weil das Objekt und mit ihm das Popover sich bewegen. Lösung
+wie in Figma, Power BI und Keynote: Auswählen auf der Canvas,
+Bearbeiten in einem festen Panel.
+
+- gleicher Inhalt, andere Hülle: `ObjectFormatPopover` legt die Gruppen
+  in ein `Panel` (`side="end"`, einklappbar) am rechten Rand statt in
+  ein `Popover` am Objekt; Chart und Card nutzen die Hülle schon
+  gemeinsam, es entsteht kein zweiter Inspector
+- am Objekt bleiben Pinsel und Enter, die Regionen (Hover-Label, Klick
+  wählt das Element) und der Format-Fokus
+- Pinsel oder Enter öffnet das Panel; es bleibt offen, wenn ein anderes
+  Objekt ausgewählt wird, und zeigt dessen Gruppen; Esc oder Einklappen
+  schließt es; es schiebt die Canvas zur Seite statt sie zu überdecken,
+  wie die BuildPanel links
+- Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit
+  X | Y und W | H als Zahlenpaare; Werte in Grid-Zellen
+  (`ObjectLayout`), begrenzt wie beim Ziehen, über die bestehende
+  Layout-Action; die Zeile für Zahlenpaare nutzt danach das
+  Kasten-Modell (3.10) für Breite und Höhe wieder
+- zu Beginn klären: Shortcut zum Ein- und Ausklappen; ob das Panel ohne
+  Auswahl das Dashboard zeigt (Styles, Canvas-Hintergrund, Gap) und
+  damit später das Zahnrad-Popover ersetzt
+- keine Formänderung der Spec
+
+### 3.10 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
+
+Die neuen Zeilen entstehen gleich im Format-Panel (3.9), als Gruppen
+und nach dem Muster aus `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im
 Figma-Stil“ (Farbzeile mit `PaintControl`, Felder mit Icon und Einheit,
 Seltenes hinter ⚙, Auge bzw. ＋/− statt Schaltern, Icon und Wort für
 Verhalten; Icon-Check am Slice-Ende):
@@ -237,7 +268,7 @@ Verhalten; Icon-Check am Slice-Ende):
   soweit der Renderer sie zeichnen kann; Standard-Optik unverändert
 - neue Felder, keine Formänderung
 
-### 3.10 DateFormat (geplant)
+### 3.11 DateFormat (geplant)
 
 Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
 es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
@@ -260,7 +291,7 @@ Feb 1, 2025“ auch bei Monatsdaten.
   (`TemporalStatistics.granularity`): Monatsdaten „Jan 2025“,
   Jahresdaten „2025“, Tagesdaten „1 Jan 2025“
 - Formatter auf Basis von `Intl.DateTimeFormat` mit der Locale aus
-  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.14);
+  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.16);
   Quartale („Q1 2025“) selbst zusammensetzen
 - `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
   Auto nur das Select, bei Custom Einheit in der Zeile, Monat, Jahr und
@@ -268,12 +299,32 @@ Feb 1, 2025“ auch bei Monatsdaten.
 - Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
   im `AxisWidget`, sobald im Format-Select Date gewählt ist, statt
   bisher nichts), Überschrift des Tooltips bei Datums-X, später die
-  Datums-Spalten der Table (3.12)
+  Datums-Spalten der Table (3.14)
 - neues Feld, keine Formänderung
 - die neuen Zeilen entstehen direkt in der Gruppen-Struktur aus 3.3 und
   im kompakten Stil aus 3.4
 
-### 3.11 Theme-Umschalter in der TopBar (geplant, provisorisch)
+### 3.12 Sortierung und Top N (geplant)
+
+Die Spec kennt heute keine Sortierung; die Reihenfolge der Kategorien
+kommt aus der Query. Balken nach Wert absteigend oder „Top 10 Länder“
+sind in BI-Dashboards Alltag.
+
+- neue Felder in `ChartDataSpec`: Sortierung nach Wert oder Kategorie,
+  auf- oder absteigend, und eine Begrenzung (Top N); Standard je
+  Charttyp zu Beginn festlegen (z. B. Balken nach Wert absteigend)
+- Datums-X bleibt chronologisch; nach Wert sortiert nur eine
+  kategorische X
+- das Backend sortiert und begrenzt in der `chart-query` über den ganzen
+  Datensatz, nicht das Frontend
+- die Highlight-Query übernimmt die Kategorien der Basis-Query; ein
+  eigenes Top N unter der Selection würde andere Kategorien zeigen
+- Bedienung im Build Panel beim Encoding oder als Gruppe im Element
+  „Chart“; zu Beginn klären
+- „Other“ für die übrigen Kategorien bleibt eine Idee (Nach dem Alpha)
+- neue Felder, keine Formänderung
+
+### 3.13 Theme-Umschalter in der TopBar (geplant, provisorisch)
 
 Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
 prüfen; wird später wieder entfernt oder durch eine echte Einstellung
@@ -291,7 +342,7 @@ stehen seit den Dashboard-Styles (3.8) als echte Werte in der Spec.
 - schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
   provisorisch
 
-### 3.12 Table-Objekt (geplant)
+### 3.14 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
@@ -311,7 +362,7 @@ Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 - zu klären: welche Spalten die Table zeigt (alle, Auswahl per Drop),
   und ob sie wie die Card der Selection folgt
 
-### 3.13 Tooltip-Felder (geplant)
+### 3.15 Tooltip-Felder (geplant)
 
 Direkt nach dem Table-Objekt:
 
@@ -328,7 +379,7 @@ Direkt nach dem Table-Objekt:
 - dieselbe Feldwahl bestimmt auch den Inhalt der Datenlabels (heute fest
   Wert bzw. Anteil), z. B. Kategorie oder ein weiteres Feld
 
-### 3.14 Dashboard-Einstellungen (geplant)
+### 3.16 Dashboard-Einstellungen (geplant)
 
 Im Dashboard-Popover der Canvas-Toolbar, undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
@@ -349,12 +400,12 @@ Persistenz festlegen soll:
   Objekte filtert
 - später: Palette und Schrift als Teil der Dashboard-Styles (3.8)
 
-### 3.15 Ask Cevyn ausbauen (geplant)
+### 3.17 Ask Cevyn ausbauen (geplant)
 
 Ziel: Ask Cevyn erstellt eigenständig ganze Dashboards und formatiert
 sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
-3.12 und 3.14, weil die KI nur kann, was es als Action gibt.
+3.14 und 3.16, weil die KI nur kann, was es als Action gibt.
 
 - Action-Schema nur noch einmal beschreiben (#30): Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
@@ -382,7 +433,7 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
   Verschlechterungen bei Prompt-Änderungen zu erkennen; Effort je nach
   Anfrage (ganzes Dashboard höher, kleine Änderungen niedriger)
 
-### 3.16 Unabhängigkeit vom App-Namen (geplant)
+### 3.18 Unabhängigkeit vom App-Namen (geplant)
 
 Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 
@@ -395,7 +446,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - Doku, `AGENTS.md` und `README.md` anpassen
 - der neue Name selbst ist noch offen
 
-### 3.17 Persistenz (geplant)
+### 3.19 Persistenz (geplant)
 
 - `serializeProject()` / `deserializeProject()` über den Workspace State
 - `.cevyn`-Datei (JSON mit Format-Kennung und Version) speichern und
@@ -409,7 +460,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   den Project State (#29), Scroll- und Fokusverhalten beim Laden (#27,
   #28)
 
-### 3.18 Alpha-Infrastruktur und Vollbild (geplant)
+### 3.20 Alpha-Infrastruktur und Vollbild (geplant)
 
 - Docker-Images für Frontend und Backend
 - CI mit GitHub Actions: `npm run format`, `npm run build`,
@@ -480,7 +531,7 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
   Kästen mit eigener Größe (Kasten-Modell, `ARCHITECTURE.md`)
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
-- Zoom (braucht `pageSize`, siehe 3.14)
+- Zoom (braucht `pageSize`, siehe 3.16)
 
 ### Daten
 
