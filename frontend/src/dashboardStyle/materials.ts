@@ -104,7 +104,7 @@ function createFrostedContainer(
         opacity: 1,
         paint: createMaterialGradient(createColorValue(recipe.surface), [
           { opacity: 0.94, position: 0.19 },
-          { opacity: 0.49, position: 0.77 },
+          { opacity: 0.59, position: 0.77 },
         ]),
       },
     ],
