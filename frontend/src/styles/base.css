@@ -12,10 +12,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* The app fills the window and scrolls only inside its areas; content
+   outside the app shell, e.g. a hidden chart tooltip on the body, must
+   not widen the document. */
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow: hidden;
 }
 
 h1,
