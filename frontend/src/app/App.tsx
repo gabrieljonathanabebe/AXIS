@@ -1,5 +1,5 @@
 import { DndContext } from '@dnd-kit/core'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useAskCevyn } from '../ai/useAskCevyn'
 import CardFormatPopover from '../cards/CardFormatPopover'
@@ -7,9 +7,11 @@ import { isCardFormatElement } from '../cards/isCardFormatElement'
 import { createChartActions } from '../charts/createChartActions'
 import ChartFormatPopover from '../charts/format/ChartFormatPopover'
 import { isChartFormatElement } from '../charts/getFormatElements'
+import { createStyleColorPresets } from '../dashboardStyle/styleColorPresets'
 import DataPanel from '../datasets/DataPanel'
 import { useDatasets } from '../datasets/useDatasets'
 import { getObjectDefinition } from '../objects/objectDefinitions'
+import { SharedColorPresets } from '../shared/ui/colorPresets'
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
 import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
@@ -66,6 +68,9 @@ function App() {
     selectedChartId: selectedChart?.id ?? null,
     style,
   })
+  const stylePresets = useMemo(() => {
+    return createStyleColorPresets(style)
+  }, [style])
   // Format popovers belong to the selected object and close when it changes.
   const [formatTarget, setFormatTarget] = useState<FormatTarget | null>(null)
   const activeFormatTarget =
@@ -115,106 +120,108 @@ function App() {
   })
 
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="app-shell">
-        <TopBar />
-        <div className="app-body">
-          <NavigationRail
-            activeWorkspace={activeWorkspace}
-            onWorkspaceChange={setActiveWorkspace}
-          />
-          <main
-            className={`workspace visualize-workspace glass glass-thin ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''}`}
-            hidden={activeWorkspace !== 'visualize'}
-          >
-            <BuildPanel
-              activeDatasetSummary={activeDatasetSummary}
-              chart={selectedChart}
-              chartActions={chartActions}
-              dataset={dataset}
-              datasetName={datasetName}
-              isCollapsed={isBuildPanelCollapsed}
-              datasetError={datasetError}
-              isLoading={isLoading}
-              onAddObject={addObject}
-              onToggleCollapse={toggleBuildPanel}
-              onUploadFile={async (file) => {
-                await uploadFile(file)
-              }}
-              profile={profile}
-              semanticRoleOverrides={semanticRoleOverrides}
+    <SharedColorPresets value={stylePresets}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="app-shell">
+          <TopBar />
+          <div className="app-body">
+            <NavigationRail
+              activeWorkspace={activeWorkspace}
+              onWorkspaceChange={setActiveWorkspace}
             />
-            <CanvasPanel
-              actions={canvasActions}
-              askCevynState={askCevynState}
-              commands={commands}
-              dashboard={dashboard}
-              dataset={dataset}
-              datasetId={datasetId}
-              draggedField={
-                activeDrag?.kind === 'field' ? activeDrag.field : null
-              }
-              formatTarget={activeFormatTarget}
-              objects={objects}
-              selectedObjectId={selectedObjectId}
-              selection={selection}
-              style={style}
-              onAskCevyn={askCevyn}
-              onFormatElement={setFormatTarget}
-              onRenameDashboard={renameDashboard}
-            />
-            {selectedChart &&
-            activeFormatTarget &&
-            isChartFormatElement(activeFormatTarget.element) ? (
-              <ChartFormatPopover
-                actions={chartActions}
+            <main
+              className={`workspace visualize-workspace glass glass-thin ${isBuildPanelCollapsed ? 'is-build-panel-collapsed' : ''}`}
+              hidden={activeWorkspace !== 'visualize'}
+            >
+              <BuildPanel
+                activeDatasetSummary={activeDatasetSummary}
                 chart={selectedChart}
-                element={activeFormatTarget.element}
-                fields={dataset.fields}
-                style={style}
-                target={activeFormatTarget}
-                onClose={() => setFormatTarget(null)}
-                onElementChange={(element) =>
-                  setFormatTarget({ ...activeFormatTarget, element })
-                }
+                chartActions={chartActions}
+                dataset={dataset}
+                datasetName={datasetName}
+                isCollapsed={isBuildPanelCollapsed}
+                datasetError={datasetError}
+                isLoading={isLoading}
+                onAddObject={addObject}
+                onToggleCollapse={toggleBuildPanel}
+                onUploadFile={async (file) => {
+                  await uploadFile(file)
+                }}
+                profile={profile}
+                semanticRoleOverrides={semanticRoleOverrides}
               />
-            ) : null}
-            {selectedCard &&
-            activeFormatTarget &&
-            isCardFormatElement(activeFormatTarget.element) ? (
-              <CardFormatPopover
+              <CanvasPanel
                 actions={canvasActions}
-                card={selectedCard}
-                element={activeFormatTarget.element}
-                fields={dataset.fields}
-                target={activeFormatTarget}
-                onClose={() => setFormatTarget(null)}
-                onElementChange={(element) =>
-                  setFormatTarget({ ...activeFormatTarget, element })
+                askCevynState={askCevynState}
+                commands={commands}
+                dashboard={dashboard}
+                dataset={dataset}
+                datasetId={datasetId}
+                draggedField={
+                  activeDrag?.kind === 'field' ? activeDrag.field : null
                 }
+                formatTarget={activeFormatTarget}
+                objects={objects}
+                selectedObjectId={selectedObjectId}
+                selection={selection}
+                style={style}
+                onAskCevyn={askCevyn}
+                onFormatElement={setFormatTarget}
+                onRenameDashboard={renameDashboard}
               />
-            ) : null}
-          </main>
-          <main className="workspace" hidden={activeWorkspace !== 'data'}>
-            <DataPanel
-              dataset={dataset}
-              datasetId={datasetId}
-              datasetName={datasetName}
-              error={datasetError}
-              isLoading={isLoading}
-              profile={profile}
-              semanticRoleOverrides={semanticRoleOverrides}
-              onSemanticRoleChange={setSemanticRole}
-            />
-          </main>
+              {selectedChart &&
+              activeFormatTarget &&
+              isChartFormatElement(activeFormatTarget.element) ? (
+                <ChartFormatPopover
+                  actions={chartActions}
+                  chart={selectedChart}
+                  element={activeFormatTarget.element}
+                  fields={dataset.fields}
+                  style={style}
+                  target={activeFormatTarget}
+                  onClose={() => setFormatTarget(null)}
+                  onElementChange={(element) =>
+                    setFormatTarget({ ...activeFormatTarget, element })
+                  }
+                />
+              ) : null}
+              {selectedCard &&
+              activeFormatTarget &&
+              isCardFormatElement(activeFormatTarget.element) ? (
+                <CardFormatPopover
+                  actions={canvasActions}
+                  card={selectedCard}
+                  element={activeFormatTarget.element}
+                  fields={dataset.fields}
+                  target={activeFormatTarget}
+                  onClose={() => setFormatTarget(null)}
+                  onElementChange={(element) =>
+                    setFormatTarget({ ...activeFormatTarget, element })
+                  }
+                />
+              ) : null}
+            </main>
+            <main className="workspace" hidden={activeWorkspace !== 'data'}>
+              <DataPanel
+                dataset={dataset}
+                datasetId={datasetId}
+                datasetName={datasetName}
+                error={datasetError}
+                isLoading={isLoading}
+                profile={profile}
+                semanticRoleOverrides={semanticRoleOverrides}
+                onSemanticRoleChange={setSemanticRole}
+              />
+            </main>
+          </div>
         </div>
-      </div>
-      <DragPreviewOverlay activeDrag={activeDrag} />
-    </DndContext>
+        <DragPreviewOverlay activeDrag={activeDrag} />
+      </DndContext>
+    </SharedColorPresets>
   )
 }
 

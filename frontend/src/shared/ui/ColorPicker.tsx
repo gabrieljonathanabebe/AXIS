@@ -1,8 +1,14 @@
+import { use } from 'react'
 import { HexColorInput, HexColorPicker } from 'react-colorful'
 
 import { normalizeHex } from '../colorValue'
 import Button from './Button'
-import { getChoiceKey, getSwatchColor } from './colorPresets'
+import {
+  getChoiceKey,
+  getSwatchColor,
+  joinColorPresets,
+  SharedColorPresets,
+} from './colorPresets'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '../colorValue'
@@ -22,10 +28,10 @@ const DEFAULT_PICKER_COLOR = '#8B5CF6'
 
 // ===== COMPONENT =============================================================
 /**
- * Picker of one color: the swatches of the presets of its place, then the
- * color area with the hue slider and the hex value. A swatch opens it in
- * a popover, the editor of a solid paint shows it in place. While the
- * value is a theme color or preset, the area starts from a custom color.
+ * Picker of one color: the shared swatches in front, e.g. the colors of
+ * the dashboard style, and those of its place, then the color area with
+ * the hue slider and the hex value. A swatch opens it in a popover, the
+ * editor of a solid paint shows it in place.
  * @param props Name, swatches, color and its handler.
  */
 function ColorPicker<TPreset extends string = never>({
@@ -34,6 +40,7 @@ function ColorPicker<TPreset extends string = never>({
   value,
   onChange,
 }: ColorPickerProps<TPreset>) {
+  const allPresets = joinColorPresets(use(SharedColorPresets), presets)
   const valueKey = getChoiceKey(value)
   const pickerColor =
     typeof value !== 'string' && value.kind === 'custom'
@@ -50,13 +57,13 @@ function ColorPicker<TPreset extends string = never>({
 
   return (
     <div className="color-picker stack">
-      {presets.length > 0 ? (
+      {allPresets.length > 0 ? (
         <div
           className="color-picker-presets"
           role="radiogroup"
           aria-label={`${label} presets`}
         >
-          {presets.map((preset) => {
+          {allPresets.map((preset) => {
             const presetKey = getChoiceKey(preset.value)
             return (
               <Button

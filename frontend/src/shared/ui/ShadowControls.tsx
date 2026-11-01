@@ -59,7 +59,6 @@ function ShadowControls<TValue extends Shadow>({
         <ControlRow>
           <ColorField
             label={label}
-            presets={[]}
             value={value.color}
             onChange={(color) => onChange({ ...value, color })}
           />

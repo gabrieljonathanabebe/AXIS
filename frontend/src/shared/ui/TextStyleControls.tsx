@@ -75,7 +75,6 @@ function TextStyleControls({
       <ControlRow>
         <ColorField
           label={label}
-          presets={[]}
           value={value.color}
           onChange={(color) => onChange({ ...value, color })}
         />

@@ -10,7 +10,7 @@ import type { ColorPreset } from './colorPresets'
 // ===== TYPES =================================================================
 type ColorFieldProps<TPreset extends string = never> = {
   label: string
-  presets: ColorPreset<TPreset>[]
+  presets?: ColorPreset<TPreset>[]
   swatch?: ReactNode
   value: ColorValue | NoInfer<TPreset>
   onChange: (value: ColorValue | NoInfer<TPreset>) => void
@@ -46,7 +46,7 @@ function getSwatchLabel(
  */
 function ColorField<TPreset extends string = never>({
   label,
-  presets,
+  presets = [],
   swatch,
   value,
   onChange,

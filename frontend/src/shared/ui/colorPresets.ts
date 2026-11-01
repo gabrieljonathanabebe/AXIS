@@ -1,3 +1,5 @@
+import { createContext } from 'react'
+
 import { getColorCss, getColorValueKey } from '../colorValue'
 
 import type { ColorValue } from '../colorValue'
@@ -12,6 +14,13 @@ export type ColorPreset<TPreset extends string = never> = {
   label: string
   value: ColorValue | TPreset
 }
+
+// ===== CONSTANTS =============================================================
+/**
+ * Swatches every color picker shows in front of its own, e.g. the colors
+ * of the dashboard style; empty outside a provider.
+ */
+export const SharedColorPresets = createContext<ColorPreset[]>([])
 
 // ===== FUNCTIONS =============================================================
 /**
@@ -30,4 +39,26 @@ export function getChoiceKey(value: ColorValue | string): string {
  */
 export function getSwatchColor(value: ColorValue | string): string {
   return typeof value === 'string' ? 'var(--color-accent)' : getColorCss(value)
+}
+
+/**
+ * Joins the shared swatches and those of a place, the shared ones first;
+ * a color that is already there drops out, so no swatch shows twice.
+ * @param shared Swatches of every picker, e.g. the style colors.
+ * @param local Swatches of the place.
+ * @returns One list without repeated colors.
+ */
+export function joinColorPresets<TPreset extends string = never>(
+  shared: ColorPreset<TPreset>[],
+  local: ColorPreset<TPreset>[],
+): ColorPreset<TPreset>[] {
+  const seenKeys = new Set<string>()
+  return [...shared, ...local].filter((preset) => {
+    const key = getChoiceKey(preset.value)
+    if (seenKeys.has(key)) {
+      return false
+    }
+    seenKeys.add(key)
+    return true
+  })
 }

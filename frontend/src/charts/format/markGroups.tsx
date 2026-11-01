@@ -164,7 +164,6 @@ function getDataColorControls({
       field: (
         <ColorField
           label="Chart"
-          presets={[]}
           value={appearance.color}
           onChange={(color) => actions.setAppearance('color', color)}
         />
