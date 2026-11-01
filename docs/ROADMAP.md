@@ -72,7 +72,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.9 Arbeitsfläche, Format-Panel und Objekt-Layout (geplant)
+### 3.9 Arbeitsfläche, Format-Panel und Objekt-Layout (in Arbeit)
 
 Der Bereich rechts der BuildPanel wird umgebaut: Arbeitsfläche und Seite
 trennen, Format-Panel, Objekt-Layout.
@@ -85,8 +85,9 @@ fluchten nicht, und nur das Grid scrollt. Lösung wie in Power BI, Figma
 und Keynote:
 
 - Arbeitsfläche (App): neutral, folgt nur dem App-Theme; trägt die
-  Toolbar (Undo, Redo, Format, Dashboard-Einstellungen) und Ask Cevyn,
-  später Zoom und Vollbild
+  Toolbar (Undo, Redo, Format, Dashboard-Einstellungen) als schmale
+  Leiste über der Seite, später auch Zoom und Vollbild; Ask Cevyn bleibt
+  bis zum Chatfenster im Build Panel (3.17) schwebend unten
 - Seite (Dashboard): trägt den Style (Canvas-Flächen und Radius; die
   Ebene zieht von `.canvas-panel::before` auf die Seite) und enthält
   Titel und Grid mit einem gemeinsamen Innenabstand, sodass der Titel
@@ -100,8 +101,6 @@ und Keynote:
   Drop-Vorschau, Auswahl und das Scrollen neuer Charts ins Bild nach dem
   Umbau prüfen; Schatten der Container dürfen am Rand der Seite nicht
   abgeschnitten werden
-- zu Beginn klären: Toolbar als schmale Leiste der Arbeitsfläche über
-  der Seite oder schwebend im Rand
 
 Format-Panel: Das Format-Popover hängt heute am Objekt
 (`ObjectFormatPopover` mit `anchor` und `placement="right-start"`). Es
@@ -120,9 +119,11 @@ Auswählen auf der Seite, Bearbeiten in einem festen Panel.
   Objekt ausgewählt wird, und zeigt dessen Gruppen; Esc oder Einklappen
   schließt es; es schiebt die Arbeitsfläche zur Seite statt sie zu
   überdecken, wie die BuildPanel links
-- zu Beginn klären: Shortcut zum Ein- und Ausklappen; ob das Panel ohne
-  Auswahl das Dashboard zeigt (Styles, Canvas-Hintergrund, Gap) und
-  damit später das Zahnrad-Popover ersetzt
+- ⌘⇧B klappt das Panel ein und aus, als Gegenstück zu ⌘B für die
+  BuildPanel
+- ohne Auswahl zeigt das Panel das Dashboard (Styles,
+  Canvas-Hintergrund, Gap) und ersetzt das Zahnrad-Popover; das Zahnrad
+  in der Toolbar öffnet das Panel mit dem Dashboard
 
 Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit X | Y
 und W | H als Zahlenpaare; Werte in Grid-Zellen (`ObjectLayout`),
@@ -133,7 +134,7 @@ Höhe wieder.
 Vorgehen:
 
 1. Arbeitsfläche und Seite trennen
-2. Format-Panel an der Arbeitsfläche
+2. Format-Panel an der Arbeitsfläche, ohne Auswahl mit dem Dashboard
 3. Objekt-Layout
 
 Keine Formänderung der Spec.
@@ -283,7 +284,7 @@ Direkt nach dem Table-Objekt:
 
 ### 3.16 Dashboard-Einstellungen (geplant)
 
-Im Dashboard-Popover der Canvas-Toolbar, undo-fähig; als Unterobjekte
+Im Format-Panel ohne Auswahl (aus 3.9), undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
 Persistenz festlegen soll:
 
