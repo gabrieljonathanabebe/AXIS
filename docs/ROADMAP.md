@@ -26,10 +26,12 @@ Multi-Chart-Canvas, Cross-Highlighting, Cards, Ask Cevyn V1 und die
 Bearbeitung am Objekt (Format-Popover statt Inspector) sind in einem
 ersten vollständigen Stand. Die Appearance-Specs sind auf gemeinsame
 Bausteine umgestellt (`TextStyle`, `StrokeStyle`, `NumberFormat`,
-`Fill`, `Paint`, `Effect`, `Layout`, `ColorValue` mit Theme-Tokens), das
+`Fill`, `Paint`, `Effect`, `Layout`, `ColorValue` als feste Farbe), das
 Format-Popover zeigt alle Gruppen eines Elements in fester Reihenfolge
 und in kompakten Controls im Figma-Stil. Die App ist neutral (Akzent nur
-für Zustände), das Dashboard hat eigene Tokens, Canvas und Container
+für Zustände); das Dashboard trägt seine Farben selbst und bekommt sie
+aus Dashboard-Styles (Rezept plus Material, Galerie im
+Dashboard-Popover, Anwenden als ein Undo-Schritt). Canvas und Container
 tragen eine echte Füllung (`Fill`) mit Deckkraft. Flächen und Linien
 können Verläufe tragen, Serien einen Fade in ihrer Farbe. Marks haben
 Glow oder Schatten, Container eine Liste von Effekten (Schatten,
@@ -53,8 +55,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 5. Neutrale Farben und Hintergründe – implementiert
 6. Verläufe für Flächen und Linien – implementiert
 7. Effekte: Schatten, Background Blur und Korn – implementiert
-8. Dashboard-Styles – **in Arbeit**
-9. Format-Panel und Objekt-Layout
+8. Dashboard-Styles – implementiert
+9. Arbeitsfläche, Format-Panel und Objekt-Layout
 10. Legende, Tooltip und Farbskala mit Bausteinen
 11. DateFormat
 12. Sortierung und Top N
@@ -70,189 +72,71 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.8 Dashboard-Styles (in Arbeit)
+### 3.9 Arbeitsfläche, Format-Panel und Objekt-Layout (geplant)
 
-Vorgefertigte Looks für das ganze Dashboard, die ein Klick anwendet. So
-halten es auch Power BI (Themes), Keynote (Themes) und Canva
-(Templates). Entscheidung aus 3.5: Presets gehören nicht in einzelne
-Hintergründe, sondern als Style zum Dashboard; Canvas und Container
-tragen überall echte Farben (`Fill`).
+Der Bereich rechts der BuildPanel wird umgebaut: Arbeitsfläche und Seite
+trennen, Format-Panel, Objekt-Layout.
 
-Vorbereitung, vor den Styles (implementiert): Prüfstein aus 3.7 war
-Midnight. Der Container-Look entsteht nur aus Werten, das Leuchten aber
-nicht: Es gehört auf die Canvas. Unterschiedliche Winkel je Container
-verworfen, weil sie an Anzahl und Lage der Objekte hängen.
+Arbeitsfläche und Seite: Heute ist alles rechts der BuildPanel eine
+Fläche im Dashboard-Style. Titel (`.dashboard-surface` mit
+`padding-inline: var(--space-2)`) und Grid (`.chart-grid` mit
+zusätzlich `padding: var(--space-4)`) haben verschiedene Abstände und
+fluchten nicht, und nur das Grid scrollt. Lösung wie in Power BI, Figma
+und Keynote:
 
-- Flächen als Liste wie in Figma: Canvas und Container tragen
-  `background: Fill[]`, die oberste Zeile liegt oben (Index 0); Gruppe
-  Background mit ＋ und −, ＋ öffnet den Editor der neuen Fläche; Marks
-  behalten eine Fläche, weil ECharts je Mark nur eine zeichnet
-- Radialverlauf mit Mittelpunkt und Größe (`RadialShape`: `centerX`,
-  `centerY`, `radius`, relativ zur Fläche), in CSS und im SVG-Rahmen
-  gleich; ECharts bleibt bei Kreisen
-- Farbzeile neu: eine Zeile pro Farbe (`PaintControl` mit
-  `PaintField`), der Swatch öffnet den Editor (Typ, Angle bzw. Shape,
-  Stops oder Picker); der Picker ist ein eigener Baustein
-  (`ColorPicker`), `ColorControl` heißt `ColorSwatch`, `FillControls`
-  entfällt; im Stroke steht die Farbzeile oben
+- Arbeitsfläche (App): neutral, folgt nur dem App-Theme; trägt die
+  Toolbar (Undo, Redo, Format, Dashboard-Einstellungen) und Ask Cevyn,
+  später Zoom und Vollbild
+- Seite (Dashboard): trägt den Style (Canvas-Flächen und Radius; die
+  Ebene zieht von `.canvas-panel::before` auf die Seite) und enthält
+  Titel und Grid mit einem gemeinsamen Innenabstand, sodass der Titel
+  über dem ersten Chart fluchtet; die Seite scrollt als Ganzes in der
+  Arbeitsfläche
+- Größe Auto wie heute: Die Seite füllt die Arbeitsfläche bis auf einen
+  schmalen Rand (z. B. 16 px), damit ihr Ende sichtbar ist; feste Größe
+  und Zoom kommen mit den Dashboard-Einstellungen (3.16), Vollbild zeigt
+  später nur die Seite (3.20)
+- `ChartGrid` misst sich selbst (`getComputedStyle(grid)`): Ziehen,
+  Drop-Vorschau, Auswahl und das Scrollen neuer Charts ins Bild nach dem
+  Umbau prüfen; Schatten der Container dürfen am Rand der Seite nicht
+  abgeschnitten werden
+- zu Beginn klären: Toolbar als schmale Leiste der Arbeitsfläche über
+  der Seite oder schwebend im Rand
 
-Entscheidungen:
-
-- Anwenden statt Verknüpfen: Ein Style schreibt echte Werte, als ein
-  Undo-Schritt; danach ist jedes Feld frei änderbar, es gibt keine
-  versteckte Kopplung
-- keine Tokens mehr in Spec und Farbwähler: `ColorValue` verliert
-  `kind: 'token'` und bleibt eine Union mit `custom` (später `rule` für
-  bedingte Farben); der Farbwähler zeigt nur echte Farben, ohne
-  Token-Felder (`colorPresets.ts`) und ohne „Default“; als
-  Schnellauswahl zeigt er die Farben des aktuellen Styles, als reine
-  Werte ohne Verknüpfung (wie „Document colors“ in Figma)
-- Rollennamen (`text`, `textMuted`, `axis`, `gridLine`, `border`,
-  `inactive`, `accent`, `palette`) gibt es nur noch in der
-  Style-Definition, der Single Source of Truth
-- ein Style ist der Eingabewert der Default-Funktionen:
-  `createChartInstance` und `createCardInstance` bauen ihre Farben aus
-  dem Style; die `DashboardSpec` speichert den aktuellen Style, neue
-  Objekte entstehen in ihm (statt `objectDefaults`)
-- Anwenden: Canvas und Container kommen komplett aus dem Style; in allen
-  Objekten werden aus den Defaults des Styles alle Farbwerte übernommen
-  (Texte, Achsen, Raster, Rahmen, Paletten, Labels, Card-Werte), Größen,
-  Breiten und Texte bleiben; ein neues Element ist abgedeckt, sobald
-  seine Default-Farbe aus dem Style kommt, eine zweite Liste gibt es
-  nicht
-- dashboard-weite Farben (Auswahl und Brush, Dimmen, Tooltip) sind Werte
-  des Styles in der Spec; `readChartTheme` liest aus CSS nur noch den
-  Format-Fokus der App, ein Wechsel des Styles zeichnet die Charts über
-  die Spec neu
-- in Kauf genommen: Ein erneut angewendeter Style überschreibt auch von
-  Hand geänderte Farben (Undo fängt es auf); Ask Cevyn arbeitet mit
-  echten Farben (3.17); der Theme-Umschalter (3.13) betrifft nur die App
-
-Rezept und Materialien: Ein Style ist ein kleines Rezept, aus dem
-`createDashboardStyle` alle Werte erzeugt. Die Detailarbeit steckt
-einmal in den Materialien; ein neuer Style ist ein Material plus wenige
-Farben.
-
-```ts
-type StyleRecipe = {
-  name: string
-  scheme: 'dark' | 'light'
-  material: 'solid' | 'frosted' | 'glass'
-  surface: string // Grundton der Container
-  canvas: {
-    base: string
-    glows: {
-      color: string
-      centerX: number
-      centerY: number
-      radius: number
-    }[]
-  }
-  accent: string
-}
-```
-
-| Material  | erzeugt                                                                                           |
-| --------- | ------------------------------------------------------------------------------------------------- |
-| `solid`   | eine Fläche aus `surface`, feiner Rand; im hellen Schema ein weicher Schatten                     |
-| `frosted` | Verlauf 127° aus `surface` (94 % → 49 %), Background Blur, Korn; kein Rand, kein Schatten         |
-| `glass`   | Verlauf, Lichtkante als Verlaufsrand, Innenschatten, Background Blur, Kontakt- und Tiefenschatten |
-
-- Texte, Achsen, Raster, Rahmen und Dimmen folgen aus `scheme`
-- Datenpalette: die geteilte, auf Farbsehschwäche geprüfte Palette in
-  einer hellen und einer dunklen Variante nach `scheme`; eigene
-  Paletten je Style später
-
-Styles, als Spektrum aus hell und dunkel, neutral und farbig:
-
-|            | neutral                                                             | farbig                                                                                                                                                                         |
-| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **dunkel** | Graphite (Standard): `solid`, Canvas `#141518`, Container `#202226` | Midnight: `frosted`, Navy, blaues und violettes Leuchten nach dem Referenz-Screenshot aus 3.5, blauer Akzent; die Container unterscheiden sich nur durch das Leuchten dahinter |
-| **hell**   | Daylight: `solid`, weiße Container, heller Canvas, weicher Schatten | Bloom: `frosted` hell, Pastell-Leuchten (Pfirsich, Flieder, Mint) auf hellem Canvas                                                                                            |
-
-Optional ein fünfter Style: Indigo, ein kräftig farbiger Canvas mit
-Containern aus `glass`.
-
-Vorgehen:
-
-1. Rezept, Rollen und Materialien (implementiert): `StyleRecipe`,
-   `createDashboardStyle`, `solid`, `frosted`, `glass` in
-   `dashboardStyle/`; die `DashboardSpec` speichert das Rezept des
-   aktuellen Styles (Graphite), die Werte entstehen daraus
-   (`DashboardStyle`)
-2. Defaults aus dem Style (implementiert): Objekte, Charts und Cards
-   entstehen im aktuellen Style; `kind: 'token'` entfällt samt
-   Token-Feldern, „Default“ im Farbwähler und den CSS-Variablen der
-   Daten- und Dashboard-Farben; die Palette „Style“ ersetzt „Default“;
-   Tooltip, Brush und Dimmen kommen aus dem Style, `readChartTheme` liest
-   nur noch den Format-Fokus
-3. Anwenden als ein Undo-Schritt (implementiert):
-   `createApplyStyleActions` schreibt Rezept und Canvas, Container aus
-   dem Material und die Farben jedes Objekts als ein Batch;
-   `takeStyleColors` übernimmt generisch jede Farbe der Style-Defaults,
-   ein anderer `kind` bleibt (z. B. Glow); Dashboard-Titel und
-   Tooltip-Texte folgen dem Style; bis zur Galerie per
-   `cevyn.applyStyle(…)` in der Dev-Konsole
-4. Graphite, Midnight, Daylight, Bloom und Indigo (implementiert):
-   Rezepte in `styleRecipes.ts` (`STYLE_RECIPES`); im Material nur
-   Frosted dichter (94 % → 59 %) und Glas als dünner Schleier (Zeile
-   70 %, Stopps 12 % → 5 %); helle Styles trennen die Container über
-   eine getönte Grundfarbe der Canvas; für alle Styles Achsentexte in
-   `textMuted` und sichtbare Gitterlinien; Prüfstein helles Dashboard im
-   dunklen Editor und umgekehrt folgt mit der Galerie
-5. Galerie im Dashboard-Popover (implementiert): Gruppe Style mit
-   `StyleGallery`, die Vorschau live aus dem Rezept mit den echten
-   Ebenen der Container (`ContainerSurface`, gemeinsam mit
-   `ObjectFrame`); Empty States im Dashboard folgen dem Style; offen:
-   alle Styles im hellen und dunklen Editor prüfen
-6. Schnellauswahl der Style-Farben im Farbwähler
-7. Slice-Ende: `ARCHITECTURE.md` (`ColorValue` ohne Token, Style als
-   Eingabe der Defaults) und `DESIGN_SYSTEM.md` (Farbwähler, Materialien,
-   Styles) nachziehen
-
-Regeln gegen das Verzetteln:
-
-- ein festes Test-Dashboard (Demo-Daten mit Bar, Line, Scatter, Pie und
-  einer Card), an dem jeder Style beurteilt wird
-- pro Style ein Referenzbild und etwa eine Stunde Feintuning; was danach
-  nicht passt, wird im Material gelöst, nicht im Style
-- Styles ändern Canvas, Container und Farben, keine Glow-Einstellungen
-  der Marks und keine Achsen-Details; Format zwischen Objekten
-  übertragen ist #41
-- KI als Werkzeug: Varianten des Rezepts von Claude erzeugen lassen und
-  im Browser prüfen; später erzeugt Ask Cevyn ein Rezept aus
-  Markenfarben (Idee)
-- Kontrast der Datenfarben in Bloom und Indigo prüfen
-- Formänderungen nur vor der Persistenz
-
-### 3.9 Format-Panel und Objekt-Layout (geplant)
-
-Das Format-Popover hängt heute am Objekt (`ObjectFormatPopover` mit
-`anchor` und `placement="right-start"`). Es springt beim Ziehen, und
-mit Feldern für Position und Größe liefe es beim Scrubben unter der
-Maus weg, weil das Objekt und mit ihm das Popover sich bewegen. Lösung
-wie in Figma, Power BI und Keynote: Auswählen auf der Canvas,
-Bearbeiten in einem festen Panel.
+Format-Panel: Das Format-Popover hängt heute am Objekt
+(`ObjectFormatPopover` mit `anchor` und `placement="right-start"`). Es
+springt beim Ziehen, und mit Feldern für Position und Größe liefe es
+beim Scrubben unter der Maus weg, weil das Objekt und mit ihm das
+Popover sich bewegen. Lösung wie in Figma, Power BI und Keynote:
+Auswählen auf der Seite, Bearbeiten in einem festen Panel.
 
 - gleicher Inhalt, andere Hülle: `ObjectFormatPopover` legt die Gruppen
-  in ein `Panel` (`side="end"`, einklappbar) am rechten Rand statt in
-  ein `Popover` am Objekt; Chart und Card nutzen die Hülle schon
-  gemeinsam, es entsteht kein zweiter Inspector
+  in ein `Panel` (`side="end"`, einklappbar) am rechten Rand der
+  Arbeitsfläche statt in ein `Popover` am Objekt; Chart und Card nutzen
+  die Hülle schon gemeinsam, es entsteht kein zweiter Inspector
 - am Objekt bleiben Pinsel und Enter, die Regionen (Hover-Label, Klick
   wählt das Element) und der Format-Fokus
 - Pinsel oder Enter öffnet das Panel; es bleibt offen, wenn ein anderes
   Objekt ausgewählt wird, und zeigt dessen Gruppen; Esc oder Einklappen
-  schließt es; es schiebt die Canvas zur Seite statt sie zu überdecken,
-  wie die BuildPanel links
-- Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit
-  X | Y und W | H als Zahlenpaare; Werte in Grid-Zellen
-  (`ObjectLayout`), begrenzt wie beim Ziehen, über die bestehende
-  Layout-Action; die Zeile für Zahlenpaare nutzt danach das
-  Kasten-Modell (3.10) für Breite und Höhe wieder
+  schließt es; es schiebt die Arbeitsfläche zur Seite statt sie zu
+  überdecken, wie die BuildPanel links
 - zu Beginn klären: Shortcut zum Ein- und Ausklappen; ob das Panel ohne
   Auswahl das Dashboard zeigt (Styles, Canvas-Hintergrund, Gap) und
   damit später das Zahnrad-Popover ersetzt
-- keine Formänderung der Spec
+
+Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit X | Y
+und W | H als Zahlenpaare; Werte in Grid-Zellen (`ObjectLayout`),
+begrenzt wie beim Ziehen, über die bestehende Layout-Action; die Zeile
+für Zahlenpaare nutzt danach das Kasten-Modell (3.10) für Breite und
+Höhe wieder.
+
+Vorgehen:
+
+1. Arbeitsfläche und Seite trennen
+2. Format-Panel an der Arbeitsfläche
+3. Objekt-Layout
+
+Keine Formänderung der Spec.
 
 ### 3.10 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
 
@@ -404,14 +288,12 @@ der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
 Persistenz festlegen soll:
 
 - `canvas.background` ist seit 3.5 da (`Fill`, Gruppe Background)
-- Seite und Arbeitsfläche: `pageSize` (`Auto` wie heute oder fest, z. B.
+- feste Seitengröße: `pageSize` (`Auto` wie heute oder fest, z. B.
   1280 × 720) als Voraussetzung für Zoom; bei fester Größe steht die
-  Seite zentriert auf einer neutralen Arbeitsfläche (App-Token, wie in
-  Figma, Power BI und Tableau), und die Ebene mit `canvas.background`
-  zieht von `.canvas-panel::before` auf die Seite (`.dashboard-surface`);
-  der Titel bleibt auf der Seite, weil er zum Dashboard gehört;
-  Dokumentname und sichtbarer Titel können sich später trennen
-- `layout.padding` (Innenabstand der Canvas)
+  Seite aus 3.9 zentriert auf der Arbeitsfläche; Dokumentname und
+  sichtbarer Titel können sich später trennen
+- `layout.padding` (Innenabstand der Seite; in 3.9 ein fester Wert für
+  Titel und Grid)
 - `format.locale` statt der Konstante `LOCALE` in `shared/config.ts`;
   heute zeigt Cevyn `1,234.56` auch für deutsches Publikum
 - `interaction.crossHighlight`: ob ein Klick auf eine Mark die übrigen
@@ -490,7 +372,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   Rate-Limit für Ask Cevyn
 - Datenschutz-Hinweis für Tester (Daten gehen bei Ask Cevyn an die
   Claude-API)
-- Vollbild für die Canvas als Command mit Shortcut
+- Vollbild für die Seite als Command mit Shortcut
 
 ### Nicht im Alpha
 
@@ -666,10 +548,8 @@ Style-Bausteine und Farben
   eine Appearance für Pie und Donut mit Innenradius); Achsenlinie mit
   `StrokeStyle`; Achsentitel als `title: { text, textStyle }` wie
   überall
-- `ColorValue` mit Theme-Tokens (Text, Muted, Accent, Grid line,
-  Border, Inactive, Chart 1–5), Paletten als `ColorValue[]`, Farbauswahl
-  je Einsatzort mit Default-Feld; Flächen unter Linien in der
-  Serienfarbe
+- `ColorValue` als feste Farbe, Paletten als `ColorValue[]`; Flächen
+  unter Linien in der Serienfarbe
 - Paletten stabil erweitert (`getPaletteColor`): ab der sechsten
   Kategorie hellere bzw. dunklere Runden derselben Farben statt
   Wiederholung; vorhandene Kategorien behalten ihre Farbe
@@ -679,9 +559,8 @@ Style-Bausteine und Farben
   flächentreue Größe mit Size range, Labels ohne Überlappung
 - neutrale App („grau bis aktiv“): Hover und aktive Controls grau, der
   Akzent nur für Auswahl, Fokus, Drop-Ziele, Format-Fokus und
-  Primäraktion; Dashboard-Tokens in eigenem Namensraum
-  (`styles/dashboard.css`), Charts lesen ihr Theme vom Chart-Element mit
-  getrenntem Dashboard- und App-Akzent; Canvas (`canvas.background`) und
+  Primäraktion; Dashboard und App mit getrennten Farben und Akzenten;
+  Canvas (`canvas.background`) und
   Container als `Fill` mit Deckkraft auf eigener Ebene, ohne Glass,
   Schatten und Presets; das Objekt im Format-Popover als feiner Ring
 - Verläufe: gemeinsamer `Paint` für Fill und Stroke (Solid, linearer
@@ -693,6 +572,15 @@ Style-Bausteine und Farben
   Schatten, Innenschatten, Background Blur und Korn auf festen Ebenen;
   Gruppe Effects mit ＋ und Zeilen Art | Hauptwert | ⚙ | −; 16 px
   Innenabstand der Canvas gegen abgeschnittene Schatten
+- Dashboard-Styles: Rezept (`StyleRecipe` in der `DashboardSpec`) plus
+  Material (`solid`, `frosted`, `glass`) ergibt alle Werte; Graphite,
+  Midnight, Daylight, Bloom und Indigo; Anwenden schreibt echte Werte
+  als ein Undo-Schritt, `takeStyleColors` übernimmt generisch jede
+  Farbe der Defaults; neue Objekte entstehen im aktuellen Style; keine
+  Theme-Tokens mehr; Galerie im Dashboard-Popover mit Vorschau live aus
+  dem Rezept (`ContainerSurface`); Schnellauswahl der Style-Farben in
+  jedem Farbwähler; Dashboards behalten ihre Farben im hellen und
+  dunklen Editor
 
 Ask Cevyn V1
 
