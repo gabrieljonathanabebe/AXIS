@@ -55,6 +55,7 @@
 @import './styles/canvas/CardItem.css';
 @import './styles/canvas/EncodingDropSlots.css';
 @import './styles/canvas/FormatPopover.css';
+@import './styles/canvas/StyleGallery.css';
 
 @import './styles/data/DataTable.css';
 @import './styles/data/DataPanel.css';

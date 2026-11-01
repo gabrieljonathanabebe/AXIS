@@ -119,6 +119,7 @@ export type WorkspaceAction =
 
 /** What the canvas changes on objects, their content and the selection. */
 export type CanvasActions = {
+  applyStyle: (recipe: StyleRecipe) => void
   clearSelection: () => void
   selectData: (selection: DataSelection) => void
   selectObject: (objectId: string | null) => void

@@ -1,5 +1,4 @@
 .chart-item {
-  position: relative;
   flex: 1;
   --chart-canvas-inset: var(--space-6);
   --chart-handle-size: var(--space-6);
@@ -11,8 +10,15 @@
   );
   --chart-region-frame: var(--space-1);
   color: var(--color-text-secondary);
-  border-radius: var(--chart-radius, var(--radius-lg));
-  box-shadow: var(--chart-shadow, none);
+}
+
+/* Element that holds the layers of a container (ContainerSurface): the
+   frame of an object or a container in a style preview. Its box-shadow
+   is the drop shadow; the layers stack inside its isolation. */
+.container-surface {
+  position: relative;
+  border-radius: var(--chart-radius);
+  box-shadow: var(--chart-shadow);
   overflow: hidden;
   isolation: isolate;
 }

@@ -209,6 +209,7 @@ export function useChartWorkspace({
   }
 
   const canvasActions: CanvasActions = {
+    applyStyle,
     clearSelection,
     selectData,
     selectObject,

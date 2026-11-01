@@ -13,27 +13,44 @@ type FillListControlsProps = {
   onChange: (value: Fill[]) => void
 }
 
+// ===== HELPERS ===============================================================
+/**
+ * Tells whether a list grew by one new fill on top while the others kept
+ * their place, as the plus adds it; a style that writes new fills does not.
+ * @param previous Fills before the change.
+ * @param next Fills after the change.
+ * @returns True when the only change is a new first fill.
+ */
+function isFillAddedOnTop(previous: Fill[], next: Fill[]): boolean {
+  return (
+    next.length === previous.length + 1 &&
+    previous.every((fill, index) => fill === next[index + 1])
+  )
+}
+
 // ===== COMPONENT =============================================================
 /**
  * Rows of the fills of an area, e.g. the canvas or a container, the top
  * layer first like in Figma: per fill its paint field, opacity and a
- * minus. The plus that adds a fill sits in the header of the format widget
  * around it; since a new fill lands on top, the list opens the editor of
- * the first row when it grows, and closes any editor when it shrinks, as
+ * the first row when the plus adds one, and closes any editor when the
+ * rows change otherwise, e.g. by a minus or an applied style.
  * the rows below move up.
  * @param props Name of the area, its fills and handler.
  */
 function FillListControls({ label, value, onChange }: FillListControlsProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
-  const [knownCount, setKnownCount] = useState(value.length)
-  if (value.length !== knownCount) {
-    setKnownCount(value.length)
-    setOpenIndex(value.length > knownCount ? 0 : null)
+  const [knownFills, setKnownFills] = useState(value)
+  if (value !== knownFills) {
+    setKnownFills(value)
+    if (value.length !== knownFills.length) {
+      setOpenIndex(isFillAddedOnTop(knownFills, value) ? 0 : null)
+    }
   }
 
   return value.map((fill, index) => (
     <PaintControl
-      // Fills carry no id; the list only changes by its own rows.
+      // Fills carry no id; rows keep their place in the list.
       key={index}
       actions={
         <IconButton

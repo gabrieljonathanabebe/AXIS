@@ -1,6 +1,8 @@
 import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 
+import StyleGallery from '../dashboardStyle/StyleGallery'
+import { STYLE_RECIPES } from '../dashboardStyle/styleRecipes'
 import { addFill } from '../shared/fill'
 import FillListControls from '../shared/ui/FillListControls'
 import FormatWidget from '../shared/ui/FormatWidget'
@@ -20,9 +22,9 @@ type DashboardSettingsPopoverProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * Toolbar button with the settings of the whole dashboard: the gap between
- * objects, the canvas background and the animation of all charts. The name
- * stays inline on the canvas.
+ * Toolbar button with the settings of the whole dashboard: its style, the
+ * gap between objects, the canvas background and the animation of all
+ * charts. The name stays inline on the canvas.
  */
 function DashboardSettingsPopover({
   actions,
@@ -57,6 +59,13 @@ function DashboardSettingsPopover({
       )}
     >
       <div className="format-popover-body stack">
+        <FormatWidget title="Style">
+          <StyleGallery
+            recipes={STYLE_RECIPES}
+            value={dashboard.style}
+            onApply={actions.applyStyle}
+          />
+        </FormatWidget>
         <FormatWidget title="Layout">
           <LayoutControls
             label="Dashboard"

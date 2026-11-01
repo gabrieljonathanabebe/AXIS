@@ -39,6 +39,7 @@ type CanvasPanelProps = {
 type CanvasPanelStyle = CSSProperties & {
   '--canvas-background': string
   '--canvas-text': string
+  '--canvas-text-muted': string
 }
 
 /**
@@ -66,6 +67,7 @@ function CanvasPanel({
   const canvasStyle: CanvasPanelStyle = {
     '--canvas-background': getFillsCss(background),
     '--canvas-text': style.colors.text,
+    '--canvas-text-muted': style.colors.textMuted,
   }
   return (
     <Panel className="canvas-panel" isEmbedded isFilled style={canvasStyle}>

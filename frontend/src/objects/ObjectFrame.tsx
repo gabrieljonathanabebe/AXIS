@@ -3,10 +3,9 @@ import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
-import { getShadowsCss } from '../shared/effect'
-import { getFillsCss } from '../shared/fill'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
-import ContainerBorder from './ContainerBorder'
+import ContainerSurface from './ContainerSurface'
+import { getContainerSurfaceStyle } from './containerSurfaceStyle'
 import { getRectStyle } from './elementRect'
 import { getObjectDefinition } from './objectDefinitions'
 
@@ -25,6 +24,7 @@ import type {
   DragPayload,
   ObjectLayoutMode,
 } from '../workspace/types'
+import type { ContainerSurfaceStyle } from './containerSurfaceStyle'
 import type { DashboardObject, ElementRect, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
@@ -40,15 +40,8 @@ export type ShowFormatHint = (
   rect: ElementRect,
 ) => void
 
-type ObjectFrameStyle = CSSProperties & {
+type ObjectFrameStyle = ContainerSurfaceStyle & {
   '--chart-canvas-inset': string
-  '--chart-backdrop-blur': string
-  '--chart-background': string
-  '--chart-inner-shadow': string
-  '--chart-noise-opacity': number
-  '--chart-noise-size': string
-  '--chart-radius': string
-  '--chart-shadow': string
 }
 
 type ObjectFrameProps = {
@@ -177,26 +170,11 @@ function ObjectFrame({
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
   const { container } = object
   const definition = getObjectDefinition(object.kind)
-  const { background, effects } = container
-  const shadows = effects.filter((effect) => effect.kind === 'shadow')
-  const innerShadows = effects.filter((effect) => {
-    return effect.kind === 'innerShadow'
-  })
-  const backgroundBlur = effects.find((effect) => {
-    return effect.kind === 'backgroundBlur'
-  })
-  const noise = effects.find((effect) => effect.kind === 'noise')
   const isFormatMode = formattedElement !== null
   const frameStyle: ObjectFrameStyle = {
     ...style,
+    ...getContainerSurfaceStyle(container),
     '--chart-canvas-inset': `${container.layout.padding}px`,
-    '--chart-backdrop-blur': `${backgroundBlur?.blur ?? 0}px`,
-    '--chart-background': getFillsCss(background),
-    '--chart-inner-shadow': getShadowsCss(innerShadows, true),
-    '--chart-noise-opacity': noise?.opacity ?? 0,
-    '--chart-noise-size': `${noise?.size ?? 0}px`,
-    '--chart-radius': `${container.borderRadius}px`,
-    '--chart-shadow': getShadowsCss(shadows),
   }
 
   useEffect(() => {
@@ -289,7 +267,7 @@ function ObjectFrame({
   return (
     <div
       aria-label={label}
-      className={`chart-item ${isSelected ? 'is-selected' : ''}`}
+      className={`chart-item container-surface ${isSelected ? 'is-selected' : ''}`}
       data-object-id={object.id}
       ref={frameRef}
       role="group"
@@ -302,21 +280,9 @@ function ObjectFrame({
       onPointerLeave={() => setFormatHint(null)}
       onPointerMove={isFormatMode ? moveFormatLabel : undefined}
     >
-      {backgroundBlur ? (
-        <span aria-hidden="true" className="chart-item-backdrop" />
-      ) : null}
-      <span aria-hidden="true" className="chart-item-background" />
-      {noise ? <span aria-hidden="true" className="chart-item-noise" /> : null}
-      {innerShadows.length > 0 ? (
-        <span aria-hidden="true" className="chart-item-inner-shadow" />
-      ) : null}
-      {children(showFormatHint)}
-      {container.border.width > 0 ? (
-        <ContainerBorder
-          radius={container.borderRadius}
-          stroke={container.border}
-        />
-      ) : null}
+      <ContainerSurface surface={container}>
+        {children(showFormatHint)}
+      </ContainerSurface>
       {isFormatMode && formatHint ? (
         <button
           aria-label={formatRegionLabels[formatHint.element]}

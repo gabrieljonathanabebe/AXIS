@@ -16,6 +16,20 @@
   pointer-events: none;
 }
 
+/* Empty states on the canvas and inside a chart are content of the
+   dashboard: they take the text colors of its style, not of the app. */
+.chart-grid > .empty-state,
+.chart-state .empty-state {
+  color: var(--canvas-text);
+}
+
+.chart-grid > .empty-state .empty-state-description,
+.chart-grid > .empty-state .empty-state-icon,
+.chart-state .empty-state-description,
+.chart-state .empty-state-icon {
+  color: var(--canvas-text-muted);
+}
+
 .chart-drop-preview {
   background: var(--color-accent-soft);
   border: var(--border-width-thin) dashed var(--color-border-accent);

@@ -120,18 +120,22 @@ function createCanvas(recipe: StyleRecipe): DashboardCanvas {
 }
 
 /**
- * Builds the tooltip of every chart: a veil of the surface color with a
- * border in the accent of the dashboard.
- * @param recipe Recipe with scheme and surface color.
+ * Builds the tooltip of every chart: a veil in a tone the texts of the
+ * scheme read on, with a border in the accent of the dashboard. A dark
+ * scheme takes the canvas base, which is always dark, since the surface
+ * of glass is a light tint; a light scheme takes the surface.
+ * @param recipe Recipe with scheme, canvas and surface color.
  * @param colors Role colors of the style.
  * @returns Fill, border, shadow and sizes of the tooltip.
  */
 function createTooltip(recipe: StyleRecipe, colors: StyleColors): StyleTooltip {
   const { backgroundOpacity, shadow } = SCHEME_TOOLTIPS[recipe.scheme]
+  const background =
+    recipe.scheme === 'dark' ? recipe.canvas.base : recipe.surface
   return {
     background: {
       opacity: backgroundOpacity,
-      paint: { color: createColorValue(recipe.surface), kind: 'solid' },
+      paint: { color: createColorValue(background), kind: 'solid' },
     },
     blur: 18,
     border: {

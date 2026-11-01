@@ -193,11 +193,19 @@ Vorgehen:
    ein anderer `kind` bleibt (z. B. Glow); Dashboard-Titel und
    Tooltip-Texte folgen dem Style; bis zur Galerie per
    `cevyn.applyStyle(…)` in der Dev-Konsole
-4. Graphite und Midnight, dann Daylight (Prüfstein: helles Dashboard im
-   dunklen Editor und umgekehrt), dann Bloom, optional Indigo
-5. Schnellauswahl der Style-Farben im Farbwähler
-6. Galerie im Dashboard-Popover, die Vorschau live aus dem Rezept
-   gezeichnet statt aus Screenshots
+4. Graphite, Midnight, Daylight, Bloom und Indigo (implementiert):
+   Rezepte in `styleRecipes.ts` (`STYLE_RECIPES`); im Material nur
+   Frosted dichter (94 % → 59 %) und Glas als dünner Schleier (Zeile
+   70 %, Stopps 12 % → 5 %); helle Styles trennen die Container über
+   eine getönte Grundfarbe der Canvas; für alle Styles Achsentexte in
+   `textMuted` und sichtbare Gitterlinien; Prüfstein helles Dashboard im
+   dunklen Editor und umgekehrt folgt mit der Galerie
+5. Galerie im Dashboard-Popover (implementiert): Gruppe Style mit
+   `StyleGallery`, die Vorschau live aus dem Rezept mit den echten
+   Ebenen der Container (`ContainerSurface`, gemeinsam mit
+   `ObjectFrame`); Empty States im Dashboard folgen dem Style; offen:
+   alle Styles im hellen und dunklen Editor prüfen
+6. Schnellauswahl der Style-Farben im Farbwähler
 7. Slice-Ende: `ARCHITECTURE.md` (`ColorValue` ohne Token, Style als
    Eingabe der Defaults) und `DESIGN_SYSTEM.md` (Farbwähler, Materialien,
    Styles) nachziehen
