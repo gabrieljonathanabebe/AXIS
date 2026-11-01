@@ -40,12 +40,12 @@ Glasflächen werden zentral über die Klasse `.glass`
 (`src/styles/glass.css`) und die `--glass-*`-Tokens umgesetzt, nicht
 pro Komponente.
 
-| Stufe   | Klassen              | Verwendung                                                                    | Blur        |
-| ------- | -------------------- | ----------------------------------------------------------------------------- | ----------- |
-| thin    | `glass glass-thin`   | Panels                                                                        | `--blur-md` |
-| regular | `glass`              | Collapsible Sections (Variante `widget`)                                      | keiner      |
-| liquid  | `glass glass-liquid` | derzeit ohne Nutzer                                                           | `--blur-md` |
-| thick   | `glass glass-thick`  | Dropdowns, Popover, schwebendes Editor-Chrome (Canvas-Toolbar, Ask Cevyn Bar) | `--blur-lg` |
+| Stufe   | Klassen              | Verwendung                                                    | Blur        |
+| ------- | -------------------- | ------------------------------------------------------------- | ----------- |
+| thin    | `glass glass-thin`   | Panels                                                        | `--blur-md` |
+| regular | `glass`              | Collapsible Sections (Variante `widget`)                      | keiner      |
+| liquid  | `glass glass-liquid` | derzeit ohne Nutzer                                           | `--blur-md` |
+| thick   | `glass glass-thick`  | Dropdowns, Popover, schwebendes Editor-Chrome (Ask Cevyn Bar) | `--blur-lg` |
 
 `glass-liquid` ist die durchscheinende Stufe: Füllung ab transparent
 mit einem Hauch Weiß unten (`--glass-fill-liquid`), Blur mit
@@ -279,23 +279,32 @@ Werkzeug). Entscheidungsfrage für jedes neue Element:
 | Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Format-Popover, Build       |
 
 ```text
-Canvas Panel (Fill als ::before, ohne Panel-Header)
-├── .canvas-toolbar     schwebend oben rechts, glass glass-thick
-├── .dashboard-surface  Titel + ChartGrid, die „Seite“
-└── AskCevynBar         schwebend unten
+Canvas Panel = Arbeitsfläche (isEmbedded, isFilled, App-Theme)
+├── Panel-Header         Toolbar als schmale Leiste (actions)
+├── .dashboard-page      die Seite: Style-Fläche, Titel + ChartGrid
+└── AskCevynBar          schwebend unten
 ```
 
-- Die ganze Fläche rechts der Haarlinie zum Build Panel ist
-  die Seite; sie hat keinen eigenen Rahmen und keinen Radius.
-- Ihre Füllung (`canvas.background`) liegt auf `.canvas-panel::before`.
-  Der Workspace schneidet sie auf seine runden Ecken zu
-  (`overflow: hidden`), seine Lichtkante liegt darüber. Das Grid hat
-  keinen Radius, damit jedes Objekt seine Ecken selbst bestimmt.
-- `.dashboard-surface` ist der unsichtbare Rahmen um Titel und Grid.
-  Ein späterer Präsentationsmodus zeigt genau dieses Element.
-- Editor-Elemente schweben mit eigenem Z-Index über der Seite. Die
-  Toolbar enthält `CommandButton`s in `sm` und `ghost`; die Pille ist
-  die einzige Fläche.
+- Die Arbeitsfläche ist neutral und folgt nur dem App-Theme. Sie trägt
+  die Toolbar im vorhandenen `actions`-Slot des Panels: `CommandButton`s
+  und das Zahnrad in `sm` und `ghost`, ohne eigene Fläche. Kopf und Rand
+  sind kompakt (8 px über und unter der Leiste, 16 px seitlich, 24 px
+  unter der Seite).
+- Die Seite (`.dashboard-page`) füllt die Arbeitsfläche bis auf diesen
+  Rand und bleibt stehen; Titel und Grid scrollen gemeinsam in ihr, ihr
+  Ende ist immer sichtbar. Ein gemeinsamer Innenabstand (16 px) lässt
+  den Titel über dem ersten Objekt fluchten und hält den
+  Standard-Schatten eines Containers auf der Seite.
+- Die Seite trägt die Füllung (`canvas.background`) als `background`
+  und die Style-Variablen (`--canvas-*`). Rahmen
+  (`--color-border-subtle`) und `--shadow-sm` gehören zur Arbeitsfläche,
+  nicht zum Style: Sie trennen die Seite auch dann, wenn Style und App
+  dieselbe Farbe haben. Die Füllung endet innerhalb des Rahmens
+  (`background-clip: padding-box`), damit der halbtransparente Rahmen
+  in jedem Style gleich aussieht. Das Grid hat keinen Radius, damit
+  jedes Objekt seine Ecken selbst bestimmt.
+- Ein späterer Präsentationsmodus zeigt nur die Seite, ohne Rahmen und
+  Schatten.
 - Rechts vom Pinsel öffnet das Zahnrad (`Settings2`, `IconButton` `sm`
   `ghost`, gedrückt solange offen) das Popover „Dashboard“ mit
   Einstellungen ohne eigenes Element auf der Canvas: Style (Galerie,
@@ -303,9 +312,7 @@ Canvas Panel (Fill als ::before, ohne Panel-Header)
   Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
   Format-Popover. Der Name bleibt inline im Titel, eine Einstellung hat
   genau eine Heimat.
-- Toolbar und Titelzeile sind beide 36 px hoch und liegen auf einer
-  Linie. Der Titel ist auf 480 px begrenzt, damit sein Eingabefeld
-  nicht unter die Toolbar läuft.
+- Der Titel ist auf 480 px begrenzt.
 
 ## 4a. Data Workspace
 

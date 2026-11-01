@@ -597,9 +597,10 @@ Container in HTML (`ContainerSurface` in `objects/`, gemeinsam für
 - Korn ist eine Kachel statt eines Live-Filters; die Größe skaliert die
   Kachel (`background-size`), die Intensität ist ihre Deckkraft.
 - `prefers-reduced-transparency`: Blur und Korn entfallen.
-- Das Grid der Canvas (`.chart-grid`) hat 16 px Innenabstand, so weit
-  wie der Standard-Schatten reicht; `getGridStep` zieht ihn von der
-  Breite ab. Größere Schatten dürfen am Rand abgeschnitten werden.
+- Die Seite (`.dashboard-page`) hat 16 px Innenabstand, so weit wie
+  der Standard-Schatten reicht; das Grid selbst hat keinen, und
+  `getGridStep` liest sein Padding weiterhin aus. Größere Schatten
+  dürfen am Rand der scrollenden Seite abgeschnitten werden.
 
 ### Platzierung
 
@@ -740,7 +741,8 @@ Werkzeug, Farbe gehört dem Inhalt.
   Zustände: Auswahl, Format-Fokus, Ring der aktiven Style-Kachel.
 - Braucht HTML im Dashboard eine Farbe des Styles, die nicht in der Spec
   steht, setzt die Stelle eine CSS-Variable aus dem Style: `CanvasPanel`
-  setzt `--canvas-text` und `--canvas-text-muted` (Dashboard-Titel,
+  setzt an der Seite (`.dashboard-page`) `--canvas-text` und
+  `--canvas-text-muted` (Dashboard-Titel,
   Empty States im Dashboard), der Tooltip setzt `--chart-tooltip-text`
   und `--chart-tooltip-text-muted` an seinem eigenen Element, weil er am
   `body` hängt.
@@ -749,10 +751,12 @@ Werkzeug, Farbe gehört dem Inhalt.
   radiale Leuchtflächen. Rand und Effekte (Schatten, Lichtkante als
   Innenschatten, Blur, Korn; siehe „Effect“) stellt der Nutzer selbst ein
   oder schreibt ein Style beim Anwenden.
-- Beide malen ihre Flächen auf einer eigenen Ebene hinter dem Inhalt:
-  `CanvasPanel` setzt `--canvas-background` für `.canvas-panel::before`,
-  `ObjectFrame` setzt `--chart-background` für `.chart-item-background`
-  (über dem Background Blur). `getFillsCss` (`shared/fill.ts`) baut
+- `CanvasPanel` setzt `--canvas-background` als `background` der Seite
+  (`.dashboard-page`, innerhalb ihres Rahmens); `ObjectFrame` setzt
+  `--chart-background` für die eigene Ebene `.chart-item-background`
+  (über dem Background Blur, dessen Ebene bei neuen Füllungen neu
+  mountet, damit Chromium nicht die alte Canvas weiter zeigt).
+  `getFillsCss` (`shared/fill.ts`) baut
   daraus einen CSS-Hintergrund mit einer Schicht je Fläche, die erste
   oben wie die Zeilen der Gruppe. CSS kennt keine Deckkraft je Schicht,
   deshalb trägt jede Schicht ihre Deckkraft in den Farben; eine

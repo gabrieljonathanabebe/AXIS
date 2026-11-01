@@ -91,10 +91,11 @@ und Keynote:
 - Seite (Dashboard): trägt den Style (Canvas-Flächen und Radius; die
   Ebene zieht von `.canvas-panel::before` auf die Seite) und enthält
   Titel und Grid mit einem gemeinsamen Innenabstand, sodass der Titel
-  über dem ersten Chart fluchtet; die Seite scrollt als Ganzes in der
-  Arbeitsfläche
+  über dem ersten Chart fluchtet; die Seite bleibt in der Arbeitsfläche
+  stehen, und Titel und Grid scrollen gemeinsam in ihr
 - Größe Auto wie heute: Die Seite füllt die Arbeitsfläche bis auf einen
-  schmalen Rand (z. B. 16 px), damit ihr Ende sichtbar ist; feste Größe
+  schmalen Rand (16 px, unten 24 px), damit ihr Ende immer sichtbar ist;
+  Rahmen und Schatten der Seite gehören zur Arbeitsfläche; feste Größe
   und Zoom kommen mit den Dashboard-Einstellungen (3.16), Vollbild zeigt
   später nur die Seite (3.20)
 - `ChartGrid` misst sich selbst (`getComputedStyle(grid)`): Ziehen,
@@ -133,7 +134,7 @@ Höhe wieder.
 
 Vorgehen:
 
-1. Arbeitsfläche und Seite trennen
+1. Arbeitsfläche und Seite trennen – implementiert
 2. Format-Panel an der Arbeitsfläche, ohne Auswahl mit dem Dashboard
 3. Objekt-Layout
 
