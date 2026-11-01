@@ -3,7 +3,7 @@ import { PanelLeftClose, PanelRightClose } from 'lucide-react'
 import IconBadge from './IconBadge'
 import IconButton from './IconButton'
 
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 type PanelSide = 'start' | 'end'
 
@@ -20,14 +20,12 @@ type PanelProps = {
   isFilled?: boolean
   isScrollable?: boolean
   side?: PanelSide
-  style?: CSSProperties
   onToggleCollapse?: () => void
 }
 
 /**
  * Area of a workspace with an optional header of title, actions and a
- * collapse button; an embedded panel sits flush without glass. `style`
- * passes CSS variables, e.g. the canvas background.
+ * collapse button; an embedded panel sits flush without glass.
  */
 function Panel({
   as: Element = 'section',
@@ -42,7 +40,6 @@ function Panel({
   isFilled = false,
   isScrollable = false,
   side = 'start',
-  style,
   onToggleCollapse,
 }: PanelProps) {
   const CollapseIcon = side === 'start' ? PanelLeftClose : PanelRightClose
@@ -64,7 +61,6 @@ function Panel({
   return (
     <Element
       className={`panel ${isEmbedded ? 'is-embedded' : 'glass glass-thin'} ${isFilled ? 'is-filled' : ''} ${isScrollable ? 'is-scrollable' : ''} ${isCollapsed ? 'is-collapsed' : ''} ${className}`}
-      style={style}
     >
       {isCollapsed ? (
         <IconButton

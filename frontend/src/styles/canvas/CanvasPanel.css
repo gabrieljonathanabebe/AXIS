@@ -1,13 +1,8 @@
-/* The padding keeps the default shadow of a container (16px below it)
-   inside the scrolling canvas; wider shadows may be clipped at the edge. */
 .chart-grid {
   position: relative;
   flex: 1;
   display: grid;
   align-content: start;
-  min-height: 0;
-  padding: var(--space-4);
-  overflow-y: auto;
 }
 
 .chart-grid > .empty-state {
@@ -37,41 +32,44 @@
   pointer-events: none;
 }
 
+/* Neutral area around the page: the toolbar as a compact bar on top and
+   a margin around the page, so its edge always shows. */
 .canvas-panel {
   position: relative;
-  isolation: isolate;
+  padding: 0;
 }
 
-/* The canvas fills on their own layer behind the objects; each fill
-   carries its opacity in its colors. */
-.canvas-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--canvas-background);
-  pointer-events: none;
+.canvas-panel > .panel-header {
+  min-height: 0;
+  margin-bottom: 0;
+  padding: var(--space-2) var(--space-4);
 }
 
-.canvas-toolbar {
-  position: absolute;
-  top: var(--space-3);
-  right: calc(var(--space-3) + var(--space-2));
-  z-index: 10;
-  display: flex;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  border-radius: var(--radius-md);
+.canvas-panel > .panel-content {
+  padding: 0 var(--space-4) var(--space-6);
 }
 
-.dashboard-surface {
+/* Page of the dashboard: carries the canvas fills and holds title and
+   grid with one inner spacing, so the title lines up with the first
+   object; it fills the area and stays in place, its content scrolls. The
+   padding keeps the default shadow of a container (16px below it) on the
+   page. Border and shadow belong to the area, not to the style: they set
+   the page apart even if both share a color, so the fills end inside the
+   border. */
+.dashboard-page {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   min-width: 0;
-  min-height: 0;
-  padding-inline: var(--space-2);
+  padding: var(--space-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--canvas-background);
+  background-clip: padding-box;
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .dashboard-title {

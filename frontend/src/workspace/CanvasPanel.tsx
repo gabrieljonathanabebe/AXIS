@@ -36,15 +36,17 @@ type CanvasPanelProps = {
   onRenameDashboard: (name: string) => void
 }
 
-type CanvasPanelStyle = CSSProperties & {
+type DashboardPageStyle = CSSProperties & {
   '--canvas-background': string
   '--canvas-text': string
   '--canvas-text-muted': string
 }
 
 /**
- * Canvas of the Visualize workspace: toolbar, dashboard name, objects and
- * Ask Cevyn. Its fills are painted on a layer behind the objects.
+ * Canvas of the Visualize workspace: a neutral area with the toolbar and
+ * Ask Cevyn around the page of the dashboard. The page carries the style
+ * (fills and text colors), the name and the objects; it stays in place
+ * and its content scrolls.
  */
 function CanvasPanel({
   actions,
@@ -64,32 +66,38 @@ function CanvasPanel({
   onRenameDashboard,
 }: CanvasPanelProps) {
   const { background } = dashboard.canvas
-  const canvasStyle: CanvasPanelStyle = {
+  const pageStyle: DashboardPageStyle = {
     '--canvas-background': getFillsCss(background),
     '--canvas-text': style.colors.text,
     '--canvas-text-muted': style.colors.textMuted,
   }
   return (
-    <Panel className="canvas-panel" isEmbedded isFilled style={canvasStyle}>
-      <div className="canvas-toolbar glass glass-thick">
-        <CommandButton
-          command={commands['history.undo']}
-          size="sm"
-          variant="ghost"
-        />
-        <CommandButton
-          command={commands['history.redo']}
-          size="sm"
-          variant="ghost"
-        />
-        <CommandButton
-          command={commands['object.format']}
-          size="sm"
-          variant="ghost"
-        />
-        <DashboardSettingsPopover actions={actions} dashboard={dashboard} />
-      </div>
-      <div className="dashboard-surface">
+    <Panel
+      actions={
+        <>
+          <CommandButton
+            command={commands['history.undo']}
+            size="sm"
+            variant="ghost"
+          />
+          <CommandButton
+            command={commands['history.redo']}
+            size="sm"
+            variant="ghost"
+          />
+          <CommandButton
+            command={commands['object.format']}
+            size="sm"
+            variant="ghost"
+          />
+          <DashboardSettingsPopover actions={actions} dashboard={dashboard} />
+        </>
+      }
+      className="canvas-panel"
+      isEmbedded
+      isFilled
+    >
+      <div className="dashboard-page" style={pageStyle}>
         <h2 className="dashboard-title">
           <EditableText
             className="dashboard-title-text"

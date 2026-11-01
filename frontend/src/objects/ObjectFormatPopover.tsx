@@ -27,12 +27,12 @@ type ObjectFormatPopoverProps<TElement extends ObjectFormatElement> = {
 
 // ===== HELPERS ===============================================================
 /**
- * Selects where presses keep the popover open: the canvas toolbar (undo,
- * redo, the format toggle) and the formatted object, whose regions switch
- * the element.
+ * Selects where presses keep the popover open: the toolbar in the header
+ * of the canvas (undo, redo, the format toggle) and the formatted object,
+ * whose regions switch the element.
  */
 function getKeepOpenSelector(objectId: string): string {
-  return `.canvas-toolbar, [data-object-id="${objectId}"]`
+  return `.canvas-panel > .panel-header, [data-object-id="${objectId}"]`
 }
 
 // ===== COMPONENT =============================================================
