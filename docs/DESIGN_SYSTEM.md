@@ -120,20 +120,22 @@ Nicht jedes blaue Element benötigt einen Glow.
 
 Electric Blue ist keine Datenfarbe. Blau bedeutet in Cevyn Zustand
 (ausgewählt, gezogen, fokussiert), damit Auswahl, Brush und Format-Fokus
-auf jedem Chart lesbar bleiben. Die Standardfarben der Daten sind
-deshalb die Theme-Tokens `chart1`–`chart5` (`--chart-1` bis `--chart-5`
-in `styles/themes.css`): Teal, Orange, Violett, Amber, Magenta. Sie
-bilden die Palette „Default“ (`DEFAULT_CATEGORICAL_PALETTE`,
-`charts/colorPalettes.ts`); `chart1` ist die Standard-Markfarbe
-(`appearance.color`). Die Palette ist für Farbsehschwächen auf der
-dunklen Fläche geprüft. Im Light Theme ist Amber auf `#B57800`
-abgedunkelt (3,4:1 statt 2,8:1 auf dem Hintergrund); Teal und Violett
-liegen dort bei etwa 3:1. Blau bleibt als eigene Farbe wählbar, ist aber
-kein Feld der Daten-Reihe.
+auf jedem Chart lesbar bleiben. Die Standardfarben der Daten kommen
+deshalb aus dem Dashboard-Style: eine geteilte Palette aus Teal, Orange,
+Violett, Amber und Magenta in einer dunklen und einer hellen Variante
+(`DATA_PALETTES` in `dashboardStyle/createDashboardStyle.ts`). Die erste
+Farbe ist die Standard-Markfarbe (`appearance.color`), in der
+Paletten-Auswahl heißt sie „Style“. Die Palette ist für Farbsehschwächen
+auf dunkler Fläche geprüft; in der hellen Variante ist Amber auf
+`#B57800` abgedunkelt (3,4:1 statt 2,8:1), Teal und Violett liegen dort
+bei etwa 3:1. Blau bleibt als eigene Farbe wählbar, ist aber keine Farbe
+der Palette.
 
-Der Akzent im Inhalt des Dashboards (Token `accent`, z. B. Card-Wert
-und Brush) ist davon getrennt: `--dashboard-accent`, standardmäßig
-neutral hellgrau. Format-Fokus und Auswahlring bleiben beim App-Akzent.
+Der Akzent im Inhalt des Dashboards (Rolle `accent`, z. B.
+Selection-Label der Card, Brush, Rand des Tooltips) ist davon getrennt
+und kommt aus dem Style, in Graphite neutral hellgrau. Format-Fokus,
+Auswahlring und der Ring der aktiven Style-Kachel bleiben beim
+App-Akzent.
 
 ### Danger
 
@@ -296,8 +298,9 @@ Canvas Panel (Fill als ::before, ohne Panel-Header)
   die einzige Fläche.
 - Rechts vom Pinsel öffnet das Zahnrad (`Settings2`, `IconButton` `sm`
   `ghost`, gedrückt solange offen) das Popover „Dashboard“ mit
-  Einstellungen ohne eigenes Element auf der Canvas: Gap, Background
-  (Fill der Canvas) und Animation (＋/−, Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
+  Einstellungen ohne eigenes Element auf der Canvas: Style (Galerie,
+  siehe 9t), Gap, Background (Fill der Canvas) und Animation (＋/−,
+  Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
   Format-Popover. Der Name bleibt inline im Titel, eine Einstellung hat
   genau eine Heimat.
 - Toolbar und Titelzeile sind beide 36 px hoch und liegen auf einer
@@ -772,8 +775,8 @@ welcher Paint die Datenfarbe trägt:
 Das linke Feld folgt dem Farbmodus (`getColorEncodingMode`):
 
 ```text
-konstant        [● Chart 1         ]  [◐ 90 %]      ColorField
-kategorial      [▬▬ Default       ▾]  [◐ 90 %]      PaletteControl (Dropdown)
+konstant        [● #199E8A         ]  [◐ 90 %]      ColorField
+kategorial      [▬▬ Style         ▾]  [◐ 90 %]      PaletteControl (Dropdown)
 kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      GradientControl, Range (⚙)
 ```
 
@@ -937,7 +940,7 @@ im Editor einer Solid-Farbe.
 Verlaufs. Es arbeitet auf `GradientStop[]`: Die Swatches zeigen den
 ersten und letzten Stopp nach Position, die Vorschau alle Stopps samt
 Deckkraft. Genutzt nur noch für die Enden der kontinuierlichen
-Farbskala (Chart 1–5), weil dort Anfang und Ende direkt klickbar sein
+Farbskala, weil dort Anfang und Ende direkt klickbar sein
 sollen; ob sie ein `PaintField` wird, klärt „Legende, Tooltip und
 Farbskala mit Bausteinen“ (`ROADMAP.md`).
 
@@ -1085,38 +1088,32 @@ Escape); der Editor einer Solid-Farbe zeigt ihn direkt.
 ```
 
 Wert und Rückgabe sind ein `ColorValue` (siehe ARCHITECTURE,
-Farbwerte): ein Theme-Token oder eine feste Farbe.
+Farbwerte), eine feste Farbe.
 
 Grundstruktur:
 
-- eine Reihe Preset-Swatches, die der Aufrufer über `presets` setzt
-  (Pflicht, `ColorPreset` in `colorPresets.ts`); Theme-Swatches zeigen
-  die aktuelle Theme-Farbe und speichern den Token; ohne Presets
-  entfällt die Reihe;
-- Farbfläche und Hex-Feld für eine feste Farbe.
+- eine Reihe Swatches: vorn die Farben des Dashboard-Styles (Text,
+  Muted, Accent, Data 1–5) aus dem Context `SharedColorPresets`, den die
+  App aus dem Style befüllt (`createStyleColorPresets`), danach
+  optionale Swatches des Einsatzorts (`presets`, `ColorPreset` in
+  `colorPresets.ts`); `joinColorPresets` lässt doppelte Farben weg; ohne
+  Swatches entfällt die Reihe;
+- Farbfläche und Hex-Feld für eine eigene Farbe.
 
-Reihen je Einsatzort (`shared/ui/colorPresets.ts`):
+Die Schnellauswahl ist an jedem Einsatzort gleich, wie „Document
+colors“ in Figma: Texte, Linien und Rahmen, Marks, Verläufe, Flächen von
+Container und Canvas, Schatten.
 
-| Einsatzort                                                      | Reihe                                   |
-| --------------------------------------------------------------- | --------------------------------------- |
-| Text (`TextStyleControls`)                                      | Default · Muted · Accent · eigene Farbe |
-| Linien und Rahmen (`StrokeStyleControls`)                       | Default · Muted · Accent · eigene Farbe |
-| Marks und Flächen (Datenfarbe, Fill der Marks), Farbskala-Enden | Chart 1–5 · eigene Farbe                |
-| Hintergrund von Container und Canvas                            | nur eigene Farbe (keine Felder)         |
+- Ein Klick schreibt den Wert; nichts bleibt mit dem Style verknüpft.
+  Nach einem Wechsel des Styles zeigen die Swatches dessen Farben,
+  gewählte Werte bleiben.
+- Es gibt kein „Default“: Den Ausgangszustand eines Elements stellt das
+  Anwenden des Styles wieder her.
+- Das Feld neben dem Swatch zeigt den Hex-Wert, nie einen Rollennamen.
+- Das Label eines Swatches ist zugleich sein Hover-Titel.
 
-- „Default“ steht für die Standardrolle des Elements, z. B. `text` beim
-  Titel, `gridLine` bei Gridlines, `border` beim Container-Rahmen,
-  `accent` beim Card-Selection-Label. Es zeigt deren Farbe, führt
-  jederzeit zum Ausgangszustand zurück und hält technische Namen wie
-  „Grid line“ aus der Auswahl. `createStyleColorPresets(defaultColor)`
-  baut die Reihe; ein Feld mit demselben Wert wie Default entfällt
-  (Selection-Label: Default · Muted).
-- Marks haben kein Default-Feld; Chart 1 ist ihr Standard
-  (`DATA_COLOR_PRESETS`).
-- Das Label eines Presets ist zugleich sein Hover-Titel.
-
-Die Farbfläche zeigt die aktuelle eigene Farbe; ist ein Token oder
-Preset gewählt, startet sie bei einer festen Startfarbe. Farbfläche und
+Die Farbfläche zeigt die aktuelle Farbe; ist ein benannter Preset
+gewählt, startet sie bei einer festen Startfarbe. Farbfläche und
 Hex-Feld liefern immer eine feste Farbe. Ein Klick auf einen Preset
 lässt den Picker offen.
 
@@ -1126,7 +1123,7 @@ Active State eines Presets:
 - subtiler Glow;
 - nicht nur Farbe als Zustandsindikator.
 
-Ein Token ohne eigenen Swatch markiert keinen Swatch.
+Eine Farbe ohne passenden Swatch markiert keinen Swatch.
 
 Custom Picker kann über `react-colorful` umgesetzt werden.
 
@@ -1375,10 +1372,8 @@ setzt seine eigenen Zeilen davor oder dahinter:
   → „Legend text color“
 - `minFontSize`/`maxFontSize` begrenzen die Größe (Standard 9–28), z. B.
   11–20 für Titel im festen Header, 16–96 für den Card-Wert
-- `defaultColor` (Pflicht) ist die Farbe, die der Text bei neuen
-  Objekten bekommt; sie führt die Color-Reihe als „Default“ an (siehe
-  9). Das Widget liest sie aus den Default-Konstanten seiner Domain,
-  z. B. `TITLE_TEXT_STYLE.color`
+- der Picker der Color-Zeile zeigt die Farben des Styles (siehe 9);
+  einen Default gibt es nicht
 
 Keine Varianten über Flags: Was ein Element zusätzlich braucht, ist eine
 eigene Zeile im Widget oder ein optionaler Teil wie `alignment`.
@@ -1401,15 +1396,13 @@ eines Umrisses (`StrokeStyle`), nach demselben Muster wie
   Typ zurück
 - `paintTypes` schränkt die Typen ein, z. B. nur Solid unter einer
   kontinuierlichen Farbskala
-- `defaultColor` wie bei `TextStyleControls`, hier optional, weil
-  Serienlinien keine eigene Farbe haben
 - genutzt vom Rahmen im `ContainerWidget` (Gruppe Border), von
   Achsenlinie und Gridlines im `AxisStrokeWidget` (Breite 1–4, Auge in
-  der Überschrift; Titel, `label` und `defaultColor` per Prop, damit ein
+  der Überschrift; Titel und `label` per Prop, damit ein
   Widget beide Linien einer Achse bedient), von Linien-Marks (Gruppe
   Line mit der Datenfarbe, Breite 1–8) und den Rahmen der Balken,
-  Scatter-Punkte und Pie-Segmente (Gruppe Border, `defaultColor` aus
-  `CHART_MARK_BORDER`) in `markGroups.tsx`; später Tables
+  Scatter-Punkte und Pie-Segmente (Gruppe Border) in `markGroups.tsx`;
+  später Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -1658,7 +1651,7 @@ statt Rahmen, `label` für Screenreader („Legend position“).
 `ColorField` ist das Farbfeld einer kompakten Zeile (`.field`
 `.color-field`): links ein `ColorSwatch`, der den Picker mit den Farben
 des Einsatzorts öffnet, rechts der Hex-Wert einer eigenen Farbe (direkt
-editierbar) oder der Name ihres Presets („Default“, „Chart 2“).
+editierbar) oder der Name eines benannten Presets.
 
 - `swatch` ersetzt den Swatch, z. B. durch den eines `PaintField`, der
   den Editor öffnet; Hex-Feld und Preset-Name bleiben
@@ -1744,6 +1737,51 @@ Icon-Gruppe: `label`, `value` und optional `icon` (`LucideIcon`).
   liefert sie für Card und Build Panel
 - weitere Aggregationen folgen einem System aus Grundzeichen und Zusatz,
   z. B. ↗ für kumuliert (Cumsum als Σ mit ↗, Π für Product)
+
+## 9t. StyleGallery und Dashboard-Styles
+
+`StyleGallery` (`dashboardStyle/`) ist die Gruppe „Style“ ganz oben im
+Popover „Dashboard“: zwei Spalten mit Kacheln, je eine Vorschau und der
+Name darunter, zentriert.
+
+- Die Vorschau ist ein Mini-Dashboard, live aus dem Rezept gezeichnet
+  statt aus Screenshots: Canvas, drei Container im Material des Styles
+  (über `ContainerSurface`, also mit echtem Blur, Korn und Lichtkante),
+  darin Balken in den Datenfarben, eine Text- und eine gedämpfte
+  Textzeile und eine Linie im Akzent.
+- Ein Klick wendet den Style an, als ein Undo-Schritt; die Kachel des
+  aktuellen Styles trägt `.is-active` mit einem Ring im App-Akzent,
+  Hover und Fokus zeigen denselben Ring bzw. eine stärkere Kontur.
+- Die Gruppe Background darunter zeigt nach dem Anwenden die Flächen
+  des Styles und bleibt frei änderbar.
+
+Ein Style ist ein Rezept aus wenigen Werten (`ARCHITECTURE.md`,
+„Dashboard-Styles“); die Detailarbeit steckt in drei Materialien:
+
+| Material  | Look                                                                                      |
+| --------- | ----------------------------------------------------------------------------------------- |
+| `solid`   | deckende Fläche, feiner Rand; im hellen Schema ein weicher Schatten                       |
+| `frosted` | getönte, nach unten rechts durchlässigere Fläche über dem Leuchten der Canvas, Blur, Korn |
+| `glass`   | dünner heller Schleier, Lichtkante als Verlaufsrand, Innenschatten, weiche Schatten       |
+
+| Style    | Schema | Material  | Look                                                          |
+| -------- | ------ | --------- | ------------------------------------------------------------- |
+| Graphite | dunkel | `solid`   | Standard, neutral: Container `#202226` auf `#141518`          |
+| Midnight | dunkel | `frosted` | Navy mit großem blauem Leuchten hinter den Containern         |
+| Daylight | hell   | `solid`   | weiße Container auf kühlem Hellgrau `#E4E8EE`                 |
+| Bloom    | hell   | `frosted` | weißes Frosted über Rosé mit Pfirsich, Flieder, Mint und Rosé |
+| Indigo   | dunkel | `glass`   | Glas über Indigo mit violettem Licht von oben                 |
+
+- Styles ändern Canvas, Container und Farben, nicht die Glow-Einstellungen
+  der Marks und keine Achsen-Details.
+- Helle Styles trennen weiße Container über eine getönte Grundfarbe der
+  Canvas statt über stärkere Ränder oder Schatten.
+- Für alle Styles gilt: Achsentitel und Achsenlabels in `textMuted`,
+  Chart-Titel, Legende und Datenlabels in `text`; Gitterlinien in der
+  Richtung der Textfarbe mit 10 %.
+- Was ein Style nicht in der Spec hat, aber im HTML des Dashboards
+  braucht (Dashboard-Titel, Empty States, Tooltip-Texte), kommt über
+  CSS-Variablen aus dem Style, nie über App-Farben.
 
 ## 10. Legend
 
@@ -1938,22 +1976,19 @@ Der Container eines Objekts wird im Element „Chart“ bzw. „Card“ des
 Format-Popovers formatiert:
 
 - Background über `FillListControls`: eine oder mehrere Flächen mit
-  eigener Farbe oder Verlauf und Deckkraft (Standard eine Fläche
-  `#202226`, 100 %), ohne Felder;
+  eigener Farbe oder Verlauf und Deckkraft (Standard aus dem Material
+  des aktuellen Styles, in Graphite eine Fläche `#202226`);
 - Padding und Radius über `ScrubbableNumber` mit Icon und px;
 - Rahmen über `StrokeStyleControls` (Breite 0 heißt kein Rahmen), als
   SVG gezeichnet (`ContainerBorder`), damit Verlauf, Strichmuster und
   Radius zusammen gehen.
 
 Der Container hat kein Glass und keine festen Lichtkanten oder
-Schatten; was er davon trägt, kommt aus seinen Werten. `ObjectFrame`
-setzt den Paint als `--chart-background` und die Deckkraft als
-`--chart-background-opacity`; `.chart-item-background` malt sie auf
-einer eigenen Ebene hinter dem Inhalt, damit die Deckkraft nur die
-Fläche ausblendet. Effekte (Gruppe Effects) liegen auf festen Ebenen um
-die Fläche (`ARCHITECTURE.md`, „Effect“). Das gilt für jedes
-Dashboard-Objekt. Vorgefertigte Looks kommen mit den Dashboard-Styles
-(`ROADMAP.md`, 3.8). Die Canvas hat 16 px Innenabstand, damit der
+Schatten; was er davon trägt, kommt aus seinen Werten. `ContainerSurface`
+zeichnet Fläche, Effekte und Rahmen auf festen Ebenen um den Inhalt
+(`ARCHITECTURE.md`, „Effect“), gemeinsam mit der Vorschau der
+Style-Galerie. Das gilt für jedes Dashboard-Objekt. Vorgefertigte Looks
+schreibt ein Dashboard-Style beim Anwenden (siehe 9t). Die Canvas hat 16 px Innenabstand, damit der
 Standard-Schatten am Rand nicht abgeschnitten wird.
 
 Der Titel sitzt als HTML-Header über dem Plot. Sein seitlicher Abstand

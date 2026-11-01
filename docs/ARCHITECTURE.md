@@ -454,7 +454,7 @@ type SeriesPaint =
 - `hasOwnColor` unterscheidet beide Formen; der Guard prüft auf `Paint`,
   weil ein eigener Solid strukturell auch ein Serien-Solid ist.
   `getPaintColor` liefert die Farbe, für die ein Paint steht (Solid
-  bzw. erster Stopp), z. B. für das Default-Feld eines Rahmens.
+  bzw. erster Stopp), z. B. für den Rand des Tooltips.
 - Die Deckkraft der Zeile (`opacity`) gilt für den ganzen Paint; Stopps
   und Fade-Enden sind relativ dazu (wie in Figma). Eine Area mit 25 %
   und Fade 100 % → 0 % läuft von 25 % an der Linie bis 0 %.
@@ -536,7 +536,7 @@ type ContainerEffect =
 - Standardwerte an einer Stelle (`createEffect`,
   `createContainerEffect`): Schatten x 0, y 4, Blur 12, Schwarz 25 %;
   Innenschatten x 0, y 1, Blur 0, Weiß 8 %; Background Blur 16; Korn
-  8 %, 100 px. Schattenfarben sind feste Farben, keine Tokens.
+  8 %, 100 px. Schattenfarben sind feste Farben.
 
 Marks in ECharts:
 
@@ -563,12 +563,13 @@ Marks in ECharts:
 - der Glow ist im hellen und dunklen Theme gleich stark; `ChartTheme`
   schwächt ihn bewusst nicht ab, damit derselbe Wert gleich wirkt
 
-Container in HTML (`ObjectFrame`, `styles/canvas/ChartItem.css`), von
-unten nach oben:
+Container in HTML (`ContainerSurface` in `objects/`, gemeinsam für
+`ObjectFrame` und die Vorschau der Style-Galerie;
+`styles/canvas/ChartItem.css`), von unten nach oben:
 
 | Ebene           | Umsetzung                                                  |
 | --------------- | ---------------------------------------------------------- |
-| Schatten        | `box-shadow` am `.chart-item` selbst (`--chart-shadow`)    |
+| Schatten        | `box-shadow` am Element selbst (`--chart-shadow`)          |
 | Background Blur | `.chart-item-backdrop`, `backdrop-filter: blur(…)`         |
 | Fläche          | `.chart-item-background` (Fill mit Deckkraft)              |
 | Korn            | `.chart-item-noise`, statische SVG-Kachel (`feTurbulence`) |
@@ -576,7 +577,12 @@ unten nach oben:
 | Inhalt, Rahmen  | Content, dann `ContainerBorder` (SVG)                      |
 | Ring            | Hover und Auswahl über `::after`                           |
 
-- Schatten am Frame selbst, weil `overflow: hidden` Kind-Ebenen
+- `ContainerSurface` zeichnet die Ebenen um den Inhalt,
+  `getContainerSurfaceStyle` (`containerSurfaceStyle.ts`) setzt die
+  CSS-Variablen am Element darum; die Klasse `.container-surface` gibt
+  ihm Position, Radius, Schatten, `overflow: hidden` und Isolation.
+  Frame und Vorschau zeigen so denselben Container.
+- Schatten am Element selbst, weil `overflow: hidden` Kind-Ebenen
   abschneidet, den eigenen `box-shadow` aber nicht.
 - Blur, Korn und Innenschatten haben eigene Ebenen mit `z-index: -1`;
   die DOM-Reihenfolge legt sie übereinander. Blur und Korn werden nur
@@ -675,54 +681,45 @@ Textebenen in Figma:
 ### Farbwerte
 
 Jedes Farbfeld der Specs ist ein `ColorValue` aus
-`src/shared/colorValue.ts`: `{ kind: 'token'; token }` folgt dem Theme,
-`{ kind: 'custom'; color }` ist eine feste Hex-Farbe. Das gilt für
-`TextStyle`, die Farben im `Paint` von `StrokeStyle` und `Fill` (Solid
-und jeder Stopp, auch in den Hintergründen von Container und Canvas),
-die Chartfarbe (`appearance.color`), die Enden der
-kontinuierlichen Farbskala und `legend.inactiveColor`. Auch die
-kategorische Palette ist `ColorValue[]`
-(`colorScale.categorical.palette`): „Default“ besteht aus
-`chart1`–`chart5`, die übrigen Presets (Vivid, Pastel, Contrast) aus
-festen Farben; `resolvePalette` löst sie im Adapter auf.
+`src/shared/colorValue.ts`, eine feste Hex-Farbe
+(`{ kind: 'custom'; color }`). Das gilt für `TextStyle`, die Farben im
+`Paint` von `StrokeStyle` und `Fill` (Solid und jeder Stopp, auch in den
+Hintergründen von Container und Canvas), die Chartfarbe
+(`appearance.color`), die Enden der kontinuierlichen Farbskala,
+`legend.inactiveColor` und Schatten. Auch die kategorische Palette ist
+`ColorValue[]` (`colorScale.categorical.palette`); `resolvePalette` löst
+sie im Adapter auf.
 
-- `ColorToken` hat fachliche Namen: Struktur (`text`, `textMuted`,
-  `accent`, `gridLine`, `border`, `inactive`) und Daten
-  (`chart1`–`chart5`); `COLOR_TOKEN_VARIABLES` ordnet jedem Token seine
-  CSS-Variable aus `styles/themes.css` zu, `accent` die aus
-  `styles/dashboard.css` (`--dashboard-accent`), damit gespeicherte
-  Specs nicht an CSS-Namen hängen
-- Standardwerte folgen dem Theme: Texte, Gridlines, Container-Rahmen
-  und Legend-Inactive nutzen Struktur-Tokens, Markfarbe und
-  Default-Palette die Daten-Tokens; `custom` sind die Enden der
-  kontinuierlichen Farbskala und die Hintergründe von Canvas
-  (`#141518`) und Container (`#202226`), weil ein Dashboard Inhalt ist
-  und nicht dem Editor-Theme folgt
-- Standardwerte liegen als Konstanten bei der Domain, die sie
-  erzeugt: `objects/objectDefaults.ts` für alle Objekttypen
-  (`TITLE_TEXT_STYLE`, `CONTAINER_BORDER`, `createDefaultTitle`,
-  `createDefaultContainer`), `createChartInstance` für Charts
-  (`CHART_TEXT_STYLE`, `CHART_GRID_LINES`), `createCardInstance` für
-  Cards (`CARD_VALUE_TEXT_STYLE`, `CARD_SELECTION_LABEL_TEXT_STYLE`).
-  Format-Widgets lesen daraus das „Default“-Feld des Farbwählers, damit
-  es dem Ausgangszustand neuer Objekte entspricht
-- HTML löst über `getColorCss` auf (`var(--…)` bzw. Hex); die
-  CSS-Helper `getTextStyleCss` und `getPaintCss` nutzen ihn
-- ECharts kennt keine CSS-Variablen: `readChartTheme` in
-  `EChartCanvas` liest die aktuellen Werte vom Chart-Element
-  (`instance.getDom()`) in `ChartTheme.colors`,
-  `resolveColor` im Adapter löst damit auf. `theme` hängt am
-  `ChartContentContext`; `createTextStyleOption`,
-  `createStrokeStyleOption` und `createFillOption` nehmen es als
-  zweiten Parameter
-- geplant: `{ kind: 'rule' }` für bedingte Formatierung und
-  `{ kind: 'series' }` für Elemente, die der Serienfarbe folgen; beide
-  sind neue Varianten ohne Formänderung
+- Seit den Dashboard-Styles gibt es keine Tokens mehr: Eine Farbe in der
+  Spec folgt weder dem Editor-Theme noch dem Style, sie bleibt, wie sie
+  geschrieben wurde. Rollennamen (`text`, `textMuted`, `axis`, …) gibt
+  es nur im Style (siehe „Dashboard-Styles“).
+- `ColorValue` bleibt eine Union mit `kind`; geplant sind
+  `{ kind: 'rule' }` für bedingte Formatierung und `{ kind: 'series' }`
+  für Elemente in der Serienfarbe, beide ohne Formänderung.
+  `isColorValue` erkennt eine Farbe, wenn eine Funktion eine ganze
+  Appearance durchläuft (`takeStyleColors`).
+- Standardwerte erzeugen die Default-Funktionen der Domain aus dem
+  aktuellen Style: `createDefaultTitle` und `createDefaultContainer`
+  (`objects/objectDefaults.ts`), `createDefaultChartSpec`
+  (`createChartInstance`) und `createDefaultCardSpec`
+  (`createCardInstance`); `createColorValue` macht aus einer Hex-Farbe
+  des Styles den Wert der Spec.
+- HTML löst über `getColorCss` auf (Hex, unter voller Deckkraft mit
+  `transparent` gemischt); `getTextStyleCss` und `getPaintCss` nutzen
+  ihn. ECharts bekommt dieselben Farben über `resolveColor`; die
+  Adapter-Helper (`createTextStyleOption`, `createStrokeStyleOption`,
+  `createFillOption`, `createPaintColor`, …) brauchen dafür kein Theme.
+- `ChartTheme` (`charts/echarts/chartTheme.ts`) trägt nur den Style
+  (Brush, Dimmen, Tooltip) und den Format-Fokus der App. `readChartTheme`
+  in `EChartCanvas` liest aus dem CSS am Chart-Element nur
+  `--color-accent`; der Style kommt als Prop vom Workspace. `theme` hängt
+  am `ChartContentContext`.
 - `data-theme` steht fest auf `dark` in `index.html`; einen Umschalter
-  gibt es noch nicht. ECharts erhält aufgelöste Farben, deshalb
+  gibt es noch nicht. Weil der Format-Fokus aus dem App-Theme kommt,
   beobachtet `useDocumentTheme` (`charts/`) das Attribut und ist eine
-  Abhängigkeit des Zeichen-Effekts: Bei einem Wechsel zeichnen die
-  Charts neu
+  Abhängigkeit des Zeichen-Effekts; ein Wechsel des Styles zeichnet die
+  Charts über die Spec neu.
 
 ### Farbebenen
 
@@ -731,23 +728,27 @@ ein Dashboard mit eigener Markenfarbe nicht gegen ein blaues Editor-UI
 arbeitet. So halten es auch Figma, Power BI und Tableau: neutrales
 Werkzeug, Farbe gehört dem Inhalt.
 
-| Ebene     | Teile                                                           | Quelle                                                              |
-| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
-| App       | Rail, TopBar, Toolbar, Popover, Controls, Auswahl, Format-Fokus | `styles/themes.css` (`--color-*`, `--glass-*`)                      |
-| Dashboard | Canvas, Container, Akzent im Inhalt (Card-Wert, Brush)          | `canvas.background`, `container.background`, `styles/dashboard.css` |
-| Daten     | Serien, Paletten, Farbskala                                     | `--chart-1` bis `--chart-5`, Paletten                               |
+| Ebene     | Teile                                                                   | Quelle                                                 |
+| --------- | ----------------------------------------------------------------------- | ------------------------------------------------------ |
+| App       | Rail, TopBar, Toolbar, Popover, Controls, Auswahl, Format-Fokus         | `styles/themes.css` (`--color-*`, `--glass-*`)         |
+| Dashboard | Canvas, Container, Titel, Texte, Achsen, Raster, Akzent, Tooltip, Brush | Werte in der Spec; dashboard-weite Werte aus dem Style |
+| Daten     | Serien, Paletten, Farbskala                                             | Palette in der Spec, ihr Standard aus dem Style        |
 
-- Dashboard-Tokens (`--dashboard-*`) verweisen nie auf App-Tokens.
-  Heute gibt es nur `--dashboard-accent` (der `ColorToken` `accent`,
-  standardmäßig neutral); der App-Akzent `--color-accent` bleibt für
-  Zustände.
+- Das Dashboard verweist nie auf App-Farben: Es behält alle Farben, wenn
+  der Editor das Theme wechselt (geprüft mit hellem Dashboard im dunklen
+  Editor und umgekehrt). Der App-Akzent `--color-accent` bleibt für
+  Zustände: Auswahl, Format-Fokus, Ring der aktiven Style-Kachel.
+- Braucht HTML im Dashboard eine Farbe des Styles, die nicht in der Spec
+  steht, setzt die Stelle eine CSS-Variable aus dem Style: `CanvasPanel`
+  setzt `--canvas-text` und `--canvas-text-muted` (Dashboard-Titel,
+  Empty States im Dashboard), der Tooltip setzt `--chart-tooltip-text`
+  und `--chart-tooltip-text-muted` an seinem eigenen Element, weil er am
+  `body` hängt.
 - Canvas und Container sind Flächen aus echten Werten: eine Liste von
-  `Fill` mit Farbe oder Verlauf und Deckkraft, ohne Presets oder Glass,
-  z. B. Grundfarbe plus radiale Leuchtflächen. Rand und Effekte
-  (Schatten, Lichtkante als Innenschatten, Blur, Korn; siehe „Effect“)
-  stellt der Nutzer selbst ein; vorgefertigte
-  Looks kommen als Dashboard-Styles (`ROADMAP.md`, 3.8), die beim
-  Anwenden echte Werte schreiben statt live zu verknüpfen.
+  `Fill` mit Farbe oder Verlauf und Deckkraft, z. B. Grundfarbe plus
+  radiale Leuchtflächen. Rand und Effekte (Schatten, Lichtkante als
+  Innenschatten, Blur, Korn; siehe „Effect“) stellt der Nutzer selbst ein
+  oder schreibt ein Style beim Anwenden.
 - Beide malen ihre Flächen auf einer eigenen Ebene hinter dem Inhalt:
   `CanvasPanel` setzt `--canvas-background` für `.canvas-panel::before`,
   `ObjectFrame` setzt `--chart-background` für `.chart-item-background`
@@ -757,12 +758,77 @@ Werkzeug, Farbe gehört dem Inhalt.
   deshalb trägt jede Schicht ihre Deckkraft in den Farben; eine
   Solid-Fläche wird ein gleichmäßiger Verlauf, weil nur die unterste
   Schicht eine reine Farbe sein darf. Eine leere Liste ist `none`.
-- Hintergründe sind feste Farben, keine Tokens: Ein Dashboard behält
-  seine Farben, wenn der Editor das Theme wechselt. Texte, Achsen und
-  Raster folgen heute noch App-Tokens; ein eigenes Farbschema je
-  Dashboard gehört zu den Styles.
-- `ChartTheme` trennt beide Akzente: `accent` ist der Dashboard-Akzent
-  (Brush), `formatFocus` der App-Akzent (`syncFormatFocus`).
+
+### Dashboard-Styles
+
+Ein Style ist ein vorgefertigter Look für das ganze Dashboard
+(`src/dashboardStyle/`). Die `DashboardSpec` speichert das Rezept des
+aktuellen Styles (`style`); alle Werte entstehen daraus.
+
+```ts
+type StyleRecipe = {
+  accent: string
+  canvas: {
+    base: string
+    glows: CanvasGlow[] // RadialShape & { color }
+  }
+  material: 'frosted' | 'glass' | 'solid'
+  name: string
+  scheme: 'dark' | 'light'
+  surface: string // Grundton der Container
+}
+```
+
+`StyleRecipe` (Spec) → `createDashboardStyle` → `DashboardStyle` →
+Default-Funktionen (neue Objekte), Anwenden, `ChartTheme` (Brush,
+Dimmen, Tooltip), Galerie und Schnellauswahl im Farbwähler.
+
+- `createDashboardStyle` ist rein; der Workspace leitet den Style per
+  `useMemo` aus der Spec ab (`style` aus `useChartWorkspace`), damit die
+  Charts nur bei einem echten Wechsel neu zeichnen. `DashboardStyle`
+  enthält Canvas und Container in der Form der Spec, die Rollenfarben
+  (`StyleColors`: `text`, `textMuted`, `axis`, `gridLine`, `border`,
+  `inactive`, `accent`), die Datenpalette, `dimmedOpacity` und den
+  Tooltip aus Bausteinen (`Fill`, `StrokeStyle`, `Shadow`).
+- Das Schema liefert Rollenfarben, Datenpalette (die geteilte Palette in
+  einer hellen und einer dunklen Variante), Dimmen und Tooltip-Schatten.
+  Der Tooltip nimmt im dunklen Schema die Grundfarbe der Canvas, im
+  hellen die der Container, weil `surface` bei Glas nur eine helle
+  Tönung ist.
+- Das Material (`materials.ts`) erzeugt Fläche, Rand und Effekte jedes
+  Containers; die Detailarbeit steckt dort einmal:
+
+| Material  | erzeugt                                                                                                          |
+| --------- | ---------------------------------------------------------------------------------------------------------------- |
+| `solid`   | eine Fläche aus `surface`, feiner Rand (12 %); im hellen Schema ein weicher Schatten                             |
+| `frosted` | Verlauf 127° aus `surface` (94 % → 59 %), Background Blur 40, Korn; kein Rand, kein Schatten                     |
+| `glass`   | dünner Schleier (Zeile 70 %, Stopps 12 % → 5 %), Lichtkante als Verlaufsrand, Innenschatten, Blur, zwei Schatten |
+
+- Die Canvas besteht aus den Leuchtflächen (radiale Verläufe einer
+  Farbe, oben in der Liste) und der Grundfarbe darunter. Helle Styles
+  trennen weiße Container über eine getönte Grundfarbe.
+- `styleRecipes.ts` hält die Rezepte (`STYLE_RECIPES`): Graphite
+  (Standard), Midnight, Daylight, Bloom, Indigo. Ein neuer Style ist ein
+  Material plus wenige Farben.
+- Neue Objekte entstehen im aktuellen Style: `createObject`,
+  `createChartActions` (Charttyp wechseln) und `translateCevynActions`
+  reichen ihn an die Default-Funktionen.
+- Anwenden statt Verknüpfen: `createApplyStyleActions`
+  (`applyDashboardStyle.ts`) erzeugt `dashboard/update` (Rezept und
+  Canvas), je Objekt `object/updateContainer` (Fläche, Rand und Effekte
+  aus dem Material; Radius und Padding bleiben) sowie
+  `chart/updateAppearance` bzw. `card/updateAppearance`. `applyStyle`
+  (`CanvasActions`) wendet sie als `history/applyBatch` an, also als ein
+  Undo-Schritt; danach ist jedes Feld frei änderbar.
+- `takeStyleColors(current, defaults)` läuft Appearance und Defaults des
+  Objekttyps im neuen Style parallel durch: Jede Farbe der Defaults
+  (auch Paletten) wird übernommen, alles andere bleibt; ein Wert mit
+  anderem `kind` bleibt ganz (z. B. ein Glow oder ein eigener Verlauf).
+  Ein neues Element ist abgedeckt, sobald seine Default-Farbe aus dem
+  Style kommt; eine zweite Liste gibt es nicht.
+- in Kauf genommen: Ein erneut angewendeter Style überschreibt auch von
+  Hand geänderte Farben (Undo fängt es auf).
+- Dev-Konsole: `cevyn.applyStyle(cevyn.styles.Midnight)`.
 
 ### Container vs. Content
 
