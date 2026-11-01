@@ -69,10 +69,30 @@ export const BLOOM: StyleRecipe = {
   surface: '#FFFFFF',
 }
 
+/**
+ * Dark and saturated: glass containers over an indigo canvas with a
+ * violet light from the top and a darker corner at the bottom left.
+ */
+export const INDIGO: StyleRecipe = {
+  accent: '#8BE9FF',
+  canvas: {
+    base: '#2B1F96',
+    glows: [
+      { centerX: 0.58, centerY: -0.05, color: '#8452FF', radius: 0.35 },
+      { centerX: 0.05, centerY: 1.0, color: '#1E1478', radius: 0.5 },
+    ],
+  },
+  material: 'glass',
+  name: 'Indigo',
+  scheme: 'dark',
+  surface: '#E8E4FF',
+}
+
 /** Styles the gallery offers, in its order. */
 export const STYLE_RECIPES: StyleRecipe[] = [
   GRAPHITE,
   MIDNIGHT,
   DAYLIGHT,
   BLOOM,
+  INDIGO,
 ]

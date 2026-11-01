@@ -124,10 +124,10 @@ function createGlassContainer(recipe: StyleRecipe): StyleContainer {
   return {
     background: [
       {
-        opacity: 1,
+        opacity: 0.7,
         paint: createMaterialGradient(createColorValue(recipe.surface), [
-          { opacity: 0.6, position: 0 },
-          { opacity: 0.3, position: 1 },
+          { opacity: 0.12, position: 0 },
+          { opacity: 0.05, position: 1 },
         ]),
       },
     ],
@@ -135,9 +135,9 @@ function createGlassContainer(recipe: StyleRecipe): StyleContainer {
       lineStyle: 'solid',
       opacity: 1,
       paint: createMaterialGradient(LIGHT_COLOR, [
-        { opacity: 0.5, position: 0 },
-        { opacity: 0.05, position: 0.5 },
-        { opacity: 0.15, position: 1 },
+        { opacity: 0.35, position: 0 },
+        { opacity: 0.06, position: 0.5 },
+        { opacity: 0.14, position: 1 },
       ]),
       width: 1,
     },
@@ -148,17 +148,17 @@ function createGlassContainer(recipe: StyleRecipe): StyleContainer {
         kind: 'shadow',
         offsetX: 0,
         offsetY: 1,
-        opacity: 0.2,
+        opacity: 0.12,
       },
       {
-        blur: 32,
+        blur: 40,
         color: SHADOW_COLOR,
         kind: 'shadow',
         offsetX: 0,
         offsetY: 16,
-        opacity: 0.24,
+        opacity: 0.16,
       },
-      { blur: 24, kind: 'backgroundBlur' },
+      { blur: 32, kind: 'backgroundBlur' },
       { ...DEFAULT_INNER_SHADOW, kind: 'innerShadow' },
     ],
   }
