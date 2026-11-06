@@ -55,6 +55,15 @@ def validate_table_query(
         raise ValueError("Offset must be 0 or more and limit at least 1.")
 
 
+def validate_field_values(limit: int) -> None:
+    """
+    Reject a limit below 1; a negative one would bypass MAX_FIELD_VALUES,
+    because polars reads it as "all rows except the last".
+    """
+    if limit < 1:
+        raise ValueError("Limit must be at least 1.")
+
+
 def build_field_values(
     frame: pl.DataFrame,
     field_name: str,
