@@ -56,6 +56,19 @@ def test_invalid_query_answers_422_with_message(client: TestClient) -> None:
     assert response.json() == {"detail": "Unknown field: city"}
 
 
+def test_field_values_with_negative_limit_answer_422(
+    client: TestClient,
+) -> None:
+    """The values list rejects a limit below 1 instead of ignoring the cap."""
+    response = client.get(
+        f"/datasets/{store.DEMO_DATASET_ID}/fields/country/values",
+        params={"limit": -1},
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {"detail": "Limit must be at least 1."}
+
+
 def test_unknown_dataset_answers_404(client: TestClient) -> None:
     """A request for a dataset that is not loaded is not found."""
     response = client.post(

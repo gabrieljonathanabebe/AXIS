@@ -27,6 +27,7 @@ def get_field_values(
     """Return the most frequent values of a field for the values filter."""
     if field_name not in stored.frame.columns:
         raise HTTPException(status_code=404, detail="Field not found.")
+    table_query.validate_field_values(limit)
     return table_query.build_field_values(
         stored.frame, field_name, search, limit
     )
