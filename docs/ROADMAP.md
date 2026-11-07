@@ -57,7 +57,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 7. Effekte: Schatten, Background Blur und Korn – implementiert
 8. Dashboard-Styles – implementiert
 9. Arbeitsfläche, Format-Panel und Objekt-Layout
-10. Legende, Tooltip und Farbskala mit Bausteinen
+10. Format-Panel-Zeilen, Legende, Tooltip und Farbskala
 11. DateFormat
 12. Sortierung und Top N
 13. Theme-Umschalter in der TopBar (provisorisch)
@@ -116,15 +116,20 @@ Auswählen auf der Seite, Bearbeiten in einem festen Panel.
   die Hülle schon gemeinsam, es entsteht kein zweiter Inspector
 - am Objekt bleiben Pinsel und Enter, die Regionen (Hover-Label, Klick
   wählt das Element) und der Format-Fokus
-- Pinsel oder Enter öffnet das Panel; es bleibt offen, wenn ein anderes
-  Objekt ausgewählt wird, und zeigt dessen Gruppen; Esc oder Einklappen
-  schließt es; es schiebt die Arbeitsfläche zur Seite statt sie zu
+- Enter oder der Pinsel am Objekt öffnet das Panel für das Objekt; es
+  bleibt offen, wenn ein anderes Objekt ausgewählt wird, und zeigt
+  dessen Gruppen; es schiebt die Arbeitsfläche zur Seite statt sie zu
   überdecken, wie die BuildPanel links
-- ⌘⇧B klappt das Panel ein und aus, als Gegenstück zu ⌘B für die
-  BuildPanel
-- ohne Auswahl zeigt das Panel das Dashboard (Styles,
-  Canvas-Hintergrund, Gap) und ersetzt das Zahnrad-Popover; das Zahnrad
-  in der Toolbar öffnet das Panel mit dem Dashboard
+- der Pinsel in der Toolbar und ⌘⇧B klappen das Panel ein und aus, als
+  Gegenstück zu ⌘B für die BuildPanel; eingeklappt bleibt wie links
+  eine schmale Leiste mit Icon; beim Start ist das Panel offen
+- wechselt die Auswahl, bleibt das gewählte Element, wenn das neue
+  Objekt es hat (z. B. Legende von Chart zu Chart), sonst springt es auf
+  „Chart“ bzw. „Card“
+- ohne Auswahl zeigt das Panel das Dashboard (Style, Gap, Background,
+  Animation) wie in Power BI: ein Klick auf eine freie Stelle der Seite
+  oder Esc hebt die Auswahl auf; das Zahnrad-Popover und das Zahnrad in
+  der Toolbar entfallen, die Toolbar ist Undo, Redo und Pinsel
 
 Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit X | Y
 und W | H als Zahlenpaare; Werte in Grid-Zellen (`ObjectLayout`),
@@ -135,18 +140,68 @@ Höhe wieder.
 Vorgehen:
 
 1. Arbeitsfläche und Seite trennen – implementiert
-2. Format-Panel an der Arbeitsfläche, ohne Auswahl mit dem Dashboard
-3. Objekt-Layout
+2. Format-Panel an der Arbeitsfläche, ohne Auswahl mit dem Dashboard –
+   in Arbeit (Hülle und Spalte stehen; Auswahl folgen, Dashboard ohne
+   Auswahl, Zahnrad entfernen offen)
+3. Zeilen-Raster im Panel (siehe unten) – in Arbeit (Raster, Effekte,
+   Zahlenformat stehen; Marks-Zeilen, Überschriften, `ScrubbableNumber`
+   offen)
+4. Elemente zusammenlegen (siehe unten)
+5. Objekt-Layout
+
+Zeilen-Raster: Beide Seitenpanels sind 228 px breit (wie Figmas 240 px).
+Jede Zeile im Format-Panel steht auf einem festen Raster aus zwei
+Feldspalten und einer Icon-Spalte (`1fr 1fr 24px`, Innenabstand 12 px),
+zentral in `ControlRow`; die Icons der Gruppen-Überschriften stehen in
+derselben Spalte.
+
+- Zeilentypen über `ControlRow` (`layout`): Paar (Feld | Feld | Icon,
+  auch die Farbzeile), Einzeln (Feld | leer | Icon), Breit (über beide
+  Spalten | Icon, z. B. Texteingaben, Segmente, lange Selects); eine
+  breite Zeile ohne Icon nimmt auch die Icon-Spalte, Paare behalten sie,
+  damit ihre Felder bündig bleiben
+- pro Zeile höchstens ein Icon in der Icon-Spalte (`action`, Aktion oder
+  Toggle, Größe `xs`); Icon-Gruppen bis 3 Icons passen in eine
+  Feldspalte, ab 4 Icons über beide; Werte links, Icons rechts
+- Mindestbreiten: Selects zeigen ihren Text ganz, Zahlenfelder mit
+  Einheit ab etwa 56 px; passt eine Zeile nicht, wird sie auf zwei
+  Zeilen geteilt (Scatter: Symbol, dann Punktgröße; Animation: Easing,
+  dann Dauer)
+- Effekte wie Farben: ein Feld mit Icon und Name der Art öffnet den
+  Editor, oben die Art als Dropdown, darunter ihre Werte; die Liste der
+  Container-Effekte wird nicht mehr sortiert, wie in Figma
+- Details-Popovers und Farbwähler öffnen links neben der Zeile, oben
+  bündig, und werden nur so weit verschoben, wie das Fenster verlangt
+- das ⚙ einer Farbzeile steht in ihrer Icon-Spalte statt in der
+  Gruppen-Überschrift; Legend → Interaction nur mit Icons und
+  Hover-Titel
+- Zahlenformat ohne ⚙-Popover: Format über die ganze Breite, bei festem
+  Format darunter Dezimalstellen | Notation und eine Vorschau mit Prefix
+  und Suffix (z. B. „€1.2K pro Monat“), die die beiden Felder mit festen
+  Beschriftungen öffnet
+- keine Spezialregeln pro Gruppe; jede Gruppe wählt ihren Zeilentyp
+
+Elemente zusammenlegen: Im Panel ist genug Höhe, also werden kleine
+Elemente aufklappbare Gruppen ihres Elternteils statt eigener Ansichten:
+Data Labels und Tooltip in Marks, X/Y Axis Labels in X/Y Axis, das
+Selection-Label der Card in Value. Ein Klick auf die Region im Objekt
+(z. B. ein Datenlabel) öffnet das Elternteil bei seiner Gruppe; Format-
+Fokus und `getFormatElements` folgen.
 
 Keine Formänderung der Spec.
 
-### 3.10 Legende, Tooltip und Farbskala mit Bausteinen (geplant)
+### 3.10 Format-Panel-Zeilen, Legende, Tooltip und Farbskala (geplant)
 
 Die neuen Zeilen entstehen gleich im Format-Panel (3.9), als Gruppen
 und nach dem Muster aus `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im
 Figma-Stil“ (Farbzeile mit `PaintControl`, Felder mit Icon und Einheit,
 Seltenes hinter ⚙, Auge bzw. ＋/− statt Schaltern, Icon und Wort für
-Verhalten; Icon-Check am Slice-Ende):
+Verhalten; Icon-Check am Slice-Ende).
+
+Zuerst das Panel selbst: Menüs nicht schmaler als ihr Inhalt (z. B. die
+Namen im Menü der Palette).
+
+Danach die Bausteine:
 
 - Legende: Fill (Hintergrund, Farbzeile), Stroke (Rahmen), Radius als
   Feld; Text ist da

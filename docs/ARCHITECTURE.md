@@ -529,8 +529,9 @@ type ContainerEffect =
   `line.effect`, `bar.effect`, `scatter.effect` und `pie.effect`
   (Standard `none`).
 - Container tragen `container.effects` (Standard leer). Die Art legt
-  die Ebene fest, die Liste bleibt nach Ebenen sortiert
-  (`sortContainerEffects`); Background Blur und Korn höchstens einmal
+  die Ebene fest; die Reihenfolge der Liste bestimmt der Nutzer wie in
+  Figma und ändert die Darstellung nur unter Schatten gleicher Art;
+  Background Blur und Korn höchstens einmal
   (`isContainerEffectTaken`), Schatten und Innenschatten mehrfach, z. B.
   Kontakt- und Tiefenschatten.
 - Standardwerte an einer Stelle (`createEffect`,
@@ -642,8 +643,8 @@ Textebenen in Figma:
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
   und Text; die Gruppen des Format-Popovers folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
-- Einführung mit „Legende, Tooltip und Farbskala mit Bausteinen“
-  (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
+- Einführung mit „Format-Panel-Zeilen, Legende, Tooltip und
+  Farbskala“ (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
   Fill, Stroke und Radius bekommen: ein gemeinsamer Baustein für die
   Fläche statt je Element; dort fällt auch die Entscheidung, ob die Spec
   Position und Anordnung trennt.
