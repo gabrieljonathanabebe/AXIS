@@ -27,10 +27,11 @@
 }
 
 .visualize-workspace {
-  --build-panel-width: clamp(208px, 18vw, 224px);
+  --panel-width: 228px;
+  --build-panel-width: var(--panel-width);
   --panel-collapsed-width: calc(var(--control-height-sm) + var(--space-2) * 2);
 
-  grid-template-columns: var(--build-panel-width) minmax(0, 1fr);
+  grid-template-columns: var(--build-panel-width) minmax(0, 1fr) auto;
   align-items: stretch;
   border-radius: var(--radius-lg);
   overflow: hidden;

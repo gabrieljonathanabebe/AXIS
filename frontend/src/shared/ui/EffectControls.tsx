@@ -1,14 +1,17 @@
-import { CircleDashed, Minus } from 'lucide-react'
+import { CircleDashed, Minus, SquareStack, Sun } from 'lucide-react'
 
 import { createEffect } from '../effect'
 import ControlRow from './ControlRow'
-import DetailsPopover from './DetailsPopover'
+import DetailsField from './DetailsField'
+import FormatWidget from './FormatWidget'
 import IconButton from './IconButton'
 import ScrubbableNumber from './ScrubbableNumber'
 import SelectControl from './SelectControl'
 import ShadowControls from './ShadowControls'
 
+import type { ReactNode } from 'react'
 import type { Effect } from '../effect'
+import type { OptionItem } from './OptionsMenu'
 
 // ===== TYPES =================================================================
 type EffectControlsProps = {
@@ -19,72 +22,89 @@ type EffectControlsProps = {
 
 // ===== CONSTANTS =============================================================
 const effectKindOptions = [
-  { label: 'Glow', value: 'glow' },
-  { label: 'Shadow', value: 'shadow' },
-] satisfies {
-  label: string
-  value: Effect['kind']
-}[]
+  { icon: Sun, label: 'Glow', value: 'glow' },
+  { icon: SquareStack, label: 'Shadow', value: 'shadow' },
+] satisfies OptionItem<Effect['kind']>[]
 
 /** Strongest blur; wider blurs wash out and cost drawing time. */
 const MAX_EFFECT_BLUR = 40
 
 // ===== COMPONENT =============================================================
 /**
- * Row of the effect of one mark: its kind, its blur (the intensity of a
- * glow), for a shadow a gear with offset, color and opacity, and a minus
- * that removes the effect. The plus in the heading of the group adds a
- * glow; the glow takes the color of the mark, so it has no gear.
+ * Row of the effect of one mark, built like a paint: a field with icon
+ * and name of its kind opens the editor, which starts with the kind and
+ * holds the values below it; a minus removes the effect. The plus in the
+ * heading of the group adds a glow, which takes the color of the mark.
  * @param props Name of the mark, effect and handler.
  */
 function EffectControls({ label, value, onChange }: EffectControlsProps) {
+  const kind = effectKindOptions.find((option) => option.value === value.kind)
+
+  /**
+   * Values of the effect below its kind: the intensity of a glow, or
+   * offset, blur and color of a shadow.
+   * @returns The groups of the effect.
+   */
+  function getValues(): ReactNode {
+    if (value.kind === 'shadow') {
+      return (
+        <ShadowControls
+          label={`${label} shadow`}
+          maxBlur={MAX_EFFECT_BLUR}
+          value={value}
+          onChange={onChange}
+        />
+      )
+    }
+    return (
+      <FormatWidget title="Intensity">
+        <ControlRow>
+          <ScrubbableNumber
+            icon={<CircleDashed size={14} />}
+            label={`${label} glow intensity`}
+            max={MAX_EFFECT_BLUR}
+            min={1}
+            step={1}
+            value={value.blur}
+            onValueChange={(blur) => onChange({ ...value, blur })}
+          />
+        </ControlRow>
+      </FormatWidget>
+    )
+  }
+
   return (
     <ControlRow
-      actions={
-        <>
-          {value.kind === 'shadow' ? (
-            <DetailsPopover label="Shadow" size="xs">
-              <ShadowControls
-                label={`${label} shadow`}
-                value={value}
-                onChange={onChange}
-              />
-            </DetailsPopover>
-          ) : null}
-          <IconButton
-            label={`Remove ${label.toLowerCase()} effect`}
-            size="xs"
-            variant="ghost"
-            onClick={() => onChange({ kind: 'none' })}
-          >
-            <Minus size={14} />
-          </IconButton>
-        </>
+      action={
+        <IconButton
+          label={`Remove ${label.toLowerCase()} effect`}
+          size="xs"
+          variant="ghost"
+          onClick={() => onChange({ kind: 'none' })}
+        >
+          <Minus size={14} />
+        </IconButton>
       }
+      layout="wide"
     >
-      <SelectControl
+      <DetailsField
+        icon={kind ? <kind.icon size={14} /> : null}
         label={`${label} effect`}
-        options={effectKindOptions}
-        value={value.kind}
-        onChange={(kind) => {
-          if (kind !== value.kind) {
-            onChange(createEffect(kind))
-          }
-        }}
-      />
-      <ScrubbableNumber
-        icon={<CircleDashed size={14} />}
-        label={
-          value.kind === 'glow'
-            ? `${label} glow intensity`
-            : `${label} shadow blur`
-        }
-        max={MAX_EFFECT_BLUR}
-        min={value.kind === 'glow' ? 1 : 0}
-        step={1}
-        value={value.blur}
-        onValueChange={(blur) => onChange({ ...value, blur })}
-      />
+        text={kind?.label ?? ''}
+      >
+        <SelectControl
+          label={`${label} effect kind`}
+          options={effectKindOptions}
+          value={value.kind}
+          variant="title"
+          onChange={(nextKind) => {
+            if (nextKind !== value.kind) {
+              onChange(createEffect(nextKind))
+            }
+          }}
+        />
+        {getValues()}
+      </DetailsField>
     </ControlRow>
   )
 }

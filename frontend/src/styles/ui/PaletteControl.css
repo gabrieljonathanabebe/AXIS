@@ -24,3 +24,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* In the button of the select the strip alone shows the palette; the
+   menu still names it. */
+.select-control-value .palette-control-name {
+  display: none;
+}

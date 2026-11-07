@@ -6,52 +6,45 @@
   min-height: 36px;
 }
 
+/* Grid of the format panel: two field columns and an icon column that
+   rows keep, also when empty, so fields and icons of all rows line up
+   with the icons of the group headings. */
 .control-row-compact {
   --field-border-color: transparent;
   --field-font-size: var(--font-size-xs);
   --field-width: 100%;
 
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-columns: auto;
-  grid-auto-flow: column;
-  gap: var(--space-2);
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr))
+    var(--control-row-icon-width);
+  gap: var(--control-row-gap);
   min-height: var(--control-height-sm);
 }
 
-.control-row-compact > .text-input:only-child {
-  grid-column: 1 / -1;
-}
-
-/* A segmented control without a field next to it spans both columns,
-   e.g. Points; icon buttons such as a minus still follow it. */
-.control-row-compact
-  > .segmented-control:first-child:not(:has(+ :not(.control))) {
+/* One field across both field columns, e.g. a text input, a segmented
+   control or a select with a long name. */
+.control-row-compact.is-wide > :first-child {
   grid-column: span 2;
 }
 
-/* An icon button after a single field sits at the end of the row, e.g. a
-   minus after one number field. */
-.control-row-compact > .control {
-  justify-self: end;
+/* Without an icon a wide row also takes the icon column, e.g. the
+   function of a card; pairs keep it, so their fields stay aligned. */
+.control-row-compact.is-wide:not(:has(> .control-row-icon)) > :first-child {
+  grid-column: 1 / -1;
 }
 
-/* Icon buttons at the end of a row, e.g. gear and minus of an effect. The
-   slot keeps the width of two buttons, so the fields of a list line up
-   whether a row shows its gear or not; the first field gets twice the
-   room of the second, so kind names such as "Inner shadow" stay readable
-   next to a short value. */
-.control-row-compact:has(> .control-row-actions) {
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+/* A pair that asks for it takes the whole width, e.g. the decimal places
+   and notation of a number format, whose rows have no icons. */
+.control-row-compact.is-full {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-/* The slot always takes the last column, also after a single field, so
-   its buttons end at the same edge as the actions of a widget header. */
-.control-row-actions {
-  --cluster-gap: var(--space-1);
-
+/* The one icon of a row, e.g. a minus or the italic toggle; always in the
+   icon column, also after a single field. */
+.control-row-icon {
+  display: flex;
   grid-column: -2;
-  justify-content: flex-end;
-  min-width: calc(2 * var(--control-height-xs) + var(--space-1));
+  justify-content: center;
 }
 
 .control-row-label {

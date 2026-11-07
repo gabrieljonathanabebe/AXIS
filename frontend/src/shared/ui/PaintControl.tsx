@@ -11,7 +11,6 @@ import ColorPicker from './ColorPicker'
 import ControlRow from './ControlRow'
 import DetailsPopover from './DetailsPopover'
 import FormatWidget from './FormatWidget'
-import FormatWidgetAction from './FormatWidgetAction'
 import GradientStopsControl from './GradientStopsControl'
 import PaintField from './PaintField'
 import RotationDial from './RotationDial'
@@ -25,7 +24,7 @@ import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================
 type PaintControlProps<TValue extends Fill<Paint | SeriesPaint>> = {
-  actions?: ReactNode
+  action?: ReactNode
   details?: ReactNode
   label: string
   open?: boolean
@@ -63,16 +62,16 @@ const MAX_RADIAL_RADIUS = 200
  * editor: type with the angle of a linear gradient, then the color, or
  * center and radius of a radial gradient and its stops. A paint in the
  * series color shows `seriesColor`, the field of the data color, and its
- * editor, type and the ends of a fade, behind a gear in the header of
- * the format widget; given `details` take that gear. With only one of
- * `paintTypes` there is no type to pick. `actions` end the row, e.g. a
- * minus in a list; `open` and `onOpenChange` let a list open the editor
- * of an own color, e.g. right after adding the fill.
- * @param props Fill or stroke, swatches, types, series color, actions,
+ * editor, type and the ends of a fade, behind a gear in the icon column
+ * of the row; given `details` take that gear. With only one of
+ * `paintTypes` there is no type to pick. `action` takes the icon column
+ * instead, e.g. a minus in a list; `open` and `onOpenChange` let a list
+ * open the editor of an own color, e.g. right after adding the fill.
+ * @param props Fill or stroke, swatches, types, series color, action,
  *   open state and handlers.
  */
 function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
-  actions,
+  action,
   details,
   label,
   open,
@@ -121,7 +120,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
       return null
     }
     return (
-      <ControlRow>
+      <ControlRow layout="wide">
         <SegmentedControl
           label={`${label} paint type`}
           options={typeOptions}
@@ -302,7 +301,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
   }
 
   /**
-   * Gear for the header of the format widget: the given details, else the
+   * Gear for the icon column of the row: the given details, else the
    * editor of a paint in the series color, whose field cannot open it.
    * @returns The gear with its popover, or nothing for an own color.
    */
@@ -320,7 +319,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
 
   // ===== JSX RETURN ==========================================================
   return (
-    <ControlRow actions={actions}>
+    <ControlRow action={action ?? getDetails()}>
       {getField()}
       <ScrubbableNumber
         icon={<Blend size={14} />}
@@ -334,7 +333,6 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
           onChange({ ...value, opacity: percent / 100 })
         }}
       />
-      <FormatWidgetAction>{getDetails()}</FormatWidgetAction>
     </ControlRow>
   )
 }

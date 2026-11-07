@@ -1,4 +1,4 @@
-import { Blend } from 'lucide-react'
+import { Blend, CircleDashed } from 'lucide-react'
 
 import ColorField from './ColorField'
 import ControlRow from './ControlRow'
@@ -10,6 +10,7 @@ import type { Shadow } from '../effect'
 // ===== TYPES =================================================================
 type ShadowControlsProps<TValue extends Shadow> = {
   label: string
+  maxBlur: number
   value: TValue
   onChange: (value: TValue) => void
 }
@@ -21,13 +22,14 @@ const MAX_SHADOW_OFFSET = 40
 // ===== COMPONENT =============================================================
 /**
  * Details of a shadow behind its gear: the offset to the right and down,
- * then color and opacity. The blur stays in the row of the effect, so
- * marks and containers show it at a glance.
- * @param props Name for screen readers, shadow and handler; the shadow
- *   keeps its other fields, e.g. its kind.
+ * the blur, then color and opacity. The row of the effect shows only its
+ * kind, like in Figma.
+ * @param props Name for screen readers, widest blur, shadow and handler;
+ *   the shadow keeps its other fields, e.g. its kind.
  */
 function ShadowControls<TValue extends Shadow>({
   label,
+  maxBlur,
   value,
   onChange,
 }: ShadowControlsProps<TValue>) {
@@ -52,6 +54,19 @@ function ShadowControls<TValue extends Shadow>({
             step={1}
             value={value.offsetY}
             onValueChange={(offsetY) => onChange({ ...value, offsetY })}
+          />
+        </ControlRow>
+      </FormatWidget>
+      <FormatWidget title="Blur">
+        <ControlRow>
+          <ScrubbableNumber
+            icon={<CircleDashed size={14} />}
+            label={`${label} blur`}
+            max={maxBlur}
+            min={0}
+            step={1}
+            value={value.blur}
+            onValueChange={(blur) => onChange({ ...value, blur })}
           />
         </ControlRow>
       </FormatWidget>

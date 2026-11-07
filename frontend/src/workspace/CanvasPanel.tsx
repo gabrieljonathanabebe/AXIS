@@ -7,7 +7,7 @@ import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import ChartGrid from './ChartGrid'
-import DashboardSettingsPopover from './DashboardSettingsPopover'
+import DashboardFormatPanel from './DashboardFormatPanel'
 
 import type { CSSProperties } from 'react'
 import type { AskCevynState } from '../ai/useAskCevyn'
@@ -86,11 +86,11 @@ function CanvasPanel({
             variant="ghost"
           />
           <CommandButton
-            command={commands['object.format']}
+            command={commands['layout.toggleFormatPanel']}
             size="sm"
             variant="ghost"
           />
-          <DashboardSettingsPopover actions={actions} dashboard={dashboard} />
+          <DashboardFormatPanel actions={actions} dashboard={dashboard} />
         </>
       }
       className="canvas-panel"

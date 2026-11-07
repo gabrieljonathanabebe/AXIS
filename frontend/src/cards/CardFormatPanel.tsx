@@ -1,6 +1,6 @@
 import ContainerWidget from '../objects/ContainerWidget'
-import ObjectFormatPopover from '../objects/ObjectFormatPopover'
 import ObjectTitleWidget from '../objects/ObjectTitleWidget'
+import FormatPanel from '../shared/ui/FormatPanel'
 import FormatWidget from '../shared/ui/FormatWidget'
 import TextStyleControls from '../shared/ui/TextStyleControls'
 import CardValueWidget from './CardValueWidget'
@@ -9,21 +9,20 @@ import { getDefaultCardTitle } from './getCardTitle'
 
 import type { ReactNode } from 'react'
 import type { DataField } from '../datasets/types'
-import type { FormatElementOption } from '../objects/ObjectFormatPopover'
-import type { FormatTarget } from '../objects/types'
+import type { FormatElementOption } from '../shared/ui/FormatPanel'
 import type { FormatVisibility } from '../shared/ui/FormatWidget'
 import type { CanvasActions } from '../workspace/types'
 import type { CardFormatElement, CardInstance } from './types'
 
 // ===== TYPES =================================================================
-type CardFormatPopoverProps = {
+type CardFormatPanelProps = {
   actions: CanvasActions
   card: CardInstance
   element: CardFormatElement
   fields: DataField[]
-  target: FormatTarget
-  onClose: () => void
+  isCollapsed: boolean
   onElementChange: (element: CardFormatElement) => void
+  onToggleCollapse: () => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -43,7 +42,7 @@ const elementOptions: FormatElementOption<CardFormatElement>[] = [
  */
 function renderFormatWidget(
   element: CardFormatElement,
-  { actions, card, fields }: CardFormatPopoverProps,
+  { actions, card, fields }: CardFormatPanelProps,
 ): ReactNode {
   const { appearance, data } = card.spec
   switch (element) {
@@ -109,7 +108,7 @@ function renderFormatWidget(
  */
 function getElementVisibility(
   element: CardFormatElement,
-  { actions, card }: CardFormatPopoverProps,
+  { actions, card }: CardFormatPanelProps,
 ): FormatVisibility | undefined {
   const { selectionLabel, title } = card.spec.appearance
   switch (element) {
@@ -135,24 +134,26 @@ function getElementVisibility(
 
 // ===== COMPONENT =============================================================
 /**
- * Shows the format widget of one card element next to the card.
+ * Shows the format widget of one card element in the format panel.
  * The element select switches between title and value.
  */
-function CardFormatPopover(props: CardFormatPopoverProps) {
-  const { element, target, onClose, onElementChange } = props
+function CardFormatPanel(props: CardFormatPanelProps) {
+  const { element, isCollapsed, onElementChange, onToggleCollapse } = props
   return (
-    <ObjectFormatPopover
-      element={element}
-      elementOptions={elementOptions}
+    <FormatPanel
+      elementSelect={{
+        element,
+        options: elementOptions,
+        onChange: onElementChange,
+      }}
+      isCollapsed={isCollapsed}
       label="Card format"
-      target={target}
       visibility={getElementVisibility(element, props)}
-      onClose={onClose}
-      onElementChange={onElementChange}
+      onToggleCollapse={onToggleCollapse}
     >
       {renderFormatWidget(element, props)}
-    </ObjectFormatPopover>
+    </FormatPanel>
   )
 }
 
-export default CardFormatPopover
+export default CardFormatPanel

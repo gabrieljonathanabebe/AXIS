@@ -24,8 +24,8 @@ const easingOptions = [
 
 /**
  * Animation group of the dashboard: without animation only the plus in its
- * heading, which adds the default animation, else the row with the speed
- * curve and duration of all chart animations and a minus that removes it.
+ * heading, which adds the default animation, else the speed curve with a
+ * minus that removes it and below it the duration of all chart animations.
  */
 function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   if (!value.enabled) {
@@ -38,13 +38,27 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   }
   return (
     <FormatWidget title="Animation">
-      <ControlRow>
+      <ControlRow
+        action={
+          <IconButton
+            label="Remove animation"
+            size="xs"
+            variant="ghost"
+            onClick={() => onChange({ ...value, enabled: false })}
+          >
+            <Minus size={14} />
+          </IconButton>
+        }
+        layout="wide"
+      >
         <SelectControl
           label="Animation easing"
           options={easingOptions}
           value={value.easing}
           onChange={(easing) => onChange({ ...value, easing })}
         />
+      </ControlRow>
+      <ControlRow layout="single">
         <ScrubbableNumber
           icon={<Timer size={14} />}
           label="Animation duration"
@@ -55,14 +69,6 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
           value={value.duration}
           onValueChange={(duration) => onChange({ ...value, duration })}
         />
-        <IconButton
-          label="Remove animation"
-          size="sm"
-          variant="ghost"
-          onClick={() => onChange({ ...value, enabled: false })}
-        >
-          <Minus size={14} />
-        </IconButton>
       </ControlRow>
     </FormatWidget>
   )

@@ -1,8 +1,8 @@
 import { Fragment } from 'react'
 
 import ContainerWidget from '../../objects/ContainerWidget'
-import ObjectFormatPopover from '../../objects/ObjectFormatPopover'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
+import FormatPanel from '../../shared/ui/FormatPanel'
 import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
 import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
@@ -17,16 +17,15 @@ import TooltipWidget from './TooltipWidget'
 import ZoomWidget from './ZoomWidget'
 
 import type { ReactNode } from 'react'
-import type { FormatTarget } from '../../objects/types'
 import type { FormatVisibility } from '../../shared/ui/FormatWidget'
 import type { ChartFormatElement, ChartFormatProps } from '../types'
 
 // ===== TYPES =================================================================
-type ChartFormatPopoverProps = ChartFormatProps & {
+type ChartFormatPanelProps = ChartFormatProps & {
   element: ChartFormatElement
-  target: FormatTarget
-  onClose: () => void
+  isCollapsed: boolean
   onElementChange: (element: ChartFormatElement) => void
+  onToggleCollapse: () => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -243,34 +242,36 @@ function getElementVisibility(
 
 // ===== FUNCTION ==============================================================
 /**
- * Shows the format groups of one chart element next to the chart.
+ * Shows the format groups of one chart element in the format panel.
  * The element select switches between the elements of the same chart.
  */
-function ChartFormatPopover({
+function ChartFormatPanel({
   element,
-  target,
-  onClose,
+  isCollapsed,
   onElementChange,
+  onToggleCollapse,
   ...formatProps
-}: ChartFormatPopoverProps) {
+}: ChartFormatPanelProps) {
   const { chart, fields } = formatProps
   const elementOptions = getFormatElements(chart, fields).map((element) => ({
     label: elementTitles[element],
     value: element,
   }))
   return (
-    <ObjectFormatPopover
-      element={element}
-      elementOptions={elementOptions}
+    <FormatPanel
+      elementSelect={{
+        element,
+        options: elementOptions,
+        onChange: onElementChange,
+      }}
+      isCollapsed={isCollapsed}
       label="Chart format"
-      target={target}
       visibility={getElementVisibility(element, formatProps)}
-      onClose={onClose}
-      onElementChange={onElementChange}
+      onToggleCollapse={onToggleCollapse}
     >
       {getFormatGroups(element, formatProps, onElementChange)}
-    </ObjectFormatPopover>
+    </FormatPanel>
   )
 }
 
-export default ChartFormatPopover
+export default ChartFormatPanel

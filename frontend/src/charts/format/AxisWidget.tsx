@@ -51,7 +51,7 @@ function AxisWidget({
           },
         }}
       >
-        <ControlRow>
+        <ControlRow layout="wide">
           <TextInput
             label={`${title} title`}
             value={value.title.text}

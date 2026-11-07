@@ -1,6 +1,6 @@
 .scrubbable-number {
   display: grid;
-  grid-template-columns: 24px minmax(42px, 1fr) auto;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
   width: var(--field-width, 84px);
   min-width: 0;
   height: var(--control-height-sm);

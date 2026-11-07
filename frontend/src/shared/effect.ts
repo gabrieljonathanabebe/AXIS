@@ -35,14 +35,6 @@ export type ContainerEffect =
   | { blur: number; kind: 'backgroundBlur' }
   | { kind: 'noise'; opacity: number; size: number }
 
-/** Layers of the container effects from the bottom, as the list shows. */
-const CONTAINER_EFFECT_ORDER: ContainerEffect['kind'][] = [
-  'shadow',
-  'backgroundBlur',
-  'noise',
-  'innerShadow',
-]
-
 /** Kinds a container takes at most once; shadows may stack. */
 const SINGLE_CONTAINER_EFFECTS: ContainerEffect['kind'][] = [
   'backgroundBlur',
@@ -134,23 +126,6 @@ export function getShadowsCss(shadows: Shadow[], inset = false): string {
       return `${inset ? 'inset ' : ''}${offset} ${getColorCss(color, opacity)}`
     })
     .join(', ')
-}
-
-/**
- * Sorts the effects of a container by their layers from the bottom, the
- * order the list shows; effects of one kind keep their order.
- * @param effects Effects of a container, e.g. after a kind changed.
- * @returns A new sorted list.
- */
-export function sortContainerEffects(
-  effects: ContainerEffect[],
-): ContainerEffect[] {
-  return [...effects].sort((first, second) => {
-    return (
-      CONTAINER_EFFECT_ORDER.indexOf(first.kind) -
-      CONTAINER_EFFECT_ORDER.indexOf(second.kind)
-    )
-  })
 }
 
 /**

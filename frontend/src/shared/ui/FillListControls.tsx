@@ -52,7 +52,7 @@ function FillListControls({ label, value, onChange }: FillListControlsProps) {
     <PaintControl
       // Fills carry no id; rows keep their place in the list.
       key={index}
-      actions={
+      action={
         <IconButton
           label={`Remove ${label.toLowerCase()} fill ${index + 1}`}
           size="xs"

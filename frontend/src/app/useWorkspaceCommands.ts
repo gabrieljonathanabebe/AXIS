@@ -9,6 +9,7 @@ type UseWorkspaceCommandsParams = {
   canRedo: boolean
   canUndo: boolean
   isFormatOpen: boolean
+  isFormatPanelCollapsed: boolean
   selectedObjectId: string | null
   selectedObjectLabel: string
   onCloseFormat: () => void
@@ -17,6 +18,7 @@ type UseWorkspaceCommandsParams = {
   onRedo: () => void
   onRemoveObject: (objectId: string) => void
   onToggleBuildPanel: () => void
+  onToggleFormatPanel: () => void
   onUndo: () => void
 }
 
@@ -26,6 +28,7 @@ export function useWorkspaceCommands({
   canRedo,
   canUndo,
   isFormatOpen,
+  isFormatPanelCollapsed,
   selectedObjectId,
   selectedObjectLabel,
   onCloseFormat,
@@ -34,6 +37,7 @@ export function useWorkspaceCommands({
   onRedo,
   onRemoveObject,
   onToggleBuildPanel,
+  onToggleFormatPanel,
   onUndo,
 }: UseWorkspaceCommandsParams): WorkspaceCommands {
   const commands: WorkspaceCommands = {
@@ -66,6 +70,16 @@ export function useWorkspaceCommands({
       run: onToggleBuildPanel,
       scope: 'global',
       shortcuts: [{ key: 'b', mod: true }],
+    },
+    'layout.toggleFormatPanel': {
+      icon: Paintbrush,
+      id: 'layout.toggleFormatPanel',
+      isActive: !isFormatPanelCollapsed,
+      isEnabled: true,
+      label: 'Toggle Format panel',
+      run: onToggleFormatPanel,
+      scope: 'global',
+      shortcuts: [{ key: 'b', mod: true, shift: true }],
     },
     'object.delete': {
       icon: Trash2,

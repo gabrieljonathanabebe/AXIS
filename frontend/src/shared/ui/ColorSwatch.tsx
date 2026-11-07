@@ -42,6 +42,8 @@ function ColorSwatch<TPreset extends string = never>({
       <Popover
         label={`${label} color`}
         open={isOpen}
+        placement="left-start"
+        flipsAlignment={false}
         className="color-swatch-popover glass glass-thick"
         onOpenChange={setIsOpen}
         renderTrigger={(triggerProps) => (

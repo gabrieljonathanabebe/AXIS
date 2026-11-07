@@ -1,6 +1,6 @@
 import { SquareRoundCorner } from 'lucide-react'
 
-import { createContainerEffect, sortContainerEffects } from '../shared/effect'
+import { createContainerEffect } from '../shared/effect'
 import { addFill } from '../shared/fill'
 import ContainerEffectsControls from '../shared/ui/ContainerEffectsControls'
 import ControlRow from '../shared/ui/ControlRow'
@@ -67,13 +67,10 @@ function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
       <FormatWidget
         title="Effects"
         onAdd={() => {
-          onChange(
-            'effects',
-            sortContainerEffects([
-              ...value.effects,
-              createContainerEffect('shadow'),
-            ]),
-          )
+          onChange('effects', [
+            ...value.effects,
+            createContainerEffect('shadow'),
+          ])
         }}
       >
         {value.effects.length > 0 ? (

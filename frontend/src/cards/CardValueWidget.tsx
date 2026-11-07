@@ -32,7 +32,7 @@ function CardValueWidget({
   return (
     <>
       <FormatWidget title="Function">
-        <ControlRow>
+        <ControlRow layout="wide">
           <SelectControl
             disabled={aggregations.length < 2}
             label="Value aggregation"

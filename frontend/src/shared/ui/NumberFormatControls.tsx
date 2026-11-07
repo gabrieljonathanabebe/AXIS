@@ -1,9 +1,13 @@
-import { DecimalsArrowRight } from 'lucide-react'
+import { DecimalsArrowRight, TextCursorInput } from 'lucide-react'
 
-import { formatCompactNumber, formatNumber } from '../format/formatNumber'
+import {
+  createNumberFormatter,
+  formatCompactNumber,
+  formatNumber,
+} from '../format/formatNumber'
 import { CURRENCY_OPTIONS } from '../format/valueFormats'
 import ControlRow from './ControlRow'
-import DetailsPopover from './DetailsPopover'
+import DetailsField from './DetailsField'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 import SelectControl from './SelectControl'
@@ -45,8 +49,11 @@ const formatOrDateOptions = [
   { label: 'Date', value: 'date' },
 ] satisfies { label: string; value: FormatChoice | 'date' }[]
 
-/** Value the notation options show, e.g. as 1,234,567 and 1.2M. */
-const NOTATION_EXAMPLE = 1234567
+/** Value the notation options show, e.g. as 1,200 and 1.2K. */
+const NOTATION_EXAMPLE = 1200
+
+/** Share the preview of a percent format shows, e.g. as 12.5%. */
+const PERCENT_EXAMPLE = 0.125
 
 const notationOptions = [
   { label: formatNumber(NOTATION_EXAMPLE), value: 'standard' },
@@ -83,13 +90,25 @@ function applyFormatChoice(
     : { ...value, style: choice }
 }
 
+/**
+ * Text of the preview: an example value in the format, with prefix and
+ * suffix, e.g. "€1,200.00 per month".
+ * @param value Number format of the element.
+ * @returns The example as the element would show it.
+ */
+function getPreview(value: NumberFormat): string {
+  const example = value.style === 'percent' ? PERCENT_EXAMPLE : NOTATION_EXAMPLE
+  return createNumberFormatter(value)(example)
+}
+
 // ===== COMPONENT =============================================================
 /**
- * Row of one number format: format with currency, decimal places and a gear
- * for notation, prefix and suffix. With auto the place that shows the value
- * decides, so only the format select shows. With `onDate` the select also
- * offers Date, e.g. for axis labels; `isDate` marks it as chosen and hides
- * the rest of the row.
+ * Rows of one number format: the format with currency across the row,
+ * then for a fixed format the decimal places and the notation, and a
+ * preview of the result whose icon opens prefix and suffix with fixed
+ * names. With auto the place that shows the value decides, so only the
+ * format select shows. With `onDate` the select also offers Date, e.g.
+ * for axis labels; `isDate` marks it as chosen and hides the rest.
  */
 function NumberFormatControls({
   isDate = false,
@@ -98,33 +117,36 @@ function NumberFormatControls({
   onChange,
   onDate,
 }: NumberFormatControlsProps) {
+  const hasDetails = !isDate && value.style !== 'auto'
   return (
-    <ControlRow>
-      <SelectControl
-        label={`${label} format`}
-        options={onDate ? formatOrDateOptions : formatChoiceOptions}
-        value={isDate ? 'date' : getFormatChoice(value)}
-        onChange={(choice) => {
-          if (choice === 'date') {
-            onDate?.()
-            return
-          }
-          onChange(applyFormatChoice(value, choice))
-        }}
-      />
-      {!isDate && value.style !== 'auto' ? (
+    <>
+      <ControlRow layout="wide">
+        <SelectControl
+          label={`${label} format`}
+          options={onDate ? formatOrDateOptions : formatChoiceOptions}
+          value={isDate ? 'date' : getFormatChoice(value)}
+          onChange={(choice) => {
+            if (choice === 'date') {
+              onDate?.()
+              return
+            }
+            onChange(applyFormatChoice(value, choice))
+          }}
+        />
+      </ControlRow>
+      {hasDetails ? (
         <>
-          <ScrubbableNumber
-            icon={<DecimalsArrowRight size={14} />}
-            label={`${label} decimal places`}
-            max={6}
-            min={0}
-            step={1}
-            value={value.decimals}
-            onAuto={() => onChange({ ...value, decimals: null })}
-            onValueChange={(decimals) => onChange({ ...value, decimals })}
-          />
-          <DetailsPopover label="Number format">
+          <ControlRow isFull>
+            <ScrubbableNumber
+              icon={<DecimalsArrowRight size={14} />}
+              label={`${label} decimal places`}
+              max={6}
+              min={0}
+              step={1}
+              value={value.decimals}
+              onAuto={() => onChange({ ...value, decimals: null })}
+              onValueChange={(decimals) => onChange({ ...value, decimals })}
+            />
             <SegmentedControl
               label={`${label} notation`}
               options={notationOptions}
@@ -133,24 +155,34 @@ function NumberFormatControls({
                 onChange({ ...value, compact: notation === 'compact' })
               }}
             />
-            <ControlRow>
-              <TextInput
-                label={`${label} prefix`}
-                placeholder="Prefix"
-                value={value.prefix}
-                onValueChange={(prefix) => onChange({ ...value, prefix })}
-              />
-              <TextInput
-                label={`${label} suffix`}
-                placeholder="Suffix"
-                value={value.suffix}
-                onValueChange={(suffix) => onChange({ ...value, suffix })}
-              />
-            </ControlRow>
-          </DetailsPopover>
+          </ControlRow>
+          <ControlRow layout="wide">
+            <DetailsField
+              icon={<TextCursorInput size={14} />}
+              label={`${label} prefix and suffix`}
+              text={getPreview(value)}
+            >
+              <ControlRow label="Prefix">
+                <TextInput
+                  label={`${label} prefix`}
+                  placeholder="None"
+                  value={value.prefix}
+                  onValueChange={(prefix) => onChange({ ...value, prefix })}
+                />
+              </ControlRow>
+              <ControlRow label="Suffix">
+                <TextInput
+                  label={`${label} suffix`}
+                  placeholder="None"
+                  value={value.suffix}
+                  onValueChange={(suffix) => onChange({ ...value, suffix })}
+                />
+              </ControlRow>
+            </DetailsField>
+          </ControlRow>
         </>
       ) : null}
-    </ControlRow>
+    </>
   )
 }
 

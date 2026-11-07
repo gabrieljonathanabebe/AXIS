@@ -2,10 +2,10 @@ import { DndContext } from '@dnd-kit/core'
 import { useMemo, useState } from 'react'
 
 import { useAskCevyn } from '../ai/useAskCevyn'
-import CardFormatPopover from '../cards/CardFormatPopover'
+import CardFormatPanel from '../cards/CardFormatPanel'
 import { isCardFormatElement } from '../cards/isCardFormatElement'
 import { createChartActions } from '../charts/createChartActions'
-import ChartFormatPopover from '../charts/format/ChartFormatPopover'
+import ChartFormatPanel from '../charts/format/ChartFormatPanel'
 import { isChartFormatElement } from '../charts/getFormatElements'
 import { createStyleColorPresets } from '../dashboardStyle/styleColorPresets'
 import DataPanel from '../datasets/DataPanel'
@@ -98,14 +98,17 @@ function App() {
   const {
     activeWorkspace,
     isBuildPanelCollapsed,
+    isFormatPanelCollapsed,
     setActiveWorkspace,
     toggleBuildPanel,
+    toggleFormatPanel,
   } = useWorkspaceLayout()
 
   const commands = useWorkspaceCommands({
     canRedo,
     canUndo,
     isFormatOpen: activeFormatTarget !== null,
+    isFormatPanelCollapsed,
     selectedObjectId,
     selectedObjectLabel: selectedObject
       ? getObjectDefinition(selectedObject.kind).label
@@ -116,6 +119,7 @@ function App() {
     onRedo: redo,
     onRemoveObject: removeObject,
     onToggleBuildPanel: toggleBuildPanel,
+    onToggleFormatPanel: toggleFormatPanel,
     onUndo: undo,
   })
 
@@ -176,32 +180,32 @@ function App() {
               {selectedChart &&
               activeFormatTarget &&
               isChartFormatElement(activeFormatTarget.element) ? (
-                <ChartFormatPopover
+                <ChartFormatPanel
                   actions={chartActions}
                   chart={selectedChart}
                   element={activeFormatTarget.element}
                   fields={dataset.fields}
+                  isCollapsed={isFormatPanelCollapsed}
                   style={style}
-                  target={activeFormatTarget}
-                  onClose={() => setFormatTarget(null)}
                   onElementChange={(element) =>
                     setFormatTarget({ ...activeFormatTarget, element })
                   }
+                  onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
               {selectedCard &&
               activeFormatTarget &&
               isCardFormatElement(activeFormatTarget.element) ? (
-                <CardFormatPopover
+                <CardFormatPanel
                   actions={canvasActions}
                   card={selectedCard}
                   element={activeFormatTarget.element}
                   fields={dataset.fields}
-                  target={activeFormatTarget}
-                  onClose={() => setFormatTarget(null)}
+                  isCollapsed={isFormatPanelCollapsed}
                   onElementChange={(element) =>
                     setFormatTarget({ ...activeFormatTarget, element })
                   }
+                  onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
             </main>

@@ -41,6 +41,7 @@ type PopoverProps = {
   keepOpenOn?: string
   placement?: Placement
   role?: PopoverRole
+  flipsAlignment?: boolean
   matchTriggerWidth?: boolean
   onOpenChange: (open: boolean) => void
   renderTrigger?: (props: PopoverTriggerProps) => ReactNode
@@ -60,6 +61,7 @@ function PopoverNode({
   role = 'dialog',
   title,
   matchTriggerWidth = false,
+  flipsAlignment = true,
   onOpenChange,
   renderTrigger,
 }: PopoverProps) {
@@ -78,6 +80,7 @@ function PopoverNode({
     middleware: [
       offset(8),
       flip({
+        crossAxis: flipsAlignment,
         padding: 12,
       }),
       shift({
@@ -171,6 +174,8 @@ function PopoverNode({
  * eye; `keepOpenOn` is a selector of elements outside whose presses keep
  * it open. Nested popovers form a tree, so a click inside a child, e.g. a
  * color picker in a chart popover, does not dismiss its parent.
+ * Without `flipsAlignment` it keeps its alignment to the trigger, e.g.
+ * top-aligned beside a row, and only shifts as far as the window needs.
  */
 function Popover(props: PopoverProps) {
   const parentId = useFloatingParentNodeId()

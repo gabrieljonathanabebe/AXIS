@@ -27,7 +27,7 @@ type DetailsPopoverProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * Popover of rare settings below its trigger, e.g. prefix and suffix of a
+ * Popover of rare settings left of its trigger, e.g. prefix and suffix of a
  * number format. The trigger is a gear unless `renderTrigger` gives
  * another, e.g. the swatch of a paint. Its header shows the name and
  * `actions` before the close button, e.g. a plus that adds a row;
@@ -64,6 +64,8 @@ function DetailsPopover({
       actions={actions}
       label={label}
       open={isOpen}
+      placement="left-start"
+      flipsAlignment={false}
       className="details-popover glass glass-thick"
       title={hasHeader ? label : undefined}
       onOpenChange={setIsOpen}

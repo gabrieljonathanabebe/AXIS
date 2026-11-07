@@ -33,7 +33,7 @@ function TooltipWidget({
   }
   return (
     <FormatWidget title="Behavior">
-      <ControlRow>
+      <ControlRow layout="wide">
         <SegmentedControl
           label="Tooltip trigger"
           options={triggerOptions}

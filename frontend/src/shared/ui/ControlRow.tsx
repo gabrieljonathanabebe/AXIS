@@ -1,28 +1,44 @@
 import type { ReactNode } from 'react'
 
+// ===== TYPES =================================================================
+/** Where the fields of a row sit on the grid of the format panel. */
+export type ControlRowLayout = 'pair' | 'single' | 'wide'
+
 type ControlRowProps = {
-  actions?: ReactNode
-  label?: string
+  action?: ReactNode
   children: ReactNode
+  isFull?: boolean
+  label?: string
+  layout?: ControlRowLayout
 }
 
+// ===== COMPONENT =============================================================
 /**
  * One row of controls. With a label, the label stands left of the
- * controls; without one, the controls share the row in two columns,
- * followed by icon buttons, e.g. an icon toggle. `actions` are xs icon
- * buttons at the end of a row without label, e.g. gear and minus of an
- * effect, spaced like the actions of a widget header; their slot keeps
- * its width, so the rows of a list line up.
- * @param props Controls, optional label and actions.
+ * controls. Without one, the row sits on the grid of the format panel:
+ * two field columns and an icon column, so fields and icons line up
+ * across rows and with the icons of the group headings. `pair` puts two
+ * fields side by side, `single` one field into the first column, `wide`
+ * one field across both; a wide row without icon also takes the icon
+ * column. `isFull` lets a pair without icon take it, too, e.g. in a group
+ * whose rows have no icons. `action` is the one icon of the row, e.g. a
+ * minus or the italic toggle.
+ * @param props Controls, optional label, layout, width and action.
  */
-function ControlRow({ actions, label, children }: ControlRowProps) {
+function ControlRow({
+  action,
+  children,
+  isFull = false,
+  label,
+  layout = 'pair',
+}: ControlRowProps) {
   if (!label) {
     return (
-      <div className="control-row control-row-compact">
+      <div
+        className={`control-row control-row-compact is-${layout} ${isFull ? 'is-full' : ''}`}
+      >
         {children}
-        {actions ? (
-          <div className="control-row-actions cluster">{actions}</div>
-        ) : null}
+        {action ? <div className="control-row-icon">{action}</div> : null}
       </div>
     )
   }

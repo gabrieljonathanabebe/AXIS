@@ -15,7 +15,7 @@ import type { Fill } from '../shared/fill'
 import type { CanvasActions, DashboardSpec } from './types'
 
 // ===== TYPES =================================================================
-type DashboardSettingsPopoverProps = {
+type DashboardFormatPanelProps = {
   actions: CanvasActions
   dashboard: DashboardSpec
 }
@@ -26,10 +26,10 @@ type DashboardSettingsPopoverProps = {
  * gap between objects, the canvas background and the animation of all
  * charts. The name stays inline on the canvas.
  */
-function DashboardSettingsPopover({
+function DashboardFormatPanel({
   actions,
   dashboard,
-}: DashboardSettingsPopoverProps) {
+}: DashboardFormatPanelProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   /** Changes the canvas fills; the other canvas settings stay. */
@@ -92,4 +92,4 @@ function DashboardSettingsPopover({
   )
 }
 
-export default DashboardSettingsPopover
+export default DashboardFormatPanel

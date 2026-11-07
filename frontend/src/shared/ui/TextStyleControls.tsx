@@ -44,7 +44,21 @@ function TextStyleControls({
   const isItalic = value.fontStyle === 'italic'
   return (
     <>
-      <ControlRow>
+      <ControlRow
+        action={
+          <IconButton
+            aria-pressed={isItalic}
+            isActive={isItalic}
+            label={`${label} italic`}
+            size="xs"
+            onClick={() => {
+              onChange({ ...value, fontStyle: isItalic ? 'normal' : 'italic' })
+            }}
+          >
+            <Italic size={14} />
+          </IconButton>
+        }
+      >
         <ScrubbableNumber
           icon={<ALargeSmall size={14} />}
           label={`${label} font size`}
@@ -60,17 +74,6 @@ function TextStyleControls({
           value={value.fontWeight}
           onValueChange={(fontWeight) => onChange({ ...value, fontWeight })}
         />
-        <IconButton
-          aria-pressed={isItalic}
-          isActive={isItalic}
-          label={`${label} italic`}
-          size="sm"
-          onClick={() => {
-            onChange({ ...value, fontStyle: isItalic ? 'normal' : 'italic' })
-          }}
-        >
-          <Italic size={14} />
-        </IconButton>
       </ControlRow>
       <ControlRow>
         <ColorField
