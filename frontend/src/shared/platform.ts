@@ -2,6 +2,9 @@
 /** Whether the app runs on a Mac, iPhone or iPad, where ⌘ is the command key. */
 export const isMac = /Mac|iPhone|iPad/.test(navigator.userAgent)
 
+/** Name of the format key in hints, e.g. "⌘-click any part". */
+export const formatKeyLabel = isMac ? '⌘' : 'Ctrl'
+
 // ===== FUNCTION ==============================================================
 /**
  * Tells whether a click asks to format what it hits instead of its main

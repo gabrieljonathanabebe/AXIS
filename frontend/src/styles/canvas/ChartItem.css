@@ -180,8 +180,8 @@
   transform: translateY(-50%);
 }
 
-/* Lies over the canvas in format mode and takes the click, so it selects
-   the element instead of editing its text or toggling legend items. */
+/* Outlines the element under the pointer that a click formats. It only
+   shows; the click goes through to the element and the frame. */
 .chart-format-region {
   position: absolute;
   z-index: 3;
@@ -191,17 +191,18 @@
   background: transparent;
   border: var(--border-width-thin) solid var(--color-border-accent);
   border-radius: var(--radius-md);
-  cursor: pointer;
+  pointer-events: none;
 }
 
 /* Names what a click formats. Follows the pointer like a tooltip, with the
-   look of a chip; the frame writes its position, the click goes through. */
+   look of a chip; it lies in a portal above the page, so the frame does
+   not clip it, and the click goes through. */
 .chart-format-label {
   --chip-surface: var(--color-surface-overlay);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 5;
+  z-index: 100;
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
@@ -222,7 +223,7 @@
   color: var(--color-accent);
 }
 
-.chart-item:hover > .chart-format-label {
+.chart-format-label.is-visible {
   opacity: 1;
 }
 

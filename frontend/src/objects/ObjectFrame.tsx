@@ -1,9 +1,11 @@
 import { useDraggable } from '@dnd-kit/core'
+import { FloatingPortal } from '@floating-ui/react'
 import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
-import { isFormatClick } from '../shared/platform'
+import { formatKeyLabel, isFormatClick } from '../shared/platform'
+import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import ContainerSurface from './ContainerSurface'
 import { getContainerSurfaceStyle } from './containerSurfaceStyle'
@@ -200,10 +202,20 @@ function ObjectFrame({
   const frameRef = useRef<HTMLDivElement | null>(null)
   const labelRef = useRef<HTMLSpanElement | null>(null)
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
+  const [isPointerInside, setIsPointerInside] = useState(false)
   const pressRef = useRef<{ x: number; y: number } | null>(null)
   const { container } = object
   const definition = getObjectDefinition(object.kind)
-  const isFormatMode = formattedElement !== null
+  const isFormatKeyHeld = useIsFormatKeyHeld()
+  // Places with a data action, e.g. bars, show their hint only while the
+  // format key is held; free space shows one only on the selected object.
+  const shownHint =
+    formatHint &&
+    (isFormatKeyHeld || !dataActionElements.has(formatHint.element))
+      ? formatHint
+      : null
+  const showsObjectHint = isSelected && isPointerInside && formatHint === null
+
   const frameStyle: ObjectFrameStyle = {
     ...style,
     ...getContainerSurfaceStyle(container),
@@ -253,10 +265,18 @@ function ObjectFrame({
 
   /**
    * Selects the object and remembers where the press began, so a click can
-   * tell itself from a drag, e.g. a brush.
+   * tell itself from a drag, e.g. a brush. Pressing an object that is not
+   * selected yet shows at once what the click will format, so the panel
+   * does not show the element of the last object first.
    */
   function startPress(event: MouseEvent<HTMLDivElement>): void {
     pressRef.current = { x: event.clientX, y: event.clientY }
+    const element = formatHint?.element ?? 'container'
+    const formatsElement =
+      isFormatClick(event) || !dataActionElements.has(element)
+    if (!isSelected && formatsElement && !isFrameControl(event.target)) {
+      onFormatElement(element)
+    }
     actions.selectObject(object.id)
   }
 
@@ -304,21 +324,21 @@ function ObjectFrame({
   }
 
   /**
-   * Moves the format label next to the pointer, flipped at the frame edges.
-   * Writes the position straight to the label, so moving renders nothing.
+   * Moves the format label next to the pointer, flipped at the edges of the
+   * window. Writes the position straight to the label, so moving renders
+   * nothing.
    */
   function moveFormatLabel(event: PointerEvent<HTMLDivElement>): void {
     const label = labelRef.current
     if (!label) {
       return
     }
-    const frame = event.currentTarget.getBoundingClientRect()
-    let x = event.clientX - frame.left + FORMAT_LABEL_OFFSET
-    let y = event.clientY - frame.top + FORMAT_LABEL_OFFSET
-    if (x + label.offsetWidth > frame.width) {
+    let x = event.clientX + FORMAT_LABEL_OFFSET
+    let y = event.clientY + FORMAT_LABEL_OFFSET
+    if (x + label.offsetWidth > window.innerWidth) {
       x -= label.offsetWidth + 2 * FORMAT_LABEL_OFFSET
     }
-    if (y + label.offsetHeight > frame.height) {
+    if (y + label.offsetHeight > window.innerHeight) {
       y -= label.offsetHeight + 2 * FORMAT_LABEL_OFFSET
     }
     label.style.setProperty('--format-label-x', `${x}px`)
@@ -341,23 +361,24 @@ function ObjectFrame({
       onMouseDownCapture={holdFormatPress}
       onPointerDown={startPress}
       onPointerDownCapture={holdFormatPress}
-      onPointerLeave={() => setFormatHint(null)}
-      onPointerMove={isFormatMode ? moveFormatLabel : undefined}
+      onPointerEnter={() => setIsPointerInside(true)}
+      onPointerLeave={() => {
+        setIsPointerInside(false)
+        setFormatHint(null)
+      }}
+      onPointerMove={moveFormatLabel}
     >
       <ContainerSurface surface={container}>
         {children(setFormatHint)}
       </ContainerSurface>
-      {isFormatMode && formatHint ? (
-        <button
-          aria-label={formatRegionLabels[formatHint.element]}
+      {shownHint ? (
+        <span
+          aria-hidden="true"
           className="chart-format-region"
-          style={getRectStyle(formatHint.rect)}
-          type="button"
-          onClick={() => onFormatElement(formatHint.element)}
-          onPointerLeave={() => setFormatHint(null)}
+          style={getRectStyle(shownHint.rect)}
         />
       ) : null}
-      {isFormatMode && !formatHint ? (
+      {showsObjectHint || formattedElement === 'container' ? (
         <span
           aria-hidden="true"
           className={`chart-format-region is-container ${
@@ -365,17 +386,21 @@ function ObjectFrame({
           }`}
         />
       ) : null}
-      {isFormatMode ? (
-        <span
-          aria-hidden="true"
-          className="chip chart-format-label"
-          ref={labelRef}
-        >
-          <Paintbrush size={12} />
-          {formatHint
-            ? formatRegionLabels[formatHint.element]
-            : `Format ${definition.label}`}
-        </span>
+      {isPointerInside ? (
+        <FloatingPortal>
+          <span
+            aria-hidden="true"
+            className={`chip chart-format-label ${
+              shownHint || showsObjectHint ? 'is-visible' : ''
+            }`}
+            ref={labelRef}
+          >
+            <Paintbrush size={12} />
+            {shownHint
+              ? formatRegionLabels[shownHint.element]
+              : `Format ${definition.label} · ${formatKeyLabel}-click any part`}
+          </span>
+        </FloatingPortal>
       ) : null}
       {isSelected ? (
         <div className="chart-item-actions">
