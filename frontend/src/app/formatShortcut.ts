@@ -1,7 +1,6 @@
-import type { CommandShortcut } from './types'
+import { isMac } from '../shared/platform'
 
-// ===== CONSTANTS =============================================================
-const isMac = /Mac|iPhone|iPad/.test(navigator.userAgent)
+import type { CommandShortcut } from './types'
 
 /** Keys whose name is not just the upper-case letter. */
 const keyLabels: Record<string, { mac: string; other: string }> = {

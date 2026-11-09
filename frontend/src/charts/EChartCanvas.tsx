@@ -31,6 +31,7 @@ import { usePointsQuery } from './usePointsQuery'
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
 import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataRow, Dataset } from '../datasets/types'
+import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type { ElementRect } from '../objects/types'
 import type {
   CanvasActions,
@@ -53,7 +54,7 @@ type EChartCanvasProps = {
   formattedElement: ChartFormatElement | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
-  onHoverElement: (element: ChartFormatElement, rect: ElementRect) => void
+  onHoverElement: ShowFormatHint
   selection: DataSelection | null
   style: DashboardStyle
 }
@@ -170,14 +171,19 @@ function EChartCanvas({
     const formatHint = createFormatHintFromEvent(event)
     const container = containerRef.current
     if (formatHint && container) {
-      onHoverElement(formatHint.element, offsetRect(formatHint.rect, container))
+      onHoverElement({
+        element: formatHint.element,
+        rect: offsetRect(formatHint.rect, container),
+      })
     }
   })
 
+  /** Clears the hint of an element the pointer leaves, e.g. a bar. */
   const handleMouseOut = useEffectEvent((event: ECElementEvent) => {
     if (isAxisTitleEvent(event)) {
       onHoverAxisTitle(null)
     }
+    onHoverElement(null)
   })
 
   const handleBackgroundClick = useEffectEvent((event: ElementEvent) => {

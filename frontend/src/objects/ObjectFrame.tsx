@@ -3,6 +3,7 @@ import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
+import { isFormatClick } from '../shared/platform'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import ContainerSurface from './ContainerSurface'
 import { getContainerSurfaceStyle } from './containerSurfaceStyle'
@@ -28,17 +29,17 @@ import type { ContainerSurfaceStyle } from './containerSurfaceStyle'
 import type { DashboardObject, ElementRect, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
-/** The element under the pointer; in format mode it shows its region. */
-type FormatHint = {
+/** The element under the pointer and its bounds in the frame. */
+export type FormatHint = {
   element: ObjectFormatElement
   rect: ElementRect
 }
 
-/** Lets the content report the element under the pointer and its bounds. */
-export type ShowFormatHint = (
-  element: ObjectFormatElement,
-  rect: ElementRect,
-) => void
+/**
+ * Lets the content report the element under the pointer, or null when the
+ * pointer leaves it.
+ */
+export type ShowFormatHint = (hint: FormatHint | null) => void
 
 type ObjectFrameStyle = ContainerSurfaceStyle & {
   '--chart-canvas-inset': string
@@ -83,6 +84,22 @@ const layoutHandleModes: ObjectLayoutMode[] = [
 /** Distance of the format label from the pointer, in pixels. */
 const FORMAT_LABEL_OFFSET = 12
 
+/**
+ * Pointer travel in pixels up to which a press counts as a click, the same
+ * as the distance that starts a drag in `useWorkspaceDnd`.
+ */
+const CLICK_TOLERANCE = 6
+
+/**
+ * Elements whose click has a data action of its own, e.g. a bar filters or
+ * a legend entry toggles its series; only Cmd/Ctrl+click formats them.
+ */
+const dataActionElements: ReadonlySet<ObjectFormatElement> = new Set([
+  'labels',
+  'legend',
+  'marks',
+])
+
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
   colorScale: 'Format color scale',
   container: 'Format container',
@@ -120,6 +137,21 @@ function getLayoutHandleLabel(
   return mode === 'move'
     ? `Move ${objectLabel}`
     : `Resize ${objectLabel} from ${resizeEdgeLabels[mode]}`
+}
+
+/**
+ * Tells whether a click lands on a control of the frame, which handles it
+ * itself: the action bar, a layout handle or a text input.
+ * @param target Element the click landed on.
+ * @returns True for a control of the frame.
+ */
+function isFrameControl(target: EventTarget): boolean {
+  return (
+    target instanceof Element &&
+    target.closest(
+      '.chart-item-actions, .chart-layout-handle, input, textarea',
+    ) !== null
+  )
 }
 
 // ===== LAYOUT HANDLE =========================================================
@@ -168,6 +200,7 @@ function ObjectFrame({
   const frameRef = useRef<HTMLDivElement | null>(null)
   const labelRef = useRef<HTMLSpanElement | null>(null)
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
+  const pressRef = useRef<{ x: number; y: number } | null>(null)
   const { container } = object
   const definition = getObjectDefinition(object.kind)
   const isFormatMode = formattedElement !== null
@@ -218,19 +251,55 @@ function ObjectFrame({
     }
   }
 
-  /** Remembers the element under the pointer; format mode shows its region. */
-  function showFormatHint(
-    element: ObjectFormatElement,
-    rect: ElementRect,
-  ): void {
-    setFormatHint({ element, rect })
+  /**
+   * Selects the object and remembers where the press began, so a click can
+   * tell itself from a drag, e.g. a brush.
+   */
+  function startPress(event: MouseEvent<HTMLDivElement>): void {
+    pressRef.current = { x: event.clientX, y: event.clientY }
+    actions.selectObject(object.id)
   }
 
-  /** In format mode, a click on free space formats the object as a whole. */
+  /**
+   * Keeps a Cmd/Ctrl press from the content, so it starts no brush and no
+   * chart reacts to it; the frame still selects the object.
+   */
+  function holdFormatPress(event: MouseEvent<HTMLDivElement>): void {
+    if (isFormatClick(event) && !isFrameControl(event.target)) {
+      event.stopPropagation()
+      startPress(event)
+    }
+  }
+
+  /**
+   * Cmd/Ctrl+click formats whatever lies under the pointer, also a bar or
+   * the legend, and the click does not reach the content.
+   */
+  function handleFormatClick(event: MouseEvent<HTMLDivElement>): void {
+    if (isFormatClick(event) && !isFrameControl(event.target)) {
+      event.stopPropagation()
+      onFormatElement(formatHint?.element ?? 'container')
+    }
+  }
+
+  /**
+   * A click formats where it lands, unless the place has a data action of
+   * its own, e.g. a bar filters; on free space it formats the object as a
+   * whole. A press that moved, e.g. a brush, is no click.
+   */
   function handleClick(event: MouseEvent<HTMLDivElement>): void {
-    const target = event.target as HTMLElement
-    if (isFormatMode && !target.closest('button, .chart-layout-handle')) {
-      onFormatElement('container')
+    const press = pressRef.current
+    const hasMoved =
+      press !== null &&
+      Math.hypot(event.clientX - press.x, event.clientY - press.y) >
+        CLICK_TOLERANCE
+    const element = formatHint?.element ?? 'container'
+    if (
+      !hasMoved &&
+      !isFrameControl(event.target) &&
+      !dataActionElements.has(element)
+    ) {
+      onFormatElement(element)
     }
   }
 
@@ -266,14 +335,17 @@ function ObjectFrame({
       style={frameStyle}
       tabIndex={0}
       onClick={handleClick}
+      onClickCapture={handleFormatClick}
       onFocus={() => actions.selectObject(object.id)}
       onKeyDown={handleKeyDown}
-      onPointerDown={() => actions.selectObject(object.id)}
+      onMouseDownCapture={holdFormatPress}
+      onPointerDown={startPress}
+      onPointerDownCapture={holdFormatPress}
       onPointerLeave={() => setFormatHint(null)}
       onPointerMove={isFormatMode ? moveFormatLabel : undefined}
     >
       <ContainerSurface surface={container}>
-        {children(showFormatHint)}
+        {children(setFormatHint)}
       </ContainerSurface>
       {isFormatMode && formatHint ? (
         <button

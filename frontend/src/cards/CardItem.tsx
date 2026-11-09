@@ -99,7 +99,7 @@ function CardItem({
   function showHint(element: CardFormatElement, target: HTMLElement): void {
     const rect = getRectInFrame(target)
     if (rect) {
-      onFormatHint(element, rect)
+      onFormatHint({ element, rect })
     }
   }
 
@@ -141,6 +141,7 @@ function CardItem({
                 })
               }
               onPointerEnter={(event) => showHint('title', event.currentTarget)}
+              onPointerLeave={() => onFormatHint(null)}
             />
           </div>
         ) : null}
@@ -149,6 +150,7 @@ function CardItem({
             className={`card-item-value ${getFormatFocusClassName('value', formattedElement)}`}
             style={getTextStyleCss(value.textStyle)}
             onPointerEnter={(event) => showHint('value', event.currentTarget)}
+            onPointerLeave={() => onFormatHint(null)}
           >
             {query.isLoading && !query.result
               ? '…'
@@ -161,6 +163,7 @@ function CardItem({
               onPointerEnter={(event) =>
                 showHint('selectionLabel', event.currentTarget)
               }
+              onPointerLeave={() => onFormatHint(null)}
             >
               {getSelectionHint(selection)}
             </span>

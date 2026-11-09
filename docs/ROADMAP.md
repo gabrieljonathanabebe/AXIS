@@ -429,7 +429,10 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   Rate-Limit für Ask Cevyn
 - Datenschutz-Hinweis für Tester (Daten gehen bei Ask Cevyn an die
   Claude-API)
-- Vollbild für die Seite als Command mit Shortcut
+- Vollbild für die Seite als Command mit Shortcut; Vollbild ist die
+  Ansicht zum Analysieren und Präsentieren: Klicks, Brush und Legende
+  analysieren nur, ohne Auswahl, Hover-Labels, Format- und
+  Bearbeitungsaktionen (wie die Leseansicht in Power BI)
 
 ### Nicht im Alpha
 

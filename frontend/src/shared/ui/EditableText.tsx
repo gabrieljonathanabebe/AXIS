@@ -11,6 +11,7 @@ type EditableTextProps = {
   className?: string
   onCommit: (value: string) => void
   onPointerEnter?: (event: PointerEvent<HTMLButtonElement>) => void
+  onPointerLeave?: (event: PointerEvent<HTMLButtonElement>) => void
 }
 
 function EditableText({
@@ -20,6 +21,7 @@ function EditableText({
   className = '',
   onCommit,
   onPointerEnter,
+  onPointerLeave,
 }: EditableTextProps) {
   const [isEditing, setIsEditing] = useState(false)
 
@@ -44,6 +46,7 @@ function EditableText({
       title={value.trim() || placeholder}
       onClick={() => setIsEditing(true)}
       onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
     >
       {value.trim() || placeholder}
     </button>

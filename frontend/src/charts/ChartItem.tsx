@@ -75,7 +75,7 @@ function ChartItem({
   function handleHoverAxisTitle(edit: AxisTitleEdit | null): void {
     setHoveredAxisTitle(edit)
     if (edit) {
-      onFormatHint(`${edit.axis}Axis`, edit.rect)
+      onFormatHint({ element: `${edit.axis}Axis`, rect: edit.rect })
     }
   }
 
@@ -83,7 +83,7 @@ function ChartItem({
   function showTitleHint(target: HTMLElement): void {
     const rect = getRectInFrame(target)
     if (rect) {
-      onFormatHint('title', rect)
+      onFormatHint({ element: 'title', rect })
     }
   }
 
@@ -147,6 +147,7 @@ function ChartItem({
               })
             }
             onPointerEnter={(event) => showTitleHint(event.currentTarget)}
+            onPointerLeave={() => onFormatHint(null)}
           />
         </div>
       ) : null}
