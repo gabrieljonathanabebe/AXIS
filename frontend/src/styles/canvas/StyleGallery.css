@@ -1,9 +1,16 @@
-/* Gallery of dashboard styles in the dashboard popover: two columns of
-   tiles, each a live mini dashboard of its recipe above its name. */
+/* Gallery of dashboard styles in the format panel: two columns of tiles,
+   each a live mini dashboard of its recipe above its name. Its inline
+   padding leaves room for the outline of the current style, which lies
+   outside the tile and would be clipped at the edge of the panel. */
 .style-gallery {
+  --style-outline-offset: 2px;
+
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
+  padding-inline: calc(
+    var(--border-width-medium) + var(--style-outline-offset)
+  );
 }
 
 .style-gallery-tile {
@@ -53,7 +60,7 @@
 .style-gallery-tile.is-active .style-preview,
 .style-gallery-tile:focus-visible .style-preview {
   outline: var(--border-width-medium) solid var(--color-accent);
-  outline-offset: 2px;
+  outline-offset: var(--style-outline-offset);
 }
 
 /* Content of a preview container; the surface comes from

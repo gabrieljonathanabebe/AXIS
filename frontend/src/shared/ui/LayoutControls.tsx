@@ -84,9 +84,9 @@ function pairControls(controls: ReactNode[]): ReactNode[][] {
  * element, two controls per row. Shows only the fields the layout has, e.g.
  * only padding for a container. A layout with a side and an alignment, e.g.
  * a legend, places both in a `PositionGrid`; other positions are an icon
- * group, with icon and word for positions with their own icon, e.g. of the
- * data labels, and only the arrow for sides. A single position needs no
- * control.
+ * group: positions with their own icon, e.g. of the data labels, show icon
+ * and word in a wide row of their own, sides only the arrow in a pair. A
+ * single position needs no control.
  */
 function LayoutControls<TLayout extends PartialLayout>({
   label,
@@ -99,15 +99,7 @@ function LayoutControls<TLayout extends PartialLayout>({
   const { alignment, position } = value
   const showsGrid =
     alignment !== undefined && position !== undefined && isSide(position)
-  const controls = [
-    showsGrid ? (
-      <PositionGrid
-        key="grid"
-        label={`${label} position`}
-        value={{ alignment, position }}
-        onChange={(placement) => onChange({ ...value, ...placement })}
-      />
-    ) : null,
+  const positionControl =
     !showsGrid && position !== undefined && positions.length > 1 ? (
       <SegmentedControl
         className="layout-position-control"
@@ -126,7 +118,21 @@ function LayoutControls<TLayout extends PartialLayout>({
           onChange({ ...value, position: nextPosition })
         }}
       />
+    ) : null
+  // Positions with icon and word, e.g. of the data labels, need the whole
+  // width; sides show only an arrow and pair up with the next control.
+  const isPositionWide =
+    positionControl !== null && positions.some((option) => option.icon)
+  const controls = [
+    showsGrid ? (
+      <PositionGrid
+        key="grid"
+        label={`${label} position`}
+        value={{ alignment, position }}
+        onChange={(placement) => onChange({ ...value, ...placement })}
+      />
     ) : null,
+    isPositionWide ? null : positionControl,
     value.orientation !== undefined ? (
       <SegmentedControl
         key="orientation"
@@ -179,6 +185,9 @@ function LayoutControls<TLayout extends PartialLayout>({
   ].filter((control) => control !== null)
   return (
     <>
+      {isPositionWide ? (
+        <ControlRow layout="wide">{positionControl}</ControlRow>
+      ) : null}
       {pairControls(controls).map((row, index) => (
         <ControlRow key={index}>{row}</ControlRow>
       ))}

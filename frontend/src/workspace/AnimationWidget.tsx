@@ -19,13 +19,13 @@ type AnimationWidgetProps = {
 const easingOptions = [
   { label: 'Linear', value: 'linear' },
   { label: 'Ease out', value: 'cubicOut' },
-  { label: 'Ease in-out', value: 'cubicInOut' },
+  { label: 'In-out', value: 'cubicInOut' },
 ] satisfies OptionItem<AnimationEasing>[]
 
 /**
  * Animation group of the dashboard: without animation only the plus in its
- * heading, which adds the default animation, else the speed curve with a
- * minus that removes it and below it the duration of all chart animations.
+ * heading, which adds the default animation, else one row with the speed
+ * curve, the duration of all chart animations and a minus that removes it.
  */
 function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   if (!value.enabled) {
@@ -49,7 +49,6 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
             <Minus size={14} />
           </IconButton>
         }
-        layout="wide"
       >
         <SelectControl
           label="Animation easing"
@@ -57,8 +56,6 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
           value={value.easing}
           onChange={(easing) => onChange({ ...value, easing })}
         />
-      </ControlRow>
-      <ControlRow layout="single">
         <ScrubbableNumber
           icon={<Timer size={14} />}
           label="Animation duration"
