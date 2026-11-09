@@ -7,22 +7,24 @@
   border-top: var(--border-width-thin) solid var(--color-border-subtle);
 }
 
+/* The heading stands on the grid of the rows: its icons sit in the icon
+   column, and a heading with several icons widens it to the left. */
 .format-widget-header {
   --cluster-gap: var(--space-1);
-  --spread-gap: var(--space-2);
 
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(var(--control-row-icon-width), auto);
+  align-items: center;
+  gap: var(--control-row-gap);
   min-height: 24px;
 }
 
-/* Slot for actions of the rows, e.g. the gear of a paint; its buttons join
-   the cluster as if they were its own. */
-.format-widget-actions {
-  display: contents;
-}
-
-/* Header actions keep the height of an icon button, so a gear that
-   appears, e.g. for a gradient, does not push the rows down. */
+/* Header icons keep the height of an icon button and stand centered in
+   the icon column, like the icon of a row. */
 .format-widget-header > .cluster {
+  justify-content: center;
   min-height: var(--control-height-xs);
 }
 

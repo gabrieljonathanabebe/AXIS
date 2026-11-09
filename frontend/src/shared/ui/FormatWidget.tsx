@@ -1,7 +1,6 @@
 import { Eye, EyeOff, Paintbrush, Plus } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
-import { FormatWidgetActionSlot } from './formatWidgetSlot'
 import IconButton from './IconButton'
 
 import type { ReactNode } from 'react'
@@ -23,13 +22,12 @@ type FormatWidgetProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * One group of format rows, e.g. in the format popover. The title becomes a
+ * One group of format rows, e.g. in the format panel. The title becomes a
  * small heading; a visibility becomes an eye on its right, which also
  * shows or hides the rows, `onAdd` a plus that adds what the rows edit,
  * e.g. an effect, and `onFormat` a paintbrush that opens another element.
- * Rows can put their own action at the right end of the header with
- * `FormatWidgetAction`, e.g. the gear of a paint. Without a title the rows
- * stand alone, e.g. in a section of the build panel.
+ * These icons stand in the icon column of the rows below. Without a title
+ * the rows stand alone, e.g. in a section of the build panel.
  * @param props Rows, optional title, visibility, add and format action.
  */
 function FormatWidget({
@@ -39,7 +37,6 @@ function FormatWidget({
   onAdd,
   onFormat,
 }: FormatWidgetProps) {
-  const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null)
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsRows = visibility?.visible ?? true
   const widgetRef = useRef<HTMLDivElement | null>(null)
@@ -66,7 +63,7 @@ function FormatWidget({
   return (
     <div ref={widgetRef} className="format-widget stack">
       {title ? (
-        <div className="format-widget-header spread">
+        <div className="format-widget-header">
           <span className="format-widget-title">{title}</span>
           <span className="cluster">
             {visibility ? (
@@ -99,16 +96,11 @@ function FormatWidget({
                 <Paintbrush size={14} />
               </IconButton>
             ) : null}
-            <span ref={setActionSlot} className="format-widget-actions" />
           </span>
         </div>
       ) : null}
       {showsRows && children ? (
-        <div className="format-widget-content stack">
-          <FormatWidgetActionSlot value={actionSlot}>
-            {children}
-          </FormatWidgetActionSlot>
-        </div>
+        <div className="format-widget-content stack">{children}</div>
       ) : null}
     </div>
   )

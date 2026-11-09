@@ -165,16 +165,16 @@ derselben Spalte.
   Feldspalte, ab 4 Icons über beide; Werte links, Icons rechts
 - Mindestbreiten: Selects zeigen ihren Text ganz, Zahlenfelder mit
   Einheit ab etwa 56 px; passt eine Zeile nicht, wird sie auf zwei
-  Zeilen geteilt (Scatter: Symbol, dann Punktgröße; Animation: Easing,
-  dann Dauer)
+  Zeilen geteilt (Animation: Easing, dann Dauer); Scatter behält Symbol
+  | Punktgröße in einer Zeile
 - Effekte wie Farben: ein Feld mit Icon und Name der Art öffnet den
   Editor, oben die Art als Dropdown, darunter ihre Werte; die Liste der
   Container-Effekte wird nicht mehr sortiert, wie in Figma
 - Details-Popovers und Farbwähler öffnen links neben der Zeile, oben
   bündig, und werden nur so weit verschoben, wie das Fenster verlangt
 - das ⚙ einer Farbzeile steht in ihrer Icon-Spalte statt in der
-  Gruppen-Überschrift; Legend → Interaction nur mit Icons und
-  Hover-Titel
+  Gruppen-Überschrift; Points, Kurve und Legend → Interaction als
+  breite Zeile mit Icon und Wort
 - Zahlenformat ohne ⚙-Popover: Format über die ganze Breite, bei festem
   Format darunter Dezimalstellen | Notation und eine Vorschau mit Prefix
   und Suffix (z. B. „€1.2K pro Monat“), die die beiden Felder mit festen

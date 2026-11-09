@@ -447,7 +447,7 @@ function getChartTypeGroups(
               },
             }}
           >
-            <ControlRow>
+            <ControlRow layout="wide">
               <SegmentedControl
                 label="Line points"
                 options={linePointsOptions}
@@ -461,7 +461,7 @@ function getChartTypeGroups(
         ),
         shape: (
           <FormatWidget title="Shape">
-            <ControlRow>
+            <ControlRow layout="wide">
               <SegmentedControl
                 label="Line curve"
                 options={lineCurveOptions}
@@ -483,7 +483,7 @@ function getChartTypeGroups(
         ...getFilledMarkGroups(props, 'scatter', 'Point', dataColor),
         shape: (
           <FormatWidget title="Shape">
-            <ControlRow>
+            <ControlRow isFull>
               <SegmentedControl
                 label="Scatter symbol"
                 options={scatterSymbolOptions}
@@ -516,7 +516,7 @@ function getChartTypeGroups(
               )}
             </ControlRow>
             {sizeField ? (
-              <ControlRow>
+              <ControlRow isFull>
                 <ScrubbableNumber
                   icon={<ArrowDownToLine size={14} />}
                   label="Smallest point size"

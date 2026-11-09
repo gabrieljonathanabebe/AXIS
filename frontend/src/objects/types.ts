@@ -80,9 +80,8 @@ export type ContainerFormatElement = 'container'
 /** Elements that can be formatted on an object; grows with each kind. */
 export type ObjectFormatElement = ChartFormatElement | CardFormatElement
 
-/** The element whose format popover is open, anchored to its object. */
+/** The element in the format panel, on the object it belongs to. */
 export type FormatTarget = {
-  anchor: HTMLElement
   element: ObjectFormatElement
   objectId: string
 }

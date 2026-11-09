@@ -19,7 +19,7 @@ type SelectionChoice = LegendSelectionMode | 'off'
 // ===== GLOBAL CONSTANTS ======================================================
 const selectionChoiceOptions = [
   { icon: MousePointerBan, label: 'Off', value: 'off' },
-  { icon: ListChecks, label: 'Multiple', value: 'multiple' },
+  { icon: ListChecks, label: 'Multi', value: 'multiple' },
   { icon: SquareCheck, label: 'Single', value: 'single' },
 ] satisfies OptionItem<SelectionChoice>[]
 
@@ -35,7 +35,7 @@ function LegendInteractionWidget({
 }: LegendInteractionWidgetProps) {
   return (
     <FormatWidget title="Interaction">
-      <ControlRow>
+      <ControlRow layout="wide">
         <SegmentedControl
           label="Legend click selection"
           options={selectionChoiceOptions}

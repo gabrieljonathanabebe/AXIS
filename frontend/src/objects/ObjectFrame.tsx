@@ -54,7 +54,7 @@ type ObjectFrameProps = {
   object: DashboardObject
   selection: DataSelection | null
   style: CSSProperties
-  onFormatElement: (element: ObjectFormatElement, anchor: HTMLElement) => void
+  onFormatElement: (element: ObjectFormatElement) => void
 }
 
 type LayoutHandleProps = {
@@ -226,19 +226,11 @@ function ObjectFrame({
     setFormatHint({ element, rect })
   }
 
-  /** Opens the format popover for an element, anchored to the frame. */
-  function openFormat(element: ObjectFormatElement): void {
-    const frame = frameRef.current
-    if (frame) {
-      onFormatElement(element, frame)
-    }
-  }
-
   /** In format mode, a click on free space formats the object as a whole. */
   function handleClick(event: MouseEvent<HTMLDivElement>): void {
     const target = event.target as HTMLElement
     if (isFormatMode && !target.closest('button, .chart-layout-handle')) {
-      openFormat('container')
+      onFormatElement('container')
     }
   }
 
@@ -289,7 +281,7 @@ function ObjectFrame({
           className="chart-format-region"
           style={getRectStyle(formatHint.rect)}
           type="button"
-          onClick={() => openFormat(formatHint.element)}
+          onClick={() => onFormatElement(formatHint.element)}
           onPointerLeave={() => setFormatHint(null)}
         />
       ) : null}

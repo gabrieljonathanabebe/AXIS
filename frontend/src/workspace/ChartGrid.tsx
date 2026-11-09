@@ -284,8 +284,8 @@ function ChartGrid({
             object={object}
             selection={selection}
             style={getGridArea(layout)}
-            onFormatElement={(element, anchor) =>
-              onFormatElement({ anchor, element, objectId: object.id })
+            onFormatElement={(element) =>
+              onFormatElement({ element, objectId: object.id })
             }
           >
             {(showFormatHint) =>
