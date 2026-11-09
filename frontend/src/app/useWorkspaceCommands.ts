@@ -8,13 +8,11 @@ import type { WorkspaceCommands } from './types'
 type UseWorkspaceCommandsParams = {
   canRedo: boolean
   canUndo: boolean
-  isFormatOpen: boolean
   isFormatPanelCollapsed: boolean
   selectedObjectId: string | null
   selectedObjectLabel: string
-  onCloseFormat: () => void
   onDuplicateObject: (objectId: string) => void
-  onFormatObject: (objectId: string) => void
+  onFormatObject: () => void
   onRedo: () => void
   onRemoveObject: (objectId: string) => void
   onToggleBuildPanel: () => void
@@ -27,11 +25,9 @@ type UseWorkspaceCommandsParams = {
 export function useWorkspaceCommands({
   canRedo,
   canUndo,
-  isFormatOpen,
   isFormatPanelCollapsed,
   selectedObjectId,
   selectedObjectLabel,
-  onCloseFormat,
   onDuplicateObject,
   onFormatObject,
   onRedo,
@@ -110,16 +106,9 @@ export function useWorkspaceCommands({
     'object.format': {
       icon: Paintbrush,
       id: 'object.format',
-      isActive: isFormatOpen,
       isEnabled: selectedObjectId !== null,
       label: `Format ${selectedObjectLabel}`,
-      run: () => {
-        if (isFormatOpen) {
-          onCloseFormat()
-        } else if (selectedObjectId) {
-          onFormatObject(selectedObjectId)
-        }
-      },
+      run: onFormatObject,
       scope: 'object',
       shortcuts: [{ key: 'enter' }],
     },

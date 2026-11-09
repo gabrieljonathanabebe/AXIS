@@ -11,6 +11,7 @@ import { createStyleColorPresets } from '../dashboardStyle/styleColorPresets'
 import DataPanel from '../datasets/DataPanel'
 import { useDatasets } from '../datasets/useDatasets'
 import { getObjectDefinition } from '../objects/objectDefinitions'
+import { resolveFormatElement } from '../objects/resolveFormatElement'
 import { SharedColorPresets } from '../shared/ui/colorPresets'
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
@@ -21,7 +22,7 @@ import TopBar from './TopBar'
 import { useWorkspaceCommands } from './useWorkspaceCommands'
 import { useWorkspaceLayout } from './useWorkspaceLayout'
 
-import type { FormatTarget } from '../objects/types'
+import type { ObjectFormatElement } from '../objects/types'
 
 function App() {
   const {
@@ -71,17 +72,15 @@ function App() {
   const stylePresets = useMemo(() => {
     return createStyleColorPresets(style)
   }, [style])
-  // Format popovers belong to the selected object and close when it changes.
-  const [formatTarget, setFormatTarget] = useState<FormatTarget | null>(null)
-  const activeFormatTarget =
-    formatTarget?.objectId === selectedObjectId ? formatTarget : null
+  // The format panel follows the selection and shows the element chosen
+  // last, if the selected object has it, else "Chart" or "Card".
+  const [chosenFormatElement, setChosenFormatElement] =
+    useState<ObjectFormatElement>('container')
   const selectedObject = objects.find(({ id }) => id === selectedObjectId)
   const selectedCard = selectedObject?.kind === 'card' ? selectedObject : null
-
-  /** Opens the format panel of an object at its container. */
-  function openObjectFormat(objectId: string): void {
-    setFormatTarget({ element: 'container', objectId })
-  }
+  const formatElement = selectedObject
+    ? resolveFormatElement(selectedObject, chosenFormatElement, dataset.fields)
+    : null
 
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
@@ -95,20 +94,28 @@ function App() {
     isBuildPanelCollapsed,
     isFormatPanelCollapsed,
     setActiveWorkspace,
+    setIsFormatPanelCollapsed,
     toggleBuildPanel,
     toggleFormatPanel,
   } = useWorkspaceLayout()
 
+  /**
+   * Shows the selected object as a whole in the format panel and expands
+   * the panel, e.g. after Enter on the object.
+   */
+  function openObjectFormat(): void {
+    setChosenFormatElement('container')
+    setIsFormatPanelCollapsed(false)
+  }
+
   const commands = useWorkspaceCommands({
     canRedo,
     canUndo,
-    isFormatOpen: activeFormatTarget !== null,
     isFormatPanelCollapsed,
     selectedObjectId,
     selectedObjectLabel: selectedObject
       ? getObjectDefinition(selectedObject.kind).label
       : 'object',
-    onCloseFormat: () => setFormatTarget(null),
     onDuplicateObject: duplicateObject,
     onFormatObject: openObjectFormat,
     onRedo: redo,
@@ -163,43 +170,37 @@ function App() {
                 draggedField={
                   activeDrag?.kind === 'field' ? activeDrag.field : null
                 }
-                formatTarget={activeFormatTarget}
+                formatTarget={null}
                 objects={objects}
                 selectedObjectId={selectedObjectId}
                 selection={selection}
                 style={style}
                 onAskCevyn={askCevyn}
-                onFormatElement={setFormatTarget}
+                onFormatElement={({ element }) =>
+                  setChosenFormatElement(element)
+                }
                 onRenameDashboard={renameDashboard}
               />
-              {selectedChart &&
-              activeFormatTarget &&
-              isChartFormatElement(activeFormatTarget.element) ? (
+              {selectedChart && isChartFormatElement(formatElement) ? (
                 <ChartFormatPanel
                   actions={chartActions}
                   chart={selectedChart}
-                  element={activeFormatTarget.element}
+                  element={formatElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
                   style={style}
-                  onElementChange={(element) =>
-                    setFormatTarget({ ...activeFormatTarget, element })
-                  }
+                  onElementChange={setChosenFormatElement}
                   onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
-              {selectedCard &&
-              activeFormatTarget &&
-              isCardFormatElement(activeFormatTarget.element) ? (
+              {selectedCard && isCardFormatElement(formatElement) ? (
                 <CardFormatPanel
                   actions={canvasActions}
                   card={selectedCard}
-                  element={activeFormatTarget.element}
+                  element={formatElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
-                  onElementChange={(element) =>
-                    setFormatTarget({ ...activeFormatTarget, element })
-                  }
+                  onElementChange={setChosenFormatElement}
                   onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
