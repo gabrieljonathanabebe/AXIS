@@ -227,9 +227,9 @@
   opacity: 1;
 }
 
-/* The object as a whole: a solid accent ring inside the frame, on hover in
-   format mode and while its container is formatted. Clicks go through to
-   the frame. */
+/* The object as a whole: an accent ring inside the frame, faint while the
+   pointer is over free space of the selected object, solid while its
+   container is in focus. Clicks go through to the frame. */
 .chart-format-region.is-container {
   inset: 0;
   margin: 0;
@@ -250,8 +250,8 @@
   opacity: 1;
 }
 
-/* Free space is a click target in format mode. ECharts writes its cursor
-   inline on its root, so only !important wins there. */
+/* Free space of the selected object formats it on a click. ECharts writes
+   its cursor inline on its root, so only !important wins there. */
 .chart-item:has(> .chart-format-region.is-container) {
   cursor: pointer;
 }
@@ -260,17 +260,10 @@
   cursor: pointer !important;
 }
 
-.chart-axis-title-hover {
-  position: absolute;
-  box-sizing: content-box;
-  margin-block: calc(-1 * var(--space-1));
-  padding-block: var(--space-1);
-  pointer-events: none;
-}
-
-.chart-axis-title-hover.is-y-axis {
-  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-1));
-  padding: var(--space-2) var(--space-1);
+/* Inside an object the format region outlines hovered text, so the text
+   keeps no hover surface of its own, e.g. the chart or card title. */
+.chart-item .editable-text:hover {
+  background: transparent;
 }
 
 .chart-item:hover .chart-move-handle svg,

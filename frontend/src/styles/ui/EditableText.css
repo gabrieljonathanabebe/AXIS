@@ -1,5 +1,4 @@
 .editable-text,
-.editable-text-highlight,
 .editable-text-input {
   max-width: calc(100% + 2 * var(--space-2));
   margin-inline: calc(-1 * var(--space-2));
@@ -15,15 +14,14 @@
   overflow: hidden;
   background: transparent;
   border: none;
-  cursor: text;
+  cursor: default;
   text-overflow: ellipsis;
   vertical-align: top;
   white-space: nowrap;
   transition: background var(--transition-fast);
 }
 
-.editable-text:hover,
-.editable-text-highlight {
+.editable-text:hover {
   background: var(--color-surface-hover);
 }
 

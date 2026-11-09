@@ -43,8 +43,12 @@ function EditableText({
       className={`editable-text ${className}`}
       type="button"
       aria-label={`Edit ${label.toLowerCase()}`}
-      title={value.trim() || placeholder}
-      onClick={() => setIsEditing(true)}
+      onClick={(event) => {
+        if (event.detail === 0) {
+          setIsEditing(true)
+        }
+      }}
+      onDoubleClick={() => setIsEditing(true)}
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >

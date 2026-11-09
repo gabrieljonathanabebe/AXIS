@@ -137,11 +137,6 @@ function EChartCanvas({
   // Effect events always see the latest props, so ECharts listeners are
   // registered once when the chart is created.
   const handleClick = useEffectEvent((event: ECElementEvent) => {
-    const axisTitleEdit = getAxisTitleEdit(event)
-    if (axisTitleEdit) {
-      onEditAxisTitle(axisTitleEdit)
-      return
-    }
     const nextSelection = createSelectionFromEvent(chart, event, dataset.fields)
     if (!nextSelection) {
       return
@@ -151,6 +146,14 @@ function EChartCanvas({
       return
     }
     actions.selectData(nextSelection)
+  })
+
+  /** Opens the inline input for an axis title on a double click. */
+  const handleDoubleClick = useEffectEvent((event: ECElementEvent) => {
+    const axisTitleEdit = getAxisTitleEdit(event)
+    if (axisTitleEdit) {
+      onEditAxisTitle(axisTitleEdit)
+    }
   })
 
   const handleBrushEnd = useEffectEvent((event: unknown) => {
@@ -201,10 +204,11 @@ function EChartCanvas({
     const zr = instance.getZr()
     chartRef.current = instance
     instance.on('click', (event) => handleClick(event))
+    instance.on('dblclick', (event) => handleDoubleClick(event))
     instance.on('brushEnd', (event) => handleBrushEnd(event))
     instance.on('mousemove', (event) => {
       if (isAxisTitleEvent(event)) {
-        zr.setCursorStyle('text')
+        zr.setCursorStyle('default')
       }
     })
     instance.on('mouseout', (event) => handleMouseOut(event))

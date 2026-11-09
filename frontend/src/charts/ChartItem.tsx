@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { getRectInFrame, getRectStyle } from '../objects/elementRect'
+import { getRectInFrame } from '../objects/elementRect'
 import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
 import { getTextStyleCss } from '../shared/textStyle'
 import EditableText from '../shared/ui/EditableText'
@@ -58,22 +58,12 @@ function ChartItem({
   onFormatHint,
 }: ChartItemProps) {
   const [axisTitleEdit, setAxisTitleEdit] = useState<AxisTitleEdit | null>(null)
-  const [hoveredAxisTitle, setHoveredAxisTitle] =
-    useState<AxisTitleEdit | null>(null)
   const definition = getChartDefinition(chart.type)
   const title = chart.spec.appearance.title
-  const isFormatMode = formattedElement !== null
   const titleFocusClassName = getFormatFocusClassName('title', formattedElement)
 
-  /** Opens the inline input for an axis title. */
-  function handleEditAxisTitle(edit: AxisTitleEdit): void {
-    setHoveredAxisTitle(null)
-    setAxisTitleEdit(edit)
-  }
-
-  /** Highlights the hovered axis title and remembers it as format hint. */
+  /** Remembers the hovered axis title as format hint. */
   function handleHoverAxisTitle(edit: AxisTitleEdit | null): void {
-    setHoveredAxisTitle(edit)
     if (edit) {
       onFormatHint({ element: `${edit.axis}Axis`, rect: edit.rect })
     }
@@ -107,12 +97,6 @@ function ChartItem({
           field={draggedField}
         />
       ) : null}
-      {hoveredAxisTitle && !axisTitleEdit && !isFormatMode ? (
-        <span
-          className={`editable-text-highlight chart-axis-title-hover is-${hoveredAxisTitle.axis}-axis`}
-          style={getRectStyle(hoveredAxisTitle.rect)}
-        />
-      ) : null}
       <EChartCanvas
         actions={actions}
         animation={animation}
@@ -121,7 +105,7 @@ function ChartItem({
         datasetId={datasetId}
         editingAxisTitle={axisTitleEdit?.axis ?? null}
         formattedElement={formattedElement}
-        onEditAxisTitle={handleEditAxisTitle}
+        onEditAxisTitle={setAxisTitleEdit}
         onHoverAxisTitle={handleHoverAxisTitle}
         onHoverElement={onFormatHint}
         selection={selection}
