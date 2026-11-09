@@ -7,7 +7,6 @@ import EditableText from '../shared/ui/EditableText'
 import EmptyState from '../shared/ui/EmptyState'
 import Panel from '../shared/ui/Panel'
 import ChartGrid from './ChartGrid'
-import DashboardFormatPanel from './DashboardFormatPanel'
 
 import type { CSSProperties } from 'react'
 import type { AskCevynState } from '../ai/useAskCevyn'
@@ -90,7 +89,6 @@ function CanvasPanel({
             size="sm"
             variant="ghost"
           />
-          <DashboardFormatPanel actions={actions} dashboard={dashboard} />
         </>
       }
       className="canvas-panel"

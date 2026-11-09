@@ -15,6 +15,7 @@ import { resolveFormatElement } from '../objects/resolveFormatElement'
 import { SharedColorPresets } from '../shared/ui/colorPresets'
 import BuildPanel from '../workspace/BuildPanel'
 import CanvasPanel from '../workspace/CanvasPanel'
+import DashboardFormatPanel from '../workspace/DashboardFormatPanel'
 import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
 import { useChartWorkspace } from '../workspace/useChartWorkspace'
 import NavigationRail from './NavigationRail'
@@ -221,6 +222,14 @@ function App() {
                   onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
+              {selectedObject ? null : (
+                <DashboardFormatPanel
+                  actions={canvasActions}
+                  dashboard={dashboard}
+                  isCollapsed={isFormatPanelCollapsed}
+                  onToggleCollapse={toggleFormatPanel}
+                />
+              )}
             </main>
             <main className="workspace" hidden={activeWorkspace !== 'data'}>
               <DataPanel

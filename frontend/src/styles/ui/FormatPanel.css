@@ -1,0 +1,17 @@
+/* Format panel at the right of the canvas: as wide as the Build panel;
+   the workspace gives it an auto column, so its own width decides and
+   eases like the Build panel. */
+.format-panel {
+  width: var(--panel-width);
+  transition: width var(--transition-fast);
+}
+
+.format-panel.is-collapsed {
+  width: var(--panel-collapsed-width);
+}
+
+.format-panel-title {
+  --cluster-gap: var(--space-2);
+
+  color: var(--color-text-secondary);
+}

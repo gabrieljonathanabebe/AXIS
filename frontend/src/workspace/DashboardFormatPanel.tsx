@@ -1,14 +1,10 @@
-import { Settings2 } from 'lucide-react'
-import { useState } from 'react'
-
 import StyleGallery from '../dashboardStyle/StyleGallery'
 import { STYLE_RECIPES } from '../dashboardStyle/styleRecipes'
 import { addFill } from '../shared/fill'
 import FillListControls from '../shared/ui/FillListControls'
+import FormatPanel from '../shared/ui/FormatPanel'
 import FormatWidget from '../shared/ui/FormatWidget'
-import IconButton from '../shared/ui/IconButton'
 import LayoutControls from '../shared/ui/LayoutControls'
-import Popover from '../shared/ui/Popover'
 import AnimationWidget from './AnimationWidget'
 
 import type { Fill } from '../shared/fill'
@@ -18,77 +14,63 @@ import type { CanvasActions, DashboardSpec } from './types'
 type DashboardFormatPanelProps = {
   actions: CanvasActions
   dashboard: DashboardSpec
+  isCollapsed: boolean
+  onToggleCollapse: () => void
 }
 
 // ===== COMPONENT =============================================================
 /**
- * Toolbar button with the settings of the whole dashboard: its style, the
- * gap between objects, the canvas background and the animation of all
- * charts. The name stays inline on the canvas.
+ * Format panel without a selection, like in Power BI: the settings of the
+ * whole dashboard, its style, the gap between objects, the canvas
+ * background and the animation of all charts. The name stays inline on
+ * the canvas.
  */
 function DashboardFormatPanel({
   actions,
   dashboard,
+  isCollapsed,
+  onToggleCollapse,
 }: DashboardFormatPanelProps) {
-  const [isOpen, setIsOpen] = useState(false)
-
   /** Changes the canvas fills; the other canvas settings stay. */
   function updateBackground(background: Fill[]): void {
     actions.updateDashboard({ canvas: { ...dashboard.canvas, background } })
   }
 
   return (
-    <Popover
-      className="format-popover glass glass-thick"
-      label="Dashboard settings"
-      open={isOpen}
-      placement="bottom-start"
-      title="Dashboard"
-      onOpenChange={setIsOpen}
-      renderTrigger={(triggerProps) => (
-        <IconButton
-          {...triggerProps}
-          isActive={isOpen}
-          label="Dashboard settings"
-          size="sm"
-          variant="ghost"
-          onClick={() => setIsOpen((current) => !current)}
-        >
-          <Settings2 size={16} />
-        </IconButton>
-      )}
+    <FormatPanel
+      isCollapsed={isCollapsed}
+      label="Dashboard"
+      onToggleCollapse={onToggleCollapse}
     >
-      <div className="format-popover-body stack">
-        <FormatWidget title="Style">
-          <StyleGallery
-            recipes={STYLE_RECIPES}
-            value={dashboard.style}
-            onApply={actions.applyStyle}
-          />
-        </FormatWidget>
-        <FormatWidget title="Layout">
-          <LayoutControls
-            label="Dashboard"
-            value={dashboard.layout}
-            onChange={actions.updateDashboardLayout}
-          />
-        </FormatWidget>
-        <FormatWidget
-          title="Background"
-          onAdd={() => updateBackground(addFill(dashboard.canvas.background))}
-        >
-          <FillListControls
-            label="Canvas"
-            value={dashboard.canvas.background}
-            onChange={updateBackground}
-          />
-        </FormatWidget>
-        <AnimationWidget
-          value={dashboard.animation}
-          onChange={(animation) => actions.updateDashboard({ animation })}
+      <FormatWidget title="Style">
+        <StyleGallery
+          recipes={STYLE_RECIPES}
+          value={dashboard.style}
+          onApply={actions.applyStyle}
         />
-      </div>
-    </Popover>
+      </FormatWidget>
+      <FormatWidget title="Layout">
+        <LayoutControls
+          label="Dashboard"
+          value={dashboard.layout}
+          onChange={actions.updateDashboardLayout}
+        />
+      </FormatWidget>
+      <FormatWidget
+        title="Background"
+        onAdd={() => updateBackground(addFill(dashboard.canvas.background))}
+      >
+        <FillListControls
+          label="Canvas"
+          value={dashboard.canvas.background}
+          onChange={updateBackground}
+        />
+      </FormatWidget>
+      <AnimationWidget
+        value={dashboard.animation}
+        onChange={(animation) => actions.updateDashboard({ animation })}
+      />
+    </FormatPanel>
   )
 }
 
