@@ -3,6 +3,7 @@ import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
 import EmptyState from '../shared/ui/EmptyState'
+import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { isSameSelection } from '../workspace/dataSelection'
 import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
 import {
@@ -107,6 +108,8 @@ function EChartCanvas({
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
   const documentTheme = useDocumentTheme()
+  const isFormatKeyHeld = useIsFormatKeyHeld()
+  const isTooltipEnabled = chart.spec.interaction.tooltip.enabled
   const query = createChartQuery(chart, dataset.fields)
   const { result, isLoading, error } = useChartQuery(datasetId, query)
   const highlightQuery = createHighlightQuery(query, selection)
@@ -244,7 +247,7 @@ function EChartCanvas({
       }),
       true,
     )
-    syncBrush(instance, chart, selection, formattedElement !== null)
+    syncBrush(instance, chart, selection)
     syncFormatFocus(instance, formattedElement, theme.formatFocus)
     syncFormatTooltip(
       instance,
@@ -265,6 +268,21 @@ function EChartCanvas({
     selection,
     style,
   ])
+
+  // While the format key is held, a click formats, so the data tooltip
+  // makes room for the format label at the pointer.
+  useEffect(() => {
+    const instance = chartRef.current
+    if (!instance) {
+      return
+    }
+    if (isFormatKeyHeld) {
+      instance.dispatchAction({ type: 'hideTip' })
+    }
+    instance.setOption({
+      tooltip: { show: isTooltipEnabled && !isFormatKeyHeld },
+    })
+  }, [isFormatKeyHeld, isTooltipEnabled])
 
   useEffect(() => {
     if (isChartLoading) {

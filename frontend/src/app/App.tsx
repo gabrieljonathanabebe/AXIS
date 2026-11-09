@@ -19,6 +19,7 @@ import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
 import { useChartWorkspace } from '../workspace/useChartWorkspace'
 import NavigationRail from './NavigationRail'
 import TopBar from './TopBar'
+import { useFormatFocus } from './useFormatFocus'
 import { useWorkspaceCommands } from './useWorkspaceCommands'
 import { useWorkspaceLayout } from './useWorkspaceLayout'
 
@@ -99,12 +100,30 @@ function App() {
     toggleFormatPanel,
   } = useWorkspaceLayout()
 
+  const { isFormatFocused, pulseFormatFocus } = useFormatFocus()
+  // The element of the panel lights up on its object only while the pointer
+  // is over the format panel or for a moment after it was chosen.
+  const focusTarget =
+    selectedObject && formatElement && isFormatFocused
+      ? { element: formatElement, objectId: selectedObject.id }
+      : null
+
+  /**
+   * Shows an element in the format panel and lets it light up on its
+   * object for a moment, e.g. after a click on an axis.
+   * @param element Element to show.
+   */
+  function chooseFormatElement(element: ObjectFormatElement): void {
+    setChosenFormatElement(element)
+    pulseFormatFocus()
+  }
+
   /**
    * Shows the selected object as a whole in the format panel and expands
    * the panel, e.g. after Enter on the object.
    */
   function openObjectFormat(): void {
-    setChosenFormatElement('container')
+    chooseFormatElement('container')
     setIsFormatPanelCollapsed(false)
   }
 
@@ -170,15 +189,13 @@ function App() {
                 draggedField={
                   activeDrag?.kind === 'field' ? activeDrag.field : null
                 }
-                formatTarget={null}
+                formatTarget={focusTarget}
                 objects={objects}
                 selectedObjectId={selectedObjectId}
                 selection={selection}
                 style={style}
                 onAskCevyn={askCevyn}
-                onFormatElement={({ element }) =>
-                  setChosenFormatElement(element)
-                }
+                onFormatElement={({ element }) => chooseFormatElement(element)}
                 onRenameDashboard={renameDashboard}
               />
               {selectedChart && isChartFormatElement(formatElement) ? (
@@ -189,7 +206,7 @@ function App() {
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
                   style={style}
-                  onElementChange={setChosenFormatElement}
+                  onElementChange={chooseFormatElement}
                   onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
@@ -200,7 +217,7 @@ function App() {
                   element={formatElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
-                  onElementChange={setChosenFormatElement}
+                  onElementChange={chooseFormatElement}
                   onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
