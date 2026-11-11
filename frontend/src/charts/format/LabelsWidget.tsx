@@ -19,8 +19,8 @@ type LabelsWidgetProps = {
  * Groups of the data labels element: where they sit, how their text looks
  * and their number format. The chart type offers its `positions`, e.g.
  * outside and inside for pie segments; radial charts label percentages, so
- * they have no number format. Whether the labels show is set in the
- * popover header and by the eye of the labels group in the marks.
+ * they have no number format. Whether the labels show is the eye of their
+ * group in the marks.
  */
 function LabelsWidget({
   isRadial = false,

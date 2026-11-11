@@ -27,17 +27,18 @@ import PaletteControl from '../../shared/ui/PaletteControl'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
+import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
 import { getCategoricalPalettes } from '../colorPalettes'
 import { getColorEncodingMode } from '../getColorEncodingMode'
+import LabelsWidget from './LabelsWidget'
+import TooltipWidget from './TooltipWidget'
 
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Effect } from '../../shared/effect'
 import type { PaintType } from '../../shared/paint'
-import type { FormatVisibility } from '../../shared/ui/FormatWidget'
 import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type {
-  ChartFormatElement,
   ChartFormatProps,
   ColorScaleAppearance,
   LinePoints,
@@ -55,9 +56,6 @@ type MarkGroups = Partial<Record<MarkGroupKey, ReactNode>>
 type FilledMarkKey = 'bar' | 'pie' | 'scatter'
 
 type MarkGroupProps = Pick<ChartFormatProps, 'actions' | 'chart'>
-
-/** Switches the popover to another element, e.g. the tooltip. */
-type ElementChange = (element: ChartFormatElement) => void
 
 /**
  * Data color of the marks: its field, and for a continuous scale its range
@@ -115,30 +113,6 @@ const scatterSymbolIcons = {
 } satisfies Record<ScatterSymbol, LucideIcon>
 
 // ===== HELPERS ===============================================================
-/**
- * Group without rows whose paintbrush opens another element, e.g. the
- * tooltip; with a visibility, its eye also shows or hides that element.
- * @param title Title of the group.
- * @param element Element the paintbrush opens.
- * @param onElementChange Switches the popover to that element.
- * @param visibility Shows or hides the element, e.g. the data labels.
- * @returns The group with a paintbrush and an optional eye in its heading.
- */
-function getElementLinkGroup(
-  title: string,
-  element: ChartFormatElement,
-  onElementChange: ElementChange,
-  visibility?: FormatVisibility,
-): ReactNode {
-  return (
-    <FormatWidget
-      title={title}
-      visibility={visibility}
-      onFormat={() => onElementChange(element)}
-    />
-  )
-}
-
 /**
  * Data color in the color row of the marks: one color, a palette for
  * categories, or a gradient when a continuous field colors the marks; the
@@ -559,26 +533,56 @@ function getChartTypeGroups(
 /**
  * Fills the places of the marks element for the chart type, e.g. Shape
  * with width and radius for bars. Places a chart type does not have stay
- * empty and drop out of the popover; `MARK_GROUP_ORDER` sets the order.
+ * empty and drop out of the panel; `MARK_GROUP_ORDER` sets the order. The
+ * data labels and the tooltip are groups like the others, each with its
+ * own subgroups.
  * @param formatProps Actions, chart and fields of the chart.
- * @param onElementChange Switches the popover to its labels or tooltip.
  * @returns The groups by place.
  */
-export function getMarkGroups(
-  formatProps: ChartFormatProps,
-  onElementChange: ElementChange,
-): MarkGroups {
+export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
   const { actions, chart } = formatProps
   const { labels } = chart.spec.appearance
+  const { tooltip } = chart.spec.interaction
+  const isRadial = isRadialChartType(chart.type)
   const dataColor = getDataColorControls(formatProps)
   return {
     ...getChartTypeGroups(formatProps, dataColor),
-    labels: getElementLinkGroup('Labels', 'labels', onElementChange, {
-      visible: labels.visible,
-      onChange: (visible) => {
-        actions.setAppearance('labels', { ...labels, visible })
-      },
-    }),
-    tooltip: getElementLinkGroup('Tooltip', 'tooltip', onElementChange),
+    labels: (
+      <FormatWidget
+        group="labels"
+        title="Labels"
+        visibility={{
+          visible: labels.visible,
+          onChange: (visible) => {
+            actions.setAppearance('labels', { ...labels, visible })
+          },
+        }}
+      >
+        <LabelsWidget
+          isRadial={isRadial}
+          positions={getChartDefinition(chart.type).labelPositions}
+          value={labels}
+          onChange={(value) => actions.setAppearance('labels', value)}
+        />
+      </FormatWidget>
+    ),
+    tooltip: (
+      <FormatWidget
+        group="tooltip"
+        title="Tooltip"
+        visibility={{
+          visible: tooltip.enabled,
+          onChange: (enabled) => {
+            actions.setInteraction('tooltip', { ...tooltip, enabled })
+          },
+        }}
+      >
+        <TooltipWidget
+          showTrigger={!isRadial}
+          value={tooltip}
+          onChange={(value) => actions.setInteraction('tooltip', value)}
+        />
+      </FormatWidget>
+    ),
   }
 }

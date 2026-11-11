@@ -387,6 +387,10 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   der Link selbst noch auf keine Datei zeigt;
 - Zeilennummern vor jedem Block aus dem aktuell gespeicherten Stand
   bestimmen, da sie sich durch vorherige Blöcke verschieben;
+- mehrere Änderungen in derselben Datei von oben nach unten angeben, in
+  der Reihenfolge, in der der Nutzer sie einträgt; jede Zeilennummer ist
+  bereits um die Verschiebung durch die Änderungen darüber korrigiert und
+  stimmt nach dem Eintragen der vorherigen (nicht von unten nach oben);
 - keinen Code in Fließtext oder Aufzählungspunkte packen;
 - bei Ersetzungen den vollständigen neuen Abschnitt zeigen;
 - nach jedem Codeblock in wenigen kurzen Stichpunkten erklären, was

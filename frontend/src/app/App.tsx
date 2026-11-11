@@ -10,6 +10,7 @@ import { isChartFormatElement } from '../charts/getFormatElements'
 import { createStyleColorPresets } from '../dashboardStyle/styleColorPresets'
 import DataPanel from '../datasets/DataPanel'
 import { useDatasets } from '../datasets/useDatasets'
+import { getPanelElement } from '../objects/formatPanelElement'
 import { getObjectDefinition } from '../objects/objectDefinitions'
 import { resolveFormatElement } from '../objects/resolveFormatElement'
 import { SharedColorPresets } from '../shared/ui/colorPresets'
@@ -83,6 +84,9 @@ function App() {
   const formatElement = selectedObject
     ? resolveFormatElement(selectedObject, chosenFormatElement, dataset.fields)
     : null
+  // Small elements open their parent, e.g. a data label the marks, where
+  // they are a group of their own.
+  const panelElement = formatElement ? getPanelElement(formatElement) : null
 
   const { askCevyn, askCevynState } = useAskCevyn({
     charts,
@@ -199,11 +203,11 @@ function App() {
                 onFormatElement={({ element }) => chooseFormatElement(element)}
                 onRenameDashboard={renameDashboard}
               />
-              {selectedChart && isChartFormatElement(formatElement) ? (
+              {selectedChart && isChartFormatElement(panelElement) ? (
                 <ChartFormatPanel
                   actions={chartActions}
                   chart={selectedChart}
-                  element={formatElement}
+                  element={panelElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
                   style={style}
@@ -211,11 +215,11 @@ function App() {
                   onToggleCollapse={toggleFormatPanel}
                 />
               ) : null}
-              {selectedCard && isCardFormatElement(formatElement) ? (
+              {selectedCard && isCardFormatElement(panelElement) ? (
                 <CardFormatPanel
                   actions={canvasActions}
                   card={selectedCard}
-                  element={formatElement}
+                  element={panelElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
                   onElementChange={chooseFormatElement}

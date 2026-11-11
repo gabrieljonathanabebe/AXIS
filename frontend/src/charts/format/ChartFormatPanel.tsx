@@ -3,17 +3,15 @@ import { Fragment } from 'react'
 import ContainerWidget from '../../objects/ContainerWidget'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
 import FormatPanel from '../../shared/ui/FormatPanel'
-import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
+import FormatWidget from '../../shared/ui/FormatWidget'
 import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
 import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
-import LabelsWidget from './LabelsWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
 import LegendWidget from './LegendWidget'
 import { getMarkGroups, MARK_GROUP_ORDER } from './markGroups'
-import TooltipWidget from './TooltipWidget'
 import ZoomWidget from './ZoomWidget'
 
 import type { ReactNode } from 'react'
@@ -45,17 +43,16 @@ const elementTitles: Record<ChartFormatElement, string> = {
 
 // ===== HELPERS ===============================================================
 /**
- * Lists the format groups of one chart element, one below the other.
- * @param element Element selected in the popover.
+ * Lists the format groups of one chart element, one below the other. Small
+ * elements are groups of their parent, e.g. the data labels within the
+ * marks.
+ * @param element Element shown in the panel.
  * @param formatProps Actions, chart and fields of the chart.
- * @param onElementChange Switches the popover to another element, e.g. from
- *   the marks to their tooltip.
  * @returns The groups of the element, each wired to its chart action.
  */
 function getFormatGroups(
   element: ChartFormatElement,
   { actions, chart, fields, style }: ChartFormatProps,
-  onElementChange: (element: ChartFormatElement) => void,
 ): ReactNode {
   const { appearance, interaction } = chart.spec
   switch (element) {
@@ -78,15 +75,6 @@ function getFormatGroups(
           onChange={actions.setContainer}
         />
       )
-    case 'labels':
-      return (
-        <LabelsWidget
-          isRadial={isRadialChartType(chart.type)}
-          positions={getChartDefinition(chart.type).labelPositions}
-          value={appearance.labels}
-          onChange={(value) => actions.setAppearance('labels', value)}
-        />
-      )
     case 'legend':
       return (
         <>
@@ -101,12 +89,9 @@ function getFormatGroups(
         </>
       )
     case 'marks': {
-      const groups = getMarkGroups(
-        { actions, chart, fields, style },
-        onElementChange,
-      )
+      const markGroups = getMarkGroups({ actions, chart, fields, style })
       return MARK_GROUP_ORDER.map((key) => (
-        <Fragment key={key}>{groups[key]}</Fragment>
+        <Fragment key={key}>{markGroups[key]}</Fragment>
       ))
     }
     case 'title':
@@ -117,55 +102,45 @@ function getFormatGroups(
           onChange={(value) => actions.setAppearance('title', value)}
         />
       )
-    case 'tooltip':
-      return (
-        <TooltipWidget
-          showTrigger={!isRadialChartType(chart.type)}
-          value={interaction.tooltip}
-          onChange={(value) => actions.setInteraction('tooltip', value)}
-        />
-      )
     case 'xAxis':
-    case 'xAxisLabels':
-    case 'yAxis':
-    case 'yAxisLabels': {
-      const axis = element.startsWith('x') ? 'x' : 'y'
-      const axisElement = `${axis}Axis` as const
+    case 'yAxis': {
+      const axis = element === 'xAxis' ? 'x' : 'y'
+      const axisElement = element
       const axisAppearance = appearance[axisElement]
-      const isAxisTitle = element === axisElement
-      const axisWidget = (
-        <AxisWidget
-          defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
-          orientation={axis}
-          part={isAxisTitle ? 'title' : 'labels'}
-          value={axisAppearance}
-          onChange={(value) => actions.setAppearance(axisElement, value)}
-        />
-      )
-      if (!isAxisTitle) {
-        return axisWidget
+
+      /** Saves the changed axis, e.g. its title or its labels. */
+      function setAxis(value: typeof axisAppearance): void {
+        actions.setAppearance(axisElement, value)
       }
+
       return (
         <>
-          {axisWidget}
+          <AxisWidget
+            defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
+            orientation={axis}
+            part="title"
+            value={axisAppearance}
+            onChange={setAxis}
+          />
+          <FormatWidget group={`${axis}AxisLabels`} title="Labels">
+            <AxisWidget
+              orientation={axis}
+              part="labels"
+              value={axisAppearance}
+              onChange={setAxis}
+            />
+          </FormatWidget>
           <AxisStrokeWidget
             label="Axis line"
             title="Line"
             value={axisAppearance.line}
-            onChange={(line) =>
-              actions.setAppearance(axisElement, { ...axisAppearance, line })
-            }
+            onChange={(line) => setAxis({ ...axisAppearance, line })}
           />
           <AxisStrokeWidget
             label="Grid"
             title="Gridlines"
             value={axisAppearance.gridLines}
-            onChange={(gridLines) =>
-              actions.setAppearance(axisElement, {
-                ...axisAppearance,
-                gridLines,
-              })
-            }
+            onChange={(gridLines) => setAxis({ ...axisAppearance, gridLines })}
           />
           {axis === 'x' ? (
             <ZoomWidget
@@ -190,8 +165,7 @@ function getElementVisibility(
   element: ChartFormatElement,
   { actions, chart }: ChartFormatProps,
 ): FormatVisibility | undefined {
-  const { colorScale, labels, legend, title } = chart.spec.appearance
-  const { tooltip } = chart.spec.interaction
+  const { colorScale, legend, title } = chart.spec.appearance
   switch (element) {
     case 'colorScale':
       return {
@@ -201,12 +175,6 @@ function getElementVisibility(
             ...colorScale,
             continuous: { ...colorScale.continuous, visible },
           }),
-      }
-    case 'labels':
-      return {
-        visible: labels.visible,
-        onChange: (visible) =>
-          actions.setAppearance('labels', { ...labels, visible }),
       }
     case 'legend':
       return {
@@ -219,12 +187,6 @@ function getElementVisibility(
         visible: title.visible,
         onChange: (visible) =>
           actions.setAppearance('title', { ...title, visible }),
-      }
-    case 'tooltip':
-      return {
-        visible: tooltip.enabled,
-        onChange: (enabled) =>
-          actions.setInteraction('tooltip', { ...tooltip, enabled }),
       }
     case 'xAxis':
     case 'yAxis': {
@@ -269,7 +231,7 @@ function ChartFormatPanel({
       visibility={getElementVisibility(element, formatProps)}
       onToggleCollapse={onToggleCollapse}
     >
-      {getFormatGroups(element, formatProps, onElementChange)}
+      {getFormatGroups(element, formatProps)}
     </FormatPanel>
   )
 }

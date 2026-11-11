@@ -33,27 +33,21 @@ export function isChartFormatElement(
 }
 
 /**
- * Lists the elements of a chart that can be formatted, in reading order.
+ * Lists the elements of a chart that the format panel offers, in reading
+ * order; small elements like the data labels are groups of these.
  * @param chart Chart whose elements are listed.
  * @param fields Dataset fields, which decide whether a legend or a color
  *   scale is relevant.
- * @returns The container, title, marks with their data labels and tooltip,
- *   the axes and their labels of cartesian charts, a relevant legend and a
- *   continuous color scale.
+ * @returns The container, title, marks, the axes of cartesian charts, a
+ *   relevant legend and a continuous color scale.
  */
 export function getFormatElements(
   chart: ChartInstance,
   fields: DataField[],
 ): ChartFormatElement[] {
-  const elements: ChartFormatElement[] = [
-    'container',
-    'title',
-    'marks',
-    'labels',
-    'tooltip',
-  ]
+  const elements: ChartFormatElement[] = ['container', 'title', 'marks']
   if (!isRadialChartType(chart.type)) {
-    elements.push('xAxis', 'xAxisLabels', 'yAxis', 'yAxisLabels')
+    elements.push('xAxis', 'yAxis')
   }
   if (isLegendRelevant(chart, fields)) {
     elements.push('legend')

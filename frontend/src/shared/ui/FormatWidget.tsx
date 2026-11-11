@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Paintbrush, Plus } from 'lucide-react'
+import { Eye, EyeOff, Plus } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 import IconButton from './IconButton'
@@ -14,28 +14,30 @@ export type FormatVisibility = {
 
 type FormatWidgetProps = {
   children?: ReactNode
+  group?: string
   title?: string
   visibility?: FormatVisibility
   onAdd?: () => void
-  onFormat?: () => void
 }
 
 // ===== COMPONENT =============================================================
 /**
  * One group of format rows, e.g. in the format panel. The title becomes a
  * small heading; a visibility becomes an eye on its right, which also
- * shows or hides the rows, `onAdd` a plus that adds what the rows edit,
- * e.g. an effect, and `onFormat` a paintbrush that opens another element.
- * These icons stand in the icon column of the rows below. Without a title
- * the rows stand alone, e.g. in a section of the build panel.
- * @param props Rows, optional title, visibility, add and format action.
+ * shows or hides the rows, and `onAdd` a plus that adds what the rows edit,
+ * e.g. an effect. These icons stand in the icon column of the rows below.
+ * `group` names the part of the object the group formats when it differs
+ * from the element of the panel, e.g. the data labels within the marks; a
+ * group inside a group is a subgroup with a quieter heading. Without a
+ * title the rows stand alone, e.g. in a section of the build panel.
+ * @param props Rows, optional title, part, visibility and add action.
  */
 function FormatWidget({
   children,
+  group,
   title,
   visibility,
   onAdd,
-  onFormat,
 }: FormatWidgetProps) {
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsRows = visibility?.visible ?? true
@@ -61,7 +63,11 @@ function FormatWidget({
     onAdd?.()
   }
   return (
-    <div ref={widgetRef} className="format-widget stack">
+    <div
+      className="format-widget stack"
+      data-format-group={group}
+      ref={widgetRef}
+    >
       {title ? (
         <div className="format-widget-header">
           <span className="format-widget-title">{title}</span>
@@ -84,16 +90,6 @@ function FormatWidget({
                 onClick={handleAdd}
               >
                 <Plus size={14} />
-              </IconButton>
-            ) : null}
-            {onFormat ? (
-              <IconButton
-                label={`Format ${title.toLowerCase()}`}
-                size="xs"
-                variant="ghost"
-                onClick={onFormat}
-              >
-                <Paintbrush size={14} />
               </IconButton>
             ) : null}
           </span>

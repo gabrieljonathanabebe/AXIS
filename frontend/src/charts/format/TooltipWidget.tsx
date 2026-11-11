@@ -20,8 +20,8 @@ const triggerOptions = [
 
 /**
  * Group of the data tooltip: what triggers it, the hovered mark or all
- * marks at one position of the axis. Whether it shows is the eye in the
- * popover header; radial charts have no trigger.
+ * marks at one position of the axis. Whether it shows is the eye of its
+ * group in the marks; radial charts have no trigger.
  */
 function TooltipWidget({
   onChange,

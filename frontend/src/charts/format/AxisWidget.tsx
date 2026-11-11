@@ -26,10 +26,10 @@ type AxisWidgetProps = {
 
 // ===== FUNCTIONS =============================================================
 /**
- * Groups of one axis part: the title group of the axis element, or the
- * groups of the axis labels element (ticks, rotation, text and format as
- * number or date). Whether the axis shows is the eye in the popover
- * header.
+ * Groups of one axis part: the title group, or the subgroups of its labels
+ * (ticks, rotation, text and format as number or date), which the axis
+ * element shows in its Labels group. Whether the axis shows is the eye in
+ * the panel header.
  */
 function AxisWidget({
   defaultTitle,
