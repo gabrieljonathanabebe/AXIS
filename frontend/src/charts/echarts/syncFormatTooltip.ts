@@ -53,6 +53,8 @@ function findPreviewPoint(series: { data?: unknown[] }[]): PreviewPoint | null {
  * Keeps the data tooltip out of format mode; the label at the pointer tells
  * what a click formats instead. While the tooltip itself is formatted, it
  * stays open at the largest value as a live preview and ignores the pointer.
+ * Closing the preview also lifts the highlight it gave that value, e.g. a
+ * bar, which would otherwise stay bright while another part is in focus.
  * Editor state like `syncFormatFocus`, gone with the next full `setOption`.
  * @param instance ECharts instance of the chart.
  * @param formattedElement Element in the popover, or null when it is closed.
@@ -75,6 +77,7 @@ export function syncFormatTooltip(
       : null
   if (!point) {
     instance.dispatchAction({ type: 'hideTip' })
+    instance.dispatchAction({ type: 'downplay' })
     instance.setOption({ tooltip: { show: false } })
     return
   }

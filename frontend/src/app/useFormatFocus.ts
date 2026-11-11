@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 
 // ===== TYPES =================================================================
 type FormatFocus = {
-  isFormatFocused: boolean
+  hoveredFormatGroup: string | null
+  isFormatPulsing: boolean
+  isOverFormatPanel: boolean
   pulseFormatFocus: () => void
 }
 
@@ -12,25 +14,30 @@ const FOCUS_PULSE_DURATION = 1000
 
 // ===== FUNCTION ==============================================================
 /**
- * Tells when the element of the format panel lights up on its object: while
- * the pointer is over the format panel, and for a moment after an element
- * was chosen. Otherwise nothing is dimmed, so analyzing stays undisturbed.
- * @returns Whether the focus shows, and a pulse for a newly chosen element.
+ * Tells what of the format panel lights up on its object: while the pointer
+ * is over the panel, the group under it, e.g. the data labels, else the
+ * element of the panel; for a moment after an element was chosen, that
+ * element. Otherwise nothing is dimmed, so analyzing stays undisturbed.
+ * @returns The hover over the panel, the pulse and a way to start it.
  */
 export function useFormatFocus(): FormatFocus {
   const [isOverPanel, setIsOverPanel] = useState(false)
+  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
   const [isPulsing, setIsPulsing] = useState(false)
   const pulseTimeout = useRef<number | null>(null)
 
   useEffect(() => {
     /**
-     * Follows the pointer into and out of the format panel, also when the
-     * panel under it is replaced, e.g. from chart to card.
+     * Follows the pointer over the format panel and its groups, also when
+     * the panel under it is replaced, e.g. from chart to card.
      */
     function handlePointerOver(event: PointerEvent): void {
-      const target = event.target
-      setIsOverPanel(
-        target instanceof Element && target.closest('.format-panel') !== null,
+      const target = event.target instanceof Element ? event.target : null
+      setIsOverPanel(Boolean(target?.closest('.format-panel')))
+      setHoveredGroup(
+        target
+          ?.closest('.format-panel [data-format-group]')
+          ?.getAttribute('data-format-group') ?? null,
       )
     }
 
@@ -38,6 +45,7 @@ export function useFormatFocus(): FormatFocus {
     function handlePointerOut(event: PointerEvent): void {
       if (event.relatedTarget === null) {
         setIsOverPanel(false)
+        setHoveredGroup(null)
       }
     }
 
@@ -61,5 +69,10 @@ export function useFormatFocus(): FormatFocus {
     }, FOCUS_PULSE_DURATION)
   }
 
-  return { isFormatFocused: isOverPanel || isPulsing, pulseFormatFocus }
+  return {
+    hoveredFormatGroup: hoveredGroup,
+    isFormatPulsing: isPulsing,
+    isOverFormatPanel: isOverPanel,
+    pulseFormatFocus,
+  }
 }

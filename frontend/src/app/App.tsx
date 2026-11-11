@@ -10,7 +10,7 @@ import { isChartFormatElement } from '../charts/getFormatElements'
 import { createStyleColorPresets } from '../dashboardStyle/styleColorPresets'
 import DataPanel from '../datasets/DataPanel'
 import { useDatasets } from '../datasets/useDatasets'
-import { getPanelElement } from '../objects/formatPanelElement'
+import { findFormatGroup, getPanelElement } from '../objects/formatPanelElement'
 import { getObjectDefinition } from '../objects/objectDefinitions'
 import { resolveFormatElement } from '../objects/resolveFormatElement'
 import { SharedColorPresets } from '../shared/ui/colorPresets'
@@ -105,12 +105,30 @@ function App() {
     toggleFormatPanel,
   } = useWorkspaceLayout()
 
-  const { isFormatFocused, pulseFormatFocus } = useFormatFocus()
-  // The element of the panel lights up on its object only while the pointer
-  // is over the format panel or for a moment after it was chosen.
+  const {
+    hoveredFormatGroup,
+    isFormatPulsing,
+    isOverFormatPanel,
+    pulseFormatFocus,
+  } = useFormatFocus()
+
+  /**
+   * Picks the part of the selected object that lights up: over the format
+   * panel the group under the pointer, e.g. the data labels, or else the
+   * element of the panel; after a click the chosen part for a moment.
+   * @returns The part, or null when nothing is dimmed.
+   */
+  function getFocusedElement(): ObjectFormatElement | null {
+    if (isOverFormatPanel) {
+      return findFormatGroup(hoveredFormatGroup) ?? panelElement
+    }
+    return isFormatPulsing ? formatElement : null
+  }
+
+  const focusedElement = getFocusedElement()
   const focusTarget =
-    selectedObject && formatElement && isFormatFocused
-      ? { element: formatElement, objectId: selectedObject.id }
+    selectedObject && focusedElement
+      ? { element: focusedElement, objectId: selectedObject.id }
       : null
 
   /**

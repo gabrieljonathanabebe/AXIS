@@ -4,16 +4,16 @@ import type { ObjectFormatElement } from './types'
 /**
  * Small elements the format panel shows as a group of a larger one, e.g.
  * the data labels within the marks; every other element is a place of its
- * own in the panel.
+ * own in the panel. Each such group carries its element as
+ * `data-format-group`.
  */
-const formatParents: Partial<Record<ObjectFormatElement, ObjectFormatElement>> =
-  {
-    labels: 'marks',
-    selectionLabel: 'value',
-    tooltip: 'marks',
-    xAxisLabels: 'xAxis',
-    yAxisLabels: 'yAxis',
-  }
+const formatGroups = [
+  { element: 'labels', parent: 'marks' },
+  { element: 'selectionLabel', parent: 'value' },
+  { element: 'tooltip', parent: 'marks' },
+  { element: 'xAxisLabels', parent: 'xAxis' },
+  { element: 'yAxisLabels', parent: 'yAxis' },
+] satisfies { element: ObjectFormatElement; parent: ObjectFormatElement }[]
 
 // ===== FUNCTIONS =============================================================
 /**
@@ -25,5 +25,19 @@ const formatParents: Partial<Record<ObjectFormatElement, ObjectFormatElement>> =
 export function getPanelElement(
   element: ObjectFormatElement,
 ): ObjectFormatElement {
-  return formatParents[element] ?? element
+  const group = formatGroups.find((item) => item.element === element)
+  return group?.parent ?? element
+}
+
+/**
+ * Reads which small element a group of the panel formats from its
+ * `data-format-group`, e.g. "labels".
+ * @param name Value of the attribute, or null when there is none.
+ * @returns The element, or null when the name is no group.
+ */
+export function findFormatGroup(
+  name: string | null,
+): ObjectFormatElement | null {
+  const group = formatGroups.find((item) => item.element === name)
+  return group?.element ?? null
 }
