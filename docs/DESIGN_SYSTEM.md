@@ -255,10 +255,15 @@ Beide Bereiche nutzen `Panel`.
 
 Alle scrollenden Bereiche teilen eine schmale Scrollbar aus `base.css`:
 `--scrollbar-size` (8 px), Griff in `--color-scrollbar` bzw.
-`--color-scrollbar-hover`, Spur durchsichtig. Firefox erhält
-`scrollbar-width: thin` und `scrollbar-color` nur über
-`@supports not selector(::-webkit-scrollbar)`, weil Chrome sonst die
-`::-webkit-scrollbar`-Regeln ignoriert. Bereiche, die Innenabstand und
+`--color-scrollbar-hover`, Spur durchsichtig. Nur Firefox erhält
+`scrollbar-width: thin` und `scrollbar-color`, über
+`@supports (-moz-appearance: none)`: Sobald sie gesetzt sind,
+ignorieren Chrome und Safari die `::-webkit-scrollbar`-Regeln und
+zeigen ihre eigene Scrollbar, die auf dem Mac über dem Inhalt liegt.
+`@supports selector(::-webkit-scrollbar)` taugt nicht als Weiche, weil
+Safari es als nicht unterstützt meldet. Weil die Scrollbar von Firefox
+auf dem Mac ebenfalls überlagert, behalten scrollbare Panels dort rechts
+den vollen Innenabstand. Bereiche, die Innenabstand und
 Scrollen am selben Element tragen (Menüs, Details-Popover), haben die
 Scrollbar damit schon außen.
 
