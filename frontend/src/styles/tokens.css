@@ -41,6 +41,8 @@
 
   --glass-saturation: 170%;
 
+  --scrollbar-size: 8px;
+
   --font-sans:
     'Inter Variable', ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, 'Segoe UI', sans-serif;

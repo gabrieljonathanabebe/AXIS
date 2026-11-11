@@ -27,6 +27,9 @@
   --color-border-accent: rgba(79, 156, 255, 0.42);
   --color-border-danger: rgba(255, 99, 112, 0.42);
 
+  --color-scrollbar: rgba(148, 163, 184, 0.32);
+  --color-scrollbar-hover: rgba(148, 163, 184, 0.52);
+
   --color-accent: #178bff;
   --color-accent-hover: #178bff;
   --color-accent-soft: rgba(79, 156, 255, 0.18);
@@ -126,6 +129,9 @@
   --color-border-strong: rgba(47, 72, 103, 0.36);
   --color-border-accent: rgba(23, 139, 255, 0.42);
   --color-border-danger: rgba(214, 40, 57, 0.4);
+
+  --color-scrollbar: rgba(47, 72, 103, 0.3);
+  --color-scrollbar-hover: rgba(47, 72, 103, 0.5);
 
   --color-accent: #087fe7;
   --color-accent-hover: #006fce;
