@@ -31,13 +31,12 @@ const elementOptions: FormatElementOption<CardFormatElement>[] = [
   { label: 'Card', value: 'container' },
   { label: 'Title', value: 'title' },
   { label: 'Value', value: 'value' },
-  { label: 'Selection', value: 'selectionLabel' },
 ]
 
 // ===== HELPERS ===============================================================
 /**
  * Picks the widget of one card element.
- * @param element Element in the popover.
+ * @param element Element shown in the panel.
  * @param props Card, its fields and the actions that change it.
  * @returns The widget of the element.
  */
@@ -56,21 +55,6 @@ function renderFormatWidget(
           }
         />
       )
-    case 'selectionLabel':
-      return (
-        <FormatWidget title="Text">
-          <TextStyleControls
-            label="Selection"
-            value={appearance.selectionLabel.textStyle}
-            onChange={(textStyle) =>
-              actions.updateCardAppearance(card.id, 'selectionLabel', {
-                ...appearance.selectionLabel,
-                textStyle,
-              })
-            }
-          />
-        </FormatWidget>
-      )
     case 'title':
       return (
         <ObjectTitleWidget
@@ -83,25 +67,50 @@ function renderFormatWidget(
       )
     case 'value':
       return (
-        <CardValueWidget
-          aggregation={data.aggregation}
-          aggregations={getCardAggregations(
-            fields.find((field) => field.name === data.field),
-          )}
-          value={appearance.value}
-          onAggregationChange={(aggregation) =>
-            actions.updateCardData(card.id, { aggregation })
-          }
-          onChange={(value) =>
-            actions.updateCardAppearance(card.id, 'value', value)
-          }
-        />
+        <>
+          <CardValueWidget
+            aggregation={data.aggregation}
+            aggregations={getCardAggregations(
+              fields.find((field) => field.name === data.field),
+            )}
+            value={appearance.value}
+            onAggregationChange={(aggregation) =>
+              actions.updateCardData(card.id, { aggregation })
+            }
+            onChange={(value) =>
+              actions.updateCardAppearance(card.id, 'value', value)
+            }
+          />
+          <FormatWidget
+            group="selectionLabel"
+            title="Selection"
+            visibility={{
+              visible: appearance.selectionLabel.visible,
+              onChange: (visible) =>
+                actions.updateCardAppearance(card.id, 'selectionLabel', {
+                  ...appearance.selectionLabel,
+                  visible,
+                }),
+            }}
+          >
+            <TextStyleControls
+              label="Selection"
+              value={appearance.selectionLabel.textStyle}
+              onChange={(textStyle) =>
+                actions.updateCardAppearance(card.id, 'selectionLabel', {
+                  ...appearance.selectionLabel,
+                  textStyle,
+                })
+              }
+            />
+          </FormatWidget>
+        </>
       )
   }
 }
 
 /**
- * Eye that shows or hides a whole card element; it sits in the popover
+ * Eye that shows or hides a whole card element; it sits in the panel
  * header.
  * @param element Element in the popover.
  * @param props Card and the actions that change it.
@@ -111,17 +120,8 @@ function getElementVisibility(
   element: CardFormatElement,
   { actions, card }: CardFormatPanelProps,
 ): FormatVisibility | undefined {
-  const { selectionLabel, title } = card.spec.appearance
+  const { title } = card.spec.appearance
   switch (element) {
-    case 'selectionLabel':
-      return {
-        visible: selectionLabel.visible,
-        onChange: (visible) =>
-          actions.updateCardAppearance(card.id, 'selectionLabel', {
-            ...selectionLabel,
-            visible,
-          }),
-      }
     case 'title':
       return {
         visible: title.visible,
