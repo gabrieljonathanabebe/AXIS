@@ -85,6 +85,14 @@
   scrollbar-gutter: stable;
 }
 
+/* Firefox draws its own thin scrollbar, which overlays the content on
+   macOS and takes no gutter: the full padding keeps content clear of it. */
+@supports (-moz-appearance: none) {
+  .panel.is-scrollable .panel-content {
+    padding-right: var(--space-3);
+  }
+}
+
 @media (max-width: 960px) {
   .panel {
     min-height: auto;

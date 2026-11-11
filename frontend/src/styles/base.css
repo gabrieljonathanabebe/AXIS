@@ -24,9 +24,11 @@ body {
 
 /* One thin scrollbar for every scrolling area, as wide as
    --scrollbar-size so it fits into the outer padding of a panel. Chrome
-   ignores ::-webkit-scrollbar once scrollbar-width or scrollbar-color is
-   set, so the standard properties only apply where the pseudo-elements
-   are unknown (Firefox). */
+   and Safari ignore ::-webkit-scrollbar once scrollbar-width or
+   scrollbar-color is set and fall back to their own scrollbar, which
+   overlays the content on macOS. The standard properties are therefore
+   limited to Firefox; `selector(::-webkit-scrollbar)` is no reliable
+   check, Safari reports it as unsupported. */
 ::-webkit-scrollbar {
   width: var(--scrollbar-size);
   height: var(--scrollbar-size);
@@ -48,7 +50,7 @@ body {
   background-color: var(--color-scrollbar-hover);
 }
 
-@supports not selector(::-webkit-scrollbar) {
+@supports (-moz-appearance: none) {
   :root {
     scrollbar-color: var(--color-scrollbar) transparent;
   }
