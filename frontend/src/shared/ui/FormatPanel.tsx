@@ -1,4 +1,5 @@
 import { Eye, EyeOff, Paintbrush } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 
 import IconButton from './IconButton'
 import Panel from './Panel'
@@ -25,6 +26,7 @@ type FormatPanelProps<TElement extends string> = {
   elementSelect?: FormatElementSelect<TElement>
   isCollapsed: boolean
   label: string
+  revealedGroup?: string | null
   visibility?: FormatVisibility
   onToggleCollapse: () => void
 }
@@ -37,12 +39,15 @@ type FormatPanelProps<TElement extends string> = {
  * same object; without it, the header shows the label. A visibility puts
  * an eye into the header that shows or hides the whole element, e.g. the
  * legend; while the element is hidden, only the header remains.
+ * `revealedGroup` scrolls the group of a clicked part into view, e.g. the
+ * data labels at the bottom of the marks.
  */
 function FormatPanel<TElement extends string>({
   children,
   elementSelect,
   isCollapsed,
   label,
+  revealedGroup,
   visibility,
   onToggleCollapse,
 }: FormatPanelProps<TElement>) {
@@ -52,6 +57,16 @@ function FormatPanel<TElement extends string>({
     )?.label ?? label
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsGroups = visibility?.visible ?? true
+  const groupsRef = useRef<HTMLDivElement | null>(null)
+
+  // Brings the group of a clicked part into view, e.g. the data labels.
+  useEffect(() => {
+    if (revealedGroup) {
+      groupsRef.current
+        ?.querySelector(`[data-format-group="${revealedGroup}"]`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [revealedGroup])
   return (
     <Panel
       as="aside"
@@ -92,7 +107,11 @@ function FormatPanel<TElement extends string>({
       title="Format panel"
       onToggleCollapse={onToggleCollapse}
     >
-      {showsGroups ? <div className="stack">{children}</div> : null}
+      {showsGroups ? (
+        <div className="stack" ref={groupsRef}>
+          {children}
+        </div>
+      ) : null}
     </Panel>
   )
 }

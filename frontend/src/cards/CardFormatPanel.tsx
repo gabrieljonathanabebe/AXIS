@@ -21,6 +21,7 @@ type CardFormatPanelProps = {
   element: CardFormatElement
   fields: DataField[]
   isCollapsed: boolean
+  revealedGroup?: string | null
   onElementChange: (element: CardFormatElement) => void
   onToggleCollapse: () => void
 }
@@ -138,7 +139,13 @@ function getElementVisibility(
  * The element select switches between title and value.
  */
 function CardFormatPanel(props: CardFormatPanelProps) {
-  const { element, isCollapsed, onElementChange, onToggleCollapse } = props
+  const {
+    element,
+    isCollapsed,
+    revealedGroup,
+    onElementChange,
+    onToggleCollapse,
+  } = props
   return (
     <FormatPanel
       elementSelect={{
@@ -148,6 +155,7 @@ function CardFormatPanel(props: CardFormatPanelProps) {
       }}
       isCollapsed={isCollapsed}
       label="Card format"
+      revealedGroup={revealedGroup}
       visibility={getElementVisibility(element, props)}
       onToggleCollapse={onToggleCollapse}
     >

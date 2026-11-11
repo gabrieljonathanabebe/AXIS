@@ -228,6 +228,7 @@ function App() {
                   element={panelElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
+                  revealedGroup={formatElement}
                   style={style}
                   onElementChange={chooseFormatElement}
                   onToggleCollapse={toggleFormatPanel}
@@ -240,6 +241,7 @@ function App() {
                   element={panelElement}
                   fields={dataset.fields}
                   isCollapsed={isFormatPanelCollapsed}
+                  revealedGroup={formatElement}
                   onElementChange={chooseFormatElement}
                   onToggleCollapse={toggleFormatPanel}
                 />

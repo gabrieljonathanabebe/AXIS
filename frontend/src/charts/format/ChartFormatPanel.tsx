@@ -22,6 +22,7 @@ import type { ChartFormatElement, ChartFormatProps } from '../types'
 type ChartFormatPanelProps = ChartFormatProps & {
   element: ChartFormatElement
   isCollapsed: boolean
+  revealedGroup?: string | null
   onElementChange: (element: ChartFormatElement) => void
   onToggleCollapse: () => void
 }
@@ -210,6 +211,7 @@ function getElementVisibility(
 function ChartFormatPanel({
   element,
   isCollapsed,
+  revealedGroup,
   onElementChange,
   onToggleCollapse,
   ...formatProps
@@ -228,6 +230,7 @@ function ChartFormatPanel({
       }}
       isCollapsed={isCollapsed}
       label="Chart format"
+      revealedGroup={revealedGroup}
       visibility={getElementVisibility(element, formatProps)}
       onToggleCollapse={onToggleCollapse}
     >
