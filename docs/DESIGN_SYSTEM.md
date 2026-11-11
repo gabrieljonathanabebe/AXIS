@@ -246,6 +246,21 @@ Beide Bereiche nutzen `Panel`.
   scrollen (Build Panel). `isFilled` lässt den Inhalt die
   Höhe füllen, das Kind scrollt selbst (Canvas mit `ChartGrid`, Data mit
   `DataTable`).
+- Scrollbar wie in Figma im äußeren Rand: Bei `isScrollable` reicht der
+  Scroll-Bereich bis an den Rand des Panels, der seitliche Innenabstand
+  liegt im Scroll-Bereich (links 12 px, rechts 12 px abzüglich
+  `--scrollbar-size`), und `scrollbar-gutter: stable` hält den Platz der
+  Scrollbar frei. Der Inhalt sitzt so links und rechts 12 px vom Rand,
+  mit und ohne Scrollbar, und nichts liegt unter ihr.
+
+Alle scrollenden Bereiche teilen eine schmale Scrollbar aus `base.css`:
+`--scrollbar-size` (8 px), Griff in `--color-scrollbar` bzw.
+`--color-scrollbar-hover`, Spur durchsichtig. Firefox erhält
+`scrollbar-width: thin` und `scrollbar-color` nur über
+`@supports not selector(::-webkit-scrollbar)`, weil Chrome sonst die
+`::-webkit-scrollbar`-Regeln ignoriert. Bereiche, die Innenabstand und
+Scrollen am selben Element tragen (Menüs, Details-Popover), haben die
+Scrollbar damit schon außen.
 
 Das Build Panel ist einklappbar:
 
