@@ -238,8 +238,9 @@ Beide Bereiche nutzen `Panel`.
 - Ohne Titel, `actions` und Collapse-Button rendert `Panel` keinen
   Header (Canvas, siehe unten). Objektbezogene Aktionen wie Duplicate
   und Delete gehören nicht in eine Toolbar, sondern an das Objekt (siehe
-  Chart-Aktionsleiste). Ausnahme ist das Formatieren: Es ist ein
-  Editor-Modus und startet über den Pinsel in der Canvas-Toolbar.
+  Chart-Aktionsleiste). Formatieren ist kein Modus: Das Format-Panel
+  rechts zeigt immer, was ausgewählt ist (Abschnitt 6); der Pinsel in
+  der Canvas-Toolbar klappt es nur ein und aus.
 - Der Header hat eine feste Mindesthöhe, damit alle Panels auf
   derselben Höhe beginnen, auch ohne Actions.
 - Inhaltshöhe: `isScrollable` lässt das Panel seinen Inhalt selbst
@@ -267,7 +268,7 @@ den vollen Innenabstand. Bereiche, die Innenabstand und
 Scrollen am selben Element tragen (Menüs, Details-Popover), haben die
 Scrollbar damit schon außen.
 
-Das Build Panel ist einklappbar:
+Build Panel und Format-Panel sind einklappbar:
 
 - `isCollapsed` und `onToggleCollapse` aktivieren das Verhalten; ohne
   `onToggleCollapse` gibt es keinen Toggle.
@@ -278,7 +279,8 @@ Das Build Panel ist einklappbar:
   `ghost` sind.
 - Der Inhalt wird nur ausgeblendet, nicht entfernt; Zustand wie
   geöffnete Sections bleibt erhalten.
-- Cmd/Ctrl + B schaltet das Build Panel um (über die Command-Registry).
+- Cmd/Ctrl + B schaltet das Build Panel um, Cmd/Ctrl + Shift + B das
+  Format-Panel (über die Command-Registry); beim Start sind beide offen.
 - Der Layout-Zustand ist UI-State (`useWorkspaceLayout`), nicht Teil
   des Workspace-Reducers.
 
@@ -296,7 +298,7 @@ Werkzeug). Entscheidungsfrage für jedes neue Element:
 | ---------------------------------- | ------------------------------------------------ |
 | Dashboard-Titel, später Untertitel | Undo, Redo, Format, später Zoom, Present, Export |
 | Charts, später KPI, Text, Slicer   | Ask Cevyn Bar                                    |
-| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Format-Popover, Build       |
+| Canvas-Hintergrund, Gap            | Chart-Aktionsleiste, Format-Panel, Build         |
 
 ```text
 Canvas Panel = Arbeitsfläche (isEmbedded, isFilled, App-Theme)
@@ -306,8 +308,9 @@ Canvas Panel = Arbeitsfläche (isEmbedded, isFilled, App-Theme)
 ```
 
 - Die Arbeitsfläche ist neutral und folgt nur dem App-Theme. Sie trägt
-  die Toolbar im vorhandenen `actions`-Slot des Panels: `CommandButton`s
-  und das Zahnrad in `sm` und `ghost`, ohne eigene Fläche. Kopf und Rand
+  die Toolbar im vorhandenen `actions`-Slot des Panels: Undo, Redo und
+  Pinsel als `CommandButton`s in `sm` und `ghost`, ohne eigene Fläche.
+  Kopf und Rand
   sind kompakt (8 px über und unter der Leiste, 16 px seitlich, 24 px
   unter der Seite).
 - Die Seite (`.dashboard-page`) füllt die Arbeitsfläche bis auf diesen
@@ -325,12 +328,11 @@ Canvas Panel = Arbeitsfläche (isEmbedded, isFilled, App-Theme)
   jedes Objekt seine Ecken selbst bestimmt.
 - Ein späterer Präsentationsmodus zeigt nur die Seite, ohne Rahmen und
   Schatten.
-- Rechts vom Pinsel öffnet das Zahnrad (`Settings2`, `IconButton` `sm`
-  `ghost`, gedrückt solange offen) das Popover „Dashboard“ mit
-  Einstellungen ohne eigenes Element auf der Canvas: Style (Galerie,
-  siehe 9t), Gap, Background (Fill der Canvas) und Animation (＋/−,
-  Easing und Duration). Gleiche erhöhte Glass-Ebene wie das
-  Format-Popover. Der Name bleibt inline im Titel, eine Einstellung hat
+- Einstellungen ohne eigenes Element auf der Canvas zeigt das
+  Format-Panel, wenn nichts ausgewählt ist (`DashboardFormatPanel`):
+  Style (Galerie, siehe 9t), Gap, Background (Fill der Canvas) und
+  Animation (＋/−, Easing | Duration in einer Zeile). Ein Zahnrad gibt
+  es nicht. Der Name bleibt inline im Titel, eine Einstellung hat
   genau eine Heimat.
 - Der Titel ist auf 480 px begrenzt.
 
@@ -520,46 +522,66 @@ ID   Identifiers   identifier (standardmäßig eingeklappt)
 
 Nicht jedes Field als große Card darstellen.
 
-## 6. Format-Popover
+## 6. Format-Panel
 
-Es gibt kein Einstellungs-Panel. Einstellungen stehen am Objekt im
-Format-Popover (Bedienung siehe „Bearbeitung am Chart“), Daten-Zuordnung
-im Build Panel („Chart data“), Dashboard-Einstellungen im Popover der
-Canvas-Toolbar.
+Einstellungen stehen im Format-Panel rechts der Arbeitsfläche, wie das
+Design-Panel in Figma oder der Format-Bereich in Power BI: auswählen auf
+der Seite, bearbeiten im festen Panel (Bedienung siehe „Bearbeitung am
+Chart“). Daten-Zuordnung steht im Build Panel („Chart data“).
 
 ### Aufbau: Element, Gruppen, Zeilen (implementiert)
 
 ```text
-┌─ 🖌  X Axis ▾                     👁  × ┐   Kopf: Element + Auge
-│ TITLE                            👁    │   Gruppe mit Auge
-│ [Aa 12 px   ]  [ A  A  A   ]  [I]      │   Zeilen ohne Label
-│ ────────────────────────────────────── │
-│ LINE                             👁    │
-│ ────────────────────────────────────── │
-│ GRIDLINES                        ⊘    │   aus: nur die Überschrift
-│ ────────────────────────────────────── │
-│ ZOOM                                   │
-│ [🖱 Scroll    ]  [▭ Slider    ]         │   Verhalten als Toggles
-└────────────────────────────────────────┘
+┌─ 🖌  X Axis ▾                       👁 ┐   Kopf: Element + Auge
+│ TITLE                              👁 │   Gruppe mit Auge
+│ [Aa 12 px   ] [ A  A  A   ]        I  │   Zeilen ohne Label
+│ ───────────────────────────────────── │
+│ LABELS                                │   kleines Element als Gruppe
+│ Layout                                │   Untergruppe
+│ [⇕ Auto     ] [↻ 0°       ]           │
+│ ───────────────────────────────────── │
+│ GRIDLINES                          ⊘ │   aus: nur die Überschrift
+│ ───────────────────────────────────── │
+│ ZOOM                                  │
+│ [🖱 Scroll    ] [▭ Slider    ]         │   Verhalten als Toggles
+└───────────────────────────────────────┘
 ```
 
+- **Hülle:** `FormatPanel` (`shared/ui`) ist ein `Panel` mit
+  `side="end"`, einklappbar und so breit wie das Build Panel (228 px).
+  `ChartFormatPanel`, `CardFormatPanel` und `DashboardFormatPanel`
+  nutzen dieselbe Hülle; es gibt keinen zweiten Inspector.
+- **Was es zeigt:** das gewählte Element des ausgewählten Objekts, ohne
+  Auswahl das Dashboard (Style, Layout, Background, Animation). Wechselt
+  die Auswahl, bleibt das Element, wenn das neue Objekt es hat (z. B.
+  Legende von Chart zu Chart), sonst zeigt es „Chart“ bzw. „Card“
+  (`resolveFormatElement`).
 - **Element:** Der Kopf zeigt das Element als `SelectControl`
   (`variant="title"`). Lässt sich das ganze Element ausblenden (Titel,
-  Legende, Farbskala, Tooltip, Achse, Datenlabels, Card Selection),
-  steht sein Auge rechts im Kopf (`visibility` an `ObjectFormatPopover`,
-  über den Slot `actions` des `Popover`, benannt „Hide legend“). Ist das
+  Legende, Farbskala, Achse), steht sein Auge rechts im Kopf
+  (`visibility` an `FormatPanel`, benannt „Hide legend“). Ist das
   Element aus, bleibt nur der Kopf.
-- **Gruppen:** Ein Element zeigt alle seine Gruppen untereinander; es
-  gibt keine Collapsibles im Popover. Die Überschrift ist klein, in
-  Versalien, mit Haarlinie zur vorigen Gruppe, im Stil der plain
-  Sections im Build Panel.
-- **Überschrift:** rechts höchstens Auge, ＋ oder Pinsel (Regel 1 unter
-  „Kompakte Controls“); ausgeblendet bzw. ohne Eintrag zeigt die Gruppe
-  nur ihre Überschrift. Gruppen ohne Aktion sind immer offen.
+- **Gruppen:** Ein Element zeigt alle seine Gruppen untereinander. Die
+  Überschrift ist klein, in Versalien, mit Haarlinie zur vorigen Gruppe.
+  Es gibt keine Klapp-Gruppen: Das Auge ist das einzige Zuklappen, eine
+  ausgeblendete Gruppe zeigt nur ihre Überschrift.
+- **Kleine Elemente als Gruppen ihres Elternteils:** Data Labels und
+  Tooltip stehen als Gruppen Labels und Tooltip in Marks, die Labels
+  einer Achse als Gruppe Labels in der Achse, die Selection der Card als
+  Gruppe in Value. Sie sind normale `FormatWidget`s; ihre eigenen
+  Gruppen (Layout, Text, Format) werden darin zu Untergruppen mit
+  ruhigerer Überschrift (normale Schreibung, ohne Haarlinie, 4 px zu
+  ihren Zeilen). Im Element-Dropdown stehen sie nicht. Die Zuordnung
+  steht an einer Stelle (`formatGroups` in
+  `objects/formatPanelElement.ts`); jede solche Gruppe trägt ihr
+  Element als `data-format-group`.
+- **Überschrift:** rechts in der Icon-Spalte der Zeilen höchstens Auge
+  oder ＋ (Regel 1 unter „Kompakte Controls“).
 - **Zeilen:** kompakt und ohne Text-Label; den Kontext geben die
   Gruppe, Icons im Feld und Tooltips. Seltenes steht hinter ⚙.
-- Das Popover ist oben verankert, höchstens 400 px hoch, der Inhalt
-  scrollt.
+- Das Panel scrollt; nach einem Klick auf einen Teil des Objekts holt es
+  dessen Gruppe ins Bild (`revealedGroup`, `scrollIntoView` mit
+  `nearest`).
 
 ### Feste Reihenfolge (implementiert)
 
@@ -575,19 +597,20 @@ weg, statt leer oder deaktiviert zu erscheinen. Der Platz ist fest, der
 Titel darf zum Element passen (Fill heißt am Container „Background“,
 bei Linien „Area“; Stroke heißt bei Linien „Line“, sonst „Border“).
 
-| Element                 | Gruppen                                                  |
-| ----------------------- | -------------------------------------------------------- |
-| Chart bzw. Card         | Layout (Padding) · Shape (Radius) · Background · Border  |
-| Title                   | Content (Text) · Text (mit Alignment)                    |
-| X Axis, Y Axis          | Title · Line · Gridlines · Zoom (nur X)                  |
-| X Axis Labels, Y Axis … | Layout (Ticks, Rotation) · Text · Format (Number, Date)  |
-| Data Labels             | Layout (Position) · Text · Format (nicht bei Pie, Donut) |
-| Legend                  | Layout (Position, Alignment, Gap) · Text · Interaction   |
-| Color Scale             | Layout (Position, Orientation) · Labels                  |
-| Tooltip                 | Behavior (Trigger; nicht bei Pie und Donut)              |
-| Card Value              | Function (Aggregation) · Text · Format                   |
-| Card Selection          | Text                                                     |
-| Dashboard (Toolbar)     | Layout (Gap) · Animation                                 |
+| Element                  | Gruppen                                                                                |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| Chart bzw. Card          | Layout (Padding) · Shape (Radius) · Background · Border                                |
+| Title                    | Content (Text) · Text (mit Alignment)                                                  |
+| Marks                    | siehe Tabelle unten, zuletzt Labels und Tooltip                                        |
+| X Axis, Y Axis           | Title · Labels (Layout: Ticks, Rotation · Text · Format) · Line · Gridlines · Zoom (X) |
+| Legend                   | Layout (Position, Alignment, Gap) · Text · Interaction                                 |
+| Color Scale              | Layout (Position, Orientation) · Labels                                                |
+| Card Value               | Function (Aggregation) · Text · Format · Selection (Text)                              |
+| Dashboard (ohne Auswahl) | Style · Layout (Gap) · Background · Animation                                          |
+
+Labels in Marks enthält Layout (Position), Text und Format (nicht bei
+Pie und Donut), Tooltip enthält Behavior (Trigger; bei Pie und Donut
+nur Überschrift und Auge).
 
 Marks haben feste Plätze in `MARK_GROUP_ORDER`
 (`charts/format/markGroups.tsx`), der einzigen Stelle mit ihrer
@@ -601,15 +624,13 @@ Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
 | Stroke     | Border                                   | –                      | Border        | Border               |
 | Effect     | Effect (＋/−)                            | Effect (＋/−)          | Effect (＋/−) | Effect (＋/−)        |
 | Points     | –                                        | Auto \| Always, Auge   | –             | –                    |
-| Labels     | Pinsel und Auge                          | wie Scatter            | wie Scatter   | wie Scatter          |
-| Tooltip    | Pinsel in der Überschrift                | wie Scatter            | wie Scatter   | wie Scatter          |
+| Labels     | Labels mit Auge, Layout, Text, Format    | wie Scatter            | wie Scatter   | ohne Format          |
+| Tooltip    | Tooltip mit Auge, Behavior               | wie Scatter            | wie Scatter   | nur Auge             |
 
 - Data color ist die Gruppe, die mit der Datenfarbe gezeichnet wird;
   siehe „Datenfarbe in der Farbzeile“ unter „Kompakte Controls“.
-- Labels und Tooltip sind Gruppen ohne Zeilen; ihr Pinsel öffnet das
-  Element Data Labels bzw. Tooltip im selben Popover
-  (`getElementLinkGroup`), das Auge der Labels blendet die Datenlabels
-  ein oder aus.
+- Labels und Tooltip sind Gruppen wie die anderen; ihr Auge blendet die
+  Datenlabels bzw. den Tooltip ein oder aus.
 - Welchen Inhalt die Datenlabels zeigen, ist noch fest (Wert bzw. Anteil);
   die Wahl kommt mit „Tooltip-Felder“ (`ROADMAP.md`).
 
@@ -620,22 +641,25 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
 `LegendWidget`; es liefert eine oder mehrere Gruppen.
 
 - `FormatWidget` (`shared/ui`) ist die Gruppe: `title` wird zur
-  Überschrift, `visibility` zum Auge darin, `onAdd` zum ＋ und
-  `onFormat` zum Pinsel; `children` sind die Zeilen und dürfen fehlen
-  (Gruppe nur mit Aktion). Nach ＋ scrollt die Gruppe ins Bild, sobald
-  die neue Zeile gerendert ist (`scrollIntoView`, `nearest`), damit sie
-  am unteren Rand des Popovers nicht übersehen wird. Ohne `title` bleiben nur die Zeilen, z. B. im
-  Build Panel unter „Chart data“. `FormatVisibility` (`visible`,
-  `onChange`) ist der gemeinsame Typ für das Auge in Gruppe und Kopf;
-  sein Name folgt aus dem Titel („Hide gridlines“).
-- Ganz rechts in der Überschrift liegt ein Platz für Aktionen der Zeilen
-  (`.format-widget-actions`, `display: contents`): Ein Control setzt
-  dort mit `FormatWidgetAction` per Portal sein eigenes Icon ab, z. B.
-  das ⚙ des Paints, ohne dass das Widget davon weiß. Der Platz kommt
-  über den Kontext `FormatWidgetActionSlot` (`formatWidgetSlot.ts`);
-  ohne Titel rendert die Aktion an ihrer Stelle in der Zeile. Die
-  Aktionsleiste ist immer so hoch wie ein `xs`-Icon-Button, damit
-  erscheinende Icons die Zeilen nicht verschieben.
+  Überschrift, `visibility` zum Auge darin und `onAdd` zum ＋;
+  `children` sind die Zeilen und dürfen fehlen (Gruppe nur mit Aktion).
+  Nach ＋ scrollt die Gruppe ins Bild, sobald die neue Zeile gerendert
+  ist (`scrollIntoView`, `nearest`), damit sie am unteren Rand des
+  Panels nicht übersehen wird. Ohne `title` bleiben nur die Zeilen,
+  z. B. im Build Panel unter „Chart data“. `FormatVisibility`
+  (`visible`, `onChange`) ist der gemeinsame Typ für das Auge in Gruppe
+  und Kopf; sein Name folgt aus dem Titel („Hide gridlines“).
+- `group` nennt den Teil des Objekts, den die Gruppe formatiert, wenn er
+  nicht das Element des Panels ist (`data-format-group`, z. B.
+  „labels“ in Marks). Fokus und Hinscrollen lesen es; Aussehen und
+  Verhalten der Gruppe ändern sich nicht. Untergruppen erben es.
+- Die Überschrift steht auf dem Raster der Zeilen: Ihre Icons sitzen in
+  der Icon-Spalte, eine Überschrift mit mehreren Icons verbreitert sie
+  nach links. Die Icon-Leiste ist immer so hoch wie ein
+  `xs`-Icon-Button, damit erscheinende Icons die Zeilen nicht
+  verschieben. Aktionen einer Zeile, z. B. das ⚙ des Paints, stehen in
+  deren eigener Icon-Spalte (`ControlRow` mit `action`), nicht in der
+  Überschrift.
 - Verhalten ohne sichtbaren Teil (Zoom, Legend Interaction, Animation)
   hat kein Auge, sondern ＋/− oder Toggles in der Zeile (Regel 1 unter
   „Kompakte Controls“).
@@ -643,15 +667,15 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
   `StrokeStyleControls`, `PaintControl`, `FillListControls`,
   `EffectControls`, `NumberFormatControls`) liefern nur Zeilen; das
   Widget legt sie in seine Gruppen.
-- `AxisWidget` zeigt mit `part` (`title` | `labels`) die Gruppen eines
-  Elements: „X Axis“ die Gruppe Title, „X Axis Labels“ Layout, Text und
-  Format.
+- `AxisWidget` zeigt mit `part` (`title` | `labels`) die Gruppe Title
+  bzw. die Untergruppen der Achsen-Labels (Layout, Text, Format), die
+  die Achse in ihre Gruppe Labels legt.
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
 ### Kompakte Controls im Figma-Stil (implementiert, 3.4)
 
-Ziel: Das Popover sieht aus und bedient sich wie das Design-Panel in
+Ziel: Das Format-Panel sieht aus und bedient sich wie das Design-Panel in
 Figma: dicht, ruhig, Icons statt Text-Labels, eine klare Sprache pro
 Ebene. Die Spec hat sich dafür nicht geändert, nur die Darstellung der
 Controls.
@@ -660,7 +684,7 @@ Controls.
 
 | Ebene                  | Inhalt                           | Erlaubte Controls                                                                 |
 | ---------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
-| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts nur Auge, ＋, Pinsel oder das ⚙ des Paints, nie ein Schalter               |
+| 1. Gruppen-Überschrift | Text in Versalien (FILL, STROKE) | rechts in der Icon-Spalte nur Auge oder ＋, nie ein Schalter                      |
 | 2. Zeilen              | Werte, kompakt, ohne Text-Label  | Felder mit Icon im Feld, Icon-Gruppen, Toggles mit Icon und Wort, Icon-Toggles, − |
 | 3. Details             | seltene Einstellungen            | hinter ⚙ am Zeilenende, als eigenes kleines Popover                               |
 
@@ -677,19 +701,15 @@ Controls.
   Zeile; alle aus heißt aus (Zoom: Scroll | Slider, `enabled` folgt
   `inside || slider`).
 - **Verhalten mit wenigen Modi:** eine Icon-Gruppe mit Wort, die „Off“
-  einschließt (Legend Interaction: Off | Multiple | Single, Off
-  entspricht `enabled: false`).
-- **Pinsel:** öffnet ein anderes Element im selben Popover (`onFormat`
-  an `FormatWidget`), z. B. Tooltip oder Data Labels unter den Marks;
-  dasselbe Icon wie „Format …“ am Chart. Kein ⚙, weil ⚙ nur seltene
-  Einstellungen der eigenen Zeile öffnet, und kein zweites Popover: ein
-  Popover zeigt ein Element, das Select im Kopf ist der Weg zurück.
+  einschließt, als breite Zeile (Legend Interaction: Off | Multi |
+  Single, Off entspricht `enabled: false`).
+- **Kein Pinsel in Gruppen:** Kleine Elemente sind Gruppen ihres
+  Elternteils (Abschnitt 6), es gibt keinen Verweis auf ein anderes
+  Element. Der Pinsel steht nur in der Canvas-Toolbar.
 - **⚙ des Paints:** Stopps eines Verlaufs, Enden eines Fades oder Range
-  der Farbskala stehen nicht am Zeilenende, sondern ganz rechts in der
-  Überschrift (`FormatWidgetAction`, Größe `xs` wie Auge und ＋). Eine
-  Farbzeile hat zwei Zeilen und ändert ihr Farbfeld mit dem Typ; in der
-  Überschrift springt das ⚙ nicht mit. Andere Details, z. B. die des
-  Zahlenformats, bleiben am Zeilenende.
+  der Farbskala stehen hinter dem ⚙ in der Icon-Spalte der Farbzeile
+  (`ControlRow` mit `action`, Größe `xs`). Pro Zeile steht dort höchstens
+  ein Icon.
 - Einzelne An/Aus-Optionen in einer Zeile (Italic) sind Icon-Toggles
   (`IconButton` mit `isActive`). Einen `Toggle` gibt es nicht mehr.
 
@@ -700,9 +720,8 @@ TEXT
 [Aa 14 px      ]  [ A  A  A      ]  [I]
 [● Default     ]  [ ≡  ≡  ≡      ]
 
-FILL                          👁 ⚙
-[ ■  ▥  ◎      ]  [→ −90°      ]
-[● ▬▬▬▬▬▬▬▬ ●]  [◐ 90 %      ]
+FILL                          👁
+[● ▬▬▬▬▬▬▬▬ ●]  [◐ 90 %      ]   ⚙
 
 STROKE                        👁
 [═ 2 px        ]  [ — ┄ ┈      ]
@@ -710,10 +729,12 @@ STROKE                        👁
 [● 94A3B8      ]  [◐ 100 %     ]
 
 EFFECT                         ＋
-[ Glow ▾       ]  [◌ 12        ]   −
+[✦ Glow                         ]   −
 
 FORMAT
-[ Currency ▾   ]  [.0 Auto     ]   ⚙
+[ Currency ▾                      ]
+[.0 Auto       ]  [ 1,000 | 1K   ]
+[⌶ €1.2K pro Monat                ]
 
 POINTS                        👁
 [ ◌ Auto          |  ⊙ Always        ]
@@ -722,28 +743,44 @@ ZOOM
 [🖱 Scroll     ]  [▭ Slider    ]
 
 INTERACTION
-[ ⊘ Off  |  ☑ Multiple  |  ☑ Single ]
+[ ⊘ Off   |  ☑ Multi   |  ☑ Single  ]
 
 ANIMATION                      ＋
 [ Ease out ▾   ]  [⏱ 500 ms    ]   −
 ```
 
 - **Raster der Zeile** (`ControlRow` ohne `label`,
-  `.control-row-compact`): zwei gleich breite Spalten für Felder, danach
-  schmale Spalten für Icon-Buttons (−, ⚙, Italic). Eine Icon-Gruppe ohne
-  Nachbarfeld nutzt beide Spalten (Points, Smooth, Interaction,
-  Trigger); ein Icon-Button nach einem einzelnen Feld rückt ans
-  Zeilenende (`[⏱ 500 ms]          −`).
-- **Zeilen mit `actions`** (`ControlRow` mit `actions`, z. B. Effekte):
-  ⚙ und − stehen rechts in einer eigenen Gruppe aus `xs`-Buttons mit
-  4 px Abstand, wie die Aktionen einer Überschrift. Die Gruppe ist immer
-  so breit wie zwei Buttons, damit Felder in einer Liste untereinander
-  stehen, auch wenn eine Zeile kein ⚙ hat; die Felder teilen sich den
-  Rest 2 : 1 (Art | kurzer Wert). Die Gruppe sitzt immer in der letzten
-  Spalte (`grid-column: -2`), auch nach einem einzelnen Feld, damit ihre
-  Buttons an derselben Kante enden wie die Aktionen der Überschrift.
-  Selects in kompakten Zeilen rücken den Chevron näher an den Text
-  (`--spread-gap` 4 px, rechts 8 px).
+  `.control-row-compact`): zwei gleich breite Feldspalten und eine
+  Icon-Spalte (`1fr 1fr 24px`, Abstand `--control-row-gap`, Breite
+  `--control-row-icon-width`). Alle Zeilen und die Icons der
+  Überschriften stehen auf diesem Raster, Felder und Icons fluchten.
+- **Zeilentypen** über `layout`:
+
+  | `layout`         | Aufbau                  | Beispiele                                            |
+  | ---------------- | ----------------------- | ---------------------------------------------------- |
+  | `pair` (Default) | Feld \| Feld \| Icon    | Farbzeile, Größe \| Gewicht, Animation               |
+  | `single`         | Feld \| leer \| Icon    | Inner radius des Donut                               |
+  | `wide`           | Feld über beide \| Icon | Texteingabe, Effekt, Format, Points, Kurve, Position |
+
+  Eine breite Zeile ohne Icon nimmt auch die Icon-Spalte; ein Paar
+  behält sie, damit seine Felder bündig bleiben, außer mit `isFull`
+  (Paare in Gruppen ohne Icons, z. B. Dezimalstellen \| Notation oder
+  Symbol \| Punktgröße des Scatter, damit vier Symbole Platz haben).
+
+- **Icon der Zeile** (`action`): höchstens ein Icon pro Zeile in der
+  Icon-Spalte, Größe `xs`, z. B. −, ⚙ oder Italic. Icon-Gruppen bis drei
+  Icons passen in eine Feldspalte, ab vier über beide; Werte links,
+  Icons rechts.
+- **Mindestbreiten:** Selects zeigen ihren Text ganz, Zahlenfelder mit
+  Einheit ab etwa 56 px; passt eine Zeile nicht, wird sie geteilt oder
+  das Wort gekürzt (Easing „In-out“). Selects in kompakten Zeilen
+  haben links 8 px und rücken den Chevron näher an Text und Rand
+  (`--spread-gap` 4 px, rechts 4 px). Optionen einer Icon-Gruppe sind so
+  breit wie ihr Inhalt, der Rest wird gleich verteilt.
+- **Effekte wie Farben:** ein Feld mit Icon und Name der Art
+  (`DetailsField`) öffnet den Editor, oben die Art als Dropdown,
+  darunter ihre Werte. Details-Popovers und Farbwähler öffnen links
+  neben der Zeile, oben bündig.
 - **Farbzeile** (`PaintControl`, siehe 9q): eine Zeile pro Farbe,
   überall gleich: links das Feld (`PaintField`), rechts die Deckkraft in
   % (Icon ◐, scrubbable). Der Swatch einer eigenen Farbe öffnet den
@@ -831,7 +868,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 - Ab zwei inhaltlich verschiedenen Gruppen bekommt das Popover
   Sections: `FormatWidget`s mit Titel direkt im Body, z. B. Offset und
   Color des Schattens. Der Body übernimmt dann den Abstand des
-  Format-Popovers (12 px); einzelne Zeilen wie Fade bleiben ohne
+  Format-Panels (12 px); einzelne Zeilen wie Fade bleiben ohne
   Überschrift.
 - Der Editor einer Farbe öffnet sich am Swatch statt am ⚙ und hat
   keinen Kopf (`hasHeader={false}`): Seine Zeilen sagen, was er
@@ -873,18 +910,19 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 
 **Komponenten** (erweitert statt neu gebaut):
 
-| Bedarf                                  | Umsetzung                                               |
-| --------------------------------------- | ------------------------------------------------------- |
-| Zahlenfeld mit Icon, Einheit und Auto   | `ScrubbableNumber` mit `icon`, `unit` und `onAuto` (8)  |
-| Winkel                                  | `RotationDial`: `ScrubbableNumber` mit Pfeil als Icon   |
-| Farbzeile                               | `PaintControl` mit `PaintField` (9q)                    |
-| Icon-Toggle                             | `IconButton` mit `isActive`                             |
-| Toggle mit Icon und Wort                | `Button` mit `isActive` und `aria-pressed` (Zoom)       |
-| Icon und Wort einer Option              | `OptionItem.icon`, gezeigt von `OptionContent` (9s)     |
-| zwei Felder pro Zeile, Zeile ohne Label | `ControlRow` ohne `label`                               |
-| Auge, ＋ und Pinsel in der Überschrift  | `FormatWidget` mit `visibility`, `onAdd` und `onFormat` |
-| Details hinter ⚙                        | `DetailsPopover` (9h)                                   |
-| 3×3-Raster                              | `PositionGrid` (9r)                                     |
+| Bedarf                                 | Umsetzung                                              |
+| -------------------------------------- | ------------------------------------------------------ |
+| Zahlenfeld mit Icon, Einheit und Auto  | `ScrubbableNumber` mit `icon`, `unit` und `onAuto` (8) |
+| Winkel                                 | `RotationDial`: `ScrubbableNumber` mit Pfeil als Icon  |
+| Farbzeile                              | `PaintControl` mit `PaintField` (9q)                   |
+| Icon-Toggle                            | `IconButton` mit `isActive`                            |
+| Toggle mit Icon und Wort               | `Button` mit `isActive` und `aria-pressed` (Zoom)      |
+| Icon und Wort einer Option             | `OptionItem.icon`, gezeigt von `OptionContent` (9s)    |
+| Zeile auf dem Raster, Zeile ohne Label | `ControlRow` ohne `label`, mit `layout` und `action`   |
+| Auge und ＋ in der Überschrift         | `FormatWidget` mit `visibility` und `onAdd`            |
+| Gruppe eines kleinen Elements          | `FormatWidget` mit `group`                             |
+| Details hinter ⚙                       | `DetailsPopover` (9h)                                  |
+| 3×3-Raster                             | `PositionGrid` (9r)                                    |
 
 Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt ist kompakt,
 dadurch wirkt eine Änderung auf alle Elemente gleichzeitig.
@@ -928,7 +966,7 @@ Ergebnis zeigen, stehen allein.
 Beispiele:
 
 ```text
-Off | Multiple | Single
+Off | Multi | Single
 Item | Axis
 Auto | Always
 Straight | Smooth
@@ -1013,7 +1051,7 @@ Beispiele:
 
 Verwenden:
 
-- im Format-Popover ein Zahlenpaar in einer Zeile (Size range: ⤓ min |
+- im Format-Panel ein Zahlenpaar in einer Zeile (Size range: ⤓ min |
   ⤒ max), die Grenzen gegenseitig begrenzt
 - `RangeSlider` mit Zahlenfeldern, wenn das Intervall über einer Skala
   gewählt wird, mit `formatValue` beschriftet (Table Filter)
@@ -1061,7 +1099,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)              |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                    |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                    |
-| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorSwatch`, Format-Popover am Chart)         |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorSwatch`, `DetailsPopover`)                |
 | Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                    |
 | Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                    |
 | Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (Achsentitel, `onAuto` für Ticks und Decimals)   |
@@ -1079,7 +1117,7 @@ Regeln:
 
 `ScrubbableNumber` ist ein wiederverwendbares numerisches Control.
 
-Es ist das eine Zahlenfeld im Format-Popover, für offene und für
+Es ist das eine Zahlenfeld im Format-Panel, für offene und für
 begrenzte Werte:
 
 ```text
@@ -1194,7 +1232,7 @@ Domain Model verwenden immer `start | center | end`, nicht
 - Tastaturereignisse im Input werden nicht an Canvas-Shortcuts
   weitergegeben.
 
-Inline-Editing und Format-Popover ändern denselben Wert über dieselbe
+Inline-Editing und Format-Panel ändern denselben Wert über dieselbe
 Action.
 
 Die Edit-Hälfte ist als `InlineTextInput` eigenständig nutzbar, z. B.
@@ -1322,9 +1360,8 @@ Klick daneben):
 - Ein optionaler `title` erzeugt einen Header mit Titel und einem
   Schließen-Button (`IconButton`, `ghost`, `xs`, benannt nach `label`).
   `title` ist ein Slot (`ReactNode`), z. B. Icon plus `SelectControl`
-  im Format-Popover. Ohne `title` bleibt das Popover kopflos
-  (Dropdowns, Farbwähler). `actions` nimmt Controls vor dem
-  Schließen-Button auf, z. B. das Auge des Format-Popovers.
+  im Kopf. Ohne `title` bleibt das Popover kopflos (Dropdowns,
+  Farbwähler). `actions` nimmt Controls vor dem Schließen-Button auf.
 - `SelectControl` hat eine `variant`: `field` (Default, Feld mit
   Rahmen, Menü so breit wie das Feld) und `title` (liest sich als
   Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover leicht
@@ -1343,19 +1380,13 @@ Klick daneben):
   stehen im Kopf vor dem Schließen-Button. `renderTrigger` ersetzt das
   ⚙, z. B. durch den Swatch eines `PaintField`; `hasHeader={false}`
   lässt den Kopf weg; `open` und `onOpenChange` lassen den Aufrufer es
-  steuern, z. B. nach ＋ in einer Liste. Im Format-Popover ist es
-  verschachtelt.
+  steuern, z. B. nach ＋ in einer Liste.
 - Verschachtelte Popovers bilden einen `FloatingTree`: Ein Klick in
-  ein Kind-Popover (z. B. Farbwähler im Format-Popover) schließt das
-  Eltern-Popover nicht.
+  ein Kind-Popover (z. B. Farbwähler in einem Details-Popover) schließt
+  das Eltern-Popover nicht.
 - `keepOpenOn` (CSS-Selektor) nimmt Bereiche außerhalb vom Schließen
-  per Klick aus, z. B. den Format-Pinsel der Canvas-Toolbar, der das
-  Popover selbst schließt. Floating UI schließt sonst schon bei `pointerdown`, und der
+  per Klick aus, z. B. einen Auslöser, der das Popover selbst schließt. Floating UI schließt sonst schon bei `pointerdown`, und der
   folgende Klick würde es wieder öffnen.
-- Das Format-Popover scrollt nicht als Ganzes: Header und Glass-Kante
-  (`.glass::before`) bleiben stehen, nur der Inhalt scrollt in
-  `.format-popover-body`. Padding und gleich großer negativer
-  Margin verhindern, dass Fokusringe am Rand abgeschnitten werden.
 - Positionierung: `flip` wechselt die Seite, `shift` hält das Popover
   im Viewport, bei Platzmangel auch quer zur Platzierung. Ein Popover
   neben einem sehr breiten Chart liegt dann notfalls über ihm, statt
@@ -1711,9 +1742,8 @@ steht der Hex-Wert einer Solid-Farbe oder der Typ eines Verlaufs
   im Kopf der Section).
 - Serienfarbe: links `seriesColor`, das Feld der Datenfarbe, oder nur
   die Deckkraft; derselbe Editor (Typ, Fade Start | Ende, 0–100 %
-  relativ zur Zeile) liegt hinter dem ⚙ in der Überschrift
-  (`FormatWidgetAction`), weil das Feld der Datenfarbe ihn nicht öffnen
-  kann. Gegebene `details` haben Vorrang (Range der Farbskala).
+  relativ zur Zeile) liegt hinter dem ⚙ in der Icon-Spalte der Zeile,
+  weil das Feld der Datenfarbe ihn nicht öffnen kann. Gegebene `details` haben Vorrang (Range der Farbskala).
 - Mit nur einem der `paintTypes` gibt es keinen Typ zu wählen, z. B.
   unter einer kontinuierlichen Farbskala; eine eigene Solid-Farbe ist
   dann ein reines `ColorField`.
@@ -1826,13 +1856,13 @@ Italy
 ```
 
 Legend und ihr interaktives Verhalten gehören zum Element „Legend“ im
-Format-Popover:
+Format-Panel:
 
 ```text
 Legend                👁
 ├── Layout       (PositionGrid, Gap)
 ├── Text
-└── Interaction  [ Off | Multiple | Single ]
+└── Interaction  [ Off | Multi | Single ]
 ```
 
 Die Legend scrollt statt überzulaufen: `overflow` `auto` und `scroll`
@@ -1871,7 +1901,7 @@ ECharts `visualMap` ist ein Renderer-Detail.
 
 Im Cevyn UI heißt das Feature `Color Scale`.
 
-Das Element „Color Scale“ im Format-Popover hat sein Auge im Kopf und
+Das Element „Color Scale“ im Format-Panel hat sein Auge im Kopf und
 die Gruppen Layout (Position links oder rechts, vertikal oder
 horizontal) und Labels (Auge für die Endlabels). Start- und Endfarbe
 (`GradientControl`) und Range (⚙) stehen als Datenfarbe in der
@@ -2001,7 +2031,7 @@ Move und Resize rasten während des Drags live im Canvas-Grid ein.
 ### Chart Container
 
 Der Container eines Objekts wird im Element „Chart“ bzw. „Card“ des
-Format-Popovers formatiert:
+Format-Panels formatiert:
 
 - Background über `FillListControls`: eine oder mehrere Flächen mit
   eigener Farbe oder Verlauf und Deckkraft (Standard aus dem Material
@@ -2044,75 +2074,92 @@ ausgewählten Chart.
 
 ### Bearbeitung am Chart
 
-Am ausgewählten Chart lassen sich Elemente direkt formatieren (aktuell
-Chart als Ganzes, Titel, Marks mit Datenlabels, Tooltip, X- und Y-Achse,
-Labels der X- und Y-Achse, Legende, Color Scale):
+Am Objekt lassen sich seine Teile direkt formatieren (aktuell das Objekt
+als Ganzes, Titel, Marks mit Datenlabels und Tooltip, X- und Y-Achse mit
+ihren Labels, Legende, Color Scale; bei Cards Titel, Wert und
+Selection). Das Format-Panel (Abschnitt 6) zeigt immer, was ausgewählt
+ist; einen Format-Modus gibt es nicht.
 
-- Einstieg ist der Pinsel (`Paintbrush`) in der Canvas-Toolbar. Er
-  öffnet das Popover mit dem Chart als Ganzem („Chart“, bei Cards
-  „Card“), ist gedrückt,
-  solange es offen ist, und schließt es beim nächsten Klick. Ohne
-  ausgewählten Chart ist er deaktiviert.
-- Das Popover steht neben dem Chart (`right-start`, weicht nach links
-  aus), nie auf ihm, damit Änderungen live sichtbar bleiben; dazu
-  `--glass-fill-elevated`, `--shadow-lg` plus `--shadow-accent` und
-  einen Rahmen in `--color-border-accent`.
-- Der Kopf ist die Navigation: Pinsel in `--color-accent`, daneben das
-  aktuelle Element als `SelectControl` mit `variant="title"`, rechts das
-  X; dazwischen das Auge, wo sich das Element ausblenden lässt.
-- Darunter stehen alle Gruppen des Elements untereinander (Aufbau und
-  Reihenfolge siehe Abschnitt 6).
-  Verhalten ohne Element im Chart (z. B. Legend Selection Mode, Zoom)
-  ist eine Gruppe des Elements, das es betrifft.
-- Format-Modus (Popover offen): Hover über Chart-Titel, Achsentitel,
-  Achsen-Labels, Legende oder eine Mark zeigt eine Region (bei Labels
-  und Legende um alle Einträge, bei Marks um die einzelne Mark, bei
-  Linien um den ganzen Pfad), einen Rahmen in `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
-  größer als das Element. Die Region liegt über dem Canvas; ein Klick
-  wählt das Element im Popover, statt Text zu bearbeiten,
-  Legendeneinträge umzuschalten oder Daten zu selektieren; der Klick auf
-  eine Mark formatiert alle Marks des Charts. Sie verschwindet, sobald der Pointer
-  sie verlässt. Ohne offenes Popover gibt es keine Regionen.
-- Im Format-Modus folgt dem Pointer ein Label, das sagt, was ein Klick
-  formatiert („🖌 Format legend“, über freier Fläche „Format chart“
-  bzw. „Format card“). Es ersetzt dort den Daten-Tooltip: Was beim
-  Cursor steht, sagt, was hier passiert. Look von `.chip` mit
-  `--color-surface-overlay`, Akzent-Rand, `--shadow-sm` und Blur;
-  Abstand 12 px rechts unten, an rechtem und unterem Rand auf der
-  anderen Seite; nur Ein- und Ausblenden animiert. Der Text stammt aus
-  `formatRegionLabels`, dieselben Texte wie im `aria-label` der Region.
-- Im Format-Modus bietet der Chart keine Daten-Interaktion an: kein
-  Daten-Tooltip, kein Brush (eine bestehende Auswahl bleibt sichtbar).
-- Ausnahme Tooltip: Er hat kein klickbares Element, sondern einen
-  Eintrag im Element-Dropdown nach „Marks“; die Marks verweisen mit
-  ihrer letzten Gruppe Tooltip und dem Button „Edit ›“ (`accent`)
-  dorthin.
-  Solange „Tooltip“ formatiert wird, steht der echte Tooltip als
-  Vorschau am größten Wert, folgt nicht dem Pointer und zeigt jede
-  Änderung sofort; der übrige Chart ist abgeblendet. Kein eigenes
-  Vorschaufenster, keine Beispieldaten.
-- Das Objekt als Ganzes hat keine Region, sondern einen
-  durchgehenden Akzent-Ring innen am Frame (2 px, `--color-accent`),
-  ohne Tönung und Schein. Beim Hover über eine freie Stelle
-  erscheint sie halb stark (Vorschau), solange „Chart“/„Card“ bearbeitet
-  wird voll; ein Klick auf eine freie Stelle wählt das Objekt. Freie
-  Fläche zeigt im Format-Modus `cursor: pointer`, auch über dem
-  ECharts-Canvas. Beim Objekt als Ganzem wird nichts abgeblendet.
-- Blauer Rahmen heißt „auswählen“, graue Fläche
-  (`--color-surface-hover`) heißt „Text bearbeiten“: Außerhalb des
-  Format-Modus bleibt ein Klick auf Chart- oder Achsentitel
-  Inline-Editing.
-- Ein Druck in der Canvas-Toolbar (Undo, Redo, Pinsel) oder auf den
-  formatierten Chart schließt das Popover nicht; ein Klick auf die
-  Canvas oder einen anderen Chart, X und Escape schon.
-- Fokus statt Farbe: Während das Popover offen ist, treten Serien,
-  Labels, Legende, Chart-Titel und nicht bearbeitete Achsen auf 25 %
-  Deckkraft zurück. Das bearbeitete Element leuchtet im Akzent-Ton
-  (Achse: Linie und Titel; Achsen-Labels: Labels; Legende: Text,
-  Icons in voller Farbe; Chart-Titel per `text-shadow`); die Textfarben bleiben
-  erhalten, weil das Popover sie bearbeitet. Marks behalten ihre
-  Deckkraft ohne Schein, weil das Popover ihre Farben bearbeitet; Data
-  Labels treten dabei zurück.
+**Ort statt Modus:** Nicht ein Modus entscheidet, was ein Klick tut,
+sondern die Stelle, auf die geklickt wird. Daten-Regionen analysieren,
+alles andere formatiert direkt.
+
+| Klick auf                                      | Ergebnis                                                       |
+| ---------------------------------------------- | -------------------------------------------------------------- |
+| Mark (Balken, Punkt, Segment), Datenlabel      | Filtern bzw. Cross-Highlight, auch am ausgewählten Chart       |
+| Ziehen im Plot                                 | Brush, auch am ausgewählten Chart                              |
+| Legenden-Eintrag mit Interaction an            | Serie ein- oder ausblenden                                     |
+| Titel, Achse, Achsenbeschriftung               | Objekt auswählen und diesen Teil im Panel zeigen               |
+| freie Fläche im Chart oder Rahmen, ohne Ziehen | Objekt auswählen, Panel zeigt „Chart“; eine Datenauswahl endet |
+| Card (Titel, Wert, Selection)                  | den Teil im Panel zeigen (Cards filtern nicht)                 |
+
+**Klick-Grammatik** für alle Objekte, auch spätere wie Table und Slicer:
+
+| Geste                                      | Bedeutung                                                                                            |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Klick                                      | die Hauptaktion der Region: die Daten-Aktion, wenn es eine gibt, sonst auswählen und formatieren     |
+| ⌘-Klick (Mac), Ctrl-Klick (Windows, Linux) | formatiert jede Region ausnahmslos, auch Marks, Legende und spätere Spaltenköpfe; keine Daten-Aktion |
+| Doppelklick                                | bearbeitet Text (Chart-, Achsen-, Card- und Dashboard-Titel); ein einfacher Klick wählt nur aus      |
+| Shift-Klick                                | frei, später Mehrfachauswahl                                                                         |
+| Rechtsklick                                | frei, später Kontextmenü; auf dem Mac ist Ctrl-Klick ein Rechtsklick und formatiert deshalb nicht    |
+
+- Umsetzung an einer Stelle: `ObjectFrame` entscheidet über Klick und
+  ⌘/Ctrl-Klick, der Inhalt meldet nur, welcher Teil unter dem Pointer
+  liegt (`ShowFormatHint`). Welche Teile eine Daten-Aktion haben, steht
+  in `dataActionElements` (Marks, Datenlabels, Legende); ein Klick, der
+  sich mehr als 6 px bewegt hat, ist kein Klick (Brush). ⌘/Ctrl-Klick
+  wird in der Capture-Phase am Frame angehalten, bevor ECharts ihn sieht:
+  kein Filter, kein Umschalten der Legende, kein Brush. Die Plattform
+  erkennt `shared/platform.ts` (`isFormatClick`), dieselbe Quelle wie
+  die Anzeige der Shortcuts.
+- Kein Doppelklick auf Marks: Der erste Klick filtert, der zweite hebt
+  den Filter wieder auf.
+- Enter am Objekt zeigt es als Ganzes im Panel und klappt das Panel auf.
+  Esc oder ein Klick auf eine freie Stelle der Seite hebt die Auswahl
+  auf; das Panel zeigt dann das Dashboard.
+- Wird ein noch nicht ausgewähltes Objekt gedrückt, zeigt das Panel
+  schon beim Drücken, was der Klick formatieren wird, damit es nicht
+  erst das gemerkte Element des vorigen Objekts zeigt.
+- Eine Legende mit Interaction aus ist bei ECharts keine Trefferfläche
+  (#9); sie bleibt über das Element-Dropdown erreichbar.
+
+**Rückmeldung beim Hover:**
+
+- Über Teilen ohne Daten-Aktion zeigt jedes Objekt eine Region (Rahmen
+  in `--color-border-accent` ohne Fläche, ringsum `--chart-region-frame`
+  größer als der Teil; bei Labels und Legende um alle Einträge) und ein
+  Label am Pointer, das sagt, was ein Klick formatiert („🖌 Format X
+  axis“). Über Marks, Datenlabels und Legende zeigt der Chart seinen
+  Daten-Tooltip; erst mit gehaltenem ⌘/Ctrl erscheinen dort Region und
+  Label, und der Daten-Tooltip weicht.
+- Region und Label sind reine Anzeige (`pointer-events: none`); den
+  Klick bekommt der Teil selbst. Das Label liegt per Portal über der
+  Seite, damit der Frame es nicht abschneidet, und spiegelt sich an den
+  Fensterrändern. Look von `.chip` mit `--color-surface-overlay`,
+  Akzent-Rand, `--shadow-sm` und Blur; Text aus `formatRegionLabels`.
+- Über freier Fläche des ausgewählten Objekts erscheint ein halb
+  starker Akzent-Ring innen am Frame und das Label „Format Chart ·
+  ⌘-click any part“ (bzw. Ctrl); das ist der Hinweis auf ⌘/Ctrl-Klick.
+  An anderen Objekten zeigt freie Fläche nichts.
+- Ein Titel im Objekt zeigt beim Hover nur die Region, keine Hover-Fläche
+  und keinen nativen Tooltip; Text-Cursor erst in der Eingabe.
+
+**Format-Fokus nur kurz:** Der übrige Chart tritt auf 25 % Deckkraft
+zurück und der formatierte Teil leuchtet im Akzent-Ton, aber nur,
+solange der Pointer über dem Format-Panel ist, und etwa 1 s nach dem
+Wählen eines Teils (`useFormatFocus`). Über einer Gruppe mit `group`
+zeigt der Chart genau diesen Teil (Labels, Tooltip, Achsen-Labels,
+Selection), sonst das Element des Panels. Beim Analysieren ist das
+Dashboard nie abgedunkelt.
+
+- Achse: Linie und Titel leuchten; Achsen-Labels: Labels; Legende:
+  Text, Icons in voller Farbe; Titel per `text-shadow`. Die Textfarben
+  bleiben, weil das Panel sie bearbeitet. Marks behalten ihre Deckkraft
+  ohne Schein; Datenlabels treten dabei zurück. Beim Objekt als Ganzem
+  zeigt der Ring volle Stärke, und nichts wird abgeblendet.
+- Tooltip: Solange er im Fokus ist, steht der echte Tooltip als Vorschau
+  am größten Wert und folgt nicht dem Pointer; endet die Vorschau, wird
+  auch die Hervorhebung dieses Werts aufgehoben.
 
 ### Tastaturbedienung
 
@@ -2124,20 +2171,22 @@ Auf dem fokussierten Chart:
 | Shift + Pfeiltasten | Größe über rechte bzw. untere Kante ändern  |
 | Delete / Backspace  | Chart löschen                               |
 | Cmd/Ctrl + D        | Chart duplizieren                           |
+| Enter               | Chart als Ganzes im Format-Panel zeigen     |
 | Escape              | Datenauswahl aufheben, danach Chart-Auswahl |
 
 Shortcuts greifen nur, wenn der Chart selbst fokussiert ist, nicht ein
-Element darin. Delete und Duplicate kommen aus der Command-Registry,
+Element darin. Delete, Duplicate und Enter kommen aus der Command-Registry,
 Pfeiltasten und Escape aus `ObjectFrame`. Nach dem Löschen erhält der nächste Chart in
 Lesereihenfolge den Fokus; gibt es keinen Chart mehr, die leere Canvas.
 
 Global, außer in Textfeldern:
 
-| Taste                                  | Aktion                 |
-| -------------------------------------- | ---------------------- |
-| Cmd/Ctrl + Z                           | Rückgängig             |
-| Cmd/Ctrl + Shift + Z oder Cmd/Ctrl + Y | Wiederholen            |
-| Cmd/Ctrl + B                           | Build Panel umschalten |
+| Taste                                  | Aktion                  |
+| -------------------------------------- | ----------------------- |
+| Cmd/Ctrl + Z                           | Rückgängig              |
+| Cmd/Ctrl + Shift + Z oder Cmd/Ctrl + Y | Wiederholen             |
+| Cmd/Ctrl + B                           | Build Panel umschalten  |
+| Cmd/Ctrl + Shift + B                   | Format-Panel umschalten |
 
 Escape darf nie der einzige Weg für eine Aktion sein. Im Vollbildmodus
 behält sich der Browser Escape vor.

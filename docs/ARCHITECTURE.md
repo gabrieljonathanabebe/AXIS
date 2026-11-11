@@ -55,7 +55,8 @@ AppShell
     └── Active View
         ├── Visualize Workspace
         │   ├── Build Panel
-        │   └── Canvas (Bearbeitung am Objekt: Format-Popover, Toolbar)
+        │   ├── Canvas (Arbeitsfläche mit Toolbar und Seite)
+        │   └── Format-Panel (Auswahl bzw. Dashboard)
         └── Data Workspace
             └── Data Panel (Profile | Table)
 ```
@@ -91,7 +92,7 @@ Visual-Analytics-Workspace.
 ```text
 Build Panel
 → Canvas
-→ Format-Popover am Objekt
+→ Format-Panel für die Auswahl
 ```
 
 ### Ask Cevyn
@@ -182,9 +183,9 @@ shared/      API-Client, UI-Controls, Formatierung, Text-Stil, Hooks
 datasets/    Dataset laden, Profil, Semantic Roles, Data Panel
 table/       Table View, Table Query, Table Filter
 charts/      Chart Registry, ChartItem (Content), Queries, echarts/ (Adapter),
-             format/ (Format-Popover und Widgets), data/ (Encodings, Aggregation)
+             format/ (Format-Panel und Widgets), data/ (Encodings, Aggregation)
 objects/     Dashboard-Objekte: Modell, Registry, ObjectFrame, ObjectPicker,
-             Format-Popover-Hülle, Container- und Titel-Widget
+             Format-Zuordnung, Container- und Titel-Widget
 workspace/   Workspace State, Reducer, History, Canvas, Drag and Drop,
              Dashboard-Einstellungen
 ai/          Ask Cevyn
@@ -204,13 +205,13 @@ actions/     Action Layer (Cevyn Actions)
 Abhängigkeitsrichtung im Frontend (beschlossen): Imports zeigen nur
 nach unten, Objekt-Domänen importieren nie voneinander.
 
-| Schicht | Ordner                                           | Inhalt                                                                            |
-| ------- | ------------------------------------------------ | --------------------------------------------------------------------------------- |
-| 1       | `shared/`                                        | domänenfrei: UI-Controls, API-Client, Werteformatierung, generische Hooks         |
-| 2       | `datasets/`, `queries/` (geplant)                | Daten-Vokabular: Fields, Semantic Roles, Aggregation, Filter                      |
-| 3       | `objects/`                                       | was alle Dashboard-Objekte teilen: Frame, Layout, Container, Format-Popover-Hülle |
-| 4       | `charts/`, `cards/`, `table/`, später `slicers/` | was nur ein Objekttyp braucht                                                     |
-| 5       | `workspace/`, `app/`, `actions/`, `ai/`          | Orchestrierung; darf aus allen Schichten importieren                              |
+| Schicht | Ordner                                           | Inhalt                                                                        |
+| ------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| 1       | `shared/`                                        | domänenfrei: UI-Controls, API-Client, Werteformatierung, generische Hooks     |
+| 2       | `datasets/`, `queries/` (geplant)                | Daten-Vokabular: Fields, Semantic Roles, Aggregation, Filter                  |
+| 3       | `objects/`                                       | was alle Dashboard-Objekte teilen: Frame, Layout, Container, Format-Zuordnung |
+| 4       | `charts/`, `cards/`, `table/`, später `slicers/` | was nur ein Objekttyp braucht                                                 |
+| 5       | `workspace/`, `app/`, `actions/`, `ai/`          | Orchestrierung; darf aus allen Schichten importieren                          |
 
 - Faustregel: Braucht es nur ein Objekttyp, liegt es in dessen Ordner.
   Brauchen es mehrere, liegt es in der untersten Schicht, deren
@@ -218,7 +219,7 @@ nach unten, Objekt-Domänen importieren nie voneinander.
   `queries/`, Objekt → `objects/`).
 - Ausnahme: Die Verteiler nach `kind` in `objects/` kennen alle
   Objekttypen (Union in `types.ts`, `objectDefinitions`,
-  `createObject`, `getObjectLabel`). Sie bleiben klein und erhalten pro
+  `createObject`, `getObjectLabel`, `resolveFormatElement`). Sie bleiben klein und erhalten pro
   neuem Typ einen Fall.
 - `queries/` spiegelt `backend/app/queries/`: gemeinsames Vokabular
   aller Queries (Aggregation, Filter), das Chart, Card, Table und Slicer
@@ -284,7 +285,7 @@ Der zentrale Datenfluss lautet:
 
 ```mermaid
 flowchart LR
-    UI[UI / Format-Popover]
+    UI[UI / Format-Panel]
     Spec[ChartSpec]
     Adapter[ECharts Adapter]
     Option[EChartsOption]
@@ -641,7 +642,7 @@ Textebenen in Figma:
 | Text-Ausrichtung | Wie steht der Text im Kasten?         | `title.layout.alignment`                             |
 
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
-  und Text; die Gruppen des Format-Popovers folgen schon dieser
+  und Text; die Gruppen des Format-Panels folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
 - Einführung mit „Format-Panel-Zeilen, Legende, Tooltip und
   Farbskala“ (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
@@ -870,139 +871,130 @@ Titel („Y by X“) wird in `src/charts/getChartTitle.ts` abgeleitet und
 von Header, Inline-Editing und `aria-label` gemeinsam genutzt. Dort
 liegt auch `getDefaultAxisTitle` (X: Feldname, Y: Value Label wie
 „Count of country“); es spiegelt die Achsennamen im Adapter und dient
-Popover und Inline-Editing als Platzhalter.
+Format-Panel und Inline-Editing als Platzhalter.
 
 Die Achsentitel rendert weiterhin ECharts. Für das Inline-Editing
-übersetzt der Adapter (`createAxisTitleEditFromEvent.ts`) Klick und
-Hover auf `axisName` in ein Domain-Event `AxisTitleEdit` mit Achse und
-Bounding Box. `ChartItem` legt darüber ein `InlineTextInput` bzw. eine
-Hover-Fläche. Während der Bearbeitung blendet `syncAxisTitleEdit` den
-Original-Titel aus; ECharts-spezifische Aufrufe bleiben im Adapter.
+übersetzt der Adapter (`createAxisTitleEditFromEvent.ts`) Doppelklick
+und Hover auf `axisName` in ein Domain-Event `AxisTitleEdit` mit Achse
+und Bounding Box. Der Doppelklick öffnet darüber ein `InlineTextInput`,
+der Hover meldet die Achse als Teil unter dem Pointer (siehe unten).
+Während der Bearbeitung blendet `syncAxisTitleEdit` den Original-Titel
+aus; ECharts-spezifische Aufrufe bleiben im Adapter.
 
 ```text
-ECharts click/mouseover (axisName)
+ECharts dblclick (axisName)
 → createAxisTitleEditFromEvent
 → AxisTitleEdit
 → ChartItem Overlay
 → chart/updateAppearance
 ```
 
-Das Formatieren am Objekt startet über den Command `object.format`
-(Pinsel in der Canvas-Toolbar). Er öffnet das Popover mit dem Element
-`container` (das Objekt als Ganzes) oder schließt es; das Objekt als Anker findet
-`App` über `data-object-id` am `ObjectFrame`. Solange das Popover für
-ein Objekt offen ist, ist es im Format-Modus: Achsentitel, Achsen-Labels,
-Legende und Marks melden ihren Hover über Adapter-Events
-(`createAxisTitleEditFromEvent`, `createFormatHintFromEvent`; beide
-messen mit `getElementRect`). Gemessen wird das Element als Ganzes: die
-Legende bis zur Wurzel, die Labels einer Achse als ihre Label-Gruppe
-(erste Gruppe über dem gehoverten Text). Marks sind die Ausnahme:
-gemessen wird die Form unter dem Pointer (Punkt, Balken, Segment, bei
-Linien der ganze Pfad), der Klick wählt trotzdem alle Marks des Charts.
-Linien melden Events über `triggerEvent`; diese Events haben keinen
-`dataIndex` und erzeugen deshalb keine Selection
-(`createSelectionFromEvent`). Der HTML-Titel meldet sich
-über `EditableText` (`onPointerEnter`) und misst sich mit
-`getRectInFrame` (`objects/elementRect.ts`). Alle liefern ein `ElementRect` in
-Koordinaten des Frames an `showFormatHint`. Der Frame hält genau einen
-`formatHint` (`element`, `rect`) und zeigt im Format-Modus dafür eine
-Region. Ein Klick darauf meldet nur Element und Frame als Anker nach
-oben (`onFormatElement`); Frame und Content kennen keine
-Format-Widgets.
+Formatieren am Objekt hat keinen Modus („Ort statt Modus“,
+`DESIGN_SYSTEM.md`, „Bearbeitung am Chart“): Das Format-Panel zeigt immer
+die Auswahl, und ein Klick entscheidet nach der Stelle, die er trifft.
 
 ```text
-Pinsel (object.format)
-→ App.openObjectFormat: Anker per data-object-id, Element container
-Region im Format-Modus (ObjectFrame)
-→ onFormatElement(element, anchor) → ChartGrid ergänzt objectId
-beide
-→ App: formatTarget (React State, nicht im Reducer)
-→ ChartFormatPopover (charts/format/): Element-Auswahl + Abschnitte
+Hover im Content (Adapter-Events, EditableText, Card-Teile)
+→ ShowFormatHint({ element, rect } | null) → ObjectFrame.formatHint
+Klick bzw. ⌘/Ctrl-Klick (ObjectFrame)
+→ onFormatElement(element) → ChartGrid ergänzt objectId
+→ App.chooseFormatElement: gemerktes Element + kurzer Fokus
+→ resolveFormatElement (Auswahl) → getPanelElement → Format-Panel
 → chartActions.setAppearance → chart/updateAppearance
 ```
 
-- `FormatTarget` (`objects/types.ts`) ist `anchor`, `element` und
-  `objectId`. `ObjectFormatElement` ist die Union der formatierbaren
-  Elemente aller Objekttypen (`ChartFormatElement | CardFormatElement`).
-  Beide enthalten `ContainerFormatElement` (`'container'`, in
-  `objects/types.ts`): das Objekt als Ganzes, im Dropdown „Chart“ bzw.
-  „Card“, mit `ContainerWidget` (Background, Padding, Radius, Rahmen).
-  Gewählt wird es im Format-Modus per Klick auf eine freie Fläche: Der
-  Frame behandelt jeden Klick, der keinen Button und kein Handle trifft,
-  als `container`; eine Region gibt es dafür nicht, nur eine Anzeige
-  ohne Pointer-Events. Beim Container blenden `syncFormatFocus` und
-  `getFormatFocusClassName` nichts ab.
-- `ChartFormatElement` (`charts/types.ts`) sind die formatierbaren
-  Elemente eines Charts: Schlüssel von `ChartAppearanceSpec`
-  (`labels`, `legend`, `title`, `xAxis`, `yAxis`) plus `xAxisLabels`
-  und `yAxisLabels` für die Tick-Labels unter `xAxis.labels` bzw.
-  `yAxis.labels`, `marks` für Datenfarbe, Palette und die Marks des
-  Charttyps (`color`, Palette, Farben und Range aus `colorScale`,
-  `scatter`, `line`, `bar`, `pie`) sowie `colorScale`, `tooltip` und
-  `container`. `ChartFormatPopover` beantwortet pro Element per `switch`
-  zwei Fragen: `getFormatGroups` liefert die Gruppen untereinander, und
-  `getElementVisibility` das Auge, das das ganze Element ein- oder
-  ausblendet (Titel, Datenlabels, Legende, Farbskala, Tooltip, Achse).
-  Achse und Labels teilen `AxisWidget` mit `part` (`title` | `labels`)
-  und dieselbe `AxisAppearance`. `marks` füllt feste Plätze:
-  `getMarkGroups` (`charts/format/markGroups.tsx`) liefert pro Charttyp
-  `Partial<Record<MarkGroupKey, ReactNode>>`, `MARK_GROUP_ORDER` legt
-  die Reihenfolge an genau einer Stelle fest. Gruppen gehören zum
-  Element, das sie betreffen: `xAxis` und `yAxis` haben „Line“ und
-  „Gridlines“ (`AxisAppearance.line` bzw. `.gridLines`, im Adapter
-  `axisLine` und `splitLine`), `xAxis` zusätzlich „Zoom“
-  (`interaction.zoom`, wirkt auf die X-Achse), `legend` „Interaction“
-  (`interaction.legend`). Die Datenlabels sind ein eigenes Element
-  „Data Labels“ (`appearance.labels`): Ihre Region ist der Text, den
-  ECharts an die Mark hängt (`createFormatHintFromEvent`), und die Marks
-  verlinken sie mit Pinsel und Auge (`getElementLinkGroup`), wie den
-  Tooltip.
-- `getFormatElements(chart, fields)` (`charts/`) bestimmt, welche
-  Elemente ein Chart hat: Container, Titel, Marks und Tooltip immer,
-  Achsen und ihre Labels nur kartesisch, Legende wie `isLegendRelevant`,
-  Color Scale bei kontinuierlicher Farbe (`getColorEncodingMode`).
-  Tooltip und Color Scale haben keine Region, sie sind nur über das
-  Dropdown erreichbar: Der Tooltip existiert nicht als Element im Chart,
-  die ECharts-`visualMap` liefert keine Maus-Events und ist ohne
-  interne APIs nicht auffindbar. Die Element-Auswahl im Popover setzt nur
-  `formatTarget.element`.
-- `formatTarget` ist flüchtiger Editor-Zustand: nicht undo-fähig, mit
-  DOM-Anker, deshalb nicht im Workspace-Reducer. Das Popover gilt nur
-  für das ausgewählte Objekt und schließt, sobald sich die Auswahl
-  ändert. Pinsel, Region und Element-Auswahl schreiben denselben
-  Zustand; der Format-Modus hat keinen eigenen State, er folgt aus
-  `formattedElement !== null`.
-- Floating UI schließt das Popover bei einem Druck außerhalb schon auf
-  `pointerdown`, also vor dem Klick. Damit der Pinsel als Toggle und
-  die Regionen ihren Klick erhalten, zählen die Canvas-Toolbar und das
-  formatierte Objekt nicht als außerhalb (`Popover`-Prop `keepOpenOn`).
-- `ChartFormatPopover` arbeitet auf dem ausgewählten Chart mit den
-  `chartActions` (`createChartActions`); „Chart data“ im Build Panel
-  nutzt dieselben Actions für Charttyp, Encodings und Aggregation.
-- Solange das Popover offen ist, legt `syncFormatFocus`
-  (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern
-  Editor-Zustand in die ECharts-Instanz: Serien, Legende und nicht
-  bearbeitete Achsen gedimmt, die Legende oder der bearbeitete Teil
-  einer Achse leuchtet (`xAxis`: Titel und Linie; `xAxisLabels`:
-  Labels, Ticks bleiben normal); bei Pie und Donut werden keine Achsen
-  gesetzt.
-  Legenden-Icons erben die Deckkraft der Serien und werden beim Fokus
-  auf die Legende zurückgesetzt. Analog zu `syncAxisTitleEdit` und
-  `syncBrush`. Dieser Zustand gehört nicht zur `ChartSpec` und
-  verschwindet mit dem nächsten vollständigen `setOption`.
-- Im Format-Modus nimmt der Adapter dem Chart die Daten-Interaktion:
-  `syncFormatTooltip` versteckt den Tooltip (`hideTip`, `show: false`),
-  bei jedem Element einschließlich `container`. Beim Element `tooltip`
-  (nur im Dropdown, ohne Region) pinnt er ihn stattdessen als Vorschau:
-  `findPreviewPoint` sucht im gerenderten Option den größten Wert über
-  alle Serien (Zahlen, `[x, y]`-Paare, Objekte mit `value`),
-  `alwaysShowContent` und `triggerOn: 'none'` halten ihn fest, `showTip`
-  öffnet ihn. Ist der Tooltip ausgeschaltet, gibt es keine Vorschau.
-  `syncBrush` gibt den
-  Brush-Cursor ab (`brushType: false`), eine bestehende Auswahl bleibt
-  gezeichnet. Beides ist Editor-Zustand wie `syncFormatFocus`.
-- Das Format-Label am Pointer gehört dem `ObjectFrame`: ein Element für
-  alle Regionen und den Container, Text aus dem `formatHint` bzw. dem
+- Teile unter dem Pointer: Achsentitel, Achsen-Labels, Legende, Marks
+  und Datenlabels melden ihren Hover über Adapter-Events
+  (`createAxisTitleEditFromEvent`, `createFormatHintFromEvent`; beide
+  messen mit `getElementRect`) und beim Verlassen `null` (`mouseout`).
+  Gemessen wird der Teil als Ganzes: die Legende bis zur Wurzel, die
+  Labels einer Achse als ihre Label-Gruppe; Marks messen die Form unter
+  dem Pointer (Punkt, Balken, Segment, bei Linien der ganze Pfad). Der
+  HTML-Titel und die Teile einer Card melden sich über `onPointerEnter`
+  und `onPointerLeave` und messen sich mit `getRectInFrame`
+  (`objects/elementRect.ts`). Alles kommt als `ElementRect` in
+  Koordinaten des Frames im `formatHint` des `ObjectFrame` an.
+- Klick-Grammatik im Frame: Ein normaler Klick läuft erst zum Content
+  (Filter, Legende umschalten, Brush) und formatiert danach nur, wenn
+  der Teil keine Daten-Aktion hat (`dataActionElements`: Marks,
+  Datenlabels, Legende) und der Druck sich höchstens 6 px bewegt hat;
+  ohne Teil unter dem Pointer ist es `container`. ⌘/Ctrl-Klick
+  (`isFormatClick`, `shared/platform.ts`) hält der Frame in der
+  Capture-Phase an (`onPointerDownCapture`, `onMouseDownCapture`,
+  `onClickCapture`), bevor ECharts ihn sieht, und formatiert jeden Teil.
+  Drückt man ein noch nicht ausgewähltes Objekt, setzt der Frame das
+  Element schon beim Druck, damit Auswahl und Element in einem Render
+  wechseln. Frame und Content kennen keine Format-Widgets.
+- `FormatTarget` (`objects/types.ts`) ist `element` und `objectId`.
+  `ObjectFormatElement` ist die Union der formatierbaren Teile aller
+  Objekttypen (`ChartFormatElement | CardFormatElement`). Beide
+  enthalten `ContainerFormatElement` (`'container'`): das Objekt als
+  Ganzes, im Dropdown „Chart“ bzw. „Card“, mit `ContainerWidget`.
+- Gemerktes Element und Panel-Element: `App` hält das zuletzt gewählte
+  Element als Region (z. B. `labels`), nicht im Workspace-Reducer und
+  nicht undo-fähig. `resolveFormatElement` (`objects/`) prüft es gegen
+  das ausgewählte Objekt und fällt auf `container` zurück; so bleibt
+  z. B. die Legende von Chart zu Chart. `getPanelElement`
+  (`objects/formatPanelElement.ts`) macht aus kleinen Elementen ihr
+  Elternteil: `labels` und `tooltip` → `marks`, `xAxisLabels` →
+  `xAxis`, `yAxisLabels` → `yAxis`, `selectionLabel` → `value`. Das ist
+  die einzige Zuordnung (`formatGroups`); das Panel zeigt das
+  Elternteil, die Region bleibt Gruppe für Hinscrollen und Fokus.
+- `ChartFormatElement` (`charts/types.ts`) sind die Teile eines Charts:
+  Schlüssel von `ChartAppearanceSpec` (`labels`, `legend`, `title`,
+  `xAxis`, `yAxis`) plus `xAxisLabels` und `yAxisLabels` für die
+  Tick-Labels, `marks` für Datenfarbe und die Marks des Charttyps sowie
+  `colorScale`, `tooltip` und `container`. `getFormatElements(chart,
+fields)` liefert nur die Panel-Elemente für das Dropdown: Container,
+  Titel und Marks immer, Achsen nur kartesisch, Legende wie
+  `isLegendRelevant`, Color Scale bei kontinuierlicher Farbe. Color
+  Scale hat keine Region (die ECharts-`visualMap` liefert keine
+  Maus-Events) und ist nur über das Dropdown erreichbar.
+- `ChartFormatPanel` beantwortet pro Panel-Element per `switch` zwei
+  Fragen: `getFormatGroups` liefert die Gruppen untereinander,
+  `getElementVisibility` das Auge im Kopf (Titel, Legende, Farbskala,
+  Achse). `getMarkGroups` (`charts/format/markGroups.tsx`) füllt die
+  festen Plätze aus `MARK_GROUP_ORDER`, zuletzt die Gruppen Labels
+  (`LabelsWidget`) und Tooltip (`TooltipWidget`); die Achse legt
+  `AxisWidget` mit `part="labels"` in ihre Gruppe Labels, die Card
+  ihre Selection in Value. Diese Gruppen tragen `group`
+  (`data-format-group`). Gruppen gehören zum Element, das sie
+  betreffen: Line, Gridlines und Zoom zur Achse, Interaction zur
+  Legende.
+- Hülle: `FormatPanel` (`shared/ui`) übernimmt Kopf, Element-Auswahl,
+  Auge, Einklappen und Scrollen; `revealedGroup` scrollt nach einem
+  Klick die Gruppe mit diesem `data-format-group` ins Bild.
+  `ChartFormatPanel` (`charts/format/`), `CardFormatPanel` (`cards/`)
+  und `DashboardFormatPanel` (`workspace/`, ohne Auswahl) liegen in
+  ihrer Domäne. Eingeklappt bzw. offen ist UI-State
+  (`useWorkspaceLayout`).
+- Format-Fokus: `useFormatFocus` (`app/`) liest beim `pointerover`, ob
+  der Pointer über dem Panel ist und welche Gruppe mit
+  `data-format-group` darunter liegt (`findFormatGroup`), und hält nach
+  einer Wahl einen Puls von etwa 1 s. `App` leitet daraus das
+  fokussierte Element ab (Gruppe unter dem Pointer, sonst Panel-Element;
+  beim Puls das gewählte Element) und gibt es als `formatTarget` an die
+  Canvas. Außerhalb dieser Momente ist es `null`, und nichts ist
+  gedimmt.
+- Mit fokussiertem Element legt `syncFormatFocus`
+  (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern Editor-Zustand
+  in die ECharts-Instanz: Serien, Legende und nicht bearbeitete Achsen
+  gedimmt, die Legende oder der bearbeitete Teil einer Achse leuchtet;
+  bei Pie und Donut werden keine Achsen gesetzt. Legenden-Icons erben
+  die Deckkraft der Serien und werden beim Fokus auf die Legende
+  zurückgesetzt. `syncFormatTooltip` versteckt im Fokus den Tooltip
+  (`hideTip`, `downplay`, `show: false`); beim Element `tooltip` pinnt
+  er ihn als Vorschau am größten Wert (`findPreviewPoint`,
+  `alwaysShowContent`, `triggerOn: 'none'`, `showTip`). Das `downplay`
+  hebt die Hervorhebung auf, die die Vorschau eines Achsen-Tooltips am
+  größten Wert setzt. Beides gehört nicht zur `ChartSpec` und
+  verschwindet mit dem nächsten vollständigen `setOption`. Der Brush
+  ist immer aktiv (`syncBrush`).
+- Solange ⌘/Ctrl gehalten wird (`useIsFormatKeyHeld`), setzt
+  `EChartCanvas` per Merge `tooltip.show: false`, damit das Label am
+  Pointer den Daten-Tooltip ersetzt.
+- Das Format-Label am Pointer gehört dem `ObjectFrame`: Es liegt per
+  `FloatingPortal` über der Seite, Text aus dem `formatHint` bzw. dem
   Objekttyp. Die Position schreibt `moveFormatLabel` bei `pointermove`
   direkt als CSS-Variablen ans Label, ohne React-State, damit
   Mausbewegungen weder Frame noch Content neu rendern.
@@ -1255,14 +1247,14 @@ type DashboardObject = ChartInstance | CardInstance // später | Table | …
 - Ohne Feld zählt die Card die Zeilen („Count of rows“). Beim Drop
   eines Felds setzt `createCardData` die Aggregation aus der Semantic
   Role (Measure → `sum`, sonst `count`); `getCardAggregations` begrenzt
-  die Auswahl im Popover entsprechend.
+  die Auswahl im Format-Panel entsprechend.
 - `container` beschreibt die Formatierung des Containers und ist bewusst
   nicht Teil des Inhalts (siehe Abschnitt 6, Container vs. Content). Der
   Hintergrund ist eine Liste `Fill[]` (Standard eine Fläche `#202226`,
   100 %), Effekte sind
   eine Liste `effects` (Standard leer, siehe „Effect“).
 - `findChart(objects, id)` (`objects/findChart.ts`) liefert ein Objekt
-  nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Format-Popover,
+  nur, wenn es ein Chart ist. Code, der Chart-Inhalt braucht (Format-Panel,
   Ask-Cevyn-Validierung, `chart/setTitle`), sucht darüber.
 
 Die Objekt-Registry `objectDefinitions` (`objects/objectDefinitions.ts`)
@@ -1297,15 +1289,15 @@ WorkspaceState
 ```
 
 `useChartWorkspace` leitet daraus `charts` (für Ask Cevyn) und
-`selectedChart` (für Format-Popover und „Chart data“) ab; `App` leitet
-`selectedCard` für das Card-Format-Popover ab.
+`selectedChart` (für Format-Panel und „Chart data“) ab; `App` leitet
+`selectedCard` für das Card-Format-Panel ab.
 
-Format-Popover: Die Hülle `ObjectFormatPopover` (`objects/`) übernimmt
-Position, Offenhalten, Element-Auswahl und das Auge im Kopf für
-jedes Objekt; die Gruppen pro Typ kommen als `children` und stehen
-untereinander, ohne eigenen UI-Zustand. `ChartFormatPopover`
-(`charts/format/`) und `CardFormatPopover` (`cards/`) liegen in ihrer
-Domäne, zusammen mit ihren Widgets; was alle Objekte teilen
+Format-Panel: Die Hülle `FormatPanel` (`shared/ui`) übernimmt Kopf,
+Element-Auswahl, Auge, Einklappen und Scrollen für jedes Objekt und das
+Dashboard; die Gruppen pro Typ kommen als `children` und stehen
+untereinander. `ChartFormatPanel` (`charts/format/`) und
+`CardFormatPanel` (`cards/`) liegen in ihrer Domäne, zusammen mit ihren
+Widgets; was alle Objekte teilen
 (`ContainerWidget`, `ObjectTitleWidget`), liegt in `objects/`, der
 Rahmen der Widget-Zeilen (`FormatWidget`) in `shared/ui`.
 `isChartFormatElement` und `isCardFormatElement` grenzen
@@ -1334,7 +1326,7 @@ type DashboardSpec = {
 
 `DashboardSpec` beschreibt Einstellungen, die für das ganze Dashboard
 gelten (`src/workspace/types.ts`). `canvas.background` sind die Flächen
-der Canvas (Standard eine Fläche `#141518`, 100 %), im Dashboard-Popover
+der Canvas (Standard eine Fläche `#141518`, 100 %), im Format-Panel ohne Auswahl
 die Gruppe Background. `layout.gap` ist der Abstand in Pixeln zwischen den
 Grid-Zellen. `animation` gilt für alle Charts: Sie ist
 keine Chart-Eigenschaft mehr (`ChartInteractionSpec` hat kein
@@ -1357,15 +1349,15 @@ type DataSelection = {
 }
 ```
 
-Format-Popover, Aktionsleiste und „Chart data“ arbeiten auf dem
-selektierten Objekt. Einstellungen des ganzen Dashboards liegen im
-Dashboard-Popover der Canvas-Toolbar und brauchen keine Auswahl; es gibt
-keinen eigenen Auswahl-State für das Dashboard.
+Format-Panel, Aktionsleiste und „Chart data“ arbeiten auf dem
+selektierten Objekt. Einstellungen des ganzen Dashboards zeigt das
+Format-Panel, wenn nichts ausgewählt ist; es gibt keinen eigenen
+Auswahl-State für das Dashboard.
 
 `selectedObjectId` und `selection` sind getrennte Konzepte:
 
 - `selectedObjectId` ist die Editor-Auswahl und bestimmt, welches
-  Objekt Format-Popover, Aktionsleiste und Pinsel bearbeiten.
+  Objekt Format-Panel und Aktionsleiste bearbeiten.
 - `selection` ist die Datenauswahl für Dashboard-Interaktion. Sie ist
   feldbasiert, an keine Achse gebunden und gilt für alle Charts
   (siehe Abschnitt 6, Selection und Cross-Highlighting).
@@ -1404,13 +1396,12 @@ Selection, wenn ihr Quell-Chart entfernt wird. War das entfernte Objekt
 selektiert, wählt `object/remove` das nächste Objekt in Lesereihenfolge
 (nach `y`, dann `x`) bzw. das vorherige aus (`findNeighborObjectId`).
 
-Format-Popover und Inline-Editing auf der Canvas verwenden dieselben
-Actions. Charttitel und Achsentitel werden z. B. im Popover und direkt
+Format-Panel und Inline-Editing auf der Canvas verwenden dieselben
+Actions. Charttitel und Achsentitel werden z. B. im Panel und direkt
 im Chart über `chart/updateAppearance` geändert, der Dashboard-Name im
-Canvas-Header über `dashboard/update`. Gap und
-Animation ändert das Dashboard-Popover der Canvas-Toolbar
-(`DashboardSettingsPopover`) über die `CanvasActions`
-`updateDashboardLayout` und `updateDashboard`.
+Canvas-Header über `dashboard/update`. Style, Gap, Background und
+Animation ändert `DashboardFormatPanel` über die `CanvasActions`
+`applyStyle`, `updateDashboardLayout` und `updateDashboard`.
 
 Regeln:
 
@@ -1438,10 +1429,10 @@ Komponenten-Ebenen gereicht werden, werden zu einem typisierten
 übergeben. Einzelne Callbacks oder solche, die nur eine Ebene tief
 gehen, bleiben `on…`-Props.
 
-| Objekt          | Type                 | erzeugt in           | Weg                                                                         |
-| --------------- | -------------------- | -------------------- | --------------------------------------------------------------------------- |
-| `ChartActions`  | `charts/types.ts`    | `createChartActions` | `App` → `ChartFormatPopover` → Widgets; `App` → `BuildPanel` („Chart data“) |
-| `CanvasActions` | `workspace/types.ts` | `useChartWorkspace`  | `CanvasPanel` → `ChartGrid` → `ObjectFrame` / `ChartItem` → `EChartCanvas`  |
+| Objekt          | Type                 | erzeugt in           | Weg                                                                        |
+| --------------- | -------------------- | -------------------- | -------------------------------------------------------------------------- |
+| `ChartActions`  | `charts/types.ts`    | `createChartActions` | `App` → `ChartFormatPanel` → Widgets; `App` → `BuildPanel` („Chart data“)  |
+| `CanvasActions` | `workspace/types.ts` | `useChartWorkspace`  | `CanvasPanel` → `ChartGrid` → `ObjectFrame` / `ChartItem` → `EChartCanvas` |
 
 - `ChartActions` bearbeiten den ausgewählten Chart und brauchen deshalb
   keine `chartId`. Den Container ändern sie über
@@ -1695,26 +1686,27 @@ die Kompatibilität nicht erneut.
 
 ## 9. Bearbeitung am Objekt
 
-Es gibt kein Einstellungs-Panel. Jede Einstellung hat genau eine Heimat:
-Was ein sichtbares Element betrifft, wird im Format-Popover dieses
-Elements bearbeitet; Verhalten ohne eigenes Element gehört als
-Abschnitt zum Element, das es betrifft. Was Daten zuordnet, liegt im
-Build Panel, was das ganze Dashboard betrifft, im Dashboard-Popover der
-Canvas-Toolbar.
+Jede Einstellung hat genau eine Heimat: Was ein sichtbares Element
+betrifft, wird im Format-Panel bei diesem Element bearbeitet; kleine
+Elemente sind Gruppen ihres Elternteils, Verhalten ohne eigenes Element
+gehört als Gruppe zum Element, das es betrifft. Was Daten zuordnet,
+liegt im Build Panel, was das ganze Dashboard betrifft, im Format-Panel
+ohne Auswahl.
 
-| Bereich                            | Ort                                                                      |
-| ---------------------------------- | ------------------------------------------------------------------------ |
-| Container, Rahmen                  | Element „Chart“/„Card“ (Klick auf freie Fläche, Pinsel)                  |
-| Titel                              | Element „Title“, inline editierbar                                       |
-| Marks                              | Element „Marks“                                                          |
-| Datenlabels                        | Element „Data Labels“ (Region am Label, Pinsel in den Marks)             |
-| Tooltip                            | Element „Tooltip“ (Dropdown, Vorschau am größten Wert)                   |
-| Achsen, Gridlines, Zoom            | Elemente „X/Y Axis“ (Title, Line, Gridlines, Zoom) und „X/Y Axis Labels“ |
-| Legende, Legend Interaction        | Element „Legend“: Gruppen Layout, Text, Interaction                      |
-| Color Scale                        | Element „Color Scale“ (Dropdown, bei kontinuierlicher Farbe)             |
-| Charttyp, Encodings, Aggregation   | Build Panel, Abschnitt „Chart data“                                      |
-| Dashboard-Name                     | inline im Canvas-Titel                                                   |
-| Layout-Gap, Animation aller Charts | Dashboard-Popover (Zahnrad in der Canvas-Toolbar)                        |
+| Bereich                           | Ort                                                          |
+| --------------------------------- | ------------------------------------------------------------ |
+| Container, Rahmen                 | Element „Chart“/„Card“ (Klick auf freie Fläche, Enter)       |
+| Titel                             | Element „Title“, per Doppelklick inline editierbar           |
+| Marks                             | Element „Marks“ (⌘/Ctrl-Klick auf eine Mark)                 |
+| Datenlabels                       | Gruppe Labels in „Marks“ (⌘/Ctrl-Klick auf ein Label)        |
+| Tooltip                           | Gruppe Tooltip in „Marks“ (Vorschau am größten Wert)         |
+| Achsen, Gridlines, Zoom           | Elemente „X/Y Axis“: Title, Labels, Line, Gridlines, Zoom    |
+| Card Selection                    | Gruppe Selection in „Value“                                  |
+| Legende, Legend Interaction       | Element „Legend“: Gruppen Layout, Text, Interaction          |
+| Color Scale                       | Element „Color Scale“ (Dropdown, bei kontinuierlicher Farbe) |
+| Charttyp, Encodings, Aggregation  | Build Panel, Abschnitt „Chart data“                          |
+| Dashboard-Name                    | inline im Canvas-Titel                                       |
+| Style, Gap, Background, Animation | Format-Panel ohne Auswahl                                    |
 
 Die Widgets liegen in ihrer Domäne (`charts/format/`, `charts/data/`,
 `cards/`, `objects/`, `workspace/`) und rendern ihre Zeilen über

@@ -103,33 +103,26 @@ und Keynote:
   Umbau prüfen; Schatten der Container dürfen am Rand der Seite nicht
   abgeschnitten werden
 
-Format-Panel: Das Format-Popover hängt heute am Objekt
-(`ObjectFormatPopover` mit `anchor` und `placement="right-start"`). Es
-springt beim Ziehen, und mit Feldern für Position und Größe liefe es
-beim Scrubben unter der Maus weg, weil das Objekt und mit ihm das
-Popover sich bewegen. Lösung wie in Figma, Power BI und Keynote:
-Auswählen auf der Seite, Bearbeiten in einem festen Panel.
+Format-Panel: Das Format-Popover hing am Objekt, sprang beim Ziehen und
+wäre beim Scrubben von Position und Größe unter der Maus weggelaufen.
+Lösung wie in Figma, Power BI und Keynote: Auswählen auf der Seite,
+Bearbeiten in einem festen Panel (`FormatPanel`, `side="end"`,
+einklappbar, Pinsel in der Toolbar und ⌘⇧B).
 
-- gleicher Inhalt, andere Hülle: `ObjectFormatPopover` legt die Gruppen
-  in ein `Panel` (`side="end"`, einklappbar) am rechten Rand der
-  Arbeitsfläche statt in ein `Popover` am Objekt; Chart und Card nutzen
-  die Hülle schon gemeinsam, es entsteht kein zweiter Inspector
-- am Objekt bleiben Pinsel und Enter, die Regionen (Hover-Label, Klick
-  wählt das Element) und der Format-Fokus
-- Enter oder der Pinsel am Objekt öffnet das Panel für das Objekt; es
-  bleibt offen, wenn ein anderes Objekt ausgewählt wird, und zeigt
-  dessen Gruppen; es schiebt die Arbeitsfläche zur Seite statt sie zu
-  überdecken, wie die BuildPanel links
-- der Pinsel in der Toolbar und ⌘⇧B klappen das Panel ein und aus, als
-  Gegenstück zu ⌘B für die BuildPanel; eingeklappt bleibt wie links
-  eine schmale Leiste mit Icon; beim Start ist das Panel offen
-- wechselt die Auswahl, bleibt das gewählte Element, wenn das neue
-  Objekt es hat (z. B. Legende von Chart zu Chart), sonst springt es auf
-  „Chart“ bzw. „Card“
-- ohne Auswahl zeigt das Panel das Dashboard (Style, Gap, Background,
-  Animation) wie in Power BI: ein Klick auf eine freie Stelle der Seite
-  oder Esc hebt die Auswahl auf; das Zahnrad-Popover und das Zahnrad in
-  der Toolbar entfallen, die Toolbar ist Undo, Redo und Pinsel
+- das Panel folgt der Auswahl; das gewählte Element bleibt, wenn das
+  neue Objekt es hat, sonst „Chart“ bzw. „Card“; ohne Auswahl zeigt es
+  das Dashboard (Style, Layout, Background, Animation), das Zahnrad
+  entfällt, die Toolbar ist Undo, Redo und Pinsel
+- Ort statt Modus: Es gibt keinen Format-Modus. Daten-Regionen (Marks,
+  Datenlabels, Legende) analysieren auch am ausgewählten Chart, alles
+  andere formatiert direkt; ⌘/Ctrl-Klick formatiert jede Region,
+  Doppelklick bearbeitet Text, Shift-Klick und Rechtsklick bleiben frei
+  (Klick-Grammatik in `DESIGN_SYSTEM.md`, „Bearbeitung am Chart“)
+- Hover-Label und Region über Teilen ohne Daten-Aktion, über Marks und
+  Legende nur mit gehaltenem ⌘/Ctrl, dann ohne Daten-Tooltip
+- Format-Fokus nur über dem Panel (die Gruppe unter dem Pointer) und
+  etwa 1 s nach dem Wählen; beim Analysieren nie abgedunkelt
+- Vollbild als Ansicht ohne Auswahl und Format-Aktionen folgt in 3.20
 
 Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit X | Y
 und W | H als Zahlenpaare; Werte in Grid-Zellen (`ObjectLayout`),
@@ -141,13 +134,13 @@ Vorgehen:
 
 1. Arbeitsfläche und Seite trennen – implementiert
 2. Format-Panel an der Arbeitsfläche, ohne Auswahl mit dem Dashboard –
-   in Arbeit (Hülle und Spalte stehen; Auswahl folgen, Dashboard ohne
-   Auswahl, Zahnrad entfernen offen)
-3. Zeilen-Raster im Panel (siehe unten) – in Arbeit (Raster, Effekte,
-   Zahlenformat stehen; Marks-Zeilen, Überschriften, `ScrubbableNumber`
-   offen)
-4. Elemente zusammenlegen (siehe unten)
-5. Objekt-Layout
+   implementiert
+3. Zeilen-Raster im Panel (siehe unten) – implementiert
+4. Ort statt Modus (Klick-Grammatik, Hover, kurzer Fokus) –
+   implementiert
+5. Elemente zusammenlegen (siehe unten) – implementiert
+6. Objekt-Layout – offen; dabei die Reihenfolge der Dashboard-Gruppen
+   prüfen (Style steht heute oben)
 
 Zeilen-Raster: Beide Seitenpanels sind 228 px breit (wie Figmas 240 px).
 Jede Zeile im Format-Panel steht auf einem festen Raster aus zwei
@@ -164,9 +157,10 @@ derselben Spalte.
   Toggle, Größe `xs`); Icon-Gruppen bis 3 Icons passen in eine
   Feldspalte, ab 4 Icons über beide; Werte links, Icons rechts
 - Mindestbreiten: Selects zeigen ihren Text ganz, Zahlenfelder mit
-  Einheit ab etwa 56 px; passt eine Zeile nicht, wird sie auf zwei
-  Zeilen geteilt (Animation: Easing, dann Dauer); Scatter behält Symbol
-  | Punktgröße in einer Zeile
+  Einheit ab etwa 56 px; passt eine Zeile nicht, wird sie geteilt oder
+  das Wort gekürzt (Animation: Easing | Dauer in einer Zeile, Easing
+  „In-out“); Scatter behält Symbol | Punktgröße in einer Zeile, Legend
+  → Interaction heißt Off | Multi | Single
 - Effekte wie Farben: ein Feld mit Icon und Name der Art öffnet den
   Editor, oben die Art als Dropdown, darunter ihre Werte; die Liste der
   Container-Effekte wird nicht mehr sortiert, wie in Figma
@@ -181,12 +175,13 @@ derselben Spalte.
   Beschriftungen öffnet
 - keine Spezialregeln pro Gruppe; jede Gruppe wählt ihren Zeilentyp
 
-Elemente zusammenlegen: Im Panel ist genug Höhe, also werden kleine
-Elemente aufklappbare Gruppen ihres Elternteils statt eigener Ansichten:
-Data Labels und Tooltip in Marks, X/Y Axis Labels in X/Y Axis, das
-Selection-Label der Card in Value. Ein Klick auf die Region im Objekt
-(z. B. ein Datenlabel) öffnet das Elternteil bei seiner Gruppe; Format-
-Fokus und `getFormatElements` folgen.
+Elemente zusammenlegen: Im Panel ist genug Höhe, also sind kleine
+Elemente normale Gruppen ihres Elternteils statt eigener Ansichten,
+ohne Klappen (wie in Figma): Data Labels und Tooltip in Marks, X/Y Axis
+Labels in X/Y Axis, das Selection-Label der Card in Value. Die
+Zuordnung steht an einer Stelle (`formatGroups`); ein Klick auf die
+Region (z. B. ein Datenlabel) öffnet das Elternteil und holt die Gruppe
+ins Bild, der Fokus folgt der Gruppe unter dem Pointer.
 
 Keine Formänderung der Spec.
 
