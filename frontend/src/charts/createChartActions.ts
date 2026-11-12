@@ -82,5 +82,12 @@ export function createChartActions({
         patch: { [key]: value },
       }))
     },
+    setLayout: (layout) => {
+      dispatchForChart((chartId) => ({
+        type: 'object/updateLayout',
+        objectId: chartId,
+        patch: layout,
+      }))
+    },
   }
 }

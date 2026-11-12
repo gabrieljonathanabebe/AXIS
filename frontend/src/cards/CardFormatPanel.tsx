@@ -1,4 +1,5 @@
 import ContainerWidget from '../objects/ContainerWidget'
+import { getObjectDefinition } from '../objects/objectDefinitions'
 import ObjectTitleWidget from '../objects/ObjectTitleWidget'
 import FormatPanel from '../shared/ui/FormatPanel'
 import FormatWidget from '../shared/ui/FormatWidget'
@@ -49,9 +50,14 @@ function renderFormatWidget(
     case 'container':
       return (
         <ContainerWidget
+          layout={card.layout}
+          minSize={getObjectDefinition(card.kind).minSize}
           value={card.container}
           onChange={(key, value) =>
             actions.updateObjectContainer(card.id, { [key]: value })
+          }
+          onLayoutChange={(layout) =>
+            actions.updateObjectLayout(card.id, layout)
           }
         />
       )

@@ -1,5 +1,6 @@
 import FormatWidget from '../../shared/ui/FormatWidget'
 import LayoutControls from '../../shared/ui/LayoutControls'
+import PositionControls from '../../shared/ui/PositionControls'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
 
 import type { LegendAppearance } from '../types'
@@ -10,12 +11,20 @@ type LegendWidgetProps = {
 }
 
 /**
- * Groups of the chart legend: where it sits and how its text looks.
- * Whether it shows is the eye in the popover header.
+ * Groups of the chart legend: where it sits, the gap between its entries
+ * and how its text looks. Whether it shows is the eye in the popover
+ * header.
  */
 function LegendWidget({ value, onChange }: LegendWidgetProps) {
   return (
     <>
+      <FormatWidget title="Position">
+        <PositionControls
+          label="Legend"
+          value={value.layout}
+          onChange={(layout) => onChange({ ...value, layout })}
+        />
+      </FormatWidget>
       <FormatWidget title="Layout">
         <LayoutControls
           label="Legend"

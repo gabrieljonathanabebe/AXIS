@@ -1,59 +1,28 @@
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  Fullscreen,
-  MoveHorizontal,
-  MoveVertical,
-  Space,
-} from 'lucide-react'
+import { Fullscreen, MoveHorizontal, MoveVertical, Space } from 'lucide-react'
 
 import { isSide } from '../layout'
 import AlignmentControl from './AlignmentControl'
+import BoxFieldsRow from './BoxFieldsRow'
 import ControlRow from './ControlRow'
-import PositionGrid from './PositionGrid'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
 import type { LucideIcon } from 'lucide-react'
-import type { ReactNode } from 'react'
-import type { Layout, Orientation, Side } from '../layout'
+import type { Orientation, PartialLayout } from '../layout'
+import type { LayoutBox } from './BoxFieldsRow'
 import type { OptionItem } from './OptionsMenu'
 
 // ===== TYPES =================================================================
-/** Any part of a layout, e.g. only the alignment of a title. */
-type PartialLayout = Partial<Layout<string>>
-
-/** Positions the layout allows, e.g. the four sides of a legend. */
-type LayoutPosition<TLayout extends PartialLayout> = NonNullable<
-  TLayout['position']
->
-
 type LayoutControlsProps<TLayout extends PartialLayout> = {
+  box?: LayoutBox
   label: string
   maxGap?: number
   maxPadding?: number
-  positions?: OptionItem<LayoutPosition<TLayout>>[]
   value: TLayout
   onChange: (value: TLayout) => void
 }
 
 // ===== CONSTANTS =============================================================
-const sideOptions = [
-  { label: 'Top', value: 'top' },
-  { label: 'Bottom', value: 'bottom' },
-  { label: 'Left', value: 'left' },
-  { label: 'Right', value: 'right' },
-] satisfies OptionItem<Side>[]
-
-const sideIcons = {
-  bottom: ArrowDown,
-  left: ArrowLeft,
-  right: ArrowRight,
-  top: ArrowUp,
-} satisfies Record<Side, LucideIcon>
-
 const orientationOptions = [
   { label: 'Vertical', value: 'vertical' },
   { label: 'Horizontal', value: 'horizontal' },
@@ -64,76 +33,28 @@ const orientationIcons = {
   vertical: MoveVertical,
 } satisfies Record<Orientation, LucideIcon>
 
-// ===== HELPERS ===============================================================
-/**
- * Pairs controls into rows of two, the columns of a compact row.
- * @param controls Controls in their order.
- * @returns The controls two by two.
- */
-function pairControls(controls: ReactNode[]): ReactNode[][] {
-  const rows: ReactNode[][] = []
-  for (let index = 0; index < controls.length; index += 2) {
-    rows.push(controls.slice(index, index + 2))
-  }
-  return rows
-}
-
 // ===== COMPONENT =============================================================
 /**
- * Compact rows for position, orientation, alignment, gap and padding of one
- * element, two controls per row. Shows only the fields the layout has, e.g.
- * only padding for a container. A layout with a side and an alignment, e.g.
- * a legend, places both in a `PositionGrid`; other positions are an icon
- * group: positions with their own icon, e.g. of the data labels, show icon
- * and word in a wide row of their own, sides only the arrow in a pair. A
- * single position needs no control.
+ * Rows of the Layout group: how large an element is and how it spreads
+ * its content, in a fixed order: W | H, orientation | alignment, gap |
+ * padding. Shows only the fields the layout has, e.g. only padding for a
+ * container; `box` adds W | H with the unit and bounds of the element.
+ * At a side, orientation and alignment belong to the position, e.g. of a
+ * legend, so they show only without one. Reads only its fields, so it
+ * takes the same layout as `PositionControls`.
  */
 function LayoutControls<TLayout extends PartialLayout>({
+  box,
   label,
   maxGap = 48,
   maxPadding = 64,
-  positions = sideOptions as OptionItem<LayoutPosition<TLayout>>[],
   value,
   onChange,
 }: LayoutControlsProps<TLayout>) {
-  const { alignment, position } = value
-  const showsGrid =
-    alignment !== undefined && position !== undefined && isSide(position)
-  const positionControl =
-    !showsGrid && position !== undefined && positions.length > 1 ? (
-      <SegmentedControl
-        className="layout-position-control"
-        key="position"
-        label={`${label} position`}
-        options={positions}
-        renderOption={(option) => {
-          if (option.icon || !isSide(option.value)) {
-            return null
-          }
-          const SideIcon = sideIcons[option.value]
-          return <SideIcon aria-hidden="true" size={15} />
-        }}
-        value={position}
-        onValueChange={(nextPosition) => {
-          onChange({ ...value, position: nextPosition })
-        }}
-      />
-    ) : null
-  // Positions with icon and word, e.g. of the data labels, need the whole
-  // width; sides show only an arrow and pair up with the next control.
-  const isPositionWide =
-    positionControl !== null && positions.some((option) => option.icon)
-  const controls = [
-    showsGrid ? (
-      <PositionGrid
-        key="grid"
-        label={`${label} position`}
-        value={{ alignment, position }}
-        onChange={(placement) => onChange({ ...value, ...placement })}
-      />
-    ) : null,
-    isPositionWide ? null : positionControl,
-    value.orientation !== undefined ? (
+  const { alignment, orientation, position } = value
+  const isAtSide = position !== undefined && isSide(position)
+  const arrangement = [
+    !isAtSide && orientation !== undefined ? (
       <SegmentedControl
         key="orientation"
         label={`${label} orientation`}
@@ -142,11 +63,13 @@ function LayoutControls<TLayout extends PartialLayout>({
           const OrientationIcon = orientationIcons[option.value]
           return <OrientationIcon aria-hidden="true" size={16} />
         }}
-        value={value.orientation}
-        onValueChange={(orientation) => onChange({ ...value, orientation })}
+        value={orientation}
+        onValueChange={(nextOrientation) => {
+          onChange({ ...value, orientation: nextOrientation })
+        }}
       />
     ) : null,
-    !showsGrid && alignment !== undefined ? (
+    !isAtSide && alignment !== undefined ? (
       <AlignmentControl
         key="alignment"
         label={`${label} alignment`}
@@ -156,6 +79,8 @@ function LayoutControls<TLayout extends PartialLayout>({
         }}
       />
     ) : null,
+  ].filter((control) => control !== null)
+  const spacing = [
     value.gap !== undefined ? (
       <ScrubbableNumber
         icon={<Space size={14} />}
@@ -185,12 +110,11 @@ function LayoutControls<TLayout extends PartialLayout>({
   ].filter((control) => control !== null)
   return (
     <>
-      {isPositionWide ? (
-        <ControlRow layout="wide">{positionControl}</ControlRow>
+      {box ? (
+        <BoxFieldsRow box={box} fields={['width', 'height']} label={label} />
       ) : null}
-      {pairControls(controls).map((row, index) => (
-        <ControlRow key={index}>{row}</ControlRow>
-      ))}
+      {arrangement.length > 0 ? <ControlRow>{arrangement}</ControlRow> : null}
+      {spacing.length > 0 ? <ControlRow>{spacing}</ControlRow> : null}
     </>
   )
 }

@@ -1,5 +1,5 @@
 import FormatWidget from '../../shared/ui/FormatWidget'
-import LayoutControls from '../../shared/ui/LayoutControls'
+import PositionControls from '../../shared/ui/PositionControls'
 
 import type { ColorScaleAppearance } from '../types'
 
@@ -20,14 +20,15 @@ const positionOptions = [
 
 /**
  * Groups of the continuous color scale: where it sits and its labels; its
- * colors and range are part of the data color of the marks. Whether it
- * shows is the eye in the popover header.
+ * direction follows from the position, and its colors and range are part
+ * of the data color of the marks. Whether it shows is the eye in the
+ * popover header.
  */
 function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
   return (
     <>
-      <FormatWidget title="Layout">
-        <LayoutControls
+      <FormatWidget title="Position">
+        <PositionControls
           label="Color scale"
           positions={positionOptions}
           value={value.layout}

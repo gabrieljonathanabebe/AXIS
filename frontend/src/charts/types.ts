@@ -4,6 +4,7 @@ import type {
   ContainerFormatElement,
   DashboardObjectBase,
   ElementRect,
+  ObjectLayout,
   ObjectTitleAppearance,
   SetContainer,
 } from '../objects/types'
@@ -56,6 +57,7 @@ export type ChartActions = {
   setContainer: SetContainer
   setEncodingField: SetEncodingField
   setInteraction: SetInteraction
+  setLayout: (layout: ObjectLayout) => void
 }
 
 /** What a chart format widget needs: the chart, its fields and actions. */

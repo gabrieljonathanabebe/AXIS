@@ -1,6 +1,6 @@
 import FormatWidget from '../../shared/ui/FormatWidget'
-import LayoutControls from '../../shared/ui/LayoutControls'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
+import PositionControls from '../../shared/ui/PositionControls'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
 
 import type { OptionItem } from '../../shared/ui/OptionsMenu'
@@ -30,8 +30,8 @@ function LabelsWidget({
 }: LabelsWidgetProps) {
   return (
     <>
-      <FormatWidget title="Layout">
-        <LayoutControls
+      <FormatWidget title="Position">
+        <PositionControls
           label="Label"
           positions={positions}
           value={value.layout}

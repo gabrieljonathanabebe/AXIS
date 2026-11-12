@@ -7,25 +7,59 @@ import ControlRow from '../shared/ui/ControlRow'
 import FillListControls from '../shared/ui/FillListControls'
 import FormatWidget from '../shared/ui/FormatWidget'
 import LayoutControls from '../shared/ui/LayoutControls'
+import PositionControls from '../shared/ui/PositionControls'
 import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
 import StrokeStyleControls from '../shared/ui/StrokeStyleControls'
+import { getLayoutBounds } from '../workspace/chartLayout'
 
-import type { ObjectContainer, SetContainer } from './types'
+import type { LayoutBox } from '../shared/ui/BoxFieldsRow'
+import type {
+  ObjectContainer,
+  ObjectLayout,
+  ObjectSize,
+  SetContainer,
+} from './types'
 
 type ContainerWidgetProps = {
+  layout: ObjectLayout
+  minSize: ObjectSize
   value: ObjectContainer
   onChange: SetContainer
+  onLayoutChange: (layout: ObjectLayout) => void
 }
 
 /**
- * Groups of a container: padding, corner radius, background, border and
- * effects, in the fixed order Layout → Shape → Fill → Stroke → Effects.
+ * Groups of a container: position, size and padding, corner radius,
+ * background, border and effects, in the fixed order Position → Layout →
+ * Shape → Fill → Stroke → Effects. Position and size are grid cells,
+ * limited like dragging.
  */
-function ContainerWidget({ value, onChange }: ContainerWidgetProps) {
+function ContainerWidget({
+  layout,
+  minSize,
+  value,
+  onChange,
+  onLayoutChange,
+}: ContainerWidgetProps) {
+  const box: LayoutBox = {
+    bounds: getLayoutBounds(layout, minSize),
+    unitName: 'grid cells',
+    value: layout,
+    onChange: (patch) => onLayoutChange({ ...layout, ...patch }),
+  }
   return (
     <>
+      <FormatWidget title="Position">
+        <PositionControls
+          box={box}
+          label="Container"
+          value={value.layout}
+          onChange={(layout) => onChange('layout', layout)}
+        />
+      </FormatWidget>
       <FormatWidget title="Layout">
         <LayoutControls
+          box={box}
           label="Container"
           value={value.layout}
           onChange={(layout) => onChange('layout', layout)}

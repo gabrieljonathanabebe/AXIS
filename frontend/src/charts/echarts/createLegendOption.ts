@@ -1,3 +1,4 @@
+import { getSideOrientation } from '../../shared/layout'
 import { createTextStyleOption } from './createTextStyleOption'
 import { resolveColor } from './resolveColor'
 
@@ -72,11 +73,7 @@ export function createLegendOption({
   const textColor = resolveColor(appearance.textStyle.color)
   return {
     itemGap: appearance.layout.gap,
-    orient:
-      appearance.layout.position === 'left' ||
-      appearance.layout.position === 'right'
-        ? 'vertical'
-        : 'horizontal',
+    orient: getSideOrientation(appearance.layout.position),
     pageIconColor: textColor,
     pageIconInactiveColor: resolveColor(appearance.inactiveColor),
     pageTextStyle: { color: textColor },

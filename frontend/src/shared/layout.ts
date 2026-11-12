@@ -24,10 +24,40 @@ export type Layout<TPosition extends string = Side> = {
   position: TPosition
 }
 
+/** Any part of a layout, e.g. only the alignment of a title. */
+export type PartialLayout = Partial<Layout<string>>
+
+/**
+ * Position and size of an element on its surface, e.g. a chart on the
+ * page. The element sets the unit, e.g. grid cells or pixels.
+ */
+export type Box = {
+  height: number
+  width: number
+  x: number
+  y: number
+}
+
+/** Smallest and largest allowed value; a missing bound stays open. */
+export type NumberBounds = {
+  max?: number
+  min?: number
+}
+
 // ===== CONSTANTS =============================================================
 const SIDES: string[] = ['top', 'right', 'bottom', 'left'] satisfies Side[]
 
 // ===== FUNCTIONS =============================================================
+/**
+ * Direction of an element at a side: along the top and bottom it runs
+ * horizontally, along the left and right vertically, e.g. a legend.
+ * @param side Side the element sits at.
+ * @returns The orientation that follows from the side.
+ */
+export function getSideOrientation(side: Side): Orientation {
+  return side === 'left' || side === 'right' ? 'vertical' : 'horizontal'
+}
+
 /**
  * Tells an edge from another position, e.g. a label inside its mark.
  * @param position Position of an element.

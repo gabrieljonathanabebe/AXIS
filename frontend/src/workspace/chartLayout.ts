@@ -3,6 +3,7 @@ import type {
   ObjectLayout,
   ObjectSize,
 } from '../objects/types'
+import type { NumberBounds } from '../shared/layout'
 
 // ===== TYPES =================================================================
 export type GridDelta = Pick<ObjectLayout, 'x' | 'y'>
@@ -83,6 +84,25 @@ export function findNeighborObjectId(
     return null
   }
   return ordered[index + 1]?.id ?? ordered[index - 1]?.id ?? null
+}
+
+/**
+ * Bounds of each layout field, the same as when dragging: inside the grid
+ * columns, open downwards and not below the minimum size.
+ * @param layout Current layout.
+ * @param minSize Smallest size the object may get.
+ * @returns Smallest and largest value of x, y, width and height.
+ */
+export function getLayoutBounds(
+  layout: ObjectLayout,
+  minSize: ObjectSize,
+): Record<keyof ObjectLayout, NumberBounds> {
+  return {
+    height: { min: minSize.height },
+    width: { max: CHART_GRID.columns - layout.x, min: minSize.width },
+    x: { max: CHART_GRID.columns - layout.width, min: 0 },
+    y: { min: 0 },
+  }
 }
 
 /** Moves a layout by grid cells without leaving the grid. */

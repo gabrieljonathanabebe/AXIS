@@ -1,4 +1,5 @@
 import { formatCompactNumber } from '../../shared/format/formatNumber'
+import { getSideOrientation } from '../../shared/layout'
 import { getNumericDomain } from './getNumericDomain'
 import { resolveColor } from './resolveColor'
 
@@ -14,7 +15,8 @@ type CreateContinuousColorVisualMapParams = {
 type ContinuousColorVisualMap = ContinuousVisualMapComponentOption | null
 
 /**
- * Creates the color scale of a continuous color encoding.
+ * Creates the color scale of a continuous color encoding; its direction
+ * follows from its side.
  * @returns Visual map of the scale, or null without numeric values.
  */
 export function createContinuousColorVisualMap({
@@ -44,7 +46,7 @@ export function createContinuousColorVisualMap({
     left: appearance.layout.position === 'left' ? 16 : undefined,
     max,
     min,
-    orient: appearance.layout.orientation,
+    orient: getSideOrientation(appearance.layout.position),
     right: appearance.layout.position === 'right' ? 16 : undefined,
     show: appearance.visible,
     text: appearance.labels

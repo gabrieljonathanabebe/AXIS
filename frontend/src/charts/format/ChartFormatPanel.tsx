@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 
 import ContainerWidget from '../../objects/ContainerWidget'
+import { getObjectDefinition } from '../../objects/objectDefinitions'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
 import FormatPanel from '../../shared/ui/FormatPanel'
 import FormatWidget from '../../shared/ui/FormatWidget'
@@ -72,8 +73,11 @@ function getFormatGroups(
     case 'container':
       return (
         <ContainerWidget
+          layout={chart.layout}
+          minSize={getObjectDefinition(chart.kind).minSize}
           value={chart.container}
           onChange={actions.setContainer}
+          onLayoutChange={actions.setLayout}
         />
       )
     case 'legend':
