@@ -588,7 +588,7 @@ Chart“). Daten-Zuordnung steht im Build Panel („Chart data“).
 Jedes Element ordnet seine Gruppen gleich:
 
 ```text
-Inhalt → Layout → Shape → Text → Fill → Stroke → Effect
+Inhalt → Position → Layout → Shape → Text → Fill → Stroke → Effect
 → Zahlen- und Datumsformat → Unterelemente → Verhalten
 ```
 
@@ -596,19 +596,22 @@ Ein Element füllt nur die Plätze, die es hat; fehlende Plätze fallen
 weg, statt leer oder deaktiviert zu erscheinen. Der Platz ist fest, der
 Titel darf zum Element passen (Fill heißt am Container „Background“,
 bei Linien „Area“; Stroke heißt bei Linien „Line“, sonst „Border“).
+Eine Vorlage, die die folgenden Gruppen auf einmal setzt, steht auf dem
+Platz Inhalt vor ihnen, wie Figmas Textstil über den
+Typografie-Details: Style ist die erste Gruppe des Dashboards.
 
-| Element                  | Gruppen                                                                                |
-| ------------------------ | -------------------------------------------------------------------------------------- |
-| Chart bzw. Card          | Layout (Padding) · Shape (Radius) · Background · Border                                |
-| Title                    | Content (Text) · Text (mit Alignment)                                                  |
-| Marks                    | siehe Tabelle unten, zuletzt Labels und Tooltip                                        |
-| X Axis, Y Axis           | Title · Labels (Layout: Ticks, Rotation · Text · Format) · Line · Gridlines · Zoom (X) |
-| Legend                   | Layout (Position, Alignment, Gap) · Text · Interaction                                 |
-| Color Scale              | Layout (Position, Orientation) · Labels                                                |
-| Card Value               | Function (Aggregation) · Text · Format · Selection (Text)                              |
-| Dashboard (ohne Auswahl) | Style · Layout (Gap) · Background · Animation                                          |
+| Element                  | Gruppen                                                                                       |
+| ------------------------ | --------------------------------------------------------------------------------------------- |
+| Chart bzw. Card          | Position (X \| Y) · Layout (W \| H, Padding) · Shape (Radius) · Background · Border · Effects |
+| Title                    | Content (Text) · Text (mit Alignment)                                                         |
+| Marks                    | siehe Tabelle unten, zuletzt Labels und Tooltip                                               |
+| X Axis, Y Axis           | Title · Labels (Layout: Ticks, Rotation · Text · Format) · Line · Gridlines · Zoom (X)        |
+| Legend                   | Position (PositionGrid) · Layout (Gap) · Text · Interaction                                   |
+| Color Scale              | Position (links oder rechts) · Labels                                                         |
+| Card Value               | Function (Aggregation) · Text · Format · Selection (Text)                                     |
+| Dashboard (ohne Auswahl) | Style · Layout (Gap) · Background · Animation                                                 |
 
-Labels in Marks enthält Layout (Position), Text und Format (nicht bei
+Labels in Marks enthält Position, Text und Format (nicht bei
 Pie und Donut), Tooltip enthält Behavior (Trigger; bei Pie und Donut
 nur Überschrift und Auge).
 
@@ -633,6 +636,64 @@ Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
   Datenlabels bzw. den Tooltip ein oder aus.
 - Welchen Inhalt die Datenlabels zeigen, ist noch fest (Wert bzw. Anteil);
   die Wahl kommt mit „Tooltip-Felder“ (`ROADMAP.md`).
+
+### Position und Layout (implementiert, 3.9)
+
+Wie in Figma beantworten zwei Gruppen zwei Fragen:
+
+| Gruppe   | Frage                                               | Zeilen                                                                                                     |
+| -------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Position | Wo sitzt das Element in seinem Elternteil?          | X \| Y, oder `PositionGrid` (angedockt, z. B. Legende), oder Positions-Icons (Datenlabels); später Drehung |
+| Layout   | Wie groß ist es, und wie verteilt es seinen Inhalt? | W \| H · Richtung \| Ausrichtung · Gap \| Padding                                                          |
+
+```text
+POSITION
+[X 0       ] [Y 0       ]
+LAYOUT
+[W 12      ] [H 14      ]  ·    Icon-Spalte frei (Schloss)
+[⛶ 16 px   ]
+```
+
+- Position steht im Panel vor Layout. Die Zeilen jeder Gruppe haben eine
+  feste Reihenfolge; ein Element zeigt nur seine Zeilen.
+- Kein Margin: Der Abstand nach außen ist das Gap des Elternteils, der
+  nach innen das Padding. Die Text-Ausrichtung bleibt beim Text.
+- `PositionControls` und `LayoutControls` bekommen denselben
+  Layout-Wert, jede zeigt nur ihre Felder. `alignment` mit einer Seite
+  (Legende) ist die Lage an dieser Seite und gehört zur Position, ohne
+  Seite ist es die Ausrichtung des Inhalts im Layout.
+- Einheit und Grenzen von X | Y und W | H kommen vom Element als Props:
+  Chart und Card rechnen in Grid-Zellen, begrenzt wie beim Ziehen
+  (`getLayoutBounds` neben `moveLayout` und `resizeLayout`); Formen und
+  Textfelder später in Pixeln, ohne Umbau der Zeilen. Beide Gruppen
+  nutzen dieselbe Zahlenzeile (`BoxFieldsRow`).
+- X, Y, W und H stehen als Buchstaben im Icon-Platz des Felds, wie in
+  Figma. Zellen zeigen keine Einheit im Feld; sie steht im Namen
+  („Container width in grid cells“). Die Icon-Spalte der W|H-Zeile
+  bleibt frei für ein späteres Seitenverhältnis-Schloss.
+- Die Richtung folgt aus der Position (`getSideOrientation`): oben oder
+  unten horizontal, links oder rechts vertikal, bei Legende und
+  Farbskala gleich. Die Farbskala hat deshalb kein Richtungs-Control.
+- Die Spec ändert sich nicht: X | Y und W | H bleiben `ObjectLayout`,
+  Padding bleibt `container.layout`. Ob ein gemeinsamer Kasten künftig
+  Position, Größe und Anordnung beschreibt, entscheidet das Kasten-Modell
+  in 3.10 (`ARCHITECTURE.md`, „Kasten-Modell“).
+
+Welches Element was bekommt:
+
+| Element                  | Position                      | Layout                                   |
+| ------------------------ | ----------------------------- | ---------------------------------------- |
+| Chart, Card              | X \| Y                        | W \| H, Padding                          |
+| Dashboard                | –                             | Gap (später Seitengröße W \| H, Padding) |
+| Legende                  | PositionGrid                  | Gap (in 3.10 dazu Padding)               |
+| Farbskala                | ← \| → (in 3.10 PositionGrid) | (in 3.10 Länge \| Dicke)                 |
+| Datenlabels              | Positions-Icons               | –                                        |
+| Tooltip                  | –                             | (in 3.10 Padding)                        |
+| Rechteck, Kreis (später) | X \| Y, Drehung               | W \| H mit 🔒                            |
+| Textfeld (später)        | X \| Y                        | W \| H, Padding                          |
+
+Jede Gruppe ist kurz, und keine Zeile steht an zwei Orten. Einträge ohne
+Klammern sind implementiert, Einträge in Klammern und „später“ geplant.
 
 ### Format-Widgets (implementiert)
 
@@ -813,7 +874,8 @@ ANIMATION                      ＋
   Prefix | Suffix; an Achsenlabels zusätzlich Date im Select. DateFormat
   kommt nach demselben Muster.
 - **Zahlenpaare** in einer Zeile: Size range (⤓ min | ⤒ max), Bar width
-  | Radius, Ticks | Rotation der Achsenlabels.
+  | Radius, Ticks | Rotation der Achsenlabels, X | Y und W | H von Chart
+  und Card (`BoxFieldsRow`, 9p).
 - **Icon-Gruppen** (`SegmentedControl`) zeigen Icon und Wort
   (`OptionContent`, siehe 9s). Nur Icons, die das Ergebnis zeigen,
   stehen allein (Ausrichtung, Strichstil, Scatter-Symbole, Seiten als
@@ -923,6 +985,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 | Gruppe eines kleinen Elements          | `FormatWidget` mit `group`                             |
 | Details hinter ⚙                       | `DetailsPopover` (9h)                                  |
 | 3×3-Raster                             | `PositionGrid` (9r)                                    |
+| Zahlenzeile X \| Y bzw. W \| H         | `BoxFieldsRow` mit `LayoutBox` (9p)                    |
 
 Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt ist kompakt,
 dadurch wirkt eine Änderung auf alle Elemente gleichzeitig.
@@ -1497,10 +1560,12 @@ Vorhandene Bausteine:
 - `ContainerEffect[]` mit `ContainerEffectsControls` (siehe 9o):
   Schatten, Innenschatten, Background Blur und Korn am Container
   (`container.effects`)
-- `Layout` mit `LayoutControls` (siehe 9p): Titel (`title.layout`),
-  Container (`container.layout`), Dashboard (`dashboard.layout`),
-  Legende (`legend.layout`), Farbskala (`continuous.layout`) und
-  Datenlabels (`labels.layout`)
+- `Layout` mit `PositionControls` und `LayoutControls` (siehe 9p):
+  Container (`container.layout`, dazu X | Y und W | H aus
+  `ObjectLayout`), Dashboard (`dashboard.layout`), Legende
+  (`legend.layout`), Farbskala (`continuous.layout`) und Datenlabels
+  (`labels.layout`); die Ausrichtung des Titels (`title.layout`) steht
+  beim Text (`TextStyleControls`)
 
 Schatten von Marks und Container teilen `Shadow` und `ShadowControls`.
 
@@ -1683,26 +1748,32 @@ und Container gleich: Section Offset mit X | Y (Buchstaben als Icon,
 −40 bis 40 px) und Section Color mit `ColorField` | Deckkraft. Generisch
 über den Wert, damit `kind` beim Ändern erhalten bleibt.
 
-## 9p. LayoutControls
+## 9p. PositionControls, LayoutControls und BoxFieldsRow
 
-`LayoutControls` ist der Baustein für die Platzierung eines Elements
-(`Layout`), nach demselben Muster wie die übrigen Bausteine: Zeilen
-statt Rahmen, `label` für Screenreader („Legend position“).
+Die Bausteine der Gruppen Position und Layout (siehe „Position und
+Layout“ in 6), nach demselben Muster wie die übrigen: Zeilen statt
+Rahmen, `label` für Screenreader („Legend position“). Beide bekommen
+denselben `Layout`-Wert eines Elements und zeigen nur ihre Felder; der
+Aufrufer teilt nichts auf.
 
-- je zwei Controls in einer kompakten Zeile (`pairControls`): Position,
-  Orientation (Pfeil-Icons), Alignment (`AlignmentControl`), Gap (Icon
-  `Space`) und Padding (Icon `Fullscreen`; beide `ScrubbableNumber`,
-  Schritt 2, Grenzen über `maxGap` und `maxPadding`)
-- generisch über den Wert: Es erscheinen nur die Controls, deren Felder
-  das Layout hat; der Container zeigt nur Padding, die Datenlabels nur
-  die Position
-- ein Layout mit Seite und Alignment, z. B. die Legende, zeigt beides
-  in einem `PositionGrid` (siehe 9r)
-- `positions` schränkt die Positionen ein (Standard: die vier Seiten).
-  Seiten erscheinen als Pfeile (`.layout-position-control`); Positionen
-  mit eigenem `icon`, z. B. die `labelPositions` der Registry, zeigen
-  Icon und Wort; eine einzige Position braucht kein Control
-- steht im Popover immer in der Gruppe Layout
+- `PositionControls`: X | Y aus `box`; eine Seite mit Alignment, z. B.
+  die Legende, als `PositionGrid` (siehe 9r); sonst eine Icon-Gruppe,
+  eingeschränkt über `positions` (Standard: die vier Seiten). Seiten
+  erscheinen als Pfeile (`.layout-position-control`), bis drei in einer
+  Feldspalte, ab vier über beide; Positionen mit eigenem `icon`, z. B.
+  die `labelPositions` der Registry, zeigen Icon und Wort über die
+  ganze Zeile; eine einzige Position braucht kein Control
+- `LayoutControls`: feste Zeilen W | H aus `box`, Orientation (Pfeil-
+  Icons) | Alignment (`AlignmentControl`), Gap (Icon `Space`) | Padding
+  (Icon `Fullscreen`; beide `ScrubbableNumber`, Schritt 2, Grenzen über
+  `maxGap` und `maxPadding`); eine Zeile ohne Felder fällt weg. An einer
+  Seite gehören Orientation und Alignment zur Position und erscheinen
+  hier nicht
+- `BoxFieldsRow`: eine Zeile Kasten-Felder (`fields`, z. B. `x`, `y`
+  bzw. `width`, `height`) aus einem `LayoutBox`: Werte, Grenzen je Feld
+  (`NumberBounds`), Einheit (`unit` im Feld, `unitName` im Namen) und
+  `onChange` mit dem geänderten Feld als Patch. Buchstaben X, Y, W, H im
+  Icon-Platz; die Icon-Spalte bleibt frei (Schloss)
 
 ## 9q. PaintControl, PaintField und ColorField
 
@@ -1770,7 +1841,7 @@ transparent), neutrale Kante bei Hover, Akzent-Kante bei Fokus.
 - jede Zelle ist ein Button mit Namen („Top left“) und zeigt, wo das
   Element sitzt; die Mitte steht für den Plot und ist deaktiviert
 - links und rechts nur mittig, weil die Legende dort vertikal läuft
-- genutzt von der Legende über `LayoutControls`; die Farbskala folgt
+- genutzt von der Legende über `PositionControls`; die Farbskala folgt
   mit „Format-Panel-Zeilen, Legende, Tooltip und Farbskala“
   (`ROADMAP.md`)
 
@@ -1860,7 +1931,8 @@ Format-Panel:
 
 ```text
 Legend                👁
-├── Layout       (PositionGrid, Gap)
+├── Position     (PositionGrid)
+├── Layout       (Gap)
 ├── Text
 └── Interaction  [ Off | Multi | Single ]
 ```
@@ -1902,8 +1974,8 @@ ECharts `visualMap` ist ein Renderer-Detail.
 Im Cevyn UI heißt das Feature `Color Scale`.
 
 Das Element „Color Scale“ im Format-Panel hat sein Auge im Kopf und
-die Gruppen Layout (Position links oder rechts, vertikal oder
-horizontal) und Labels (Auge für die Endlabels). Start- und Endfarbe
+die Gruppen Position (links oder rechts; die Richtung folgt daraus) und
+Labels (Auge für die Endlabels). Start- und Endfarbe
 (`GradientControl`) und Range (⚙) stehen als Datenfarbe in der
 Farbzeile der Marks.
 

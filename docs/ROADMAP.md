@@ -23,15 +23,16 @@ implementiert.
 
 Data-Bereich (Profiling, Semantic Roles), Visualize mit
 Multi-Chart-Canvas, Cross-Highlighting, Cards, Ask Cevyn V1 und die
-Bearbeitung am Objekt (Format-Popover statt Inspector) sind in einem
+Bearbeitung am Objekt (Format-Panel statt Inspector) sind in einem
 ersten vollständigen Stand. Die Appearance-Specs sind auf gemeinsame
 Bausteine umgestellt (`TextStyle`, `StrokeStyle`, `NumberFormat`,
 `Fill`, `Paint`, `Effect`, `Layout`, `ColorValue` als feste Farbe), das
-Format-Popover zeigt alle Gruppen eines Elements in fester Reihenfolge
-und in kompakten Controls im Figma-Stil. Die App ist neutral (Akzent nur
-für Zustände); das Dashboard trägt seine Farben selbst und bekommt sie
-aus Dashboard-Styles (Rezept plus Material, Galerie im
-Dashboard-Popover, Anwenden als ein Undo-Schritt). Canvas und Container
+Format-Panel rechts der Arbeitsfläche zeigt alle Gruppen eines Elements
+in fester Reihenfolge und in kompakten Controls im Figma-Stil, mit
+Position und Layout auch für Chart und Card. Die App ist neutral
+(Akzent nur für Zustände); das Dashboard trägt seine Farben selbst und
+bekommt sie aus Dashboard-Styles (Rezept plus Material, Galerie im
+Dashboard-Panel, Anwenden als ein Undo-Schritt). Canvas und Container
 tragen eine echte Füllung (`Fill`) mit Deckkraft. Flächen und Linien
 können Verläufe tragen, Serien einen Fade in ihrer Farbe. Marks haben
 Glow oder Schatten, Container eine Liste von Effekten (Schatten,
@@ -56,7 +57,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 6. Verläufe für Flächen und Linien – implementiert
 7. Effekte: Schatten, Background Blur und Korn – implementiert
 8. Dashboard-Styles – implementiert
-9. Arbeitsfläche, Format-Panel und Objekt-Layout
+9. Arbeitsfläche, Format-Panel und Objekt-Layout – implementiert
 10. Format-Panel-Zeilen, Legende, Tooltip und Farbskala
 11. DateFormat
 12. Sortierung und Top N
@@ -71,119 +72,6 @@ Slices; Abhängigkeiten stehen beim Punkt):
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
-
-### 3.9 Arbeitsfläche, Format-Panel und Objekt-Layout (in Arbeit)
-
-Der Bereich rechts der BuildPanel wird umgebaut: Arbeitsfläche und Seite
-trennen, Format-Panel, Objekt-Layout.
-
-Arbeitsfläche und Seite: Heute ist alles rechts der BuildPanel eine
-Fläche im Dashboard-Style. Titel (`.dashboard-surface` mit
-`padding-inline: var(--space-2)`) und Grid (`.chart-grid` mit
-zusätzlich `padding: var(--space-4)`) haben verschiedene Abstände und
-fluchten nicht, und nur das Grid scrollt. Lösung wie in Power BI, Figma
-und Keynote:
-
-- Arbeitsfläche (App): neutral, folgt nur dem App-Theme; trägt die
-  Toolbar (Undo, Redo, Format, Dashboard-Einstellungen) als schmale
-  Leiste über der Seite, später auch Zoom und Vollbild; Ask Cevyn bleibt
-  bis zum Chatfenster im Build Panel (3.17) schwebend unten
-- Seite (Dashboard): trägt den Style (Canvas-Flächen und Radius; die
-  Ebene zieht von `.canvas-panel::before` auf die Seite) und enthält
-  Titel und Grid mit einem gemeinsamen Innenabstand, sodass der Titel
-  über dem ersten Chart fluchtet; die Seite bleibt in der Arbeitsfläche
-  stehen, und Titel und Grid scrollen gemeinsam in ihr
-- Größe Auto wie heute: Die Seite füllt die Arbeitsfläche bis auf einen
-  schmalen Rand (16 px, unten 24 px), damit ihr Ende immer sichtbar ist;
-  Rahmen und Schatten der Seite gehören zur Arbeitsfläche; feste Größe
-  und Zoom kommen mit den Dashboard-Einstellungen (3.16), Vollbild zeigt
-  später nur die Seite (3.20)
-- `ChartGrid` misst sich selbst (`getComputedStyle(grid)`): Ziehen,
-  Drop-Vorschau, Auswahl und das Scrollen neuer Charts ins Bild nach dem
-  Umbau prüfen; Schatten der Container dürfen am Rand der Seite nicht
-  abgeschnitten werden
-
-Format-Panel: Das Format-Popover hing am Objekt, sprang beim Ziehen und
-wäre beim Scrubben von Position und Größe unter der Maus weggelaufen.
-Lösung wie in Figma, Power BI und Keynote: Auswählen auf der Seite,
-Bearbeiten in einem festen Panel (`FormatPanel`, `side="end"`,
-einklappbar, Pinsel in der Toolbar und ⌘⇧B).
-
-- das Panel folgt der Auswahl; das gewählte Element bleibt, wenn das
-  neue Objekt es hat, sonst „Chart“ bzw. „Card“; ohne Auswahl zeigt es
-  das Dashboard (Style, Layout, Background, Animation), das Zahnrad
-  entfällt, die Toolbar ist Undo, Redo und Pinsel
-- Ort statt Modus: Es gibt keinen Format-Modus. Daten-Regionen (Marks,
-  Datenlabels, Legende) analysieren auch am ausgewählten Chart, alles
-  andere formatiert direkt; ⌘/Ctrl-Klick formatiert jede Region,
-  Doppelklick bearbeitet Text, Shift-Klick und Rechtsklick bleiben frei
-  (Klick-Grammatik in `DESIGN_SYSTEM.md`, „Bearbeitung am Chart“)
-- Hover-Label und Region über Teilen ohne Daten-Aktion, über Marks und
-  Legende nur mit gehaltenem ⌘/Ctrl, dann ohne Daten-Tooltip
-- Format-Fokus nur über dem Panel (die Gruppe unter dem Pointer) und
-  etwa 1 s nach dem Wählen; beim Analysieren nie abgedunkelt
-- Vollbild als Ansicht ohne Auswahl und Format-Aktionen folgt in 3.20
-
-Objekt-Layout: Gruppe Layout im Element „Chart“ bzw. „Card“ mit X | Y
-und W | H als Zahlenpaare; Werte in Grid-Zellen (`ObjectLayout`),
-begrenzt wie beim Ziehen, über die bestehende Layout-Action; die Zeile
-für Zahlenpaare nutzt danach das Kasten-Modell (3.10) für Breite und
-Höhe wieder.
-
-Vorgehen:
-
-1. Arbeitsfläche und Seite trennen – implementiert
-2. Format-Panel an der Arbeitsfläche, ohne Auswahl mit dem Dashboard –
-   implementiert
-3. Zeilen-Raster im Panel (siehe unten) – implementiert
-4. Ort statt Modus (Klick-Grammatik, Hover, kurzer Fokus) –
-   implementiert
-5. Elemente zusammenlegen (siehe unten) – implementiert
-6. Objekt-Layout – offen; dabei die Reihenfolge der Dashboard-Gruppen
-   prüfen (Style steht heute oben)
-
-Zeilen-Raster: Beide Seitenpanels sind 228 px breit (wie Figmas 240 px).
-Jede Zeile im Format-Panel steht auf einem festen Raster aus zwei
-Feldspalten und einer Icon-Spalte (`1fr 1fr 24px`, Innenabstand 12 px),
-zentral in `ControlRow`; die Icons der Gruppen-Überschriften stehen in
-derselben Spalte.
-
-- Zeilentypen über `ControlRow` (`layout`): Paar (Feld | Feld | Icon,
-  auch die Farbzeile), Einzeln (Feld | leer | Icon), Breit (über beide
-  Spalten | Icon, z. B. Texteingaben, Segmente, lange Selects); eine
-  breite Zeile ohne Icon nimmt auch die Icon-Spalte, Paare behalten sie,
-  damit ihre Felder bündig bleiben
-- pro Zeile höchstens ein Icon in der Icon-Spalte (`action`, Aktion oder
-  Toggle, Größe `xs`); Icon-Gruppen bis 3 Icons passen in eine
-  Feldspalte, ab 4 Icons über beide; Werte links, Icons rechts
-- Mindestbreiten: Selects zeigen ihren Text ganz, Zahlenfelder mit
-  Einheit ab etwa 56 px; passt eine Zeile nicht, wird sie geteilt oder
-  das Wort gekürzt (Animation: Easing | Dauer in einer Zeile, Easing
-  „In-out“); Scatter behält Symbol | Punktgröße in einer Zeile, Legend
-  → Interaction heißt Off | Multi | Single
-- Effekte wie Farben: ein Feld mit Icon und Name der Art öffnet den
-  Editor, oben die Art als Dropdown, darunter ihre Werte; die Liste der
-  Container-Effekte wird nicht mehr sortiert, wie in Figma
-- Details-Popovers und Farbwähler öffnen links neben der Zeile, oben
-  bündig, und werden nur so weit verschoben, wie das Fenster verlangt
-- das ⚙ einer Farbzeile steht in ihrer Icon-Spalte statt in der
-  Gruppen-Überschrift; Points, Kurve und Legend → Interaction als
-  breite Zeile mit Icon und Wort
-- Zahlenformat ohne ⚙-Popover: Format über die ganze Breite, bei festem
-  Format darunter Dezimalstellen | Notation und eine Vorschau mit Prefix
-  und Suffix (z. B. „€1.2K pro Monat“), die die beiden Felder mit festen
-  Beschriftungen öffnet
-- keine Spezialregeln pro Gruppe; jede Gruppe wählt ihren Zeilentyp
-
-Elemente zusammenlegen: Im Panel ist genug Höhe, also sind kleine
-Elemente normale Gruppen ihres Elternteils statt eigener Ansichten,
-ohne Klappen (wie in Figma): Data Labels und Tooltip in Marks, X/Y Axis
-Labels in X/Y Axis, das Selection-Label der Card in Value. Die
-Zuordnung steht an einer Stelle (`formatGroups`); ein Klick auf die
-Region (z. B. ein Datenlabel) öffnet das Elternteil und holt die Gruppe
-ins Bild, der Fokus folgt der Gruppe unter dem Pointer.
-
-Keine Formänderung der Spec.
 
 ### 3.10 Format-Panel-Zeilen, Legende, Tooltip und Farbskala (geplant)
 
@@ -212,12 +100,15 @@ Danach die Bausteine:
     Layout neben dem Chart-Canvas (der Canvas schrumpft), nicht darüber
   - Position über `PositionGrid` wie die Legende (`continuous.layout` als
     `Pick<Layout, 'alignment' | 'position'>`); `orientation` folgt aus der
-    Position
+    Position (beschlossen in 3.9: oben oder unten horizontal, links oder
+    rechts vertikal; das Richtungs-Control ist seit 3.9 entfallen)
   - ob `orientation` dann entfällt, wird vor der Persistenz entschieden
 - Kasten-Modell (`ARCHITECTURE.md`, „Platzierung“): ein gemeinsamer
   Baustein für die Fläche (Fill, Stroke, Radius, Padding) statt je
   Element; Entscheidung, ob die Spec Position und Anordnung trennt (wäre
-  eine Formänderung)
+  eine Formänderung); Breite und Höhe nutzen `BoxFieldsRow` aus dem
+  Objekt-Layout wieder
+- lange Legende oben oder unten: Ausrichtung wirkt gespiegelt (#55)
 - Effekte über den gemeinsamen Kasten-Baustein (Fill, Stroke, Radius, Padding, Effects),
   soweit der Renderer sie zeichnen kann; Standard-Optik unverändert
 - neue Felder, keine Formänderung
@@ -592,6 +483,22 @@ Bearbeitung am Objekt
   Legend Interaction als Off | Multiple | Single, Animation mit Easing
   und Duration
 
+- Arbeitsfläche und Seite getrennt: neutrale Arbeitsfläche mit Toolbar
+  (Undo, Redo, Pinsel), die Seite trägt den Style, Titel und Grid
+  fluchten und scrollen gemeinsam
+- Format-Panel rechts statt Popover (`FormatPanel`, ⌘⇧B), folgt der
+  Auswahl, ohne Auswahl das Dashboard; Zeilen-Raster `1fr 1fr 24px`
+  (`ControlRow` mit `pair`, `single`, `wide`, `action`, `isFull`)
+- Ort statt Modus: kein Format-Modus mehr; Klick-Grammatik (Klick,
+  ⌘/Ctrl-Klick, Doppelklick), Hover-Label und kurzer Format-Fokus
+- kleine Elemente als Gruppen ihres Elternteils (`formatGroups`):
+  Datenlabels und Tooltip in Marks, Achsen-Labels in der Achse,
+  Selection in Value
+- Gruppen Position und Layout wie in Figma (`PositionControls`,
+  `LayoutControls`, `BoxFieldsRow`): Chart und Card mit X | Y und W | H
+  in Grid-Zellen, begrenzt wie beim Ziehen und undo-fähig; Richtung von
+  Legende und Farbskala folgt aus der Seite
+
 Style-Bausteine und Farben
 
 - `TextStyle`, `StrokeStyle`, `NumberFormat`, `Fill`/`SeriesFill` mit
@@ -608,8 +515,9 @@ Style-Bausteine und Farben
 - Paletten stabil erweitert (`getPaletteColor`): ab der sechsten
   Kategorie hellere bzw. dunklere Runden derselben Farben statt
   Wiederholung; vorhandene Kategorien behalten ihre Farbe
-- `Layout` mit `LayoutControls` für Titel, Container, Dashboard,
-  Legende, Farbskala und Datenlabels; Achsentitel mit eigenem `visible`
+- `Layout` mit Position- und Layout-Bausteinen für Container,
+  Dashboard, Legende, Farbskala und Datenlabels; Achsentitel mit
+  eigenem `visible`
 - Line: Points Auto/On/Off, Datenlabels auch ohne Punkte; Scatter:
   flächentreue Größe mit Size range, Labels ohne Überlappung
 - neutrale App („grau bis aktiv“): Hover und aktive Controls grau, der

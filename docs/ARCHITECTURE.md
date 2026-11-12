@@ -626,8 +626,15 @@ Typparameter einschränken:
   `start` sitzt oben am rechten Rand (`createLegendPlacement`)
 - ein neues Layout-Feld eines Elements erweitert sein `Pick`, kein neuer
   Typ; das bisherige Legendenfeld für den Überlauf heißt `overflow`
+- die Richtung an einer Seite folgt aus der Seite (`getSideOrientation`
+  in `shared/layout.ts`): Legende und Farbskala lesen sie nicht aus der
+  Spec; `continuous.layout.orientation` bleibt, bis vor der Persistenz
+  entschieden ist, ob es entfällt
 - nicht zum Layout gehören Form (`borderRadius`, `barWidth`) und die
-  Grid-Position eines Objekts (`object.layout`, `ObjectLayout`)
+  Grid-Position eines Objekts (`object.layout`, `ObjectLayout`); das
+  Format-Panel zeigt sie trotzdem in Position (X | Y) und Layout
+  (W | H), über `getLayoutBounds` begrenzt wie beim Ziehen und über die
+  bestehende Action `object/updateLayout`
 
 **Kasten-Modell (geplant)**
 
@@ -657,6 +664,9 @@ Textebenen in Figma:
   Breite, Höhe, vertikale Ausrichtung), zusammen mit dem Text-Objekt.
 - Seit 3.4 steht die Text-Ausrichtung des Titels in der Oberfläche beim
   Text; die Spec bleibt `title.layout.alignment`.
+- Seit 3.9 trennt das Format-Panel Position (`PositionControls`) und
+  Anordnung samt Größe (`LayoutControls`) wie in Figma; beide lesen
+  dasselbe `Layout` eines Elements, die Spec ist unverändert.
 
 ### Darstellung der Marks
 
