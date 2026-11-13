@@ -9,16 +9,22 @@ type EditableTextProps = {
   value: string
   placeholder: string
   className?: string
+  formatElement?: string
   onCommit: (value: string) => void
   onPointerEnter?: (event: PointerEvent<HTMLButtonElement>) => void
   onPointerLeave?: (event: PointerEvent<HTMLButtonElement>) => void
 }
 
+/**
+ * Shows a text that turns into an input on a double click. `formatElement`
+ * marks it as a part of its object that the format focus frames.
+ */
 function EditableText({
   label,
   value,
   placeholder,
   className = '',
+  formatElement,
   onCommit,
   onPointerEnter,
   onPointerLeave,
@@ -29,6 +35,7 @@ function EditableText({
     return (
       <InlineTextInput
         className={className}
+        formatElement={formatElement}
         initialValue={value}
         label={label}
         placeholder={placeholder}
@@ -41,6 +48,7 @@ function EditableText({
   return (
     <button
       className={`editable-text ${className}`}
+      data-format-element={formatElement}
       type="button"
       aria-label={`Edit ${label.toLowerCase()}`}
       onClick={(event) => {

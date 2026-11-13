@@ -7,16 +7,22 @@ type InlineTextInputProps = {
   initialValue: string
   placeholder: string
   className?: string
+  formatElement?: string
   style?: CSSProperties
   onClose: () => void
   onCommit: (value: string) => void
 }
 
+/**
+ * Edits a text in place; Enter or blur commits, Escape cancels.
+ * `formatElement` marks it as the part that the format focus frames.
+ */
 function InlineTextInput({
   label,
   initialValue,
   placeholder,
   className = '',
+  formatElement,
   style,
   onClose,
   onCommit,
@@ -66,6 +72,7 @@ function InlineTextInput({
     <input
       autoFocus
       className={`editable-text-input ${className}`}
+      data-format-element={formatElement}
       type="text"
       aria-label={label}
       placeholder={placeholder}

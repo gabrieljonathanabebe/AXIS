@@ -10,7 +10,7 @@ import { isChartFormatElement } from '../charts/getFormatElements'
 import { createStyleColorPresets } from '../dashboardStyle/styleColorPresets'
 import DataPanel from '../datasets/DataPanel'
 import { useDatasets } from '../datasets/useDatasets'
-import { findFormatGroup, getPanelElement } from '../objects/formatPanelElement'
+import { getPanelElement } from '../objects/formatPanelElement'
 import { getObjectDefinition } from '../objects/objectDefinitions'
 import { resolveFormatElement } from '../objects/resolveFormatElement'
 import { SharedColorPresets } from '../shared/ui/colorPresets'
@@ -21,7 +21,6 @@ import DragPreviewOverlay from '../workspace/DragPreviewOverlay'
 import { useChartWorkspace } from '../workspace/useChartWorkspace'
 import NavigationRail from './NavigationRail'
 import TopBar from './TopBar'
-import { useFormatFocus } from './useFormatFocus'
 import { useWorkspaceCommands } from './useWorkspaceCommands'
 import { useWorkspaceLayout } from './useWorkspaceLayout'
 
@@ -105,40 +104,18 @@ function App() {
     toggleFormatPanel,
   } = useWorkspaceLayout()
 
-  const {
-    hoveredFormatGroup,
-    isFormatPulsing,
-    isOverFormatPanel,
-    pulseFormatFocus,
-  } = useFormatFocus()
-
-  /**
-   * Picks the part of the selected object that lights up: over the format
-   * panel the group under the pointer, e.g. the data labels, or else the
-   * element of the panel; after a click the chosen part for a moment.
-   * @returns The part, or null when nothing is dimmed.
-   */
-  function getFocusedElement(): ObjectFormatElement | null {
-    if (isOverFormatPanel) {
-      return findFormatGroup(hoveredFormatGroup) ?? panelElement
-    }
-    return isFormatPulsing ? formatElement : null
-  }
-
-  const focusedElement = getFocusedElement()
   const focusTarget =
-    selectedObject && focusedElement
-      ? { element: focusedElement, objectId: selectedObject.id }
+    selectedObject && formatElement
+      ? { element: formatElement, objectId: selectedObject.id }
       : null
 
   /**
-   * Shows an element in the format panel and lets it light up on its
-   * object for a moment, e.g. after a click on an axis.
+   * Shows an element in the format panel; it stays in focus on its object
+   * until another element is chosen, e.g. after a click on an axis.
    * @param element Element to show.
    */
   function chooseFormatElement(element: ObjectFormatElement): void {
     setChosenFormatElement(element)
-    pulseFormatFocus()
   }
 
   /**

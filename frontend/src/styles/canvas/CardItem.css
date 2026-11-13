@@ -37,12 +37,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.card-item .is-formatted {
-  text-shadow: 0 0 15px var(--color-accent);
-}
-
-/* Same opacity as FOCUS_DIMMED_OPACITY in syncFormatFocus. */
-.card-item .is-dimmed {
-  opacity: 0.25;
-}

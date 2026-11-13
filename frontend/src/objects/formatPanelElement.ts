@@ -28,16 +28,3 @@ export function getPanelElement(
   const group = formatGroups.find((item) => item.element === element)
   return group?.parent ?? element
 }
-
-/**
- * Reads which small element a group of the panel formats from its
- * `data-format-group`, e.g. "labels".
- * @param name Value of the attribute, or null when there is none.
- * @returns The element, or null when the name is no group.
- */
-export function findFormatGroup(
-  name: string | null,
-): ObjectFormatElement | null {
-  const group = formatGroups.find((item) => item.element === name)
-  return group?.element ?? null
-}

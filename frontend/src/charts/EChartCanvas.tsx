@@ -23,8 +23,7 @@ import {
   createSelectionFromBrush,
   createSelectionFromEvent,
 } from './echarts/createSelectionFromEvent'
-import { syncFormatFocus } from './echarts/syncFormatFocus'
-import { syncFormatTooltip } from './echarts/syncFormatTooltip'
+import { measureFocusRects } from './echarts/measureFocusRects'
 import { useChartQuery } from './useChartQuery'
 import { useDocumentTheme } from './useDocumentTheme'
 import { usePointsQuery } from './usePointsQuery'
@@ -32,7 +31,7 @@ import { usePointsQuery } from './usePointsQuery'
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
 import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataRow, Dataset } from '../datasets/types'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
+import type { ShowFormatFocus, ShowFormatHint } from '../objects/ObjectFrame'
 import type { ElementRect } from '../objects/types'
 import type {
   CanvasActions,
@@ -54,32 +53,11 @@ type EChartCanvasProps = {
   editingAxisTitle: AxisTitleEdit['axis'] | null
   formattedElement: ChartFormatElement | null
   onEditAxisTitle: (edit: AxisTitleEdit) => void
+  onFormatFocus: ShowFormatFocus
   onHoverAxisTitle: (edit: AxisTitleEdit | null) => void
   onHoverElement: ShowFormatHint
   selection: DataSelection | null
   style: DashboardStyle
-}
-
-function readToken(styles: CSSStyleDeclaration, name: string): string {
-  return styles.getPropertyValue(name).trim()
-}
-
-/**
- * Reads the app accent at the chart element, which marks the formatted
- * element; all other colors come from the spec and the dashboard style.
- * @param element Container element of the chart.
- * @param style Current dashboard style.
- * @returns Theme for the ECharts option and the format focus.
- */
-function readChartTheme(
-  element: HTMLElement,
-  style: DashboardStyle,
-): ChartTheme {
-  const styles = getComputedStyle(element)
-  return {
-    formatFocus: readToken(styles, '--color-accent'),
-    style,
-  }
 }
 
 /** Moves a rect from canvas into chart item coordinates. */
@@ -100,6 +78,7 @@ function EChartCanvas({
   editingAxisTitle,
   formattedElement,
   onEditAxisTitle,
+  onFormatFocus,
   onHoverAxisTitle,
   onHoverElement,
   selection,
@@ -199,6 +178,25 @@ function EChartCanvas({
     }
   })
 
+  /**
+   * Reports the bounds of the element in focus that ECharts draws, e.g. the
+   * bars, to the frame; other elements like the title report themselves.
+   */
+  const reportFormatFocus = useEffectEvent(() => {
+    const instance = chartRef.current
+    const container = containerRef.current
+    if (!instance || !container || !formattedElement) {
+      return
+    }
+    const rects = measureFocusRects(instance, formattedElement)
+    if (rects) {
+      onFormatFocus({
+        element: formattedElement,
+        rects: rects.map((rect) => offsetRect(rect, container)),
+      })
+    }
+  })
+
   useEffect(() => {
     const container = containerRef.current
     if (!container) {
@@ -217,6 +215,7 @@ function EChartCanvas({
     })
     instance.on('mouseout', (event) => handleMouseOut(event))
     instance.on('mouseover', (event) => handleMouseOver(event))
+    instance.on('finished', () => reportFormatFocus())
     zr.on('click', (event) => handleBackgroundClick(event))
     const resizeObserver = new ResizeObserver(() => instance.resize())
     resizeObserver.observe(container)
@@ -232,29 +231,21 @@ function EChartCanvas({
     if (!instance) {
       return
     }
-    const theme = readChartTheme(instance.getDom(), style)
-    instance.setOption(
-      createEChartOption({
-        animation,
-        chartId: chart.id,
-        chartType: chart.type,
-        dataset,
-        highlightResult,
-        points,
-        queryResult: result,
-        selection,
-        spec: chart.spec,
-        theme,
-      }),
-      true,
-    )
+    const theme: ChartTheme = { style }
+    const option = createEChartOption({
+      animation,
+      chartId: chart.id,
+      chartType: chart.type,
+      dataset,
+      highlightResult,
+      points,
+      queryResult: result,
+      selection,
+      spec: chart.spec,
+      theme,
+    })
+    instance.setOption(option, true)
     syncBrush(instance, chart, selection)
-    syncFormatFocus(instance, formattedElement, theme.formatFocus)
-    syncFormatTooltip(
-      instance,
-      formattedElement,
-      chart.spec.interaction.tooltip.enabled,
-    )
     syncAxisTitleEdit(instance, editingAxisTitle)
   }, [
     animation,
@@ -262,13 +253,18 @@ function EChartCanvas({
     dataset,
     documentTheme,
     editingAxisTitle,
-    formattedElement,
     highlightResult,
     points,
     result,
     selection,
     style,
   ])
+
+  // Measures when another element comes into focus; later changes report on
+  // `finished`, once ECharts has animated to the new state.
+  useEffect(() => {
+    reportFormatFocus()
+  }, [formattedElement])
 
   // While the format key is held, a click formats, so the data tooltip
   // makes room for the format label at the pointer.

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import { getRectInFrame } from '../objects/elementRect'
-import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
 import { getTextStyleCss } from '../shared/textStyle'
 import EditableText from '../shared/ui/EditableText'
 import InlineTextInput from '../shared/ui/InlineTextInput'
@@ -13,7 +12,7 @@ import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
 import type { CSSProperties } from 'react'
 import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField, Dataset } from '../datasets/types'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
+import type { ShowFormatFocus, ShowFormatHint } from '../objects/ObjectFrame'
 import type {
   CanvasActions,
   DashboardAnimation,
@@ -31,6 +30,7 @@ type ChartItemProps = {
   formattedElement: ChartFormatElement | null
   selection: DataSelection | null
   style: DashboardStyle
+  onFormatFocus: ShowFormatFocus
   onFormatHint: ShowFormatHint
 }
 
@@ -55,12 +55,12 @@ function ChartItem({
   formattedElement,
   selection,
   style,
+  onFormatFocus,
   onFormatHint,
 }: ChartItemProps) {
   const [axisTitleEdit, setAxisTitleEdit] = useState<AxisTitleEdit | null>(null)
   const definition = getChartDefinition(chart.type)
   const title = chart.spec.appearance.title
-  const titleFocusClassName = getFormatFocusClassName('title', formattedElement)
 
   /** Remembers the hovered axis title as format hint. */
   function handleHoverAxisTitle(edit: AxisTitleEdit | null): void {
@@ -106,6 +106,7 @@ function ChartItem({
         editingAxisTitle={axisTitleEdit?.axis ?? null}
         formattedElement={formattedElement}
         onEditAxisTitle={setAxisTitleEdit}
+        onFormatFocus={onFormatFocus}
         onHoverAxisTitle={handleHoverAxisTitle}
         onHoverElement={onFormatHint}
         selection={selection}
@@ -113,7 +114,7 @@ function ChartItem({
       />
       {title.visible ? (
         <div
-          className={`chart-item-header ${titleFocusClassName}`}
+          className="chart-item-header"
           style={{
             ...getTextStyleCss(title.textStyle),
             textAlign: title.layout.alignment,
@@ -121,6 +122,7 @@ function ChartItem({
         >
           <EditableText
             className="chart-item-title"
+            formatElement="title"
             label="Chart title"
             placeholder={getDefaultChartTitle(chart, dataset.fields)}
             value={title.text}

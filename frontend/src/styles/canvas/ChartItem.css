@@ -142,15 +142,6 @@
   line-height: var(--chart-header-height);
 }
 
-.chart-item-header.is-formatted .chart-item-title {
-  text-shadow: 0 0 15px var(--color-accent);
-}
-
-/* Same opacity as FOCUS_DIMMED_OPACITY in syncFormatFocus. */
-.chart-item-header.is-dimmed .chart-item-title {
-  opacity: 0.25;
-}
-
 .chart-item-actions {
   position: absolute;
   top: var(--chart-header-top);

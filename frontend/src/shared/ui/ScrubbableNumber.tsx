@@ -27,6 +27,7 @@ type DragState = {
   pointerId: number
   startX: number
   startValue: number
+  lastValue: number
 }
 
 function clampValue(value: number, min?: number, max?: number): number {
@@ -62,6 +63,8 @@ function ScrubbableNumber({
 }: ScrubbableNumberProps) {
   const [draftValue, setDraftValue, resetDraftValue] = useDraftValue(value)
   const dragState = useRef<DragState | null>(null)
+  const pendingValue = useRef<number | null>(null)
+  const frameRequest = useRef<number | null>(null)
   const baseValue = value ?? min ?? 0
 
   function commitValue(nextValue: number): void {
@@ -70,6 +73,28 @@ function ScrubbableNumber({
 
     setDraftValue(String(boundedValue))
     onValueChange(boundedValue)
+  }
+
+  /** Commits the value a drag left for this frame, if there is one. */
+  function flushPendingValue(): void {
+    frameRequest.current = null
+    const nextValue = pendingValue.current
+    pendingValue.current = null
+    if (nextValue !== null) {
+      commitValue(nextValue)
+    }
+  }
+
+  /**
+   * Leaves a dragged value for the next frame, so a fast drag commits at
+   * most once per frame and panel and charts update once.
+   * @param nextValue Value at the latest pointer position.
+   */
+  function scheduleValue(nextValue: number): void {
+    pendingValue.current = nextValue
+    if (frameRequest.current === null) {
+      frameRequest.current = requestAnimationFrame(flushPendingValue)
+    }
   }
 
   /** Commits the typed number; an emptied field turns auto when allowed. */
@@ -102,9 +127,14 @@ function ScrubbableNumber({
       pointerId: event.pointerId,
       startX: event.clientX,
       startValue: baseValue,
+      lastValue: baseValue,
     }
   }
 
+  /**
+   * Turns a sideways drag into steps; a new value waits for the next frame,
+   * and an unchanged value is not committed again.
+   */
   function handlePointerMove(
     event: ReactPointerEvent<HTMLButtonElement>,
   ): void {
@@ -116,12 +146,25 @@ function ScrubbableNumber({
 
     const distance = event.clientX - currentDrag.startX
     const stepCount = Math.round(distance / pixelsPerStep)
-
-    commitValue(currentDrag.startValue + stepCount * step)
+    const nextValue = clampValue(
+      normalizeValue(currentDrag.startValue + stepCount * step, step),
+      min,
+      max,
+    )
+    if (nextValue === currentDrag.lastValue) {
+      return
+    }
+    currentDrag.lastValue = nextValue
+    scheduleValue(nextValue)
   }
 
+  /** Ends a drag and commits a value still waiting for its frame. */
   function stopDragging(): void {
     dragState.current = null
+    if (frameRequest.current !== null) {
+      cancelAnimationFrame(frameRequest.current)
+      flushPendingValue()
+    }
   }
 
   /**

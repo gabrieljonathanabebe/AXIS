@@ -1,5 +1,4 @@
 import { getRectInFrame } from '../objects/elementRect'
-import { getFormatFocusClassName } from '../objects/getFormatFocusClassName'
 import {
   createNumberFormatter,
   formatCompactNumber,
@@ -16,7 +15,6 @@ import { useCardQuery } from './useCardQuery'
 
 import type { DataField } from '../datasets/types'
 import type { ShowFormatHint } from '../objects/ObjectFrame'
-import type { ObjectFormatElement } from '../objects/types'
 import type { CanvasActions, DataSelection } from '../workspace/types'
 import type {
   CardFormatElement,
@@ -30,7 +28,6 @@ type CardItemProps = {
   card: CardInstance
   datasetId: string | null
   draggedField: DataField | null
-  formattedElement: ObjectFormatElement | null
   selection: DataSelection | null
   onFormatHint: ShowFormatHint
 }
@@ -83,7 +80,6 @@ function CardItem({
   card,
   datasetId,
   draggedField,
-  formattedElement,
   selection,
   onFormatHint,
 }: CardItemProps) {
@@ -124,13 +120,14 @@ function CardItem({
       <div className="card-item">
         {title.visible ? (
           <div
-            className={`card-item-title ${getFormatFocusClassName('title', formattedElement)}`}
+            className="card-item-title"
             style={{
               ...getTextStyleCss(title.textStyle),
               textAlign: title.layout.alignment,
             }}
           >
             <EditableText
+              formatElement="title"
               label="Card title"
               placeholder={getDefaultCardTitle(card.spec.data)}
               value={title.text}
@@ -147,7 +144,8 @@ function CardItem({
         ) : null}
         <div className="card-item-body">
           <span
-            className={`card-item-value ${getFormatFocusClassName('value', formattedElement)}`}
+            className="card-item-value"
+            data-format-element="value"
             style={getTextStyleCss(value.textStyle)}
             onPointerEnter={(event) => showHint('value', event.currentTarget)}
             onPointerLeave={() => onFormatHint(null)}
@@ -158,7 +156,8 @@ function CardItem({
           </span>
           {selectionLabel.visible ? (
             <span
-              className={`card-item-selection ${getFormatFocusClassName('selectionLabel', formattedElement)}`}
+              className="card-item-selection"
+              data-format-element="selectionLabel"
               style={getTextStyleCss(selectionLabel.textStyle)}
               onPointerEnter={(event) =>
                 showHint('selectionLabel', event.currentTarget)

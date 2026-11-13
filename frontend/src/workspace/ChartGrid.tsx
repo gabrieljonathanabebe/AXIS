@@ -19,7 +19,7 @@ import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import type { WorkspaceCommands } from '../app/types'
 import type { DashboardStyle } from '../dashboardStyle/types'
 import type { DataField, Dataset } from '../datasets/types'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
+import type { ShowFormatFocus, ShowFormatHint } from '../objects/ObjectFrame'
 import type {
   DashboardObject,
   FormatTarget,
@@ -212,12 +212,14 @@ function ChartGrid({
    * @param object Object whose content is rendered.
    * @param formattedElement Element in the popover, or null when it is closed.
    * @param showFormatHint Reports the element under the pointer to the frame.
+   * @param showFormatFocus Reports the parts of the element in focus.
    * @returns The chart or card.
    */
   function renderContent(
     object: DashboardObject,
     formattedElement: ObjectFormatElement | null,
     showFormatHint: ShowFormatHint,
+    showFormatFocus: ShowFormatFocus,
   ): ReactNode {
     switch (object.kind) {
       case 'chart':
@@ -234,6 +236,7 @@ function ChartGrid({
             }
             selection={selection}
             style={style}
+            onFormatFocus={showFormatFocus}
             onFormatHint={showFormatHint}
           />
         )
@@ -243,7 +246,6 @@ function ChartGrid({
             actions={actions}
             datasetId={datasetId}
             draggedField={draggedField}
-            formattedElement={formattedElement}
             card={object}
             selection={selection}
             onFormatHint={showFormatHint}
@@ -288,8 +290,13 @@ function ChartGrid({
               onFormatElement({ element, objectId: object.id })
             }
           >
-            {(showFormatHint) =>
-              renderContent(object, formattedElement, showFormatHint)
+            {(showFormatHint, showFormatFocus) =>
+              renderContent(
+                object,
+                formattedElement,
+                showFormatHint,
+                showFormatFocus,
+              )
             }
           </ObjectFrame>
         )

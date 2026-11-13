@@ -1,7 +1,7 @@
 import { useDraggable } from '@dnd-kit/core'
 import { FloatingPortal } from '@floating-ui/react'
 import { GripHorizontal, Paintbrush } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
 import { formatKeyLabel, isFormatClick } from '../shared/platform'
@@ -9,7 +9,7 @@ import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
 import ContainerSurface from './ContainerSurface'
 import { getContainerSurfaceStyle } from './containerSurfaceStyle'
-import { getRectStyle } from './elementRect'
+import { getRectInFrame, getRectStyle } from './elementRect'
 import { getObjectDefinition } from './objectDefinitions'
 
 import type {
@@ -43,13 +43,25 @@ export type FormatHint = {
  */
 export type ShowFormatHint = (hint: FormatHint | null) => void
 
+/** Parts of the element in focus and their bounds in the frame. */
+export type FormatFocus = {
+  element: ObjectFormatElement
+  rects: ElementRect[]
+}
+
+/** Lets the content report the parts of the element in focus. */
+export type ShowFormatFocus = (focus: FormatFocus) => void
+
 type ObjectFrameStyle = ContainerSurfaceStyle & {
   '--chart-canvas-inset': string
 }
 
 type ObjectFrameProps = {
   actions: CanvasActions
-  children: (showFormatHint: ShowFormatHint) => ReactNode
+  children: (
+    showFormatHint: ShowFormatHint,
+    showFormatFocus: ShowFormatFocus,
+  ) => ReactNode
   commands: WorkspaceCommands
   formattedElement: ObjectFormatElement | null
   isSelected: boolean
@@ -127,6 +139,22 @@ const arrowKeyDeltas: Partial<Record<string, GridDelta>> = {
 
 // ===== HELPERS ===============================================================
 /**
+ * Keeps the current focus when a report repeats it, so content may report
+ * after every render or resize without a loop.
+ * @param current Focus in the frame, or null before the first report.
+ * @param next Reported element and bounds of its parts.
+ * @returns The current focus when equal, else the report.
+ */
+function keepFormatFocus(
+  current: FormatFocus | null,
+  next: FormatFocus,
+): FormatFocus {
+  return current && JSON.stringify(current) === JSON.stringify(next)
+    ? current
+    : next
+}
+
+/**
  * Names a layout handle for screen readers.
  * @param mode Whether the handle moves the object or which edge it resizes.
  * @param objectLabel Name of the kind of object, e.g. "chart".
@@ -202,6 +230,7 @@ function ObjectFrame({
   const frameRef = useRef<HTMLDivElement | null>(null)
   const labelRef = useRef<HTMLSpanElement | null>(null)
   const [formatHint, setFormatHint] = useState<FormatHint | null>(null)
+  const [formatFocus, setFormatFocus] = useState<FormatFocus | null>(null)
   const [isPointerInside, setIsPointerInside] = useState(false)
   const pressRef = useRef<{ x: number; y: number } | null>(null)
   const { container } = object
@@ -215,12 +244,61 @@ function ObjectFrame({
       ? formatHint
       : null
   const showsObjectHint = isSelected && isPointerInside && formatHint === null
+  const focusRects =
+    formatFocus && formatFocus.element === formattedElement
+      ? formatFocus.rects
+      : []
+
+  /**
+   * Keeps the parts of the element in focus that the content reports.
+   * @param focus Element in focus and the bounds of its parts.
+   */
+  function showFormatFocus(focus: FormatFocus): void {
+    setFormatFocus((current) => keepFormatFocus(current, focus))
+  }
 
   const frameStyle: ObjectFrameStyle = {
     ...style,
     ...getContainerSurfaceStyle(container),
     '--chart-canvas-inset': `${container.layout.padding}px`,
   }
+  // HTML parts of the content, e.g. a title, carry `data-format-element`.
+  // The frame measures the part in focus and again when its size changes;
+  // a part React replaced, e.g. a title by its input, is looked up anew.
+  useLayoutEffect(() => {
+    const element = formattedElement
+    const frame = frameRef.current
+    if (!element || !frame) {
+      return
+    }
+    const selector = `[data-format-element="${element}"]`
+    let part = frame.querySelector(selector)
+    if (!part) {
+      return
+    }
+    const observer = new ResizeObserver(() => reportPart())
+    observer.observe(part)
+    /**
+     * Measures the part in focus; when React replaced it, it looks the part
+     * up anew. An input in its place, e.g. while a title is edited, gets no
+     * frame; its closing brings the frame back.
+     */
+    const reportPart = (): void => {
+      if (!part?.isConnected) {
+        part = frame.querySelector(selector)
+        if (part) {
+          observer.observe(part)
+        }
+      }
+      const isEdited = part instanceof HTMLInputElement
+      const rect = part && !isEdited ? getRectInFrame(part) : null
+      setFormatFocus((current) => {
+        return keepFormatFocus(current, { element, rects: rect ? [rect] : [] })
+      })
+    }
+    reportPart()
+    return () => observer.disconnect()
+  }, [formattedElement, object])
 
   useEffect(() => {
     frameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -369,7 +447,7 @@ function ObjectFrame({
       onPointerMove={moveFormatLabel}
     >
       <ContainerSurface surface={container}>
-        {children(setFormatHint)}
+        {children(setFormatHint, showFormatFocus)}
       </ContainerSurface>
       {shownHint ? (
         <span
@@ -378,6 +456,14 @@ function ObjectFrame({
           style={getRectStyle(shownHint.rect)}
         />
       ) : null}
+      {focusRects.map((rect, index) => (
+        <span
+          aria-hidden="true"
+          className="chart-format-region"
+          key={index}
+          style={getRectStyle(rect)}
+        />
+      ))}
       {showsObjectHint || formattedElement === 'container' ? (
         <span
           aria-hidden="true"
