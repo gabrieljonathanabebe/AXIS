@@ -3,7 +3,7 @@ import { DEFAULT_INNER_SHADOW, DEFAULT_NOISE_SIZE } from '../shared/effect'
 import { createColorStops, DEFAULT_RADIAL_SHAPE } from '../shared/paint'
 
 import type { ColorValue } from '../shared/colorValue'
-import type { ContainerEffect } from '../shared/effect'
+import type { SurfaceEffect } from '../shared/effect'
 import type { GradientStop, Paint } from '../shared/paint'
 import type { StrokeStyle } from '../shared/strokeStyle'
 import type { DashboardStyle, StyleColors, StyleRecipe } from './types'
@@ -22,7 +22,7 @@ const SHADOW_COLOR = createColorValue('#000000')
 const LIGHT_COLOR = createColorValue('#FFFFFF')
 
 /** Soft shadow that lifts a solid container off a light canvas. */
-const SOFT_SHADOW: ContainerEffect = {
+const SOFT_SHADOW: SurfaceEffect = {
   blur: 24,
   color: createColorValue('#101828'),
   kind: 'shadow',

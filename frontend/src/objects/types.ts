@@ -4,10 +4,8 @@ import type {
   ChartInstance,
   ChartType,
 } from '../charts/types'
-import type { ContainerEffect } from '../shared/effect'
-import type { Fill } from '../shared/fill'
 import type { Layout } from '../shared/layout'
-import type { StrokeStyle } from '../shared/strokeStyle'
+import type { Surface } from '../shared/surface'
 import type { TextStyle } from '../shared/textStyle'
 
 // ===== OBJECT ================================================================
@@ -40,13 +38,9 @@ export type ObjectLayout = {
 export type ObjectSize = Pick<ObjectLayout, 'height' | 'width'>
 
 // ===== CONTAINER =============================================================
-/** Formatting of the container around an object's content. */
-export type ObjectContainer = {
-  background: Fill[]
-  border: StrokeStyle
-  effects: ContainerEffect[]
+/** Formatting of the container around an object's content: surface and padding. */
+export type ObjectContainer = Surface & {
   layout: Pick<Layout, 'padding'>
-  borderRadius: number
 }
 
 /** Changes one property of a container, e.g. its border. */

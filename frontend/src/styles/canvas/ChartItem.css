@@ -6,70 +6,10 @@
   --chart-header-top: max(var(--chart-canvas-inset), var(--chart-handle-size));
   --chart-header-inline: max(
     var(--chart-canvas-inset),
-    calc(var(--chart-radius, 0px) / 2)
+    calc(var(--surface-radius, 0px) / 2)
   );
   --chart-region-frame: var(--space-1);
   color: var(--color-text-secondary);
-}
-
-/* Element that holds the layers of a container (ContainerSurface): the
-   frame of an object or a container in a style preview. Its box-shadow
-   is the drop shadow; the layers stack inside its isolation. */
-.container-surface {
-  position: relative;
-  border-radius: var(--chart-radius);
-  box-shadow: var(--chart-shadow);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-/* Fills of the container on their own layer above the background blur;
-   each fill carries its opacity in its colors. */
-.chart-item-background {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--chart-background);
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* Effects of the container on their own layers under the content, from
-   the bottom: background blur, fill, noise, inner shadow; the DOM order
-   decides. The drop shadow is the box-shadow of the frame itself. */
-.chart-item-backdrop,
-.chart-item-noise,
-.chart-item-inner-shadow {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* Blurs what lies behind the container, e.g. the glow of the canvas; on
-   its own layer, since the opacity of the fill would fade it, too. */
-.chart-item-backdrop {
-  backdrop-filter: blur(var(--chart-backdrop-blur));
-}
-
-/* Grain as a static tile of colorless fractal noise instead of a live
-   filter; the size scales the tile, the intensity fades it. */
-.chart-item-noise {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
-  background-size: var(--chart-noise-size);
-  opacity: var(--chart-noise-opacity);
-}
-
-.chart-item-inner-shadow {
-  box-shadow: var(--chart-inner-shadow);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .chart-item-backdrop,
-  .chart-item-noise {
-    display: none;
-  }
 }
 
 .chart-item::after {
@@ -93,20 +33,6 @@
 
 .chart-item:focus-visible {
   outline: none;
-}
-
-/* Border of the container as SVG: drawn inside the frame over the content,
-   under regions, handles and the selection ring. The SVG sits half a
-   stroke inside the frame, so the stroke ends at its edge. */
-.chart-item-border {
-  position: absolute;
-  top: var(--chart-border-inset);
-  left: var(--chart-border-inset);
-  z-index: 2;
-  width: calc(100% - 2 * var(--chart-border-inset));
-  height: calc(100% - 2 * var(--chart-border-inset));
-  overflow: visible;
-  pointer-events: none;
 }
 
 .chart-layout-handle {

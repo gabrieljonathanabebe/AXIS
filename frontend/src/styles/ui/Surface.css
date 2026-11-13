@@ -1,0 +1,73 @@
+/* Element that holds the layers of a surface (SurfaceLayers), e.g. the
+   frame of an object or a container in a style preview. Its box-shadow
+   is the drop shadow; the layers stack inside its isolation. */
+.surface {
+  position: relative;
+  border-radius: var(--surface-radius);
+  box-shadow: var(--surface-shadow);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Fills of the surface on their own layer above the background blur;
+   each fill carries its opacity in its colors. */
+.surface-background {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--surface-background);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Effects of the surface on their own layers under the content, from
+   the bottom: background blur, fill, noise, inner shadow; the DOM order
+   decides. The drop shadow is the box-shadow of the surface itself. */
+.surface-backdrop,
+.surface-noise,
+.surface-inner-shadow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Blurs what lies behind the surface, e.g. the glow of the canvas; on its
+   own layer, since the opacity of the fill would fade it, too. */
+.surface-backdrop {
+  backdrop-filter: blur(var(--surface-backdrop-blur));
+}
+
+/* Grain as a static tile of colorless fractal noise instead of a live
+   filter; the size scales the tile, the intensity fades it. */
+.surface-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+  background-size: var(--surface-noise-size);
+  opacity: var(--surface-noise-opacity);
+}
+
+.surface-inner-shadow {
+  box-shadow: var(--surface-inner-shadow);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .surface-backdrop,
+  .surface-noise {
+    display: none;
+  }
+}
+
+/* Border of the surface as SVG: drawn over the content, under the format
+   regions, handles and selection ring of an object. The SVG sits half a
+   stroke inside the surface, so the stroke ends at its edge. */
+.surface-border {
+  position: absolute;
+  top: var(--surface-border-inset);
+  left: var(--surface-border-inset);
+  z-index: 2;
+  width: calc(100% - 2 * var(--surface-border-inset));
+  height: calc(100% - 2 * var(--surface-border-inset));
+  overflow: visible;
+  pointer-events: none;
+}

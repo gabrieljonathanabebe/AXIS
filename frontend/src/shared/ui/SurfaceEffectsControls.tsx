@@ -9,7 +9,7 @@ import {
   SquareStack,
 } from 'lucide-react'
 
-import { createContainerEffect, isContainerEffectTaken } from '../effect'
+import { createSurfaceEffect, isSurfaceEffectTaken } from '../effect'
 import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
 import FormatWidget from './FormatWidget'
@@ -19,14 +19,15 @@ import SelectControl from './SelectControl'
 import ShadowControls from './ShadowControls'
 
 import type { ReactNode } from 'react'
-import type { ContainerEffect } from '../effect'
+import type { SurfaceEffect } from '../effect'
 import type { OptionItem } from './OptionsMenu'
 
 // ===== TYPES =================================================================
-type ContainerEffectsControlsProps = {
+type SurfaceEffectsControlsProps = {
+  kinds: SurfaceEffect['kind'][]
   label: string
-  value: ContainerEffect[]
-  onChange: (value: ContainerEffect[]) => void
+  value: SurfaceEffect[]
+  onChange: (value: SurfaceEffect[]) => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -35,10 +36,10 @@ const effectKindOptions = [
   { icon: SquareSquare, label: 'Inner shadow', value: 'innerShadow' },
   { icon: Droplet, label: 'Blur', value: 'backgroundBlur' },
   { icon: Grip, label: 'Noise', value: 'noise' },
-] satisfies OptionItem<ContainerEffect['kind']>[]
+] satisfies OptionItem<SurfaceEffect['kind']>[]
 
-/** Widest blur of a container effect; deep shadows need more than marks. */
-const MAX_CONTAINER_BLUR = 64
+/** Widest blur of a surface effect; deep shadows need more than marks. */
+const MAX_SURFACE_BLUR = 64
 
 /** Smallest and largest grain tile, in px. */
 const MIN_NOISE_SIZE = 20
@@ -46,18 +47,19 @@ const MAX_NOISE_SIZE = 400
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of the effects of a container in their layers from the bottom,
+ * Rows of the effects of a surface in their layers from the bottom,
  * built like paints: a field with icon and name of the kind opens the
  * editor, which starts with the kind and holds the values below it, and
  * a minus removes the effect. Blur and noise are offered once per
- * container.
- * @param props Name of the container, its effects and handler.
+ * surface, and only the kinds its renderer draws.
+ * @param props Kinds the renderer draws, name, effects and handler.
  */
-function ContainerEffectsControls({
+function SurfaceEffectsControls({
+  kinds,
   label,
   value,
   onChange,
-}: ContainerEffectsControlsProps) {
+}: SurfaceEffectsControlsProps) {
   // ===== FUNCTIONS ===========================================================
   /**
    * Saves one changed effect at its place; the list keeps the order the
@@ -65,7 +67,7 @@ function ContainerEffectsControls({
    * @param index Position of the effect in the list.
    * @param effect Changed effect, e.g. of another kind.
    */
-  function setEffect(index: number, effect: ContainerEffect): void {
+  function setEffect(index: number, effect: SurfaceEffect): void {
     onChange(value.with(index, effect))
   }
 
@@ -77,12 +79,12 @@ function ContainerEffectsControls({
    * @param index Position of the effect in the list.
    * @returns The groups of the effect.
    */
-  function getValues(effect: ContainerEffect, index: number): ReactNode {
+  function getValues(effect: SurfaceEffect, index: number): ReactNode {
     if (effect.kind === 'shadow' || effect.kind === 'innerShadow') {
       return (
         <ShadowControls
           label={`${label} effect ${index + 1}`}
-          maxBlur={MAX_CONTAINER_BLUR}
+          maxBlur={MAX_SURFACE_BLUR}
           value={effect}
           onChange={(shadow) => setEffect(index, shadow)}
         />
@@ -95,7 +97,7 @@ function ContainerEffectsControls({
             <ScrubbableNumber
               icon={<CircleDashed size={14} />}
               label={`${label} effect ${index + 1} blur`}
-              max={MAX_CONTAINER_BLUR}
+              max={MAX_SURFACE_BLUR}
               min={0}
               step={1}
               value={effect.blur}
@@ -165,17 +167,19 @@ function ContainerEffectsControls({
         >
           <SelectControl
             label={`${label} effect ${index + 1} kind`}
-            options={effectKindOptions.map((option) => ({
-              ...option,
-              disabled:
-                option.value !== effect.kind &&
-                isContainerEffectTaken(value, option.value),
-            }))}
+            options={effectKindOptions
+              .filter((option) => kinds.includes(option.value))
+              .map((option) => ({
+                ...option,
+                disabled:
+                  option.value !== effect.kind &&
+                  isSurfaceEffectTaken(value, option.value),
+              }))}
             value={effect.kind}
             variant="title"
             onChange={(nextKind) => {
               if (nextKind !== effect.kind) {
-                setEffect(index, createContainerEffect(nextKind))
+                setEffect(index, createSurfaceEffect(nextKind))
               }
             }}
           />
@@ -186,4 +190,4 @@ function ContainerEffectsControls({
   })
 }
 
-export default ContainerEffectsControls
+export default SurfaceEffectsControls

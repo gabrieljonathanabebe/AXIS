@@ -5,7 +5,7 @@ import type { ColorValue } from './colorValue'
 // ===== TYPES =================================================================
 /**
  * Offset, blurred copy of a shape behind it, like a drop shadow in Figma.
- * Marks and containers share it; the kind decides where it is drawn.
+ * Marks and surfaces share it; the kind decides where it is drawn.
  */
 export type Shadow = {
   blur: number
@@ -26,17 +26,17 @@ export type Effect =
   | ({ kind: 'shadow' } & Shadow)
 
 /**
- * One effect of a container. A container keeps a list; the kind fixes the
+ * One effect of a surface. A surface keeps a list; the kind fixes the
  * layer it is drawn on, so the order of the list does not matter.
  */
-export type ContainerEffect =
+export type SurfaceEffect =
   | ({ kind: 'shadow' } & Shadow)
   | ({ kind: 'innerShadow' } & Shadow)
   | { blur: number; kind: 'backgroundBlur' }
   | { kind: 'noise'; opacity: number; size: number }
 
-/** Kinds a container takes at most once; shadows may stack. */
-const SINGLE_CONTAINER_EFFECTS: ContainerEffect['kind'][] = [
+/** Kinds a surface takes at most once; shadows may stack. */
+const SINGLE_SURFACE_EFFECTS: SurfaceEffect['kind'][] = [
   'backgroundBlur',
   'noise',
 ]
@@ -90,13 +90,13 @@ export function createEffect(kind: Effect['kind']): Effect {
 }
 
 /**
- * Creates a container effect of one kind with its default values.
+ * Creates a surface effect of one kind with its default values.
  * @param kind Kind to create, e.g. a shadow by the plus of the group.
  * @returns The effect with the default values of its kind.
  */
-export function createContainerEffect(
-  kind: ContainerEffect['kind'],
-): ContainerEffect {
+export function createSurfaceEffect(
+  kind: SurfaceEffect['kind'],
+): SurfaceEffect {
   switch (kind) {
     case 'backgroundBlur':
       return { blur: DEFAULT_BACKGROUND_BLUR, kind }
@@ -111,7 +111,7 @@ export function createContainerEffect(
 
 /**
  * Turns shadows into a CSS box-shadow list, e.g. the drop shadows of a
- * container. The first shadow lies on top, as in CSS.
+ * surface. The first shadow lies on top, as in CSS.
  * @param shadows Shadows of one kind.
  * @param inset Whether the shadows fall inward, e.g. a light edge.
  * @returns A box-shadow value, or `none` without shadows.
@@ -129,18 +129,18 @@ export function getShadowsCss(shadows: Shadow[], inset = false): string {
 }
 
 /**
- * Tells whether a container already has an effect it takes only once,
+ * Tells whether a surface already has an effect it takes only once,
  * e.g. a background blur, so the kind select offers it disabled.
- * @param effects Effects of a container.
+ * @param effects Effects of a surface.
  * @param kind Kind to check.
  * @returns True when the kind is single and already in the list.
  */
-export function isContainerEffectTaken(
-  effects: ContainerEffect[],
-  kind: ContainerEffect['kind'],
+export function isSurfaceEffectTaken(
+  effects: SurfaceEffect[],
+  kind: SurfaceEffect['kind'],
 ): boolean {
   return (
-    SINGLE_CONTAINER_EFFECTS.includes(kind) &&
+    SINGLE_SURFACE_EFFECTS.includes(kind) &&
     effects.some((effect) => effect.kind === kind)
   )
 }

@@ -1,20 +1,20 @@
 import { useId } from 'react'
 
-import { getColorCss } from '../shared/colorValue'
-import { getLinearGradientPoints, getSortedStops } from '../shared/paint'
+import { getColorCss } from '../colorValue'
+import { getLinearGradientPoints, getSortedStops } from '../paint'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { Paint } from '../shared/paint'
-import type { StrokeStyle } from '../shared/strokeStyle'
+import type { Paint } from '../paint'
+import type { StrokeStyle } from '../strokeStyle'
 
 // ===== TYPES =================================================================
-type ContainerBorderProps = {
+type SurfaceBorderProps = {
   radius: number
   stroke: StrokeStyle
 }
 
-type ContainerBorderStyle = CSSProperties & {
-  '--chart-border-inset': string
+type SurfaceBorderStyle = CSSProperties & {
+  '--surface-border-inset': string
 }
 
 // ===== HELPERS ===============================================================
@@ -75,15 +75,15 @@ function getGradientElement(id: string, paint: Paint): ReactNode {
  * half a stroke inside the frame, so the stroke ends at its edge.
  * @param props Stroke style of the border and corner radius of the frame.
  */
-function ContainerBorder({ radius, stroke }: ContainerBorderProps) {
+function SurfaceBorder({ radius, stroke }: SurfaceBorderProps) {
   const gradientId = useId()
   const { paint, width } = stroke
-  const style: ContainerBorderStyle = {
-    '--chart-border-inset': `${width / 2}px`,
+  const style: SurfaceBorderStyle = {
+    '--surface-border-inset': `${width / 2}px`,
     opacity: stroke.opacity,
   }
   return (
-    <svg aria-hidden="true" className="chart-item-border" style={style}>
+    <svg aria-hidden="true" className="surface-border" style={style}>
       <defs>{getGradientElement(gradientId, paint)}</defs>
       <rect
         fill="none"
@@ -103,4 +103,4 @@ function ContainerBorder({ radius, stroke }: ContainerBorderProps) {
   )
 }
 
-export default ContainerBorder
+export default SurfaceBorder

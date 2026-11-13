@@ -1,10 +1,10 @@
-import ContainerSurface from '../objects/ContainerSurface'
-import { getContainerSurfaceStyle } from '../objects/containerSurfaceStyle'
 import { getFillsCss } from '../shared/fill'
+import { getSurfaceStyle } from '../shared/surface'
+import SurfaceLayers from '../shared/ui/SurfaceLayers'
 import { createDashboardStyle } from './createDashboardStyle'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { ContainerSurfaceValue } from '../objects/containerSurfaceStyle'
+import type { Surface } from '../shared/surface'
 import type { StyleRecipe } from './types'
 
 // ===== TYPES =================================================================
@@ -21,7 +21,7 @@ type StylePreviewProps = {
 type PreviewContainerProps = {
   children: ReactNode
   className?: string
-  surface: ContainerSurfaceValue
+  surface: Surface
 }
 
 type StylePreviewStyle = CSSProperties & {
@@ -51,10 +51,10 @@ function PreviewContainer({
 }: PreviewContainerProps) {
   return (
     <span
-      className={`container-surface style-preview-container ${className}`}
-      style={getContainerSurfaceStyle(surface)}
+      className={`surface style-preview-container ${className}`}
+      style={getSurfaceStyle(surface)}
     >
-      <ContainerSurface surface={surface}>{children}</ContainerSurface>
+      <SurfaceLayers surface={surface}>{children}</SurfaceLayers>
     </span>
   )
 }

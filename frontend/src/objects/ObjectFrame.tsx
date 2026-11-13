@@ -5,10 +5,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import CommandButton from '../app/CommandButton'
 import { formatKeyLabel, isFormatClick } from '../shared/platform'
+import { getSurfaceStyle } from '../shared/surface'
+import SurfaceLayers from '../shared/ui/SurfaceLayers'
 import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { moveLayout, resizeLayout } from '../workspace/chartLayout'
-import ContainerSurface from './ContainerSurface'
-import { getContainerSurfaceStyle } from './containerSurfaceStyle'
 import { getRectInFrame, getRectStyle } from './elementRect'
 import { getObjectDefinition } from './objectDefinitions'
 
@@ -20,6 +20,7 @@ import type {
   ReactNode,
 } from 'react'
 import type { WorkspaceCommands } from '../app/types'
+import type { SurfaceStyle } from '../shared/surface'
 import type { GridDelta } from '../workspace/chartLayout'
 import type {
   CanvasActions,
@@ -27,7 +28,6 @@ import type {
   DragPayload,
   ObjectLayoutMode,
 } from '../workspace/types'
-import type { ContainerSurfaceStyle } from './containerSurfaceStyle'
 import type { DashboardObject, ElementRect, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
@@ -52,7 +52,7 @@ export type FormatFocus = {
 /** Lets the content report the parts of the element in focus. */
 export type ShowFormatFocus = (focus: FormatFocus) => void
 
-type ObjectFrameStyle = ContainerSurfaceStyle & {
+type ObjectFrameStyle = SurfaceStyle & {
   '--chart-canvas-inset': string
 }
 
@@ -259,7 +259,7 @@ function ObjectFrame({
 
   const frameStyle: ObjectFrameStyle = {
     ...style,
-    ...getContainerSurfaceStyle(container),
+    ...getSurfaceStyle(container),
     '--chart-canvas-inset': `${container.layout.padding}px`,
   }
   // HTML parts of the content, e.g. a title, carry `data-format-element`.
@@ -426,7 +426,7 @@ function ObjectFrame({
   return (
     <div
       aria-label={label}
-      className={`chart-item container-surface ${isSelected ? 'is-selected' : ''}`}
+      className={`chart-item surface ${isSelected ? 'is-selected' : ''}`}
       data-object-id={object.id}
       ref={frameRef}
       role="group"
@@ -446,9 +446,9 @@ function ObjectFrame({
       }}
       onPointerMove={moveFormatLabel}
     >
-      <ContainerSurface surface={container}>
+      <SurfaceLayers surface={container}>
         {children(setFormatHint, showFormatFocus)}
-      </ContainerSurface>
+      </SurfaceLayers>
       {shownHint ? (
         <span
           aria-hidden="true"

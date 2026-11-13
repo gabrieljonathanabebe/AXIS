@@ -64,7 +64,7 @@
 }
 
 /* Content of a preview container; the surface comes from
-   .container-surface and ContainerSurface. */
+   .surface and SurfaceLayers. */
 .style-preview-container {
   display: flex;
   flex-direction: column;
