@@ -58,7 +58,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 7. Effekte: Schatten, Background Blur und Korn – implementiert
 8. Dashboard-Styles – implementiert
 9. Arbeitsfläche, Format-Panel und Objekt-Layout – implementiert
-10. Format-Panel-Zeilen, Legende, Tooltip und Farbskala
+10. Kästen als HTML (3.10a), dann Farbskala wie eine Achse und Flächen
+    für Kästen (3.10b) – **nächster Slice**
 11. DateFormat
 12. Sortierung und Top N
 13. Theme-Umschalter in der TopBar (provisorisch)
@@ -73,45 +74,107 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.10 Format-Panel-Zeilen, Legende, Tooltip und Farbskala (geplant)
+- nach 3.10b: Chart- und Card-Titel als Kasten mit Text; der Titel
+  bleibt Teil des Objekts (er bewegt und skaliert sich mit, sein
+  Standardtext kommt aus den Daten) und bekommt eine optionale
+  `surface` (Standard durchsichtig) über `SurfaceControls` und
+  `SurfaceLayers`; `ObjectTitleAppearance` gilt für Chart und Card
+  zugleich, die Optik bleibt ohne Fläche unverändert
 
-Die neuen Zeilen entstehen gleich im Format-Panel (3.9), als Gruppen
-und nach dem Muster aus `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im
-Figma-Stil“ (Farbzeile mit `PaintControl`, Felder mit Icon und Einheit,
-Seltenes hinter ⚙, Auge bzw. ＋/− statt Schaltern, Icon und Wort für
-Verhalten; Icon-Check am Slice-Ende).
+### 3.10a Kästen als HTML (geplant, nächster Slice)
 
-Zuerst das Panel selbst: Menüs nicht schmaler als ihr Inhalt (z. B. die
-Namen im Menü der Palette).
+Ein Kasten ist Fläche + Layout + Inhalt. Container, Legende, Farbskala,
+Tooltip und später Textfelder und Formen unterscheiden sich nur im
+Inhalt; Fläche und Layout sind bei allen gleich. Die Fläche gibt es
+schon: `ObjectContainer` ohne `layout`, samt Widgets und Ebenen in
+`ObjectFrame`. 3.10a löst sie heraus und macht Legende und Farbskala zu
+HTML-Kästen; neue Formatier-Optionen kommen erst mit 3.10b.
 
-Danach die Bausteine:
+Entscheidungen:
 
-- Legende: Fill (Hintergrund, Farbzeile), Stroke (Rahmen), Radius als
-  Feld; Text ist da
-- Tooltip: Text, Fill, Stroke, Radius und Zahlenformat
-  (`NumberFormatControls` für `interaction.tooltip.numberFormat`, das
-  heute ausgewertet wird, aber kein Control hat)
-- Farbskala als HTML: die ECharts-`visualMap` bleibt mit `show: false`
-  für die Farbzuordnung, nur der Balken wird HTML: Text und Zahlenformat
-  für die Werte, Fill und Stroke, eigene Format-Region wie die Legende
-  (damit wird die Color Scale anklickbar); das Element regelt nur die
-  Komponente selbst, ihre Farben gehören zur Datenfarbe der Marks
-  - eigener Platz statt den Plot zu überlappen: Die Farbskala sitzt im
-    Layout neben dem Chart-Canvas (der Canvas schrumpft), nicht darüber
-  - Position über `PositionGrid` wie die Legende (`continuous.layout` als
-    `Pick<Layout, 'alignment' | 'position'>`); `orientation` folgt aus der
-    Position (beschlossen in 3.9: oben oder unten horizontal, links oder
-    rechts vertikal; das Richtungs-Control ist seit 3.9 entfallen)
-  - ob `orientation` dann entfällt, wird vor der Persistenz entschieden
-- Kasten-Modell (`ARCHITECTURE.md`, „Platzierung“): ein gemeinsamer
-  Baustein für die Fläche (Fill, Stroke, Radius, Padding) statt je
-  Element; Entscheidung, ob die Spec Position und Anordnung trennt (wäre
-  eine Formänderung); Breite und Höhe nutzen `BoxFieldsRow` aus dem
-  Objekt-Layout wieder
-- lange Legende oben oder unten: Ausrichtung wirkt gespiegelt (#55)
-- Effekte über den gemeinsamen Kasten-Baustein (Fill, Stroke, Radius, Padding, Effects),
-  soweit der Renderer sie zeichnen kann; Standard-Optik unverändert
-- neue Felder, keine Formänderung
+- jeder Baustein genau einmal: ein Typ `Surface` (`background: Fill[]`,
+  `border`, `borderRadius`, `effects`), ein Satz `SurfaceControls`
+  (Gruppen Background, Border, Radius, Effects aus `ContainerWidget`),
+  ein HTML-Renderer `SurfaceLayers` (Flächen, Blur, Korn, Innenschatten,
+  SVG-Rahmen aus `ObjectFrame`); `ObjectContainer` wird `Surface` plus
+  `layout`, die Spec der Objekte bleibt gleich
+- was ein Renderer zeichnen kann, steht in einer kleinen Tabelle an
+  einer Stelle, nicht als Sonderfall je Element; die Controls blenden
+  aus, was nicht geht (Tooltip: kein SVG-Rahmen)
+- Legende und Farbskala sind HTML und sitzen in Plätzen um den
+  Chart-Canvas (oben, rechts, unten, links); der Canvas schrumpft per
+  CSS, das Messen und Rechnen in `createGridOption`
+  (`measureTextWidth`, `LEGEND_TO_PLOT`) und das Ausweichen von Pie und
+  Donut (`getPieCenter`) entfallen; die ECharts-`visualMap` bleibt mit
+  `show: false` für die Farbzuordnung
+- Position als Kreuz: `PositionGrid` mit einer Prop für nur die vier
+  Seiten (oben, links, rechts, unten als Buttons, die Mitte steht für
+  den Plot und ist deaktiviert); die Legende hat daneben die Ausrichtung
+  entlang der Seite (Anfang, Mitte, Ende), die Farbskala nicht (immer
+  mittig); die Richtung folgt aus der Seite (links und rechts vertikal,
+  oben und unten horizontal)
+- die Spec trennt Position und Anordnung nicht: Sie bleibt bei `layout`
+  mit `Pick`, das Format-Panel trennt beides seit 3.9; ob
+  `continuous.layout.orientation` entfällt, wird vor der Persistenz
+  entschieden
+- Überlauf der Legende einfach halten: umbrechen oder scrollen, kein
+  Blättern mit Seitenzahlen
+
+Vorgehen:
+
+1. Vorbereitung: erst #51 (Scatter flackert bei Selection), dann #52
+   (Charts aktualisieren statt neu aufbauen, `replaceMerge` statt
+   `notMerge`); #52 vor dem Umbau der Legende, weil `replaceMerge` dort
+   aufpassen muss
+2. Menüs im Panel nicht schmaler als ihr Inhalt (z. B. die Namen im Menü
+   der Palette)
+3. `Surface` herauslösen: Typ, `SurfaceControls`, `SurfaceLayers`; der
+   Container sieht danach exakt aus wie vorher
+4. Plätze um den Chart-Canvas; Position als Kreuz, bei der Legende mit
+   Ausrichtung
+5. Farbskala als HTML in ihrem Platz, vorerst mit Minimum und Maximum
+   wie heute
+6. Legende als HTML in denselben Plätzen mit gleichem Verhalten
+   (Serien ein- und ausblenden, Auswahl-Modus, inaktive Farbe,
+   Überlauf, Cmd/Ctrl+Klick formatiert); behebt #9 und #55
+
+Nicht in 3.10a: freie Positionierung der Legende (Versatz, Ziehen),
+Textfelder und Formen, neue Formatier-Optionen.
+
+### 3.10b Farbskala wie eine Achse und Flächen für Kästen (geplant)
+
+Direkt nach 3.10a. Die Farbskala ist im Grunde eine Achse mit
+Farbverlauf statt Linie; sie nutzt deshalb die Bausteine der Achsen,
+keine neuen, und hat im Format-Panel dieselben Gruppen.
+
+- Farbskala:
+  - Titel (Name der Metrik) als `title` wie der Achsentitel
+    (`AxisTitleAppearance`)
+  - Werte als `labels` wie die Achsenbeschriftung
+    (`AxisLabelsAppearance`: `textStyle`, `numberFormat`, `tickCount`)
+  - Ticks: Anzahl Auto oder fest, Striche sichtbar ja oder nein;
+    Standard nur Minimum und Maximum wie heute, Zwischenwerte über die
+    Tick-Anzahl (wie in Databricks)
+  - horizontal: Minimum links, Maximum rechts, Werte darunter wie an der
+    X-Achse; vertikal: Minimum unten, Maximum oben, Werte daneben wie an
+    der Y-Achse
+  - runde Tick-Werte (0, 25, 50 …) rechnet eine kleine eigene Funktion,
+    weil der Balken HTML ist; mit Tests
+  - ob die Enden des Verlaufs (`GradientControl`) ein `PaintField`
+    werden, hier klären; die Farben bleiben Datenfarbe der Marks
+- Fläche und Padding für Legende und Farbskala über `SurfaceControls`
+  und Padding in ihrem `layout`
+- Tooltip: Fläche als CSS (Flächen, Rand, Radius, Schatten, Blur; kein
+  SVG-Rahmen), Text und Zahlenformat (`NumberFormatControls` für
+  `interaction.tooltip.numberFormat`, das heute ausgewertet wird, aber
+  kein Control hat)
+- Standard-Optik unverändert: Die Flächen von Legende, Farbskala und
+  Tooltip kommen als Default aus dem Dashboard-Style; „Style anwenden“
+  färbt sie mit
+- die neuen Zeilen entstehen im Format-Panel nach dem Muster aus
+  `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im Figma-Stil“;
+  Icon-Check am Slice-Ende
+- neue Felder; Formänderungen nur vor der Persistenz
 
 ### 3.11 DateFormat (geplant)
 
@@ -230,11 +293,23 @@ Im Format-Panel ohne Auswahl (aus 3.9), undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
 Persistenz festlegen soll:
 
+- zuerst Textobjekt und Dokumentname, wie in Power BI: Dokumentname und
+  sichtbarer Titel trennen sich
+  - der Dokumentname (`dashboard.name`) steht in der TopBar, wie der
+    Dateiname in Figma und Power BI
+  - der sichtbare Titel ist ein Textobjekt im Grid: bei neuen Dashboards
+    oben über die volle Breite angelegt, verschiebbar, skalierbar,
+    löschbar; weitere Textobjekte für Zwischenüberschriften, Erklärtexte
+    und Fußnoten
+  - ein Textobjekt ist ein Kasten mit Text (Container mit `Surface`,
+    `EditableText`, `TextStyle`) und im Kern ein neuer Objekttyp in der
+    Registry; eine Card ist fast dasselbe, nur mit Daten
+  - vor der Persistenz, weil Dokumentname und Titel ins Dateiformat
+    eingehen
 - `canvas.background` ist seit 3.5 da (`Fill`, Gruppe Background)
 - feste Seitengröße: `pageSize` (`Auto` wie heute oder fest, z. B.
   1280 × 720) als Voraussetzung für Zoom; bei fester Größe steht die
-  Seite aus 3.9 zentriert auf der Arbeitsfläche; Dokumentname und
-  sichtbarer Titel können sich später trennen
+  Seite aus 3.9 zentriert auf der Arbeitsfläche
 - `layout.padding` (Innenabstand der Seite; in 3.9 ein fester Wert für
   Titel und Grid)
 - `format.locale` statt der Konstante `LOCALE` in `shared/config.ts`;

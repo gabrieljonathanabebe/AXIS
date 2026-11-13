@@ -1069,8 +1069,8 @@ Verlaufs. Es arbeitet auf `GradientStop[]`: Die Swatches zeigen den
 ersten und letzten Stopp nach Position, die Vorschau alle Stopps samt
 Deckkraft. Genutzt nur noch für die Enden der kontinuierlichen
 Farbskala, weil dort Anfang und Ende direkt klickbar sein
-sollen; ob sie ein `PaintField` wird, klärt „Format-Panel-Zeilen,
-Legende, Tooltip und Farbskala“ (`ROADMAP.md`).
+sollen; ob sie ein `PaintField` wird, klärt „Farbskala wie eine Achse
+und Flächen für Kästen“ (`ROADMAP.md`).
 
 `GradientStopsControl` ist die Stopp-Liste im Editor eines Verlaufs
 (Section Stops): je Stopp Swatch | Position (%) | Deckkraft (%) | −, ＋
@@ -1841,9 +1841,9 @@ transparent), neutrale Kante bei Hover, Akzent-Kante bei Fokus.
 - jede Zelle ist ein Button mit Namen („Top left“) und zeigt, wo das
   Element sitzt; die Mitte steht für den Plot und ist deaktiviert
 - links und rechts nur mittig, weil die Legende dort vertikal läuft
-- genutzt von der Legende über `PositionControls`; die Farbskala folgt
-  mit „Format-Panel-Zeilen, Legende, Tooltip und Farbskala“
-  (`ROADMAP.md`)
+- genutzt von der Legende über `PositionControls`; mit „Kästen als
+  HTML“ (`ROADMAP.md`) wird es für Legende und Farbskala ein Kreuz aus
+  den vier Seiten, die Legende behält daneben ihre Ausrichtung
 
 ## 9s. Optionen mit Icons
 
