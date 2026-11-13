@@ -171,18 +171,28 @@
   transform: translateY(-50%);
 }
 
-/* Outlines the element under the pointer that a click formats. It only
-   shows; the click goes through to the element and the frame. */
+/* Outlines the element under the pointer that a click formats, and the
+   parts of the element in focus. It only shows; the click goes through.
+   The negative margin covers padding and border, so the gap to the element
+   is the same on every side; the halo keeps the line visible on any chart. */
 .chart-format-region {
+  --region-width: 1.5px;
   position: absolute;
   z-index: 3;
   box-sizing: content-box;
-  margin: calc(-1 * var(--chart-region-frame));
+  margin: calc(-1 * (var(--chart-region-frame) + var(--region-width)));
   padding: var(--chart-region-frame);
   background: transparent;
-  border: var(--border-width-thin) solid var(--color-border-accent);
-  border-radius: var(--radius-md);
+  border: var(--region-width) solid var(--color-accent);
+  border-radius: var(--radius-xs);
+  box-shadow:
+    0 0 0 1px var(--color-background),
+    inset 0 0 0 1px var(--color-background);
   pointer-events: none;
+}
+
+.chart-format-region.is-focus {
+  --region-width: 2px;
 }
 
 /* Names what a click formats. Follows the pointer like a tooltip, with the

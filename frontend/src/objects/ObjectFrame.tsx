@@ -459,7 +459,7 @@ function ObjectFrame({
       {focusRects.map((rect, index) => (
         <span
           aria-hidden="true"
-          className="chart-format-region"
+          className="chart-format-region is-focus"
           key={index}
           style={getRectStyle(rect)}
         />

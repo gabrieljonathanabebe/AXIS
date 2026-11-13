@@ -17,6 +17,7 @@
 
   --transition-fast: 160ms ease;
 
+  --radius-xs: 4px;
   --radius-sm: 10px;
   --radius-md: 18px;
   --radius-lg: 24px;
