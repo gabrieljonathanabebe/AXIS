@@ -651,11 +651,12 @@ Textebenen in Figma:
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
   und Text; die Gruppen des Format-Panels folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
-- Einführung mit „Format-Panel-Zeilen, Legende, Tooltip und
-  Farbskala“ (`ROADMAP.md`), wo Legende, Tooltip und Farbskala
-  Fill, Stroke und Radius bekommen: ein gemeinsamer Baustein für die
-  Fläche statt je Element; dort fällt auch die Entscheidung, ob die Spec
-  Position und Anordnung trennt.
+- Einführung mit „Kästen als HTML“ und „Farbskala wie eine Achse und
+  Flächen für Kästen“ (`ROADMAP.md`): ein Typ `Surface` mit
+  `SurfaceControls` und dem HTML-Renderer `SurfaceLayers` für alle
+  Kästen statt je Element; Legende und Farbskala werden HTML.
+- Entschieden: Die Spec trennt Position und Anordnung nicht; sie bleibt
+  bei `layout` mit `Pick`, das Format-Panel trennt beides seit 3.9.
 - Der Adapter bildet den Kasten auf beide Renderer ab: CSS beim
   Objekttitel, ECharts bei Legende, Titel und Tooltip; auch ECharts-Texte
   kennen `backgroundColor`, `border*`, `padding`, `width`, `height`,
