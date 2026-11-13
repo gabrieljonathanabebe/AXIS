@@ -58,6 +58,8 @@ export function createBrushOption(
 
 /**
  * Arms the brush of a points chart and draws the selection made with it.
+ * A full `setOption` already clears the brush, so the brush action, which
+ * runs over every point, only goes out when this chart has an area to draw.
  * @param instance ECharts instance of the chart.
  * @param chart Chart whose brush is synced.
  * @param selection Current data selection, drawn when it came from this chart.
@@ -79,10 +81,11 @@ export function syncBrush(
     },
   })
   const coordRange = getBrushCoordRange(chart, selection)
+  if (!coordRange) {
+    return
+  }
   instance.dispatchAction({
     type: 'brush',
-    areas: coordRange
-      ? [{ brushType: 'rect', coordRange, xAxisIndex: 0, yAxisIndex: 0 }]
-      : [],
+    areas: [{ brushType: 'rect', coordRange, xAxisIndex: 0, yAxisIndex: 0 }],
   })
 }
