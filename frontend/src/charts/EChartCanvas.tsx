@@ -116,10 +116,11 @@ function EChartCanvas({
   const { result: highlightResult } = useChartQuery(datasetId, highlightQuery)
   const pointsQuery = usePointsQuery(
     datasetId,
-    createPointsQuery(chart, selection),
+    createPointsQuery(chart, dataset.fields, selection),
   )
   const points = pointsQuery.result?.rows ?? EMPTY_POINTS
-  const isChartLoading = isLoading || pointsQuery.isLoading
+  const isChartLoading =
+    isLoading || (pointsQuery.isLoading && !pointsQuery.result)
   const chartError = error ?? pointsQuery.error
   const missingLabels = getMissingEncodings(
     chart.type,

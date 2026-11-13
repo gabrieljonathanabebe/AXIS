@@ -60,6 +60,27 @@ export function isRowInSelection(
   })
 }
 
+/**
+ * Keeps a selection only when the rows carry all of its fields, so rows
+ * still loading a filtered field are not dimmed as unselected.
+ * @param rows Loaded rows of a chart.
+ * @param selection Active selection, or null when nothing is selected.
+ * @returns The selection, or null while a filtered field is missing.
+ */
+export function getRowSelection(
+  rows: DataRow[],
+  selection: DataSelection | null,
+): DataSelection | null {
+  const [firstRow] = rows
+  if (!selection || !firstRow) {
+    return selection
+  }
+  const hasAllFields = selection.filters.every((filter) => {
+    return filter.field in firstRow
+  })
+  return hasAllFields ? selection : null
+}
+
 export function formatSelectionLabel(selection: DataSelection): string {
   return selection.filters
     .map((filter) => {

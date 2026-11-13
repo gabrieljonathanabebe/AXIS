@@ -41,28 +41,38 @@ export function createChartQuery(
 }
 
 /**
- * Builds the rows query of a scatter chart: its encoded fields plus the
- * fields a selection filters on, so it can tell which points another
- * chart's selection contains.
+ * Builds the rows query of a scatter chart: its encoded fields, every field
+ * that is not a measure and the fields a selection filters on. Other charts
+ * select on categories, so their selections need no new request.
  * @param chart Chart whose rows are loaded.
+ * @param fields Dataset fields; all but measures are loaded up front.
  * @param selection Active selection, or null when nothing is selected.
  * @returns Fields to load, or null for other chart types or without x or y.
  */
 export function createPointsQuery(
   chart: ChartInstance,
+  fields: DataField[],
   selection: DataSelection | null,
 ): PointsQueryRequest | null {
   const { color, size, x, y } = chart.spec.data.encoding
   if (!isPointsChartType(chart.type) || !x || !y) {
     return null
   }
+  const categoryFields = fields
+    .filter((field) => field.semantic_role !== 'measure')
+    .map((field) => field.name)
   const selectionFields = selection?.filters.map((filter) => filter.field) ?? []
-  const fields = [x, y, size, color, ...selectionFields].filter(
-    (field): field is string => {
-      return Boolean(field)
-    },
-  )
-  return { fields: [...new Set(fields)] }
+  const names = [
+    x,
+    y,
+    size,
+    color,
+    ...categoryFields,
+    ...selectionFields,
+  ].filter((name): name is string => {
+    return Boolean(name)
+  })
+  return { fields: [...new Set(names)] }
 }
 
 export function createHighlightQuery(

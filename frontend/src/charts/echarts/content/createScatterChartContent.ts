@@ -1,4 +1,7 @@
-import { isRowInSelection } from '../../../workspace/dataSelection'
+import {
+  getRowSelection,
+  isRowInSelection,
+} from '../../../workspace/dataSelection'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { createAxesOptions } from '../createAxesOptions'
@@ -129,6 +132,7 @@ export function createScatterChartContent(
     dataset.fields,
   )
   const rows = points
+  const rowSelection = getRowSelection(rows, selection)
   const canGlow = rows.length <= MAX_GLOW_POINTS
   const sizeDomain = sizeFieldName
     ? getNumericDomain(rows.map((row) => row[sizeFieldName]))
@@ -137,7 +141,7 @@ export function createScatterChartContent(
     ? createAreaSymbolSize(sizeDomain.max, appearance.scatter.sizeRange)
     : appearance.scatter.pointSize
   const data = rows.map((row) => ({
-    itemStyle: isRowInSelection(row, selection)
+    itemStyle: isRowInSelection(row, rowSelection)
       ? undefined
       : { opacity: theme.style.dimmedOpacity, shadowColor: 'transparent' },
     value: [
