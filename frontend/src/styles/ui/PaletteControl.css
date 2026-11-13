@@ -25,8 +25,16 @@
   text-overflow: ellipsis;
 }
 
-/* In the button of the select the strip alone shows the palette; the
-   menu still names it. */
+/* In the button of the select the strip alone shows the palette and fills
+   the room up to the chevron; the menu still names it. */
+.select-control-value:has(.palette-control-option) {
+  flex: 1;
+}
+
+.select-control-value .palette-control-preview {
+  flex: 1;
+}
+
 .select-control-value .palette-control-name {
   display: none;
 }
