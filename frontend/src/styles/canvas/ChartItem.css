@@ -68,6 +68,20 @@
   line-height: var(--chart-header-height);
 }
 
+/* Content below the header: the canvas in the middle, around it the places
+   for legend and color scale. A filled place takes its room from the
+   canvas, and ECharts resizes with it. */
+.chart-body {
+  position: absolute;
+  inset: var(--chart-canvas-inset);
+  top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
+  display: grid;
+  grid-template:
+    'top top top' auto
+    'left canvas right' minmax(0, 1fr)
+    'bottom bottom bottom' auto / auto minmax(0, 1fr) auto;
+}
+
 .chart-item-actions {
   position: absolute;
   top: var(--chart-header-top);

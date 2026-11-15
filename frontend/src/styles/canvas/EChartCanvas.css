@@ -1,19 +1,17 @@
 .echart-canvas {
-  position: absolute;
-  inset: var(--chart-canvas-inset);
-  top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
+  grid-area: canvas;
+  min-width: 0;
+  min-height: 0;
 }
 
 .echart-canvas.is-empty {
   visibility: hidden;
 }
 
+/* Empty and error states lie over the canvas in its area. */
 .chart-state {
-  position: absolute;
-  inset: var(--chart-canvas-inset);
-  top: calc(var(--chart-canvas-inset) + var(--chart-header-height));
-
   display: grid;
+  grid-area: canvas;
   pointer-events: none;
 }
 

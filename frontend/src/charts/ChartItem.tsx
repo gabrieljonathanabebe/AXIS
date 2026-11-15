@@ -97,21 +97,23 @@ function ChartItem({
           field={draggedField}
         />
       ) : null}
-      <EChartCanvas
-        actions={actions}
-        animation={animation}
-        chart={chart}
-        dataset={dataset}
-        datasetId={datasetId}
-        editingAxisTitle={axisTitleEdit?.axis ?? null}
-        formattedElement={formattedElement}
-        onEditAxisTitle={setAxisTitleEdit}
-        onFormatFocus={onFormatFocus}
-        onHoverAxisTitle={handleHoverAxisTitle}
-        onHoverElement={onFormatHint}
-        selection={selection}
-        style={style}
-      />
+      <div className="chart-body">
+        <EChartCanvas
+          actions={actions}
+          animation={animation}
+          chart={chart}
+          dataset={dataset}
+          datasetId={datasetId}
+          editingAxisTitle={axisTitleEdit?.axis ?? null}
+          formattedElement={formattedElement}
+          onEditAxisTitle={setAxisTitleEdit}
+          onFormatFocus={onFormatFocus}
+          onHoverAxisTitle={handleHoverAxisTitle}
+          onHoverElement={onFormatHint}
+          selection={selection}
+          style={style}
+        />
+      </div>
       {title.visible ? (
         <div
           className="chart-item-header"

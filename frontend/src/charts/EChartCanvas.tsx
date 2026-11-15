@@ -2,6 +2,7 @@ import * as echarts from 'echarts'
 import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
+import { getRectInFrame } from '../objects/elementRect'
 import EmptyState from '../shared/ui/EmptyState'
 import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { isSameSelection } from '../workspace/dataSelection'
@@ -60,12 +61,19 @@ type EChartCanvasProps = {
   style: DashboardStyle
 }
 
-/** Moves a rect from canvas into chart item coordinates. */
+/**
+ * Moves a rect from canvas into frame coordinates, wherever the canvas
+ * sits in the chart, e.g. next to a legend.
+ * @param rect Bounds inside the canvas.
+ * @param container Element that holds the canvas.
+ * @returns Bounds inside the frame of the object.
+ */
 function offsetRect(rect: ElementRect, container: HTMLElement): ElementRect {
+  const origin = getRectInFrame(container)
   return {
     ...rect,
-    x: rect.x + container.offsetLeft,
-    y: rect.y + container.offsetTop,
+    x: rect.x + (origin?.x ?? 0),
+    y: rect.y + (origin?.y ?? 0),
   }
 }
 
