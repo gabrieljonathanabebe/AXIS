@@ -315,7 +315,10 @@ Renderer-spezifischer Code liegt unter `src/charts/echarts`.
 
 `createEChartOption` ist ein kleiner Orchestrator. Er kombiniert allgemeine
 Optionen wie Tooltip, Legend und Interaktion mit dem
-charttypspezifischen Content.
+charttypspezifischen Content. Er liefert `EChartRender`: die Option für
+den Canvas und die Einträge der HTML-Legende (`LegendEntry`: Name und
+Farbe). `EChartCanvas` rechnet beides beim Rendern (`useMemo`), ein
+Effect setzt nur noch die Option.
 
 ### Zahlen- und Datumsformatierung
 
@@ -388,12 +391,13 @@ zur Farbe beider Formen siehe „Paint“.
   bzw. in jeden Stopp (`createPaintColor`)
 - Achsenlinie und Gridlines folgen der Achse: eine ausgeblendete Achse
   blendet beide aus, die Ticks hängen nur an der Achse
-- Der Container-Rahmen ist ein SVG (`ContainerBorder` in `objects/`),
-  weil CSS-Rahmen Verlauf, Strichmuster und Radius nicht zusammen
-  können: ein `rect` mit `rx`, `stroke-dasharray` (Dashed `4w 2w`,
-  Dotted `w` wie in ECharts) und einem Verlauf in `objectBoundingBox`.
-  Das SVG liegt um die halbe Breite eingerückt (`.chart-item-border`,
-  `--chart-border-inset`), damit der Strich innen am Rand sitzt.
+- Der Rahmen einer HTML-Fläche ist ein SVG (`SurfaceBorder` in
+  `shared/ui/`), weil CSS-Rahmen Verlauf, Strichmuster und Radius nicht
+  zusammen können: ein `rect` mit `rx`, `stroke-dasharray` (Dashed
+  `4w 2w`, Dotted `w` wie in ECharts) und einem Verlauf in
+  `objectBoundingBox`. Das SVG liegt um die halbe Breite eingerückt
+  (`.surface-border`, `--surface-border-inset`), damit der Strich innen
+  am Rand sitzt.
 
 Flächen nutzen `Fill` aus `src/shared/fill.ts` (`opacity`, `paint`).
 Die Fläche unter Linien (`line.area`, mit `areaFill` als
@@ -480,7 +484,7 @@ type SeriesPaint =
   `color-mix` mit `transparent`, die Deckkraft eingerechnet; radial als
   `radial-gradient(r% r% at x% y%, …)`), `createPaintColor` und
   `createSeriesPaintColor` (`charts/echarts/createPaintColor.ts`) für
-  ECharts mit `resolveColor` und `color.modifyAlpha`, `ContainerBorder`
+  ECharts mit `resolveColor` und `color.modifyAlpha`, `SurfaceBorder`
   für den SVG-Rahmen (`radialGradient` mit `cx`, `cy`, `r` in Einheiten
   der Bounding Box).
 - Renderer-Unterschiede, bewusst hingenommen: ECharts zeichnet radial
@@ -488,8 +492,8 @@ type SeriesPaint =
   näheren Kante), CSS und SVG dieselbe Ellipse; ECharts und SVG
   normieren den linearen Winkel auf die Bounding Box, CSS nutzt den
   echten Bildschirmwinkel (gleich bei 0°, ±90° und 180°).
-- Unter einer kontinuierlichen Farbskala färbt die `visualMap` jede
-  Mark selbst, ein Fade wirkt dort nicht; die Farbzeile bietet dann nur
+- Unter einer kontinuierlichen Farbskala färbt die versteckte
+  `visualMap` jede Mark selbst, ein Fade wirkt dort nicht; die Farbzeile bietet dann nur
   Solid an, ein gespeicherter Fade kehrt beim Wechsel auf kategorial
   zurück.
 - Text bleibt einfarbig (`TextStyle.color`): ECharts zeichnet keinen
@@ -517,8 +521,8 @@ type Effect =
   | { kind: 'glow'; blur: number }
   | ({ kind: 'shadow' } & Shadow)
 
-type ContainerEffect =
-  // Container, Liste
+type SurfaceEffect =
+  // HTML-Flächen (Surface), Liste
   | ({ kind: 'shadow' } & Shadow)
   | ({ kind: 'innerShadow' } & Shadow)
   | { kind: 'backgroundBlur'; blur: number }
@@ -533,10 +537,10 @@ type ContainerEffect =
   die Ebene fest; die Reihenfolge der Liste bestimmt der Nutzer wie in
   Figma und ändert die Darstellung nur unter Schatten gleicher Art;
   Background Blur und Korn höchstens einmal
-  (`isContainerEffectTaken`), Schatten und Innenschatten mehrfach, z. B.
+  (`isSurfaceEffectTaken`), Schatten und Innenschatten mehrfach, z. B.
   Kontakt- und Tiefenschatten.
 - Standardwerte an einer Stelle (`createEffect`,
-  `createContainerEffect`): Schatten x 0, y 4, Blur 12, Schwarz 25 %;
+  `createSurfaceEffect`): Schatten x 0, y 4, Blur 12, Schwarz 25 %;
   Innenschatten x 0, y 1, Blur 0, Weiß 8 %; Background Blur 16; Korn
   8 %, 100 px. Schattenfarben sind feste Farben.
 
@@ -555,8 +559,7 @@ Marks in ECharts:
   `shadowColor: 'transparent'`, weil sie Versatz und Farbe sonst vom
   Serien-`itemStyle` erben.
   Pie und Donut zeigen bei einer Selection nur die hervorgehobenen
-  Werte. Der Format-Fokus setzt nur `opacity` und dimmt den Glow
-  dadurch mit
+  Werte
 - Pie-Segmente leuchten einzeln in ihrer Palettenfarbe (Glow im
   `itemStyle` jedes Datenpunkts)
 - Scatter zeichnet den Glow nur bis `MAX_GLOW_POINTS` (500) Punkte im
@@ -565,25 +568,54 @@ Marks in ECharts:
 - der Glow ist im hellen und dunklen Theme gleich stark; `ChartTheme`
   schwächt ihn bewusst nicht ab, damit derselbe Wert gleich wirkt
 
-Container in HTML (`ContainerSurface` in `objects/`, gemeinsam für
+**Surface**
+
+Die Fläche eines Kastens ist ein eigener Baustein (`shared/surface.ts`),
+genau einmal für alle Kästen: heute der Container jedes Objekts, später
+Legende, Farbskala, Tooltip und Textfelder.
+
+```ts
+type Surface = {
+  background: Fill[]
+  border: StrokeStyle
+  borderRadius: number
+  effects: SurfaceEffect[]
+}
+
+type ObjectContainer = Surface & { layout: Pick<Layout, 'padding'> }
+```
+
+- Namensregel: `Surface…` für die Fläche und ihre Teile
+  (`SurfaceControls`, `SurfaceLayers`, `SurfaceBorder`,
+  `SurfaceEffectsControls`), `Container…` nur für den Kasten eines
+  Objekts (`ObjectContainer`, `ContainerWidget`).
+- Was ein Renderer zeichnen kann, steht an einer Stelle
+  (`SURFACE_CAPABILITIES`, `SurfaceRenderer`): `html` zeichnet alles,
+  `css` (CSS an einem Element, das ECharts rendert, z. B. der Tooltip)
+  keinen Verlauf im Rahmen und kein Korn. `SurfaceControls` fragt die
+  Tabelle über `renderer` und bietet nur zeichenbare Effekte an; das
+  Ausblenden des Rahmen-Verlaufs folgt mit der ersten CSS-Fläche (3.10b).
+- `ContainerWidget` setzt Position, Layout und darunter
+  `SurfaceControls`; die Spec der Objekte ist unverändert.
+
+Flächen in HTML (`SurfaceLayers` in `shared/ui/`, gemeinsam für
 `ObjectFrame` und die Vorschau der Style-Galerie;
-`styles/canvas/ChartItem.css`), von unten nach oben:
+`styles/ui/Surface.css`), von unten nach oben:
 
-| Ebene           | Umsetzung                                                  |
-| --------------- | ---------------------------------------------------------- |
-| Schatten        | `box-shadow` am Element selbst (`--chart-shadow`)          |
-| Background Blur | `.chart-item-backdrop`, `backdrop-filter: blur(…)`         |
-| Fläche          | `.chart-item-background` (Fill mit Deckkraft)              |
-| Korn            | `.chart-item-noise`, statische SVG-Kachel (`feTurbulence`) |
-| Innenschatten   | `.chart-item-inner-shadow`, `box-shadow: inset …`          |
-| Inhalt, Rahmen  | Content, dann `ContainerBorder` (SVG)                      |
-| Ring            | Hover und Auswahl über `::after`                           |
+| Ebene           | Umsetzung                                                |
+| --------------- | -------------------------------------------------------- |
+| Schatten        | `box-shadow` am Element selbst (`--surface-shadow`)      |
+| Background Blur | `.surface-backdrop`, `backdrop-filter: blur(…)`          |
+| Fläche          | `.surface-background` (Fill mit Deckkraft)               |
+| Korn            | `.surface-noise`, statische SVG-Kachel (`feTurbulence`)  |
+| Innenschatten   | `.surface-inner-shadow`, `box-shadow: inset …`           |
+| Inhalt, Rahmen  | Content, dann `SurfaceBorder` (SVG)                      |
+| Ring            | Hover und Auswahl über `::after` (nur beim Objekt-Frame) |
 
-- `ContainerSurface` zeichnet die Ebenen um den Inhalt,
-  `getContainerSurfaceStyle` (`containerSurfaceStyle.ts`) setzt die
-  CSS-Variablen am Element darum; die Klasse `.container-surface` gibt
-  ihm Position, Radius, Schatten, `overflow: hidden` und Isolation.
-  Frame und Vorschau zeigen so denselben Container.
+- `SurfaceLayers` zeichnet die Ebenen um den Inhalt, `getSurfaceStyle`
+  setzt die CSS-Variablen (`--surface-*`) am Element darum; die Klasse
+  `.surface` gibt ihm Position, Radius, Schatten, `overflow: hidden` und
+  Isolation. Frame und Vorschau zeigen so dieselbe Fläche.
 - Schatten am Element selbst, weil `overflow: hidden` Kind-Ebenen
   abschneidet, den eigenen `box-shadow` aber nicht.
 - Blur, Korn und Innenschatten haben eigene Ebenen mit `z-index: -1`;
@@ -613,34 +645,35 @@ und `Orientation`). Jedes Element trägt nur die Felder, die es hat, als
 `Pick` im Unterobjekt `layout`; die Positionen lassen sich über den
 Typparameter einschränken:
 
-| Element     | Spec                | Typ                                                            |
-| ----------- | ------------------- | -------------------------------------------------------------- |
-| Titel       | `title.layout`      | `Pick<Layout, 'alignment'>`                                    |
-| Container   | `container.layout`  | `Pick<Layout, 'padding'>`                                      |
-| Dashboard   | `dashboard.layout`  | `Pick<Layout, 'gap'>`                                          |
-| Legende     | `legend.layout`     | `Pick<Layout, 'alignment' \| 'gap' \| 'position'>`             |
-| Farbskala   | `continuous.layout` | `Pick<Layout<'left' \| 'right'>, 'orientation' \| 'position'>` |
-| Datenlabels | `labels.layout`     | `Pick<Layout<LabelPosition>, 'position'>`                      |
+| Element     | Spec                | Typ                                                |
+| ----------- | ------------------- | -------------------------------------------------- |
+| Titel       | `title.layout`      | `Pick<Layout, 'alignment'>`                        |
+| Container   | `container.layout`  | `Pick<Layout, 'padding'>`                          |
+| Dashboard   | `dashboard.layout`  | `Pick<Layout, 'gap'>`                              |
+| Legende     | `legend.layout`     | `Pick<Layout, 'alignment' \| 'gap' \| 'position'>` |
+| Farbskala   | `continuous.layout` | `Pick<Layout, 'position'>`                         |
+| Datenlabels | `labels.layout`     | `Pick<Layout<LabelPosition>, 'position'>`          |
 
-- `alignment` meint die Lage entlang der Seite: Eine Legende rechts mit
-  `start` sitzt oben am rechten Rand (`createLegendPlacement`)
+- `alignment` meint die Lage entlang der Seite, gemessen am Plot: Eine
+  Legende unten mit `start` beginnt am Anfang des Plots. Links und
+  rechts sitzt die Legende immer mittig; die Farbskala hat kein
+  `alignment` und sitzt an jeder Seite mittig.
 - ein neues Layout-Feld eines Elements erweitert sein `Pick`, kein neuer
   Typ; das bisherige Legendenfeld für den Überlauf heißt `overflow`
 - die Richtung an einer Seite folgt aus der Seite (`getSideOrientation`
-  in `shared/layout.ts`): Legende und Farbskala lesen sie nicht aus der
-  Spec; `continuous.layout.orientation` bleibt, bis vor der Persistenz
-  entschieden ist, ob es entfällt
+  in `shared/layout.ts`), links und rechts vertikal, oben und unten
+  horizontal; die Spec speichert keine Richtung (`orientation` der
+  Farbskala ist mit 3.10a entfallen)
 - nicht zum Layout gehören Form (`borderRadius`, `barWidth`) und die
   Grid-Position eines Objekts (`object.layout`, `ObjectLayout`); das
   Format-Panel zeigt sie trotzdem in Position (X | Y) und Layout
   (W | H), über `getLayoutBounds` begrenzt wie beim Ziehen und über die
   bestehende Action `object/updateLayout`
 
-**Kasten-Modell (geplant)**
+**Kasten-Modell (in Arbeit)**
 
-`Layout` vereint heute drei Bedeutungen. Geplant ist, sie zu trennen und
-Elemente mit eigener Fläche als Kasten zu beschreiben, wie Frames und
-Textebenen in Figma:
+`Layout` vereint heute drei Bedeutungen. Elemente mit eigener Fläche
+werden als Kasten beschrieben, wie Frames und Textebenen in Figma:
 
 | Bedeutung        | Frage                                 | Heute                                                |
 | ---------------- | ------------------------------------- | ---------------------------------------------------- |
@@ -651,16 +684,15 @@ Textebenen in Figma:
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
   und Text; die Gruppen des Format-Panels folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
-- Einführung mit „Kästen als HTML“ und „Farbskala wie eine Achse und
-  Flächen für Kästen“ (`ROADMAP.md`): ein Typ `Surface` mit
-  `SurfaceControls` und dem HTML-Renderer `SurfaceLayers` für alle
-  Kästen statt je Element; Legende und Farbskala werden HTML.
+- Seit 3.10a gibt es die Fläche als `Surface` (siehe „Surface“) mit
+  `SurfaceControls` und dem HTML-Renderer `SurfaceLayers`; Legende und
+  Farbskala sind HTML (siehe „Container vs. Content“). Ihre Flächen und
+  die des Tooltips folgen mit „Farbskala wie eine Achse und Flächen für
+  Kästen“ (3.10b, `ROADMAP.md`).
 - Entschieden: Die Spec trennt Position und Anordnung nicht; sie bleibt
   bei `layout` mit `Pick`, das Format-Panel trennt beides seit 3.9.
-- Der Adapter bildet den Kasten auf beide Renderer ab: CSS beim
-  Objekttitel, ECharts bei Legende, Titel und Tooltip; auch ECharts-Texte
-  kennen `backgroundColor`, `border*`, `padding`, `width`, `height`,
-  `align` und `verticalAlign`.
+- Der Tooltip bleibt ein Kasten in ECharts; seine Fläche zeichnet der
+  Renderer `css` (siehe `SURFACE_CAPABILITIES`).
 - Später: frei verschiebbare Kästen mit eigener Größe (Versatz bzw. x/y,
   Breite, Höhe, vertikale Ausrichtung), zusammen mit dem Text-Objekt.
 - Seit 3.4 steht die Text-Ausrichtung des Titels in der Oberfläche beim
@@ -676,8 +708,9 @@ Textebenen in Figma:
   selbst, jede weitere Runde eine hellere bzw. dunklere Variante derselben
   Farben (`PALETTE_ROUND_SHIFTS`; heller über `color.lift`, dunkler als
   Mischung mit Schwarz). Die Farbe hängt nur am Index, eine neue
-  Kategorie färbt die übrigen nicht um. Die Legende übernimmt die Farbe,
-  die jede Serie bzw. jedes Segment selbst setzt
+  Kategorie färbt die übrigen nicht um. Die Content-Builder geben der
+  Legende dieselbe Farbe mit (`ChartContent.legend`), aus derselben
+  Liste und mit demselben Index wie die Marks
 - Punkte auf Linien: `line.points` ist `auto | on | off`; `auto` zeigt
   sie bis `MAX_LINE_SYMBOLS` (30) Datenpunkte. ECharts zeichnet Labels
   einer Linie nur an ihren Symbolen, daher bleiben die Symbole bei
@@ -856,12 +889,24 @@ einem Content pro Objekttyp:
   Background, Rahmen, Radius, Padding, Position und Größe, Auswahl- und
   Hover-Ring, Fokus und Tastatur, Layout-Handles, Aktionsleiste und die
   Format-Region. Am Frame hängt `data-object-id`.
-- `ChartItem` (`charts/`) ist der Content eines Charts: ECharts-Canvas,
-  Titel-Header, Inline-Editing der Achsentitel und Drop-Slots für
-  Felder. Es rendert ein Fragment direkt in den Frame, damit Rechtecke
-  aus ECharts (`offsetLeft`/`offsetTop`) relativ zum Frame bleiben.
+- `ChartItem` (`charts/`) ist der Content eines Charts: Titel-Header,
+  Chart-Body, Inline-Editing der Achsentitel und Drop-Slots für Felder.
+  Es rendert ein Fragment direkt in den Frame. Rechtecke aus ECharts
+  rechnet `offsetRect` (`EChartCanvas`) über `getRectInFrame` in
+  Koordinaten des Frames um, wo immer der Canvas im Body sitzt.
+- Der Chart-Body (`.chart-body`, unter dem Header) ist ein CSS-Grid:
+  der Canvas in der Mitte, ringsum vier Plätze (`top`, `right`,
+  `bottom`, `left`). Legende (`ChartLegend`) und Farbskala
+  (`ChartColorScale`) sind HTML und liegen im Platz ihrer Seite; ein
+  gefüllter Platz nimmt dem Canvas Raum, und ECharts passt sich über
+  den `ResizeObserver` an. Beide richten sich am Plot aus:
+  `getPlotInsets` (`createGridOption.ts`) liefert die Abstände des
+  Plots im Canvas, bei Pie und Donut null (der Canvas zählt).
 - ECharts besitzt nur den Inhalt des Plots: Grid, Achsen, Series,
-  Labels, Legend, Tooltip, Visual Map, Zoom und Brush.
+  Labels, Tooltip, Zoom und Brush. Legende und `visualMap` gibt es dort
+  nur noch versteckt (`show: false`): Die Legende filtert über
+  `selected` die ausgeblendeten Serien bzw. Segmente, die `visualMap`
+  färbt die Marks.
 
 `ChartGrid` setzt beides zusammen: Der Frame erhält Objekt, Layout,
 Auswahl und `label` (bei Charts `getChartTitle`), der Content kommt über
@@ -909,27 +954,29 @@ Hover im Content (Adapter-Events, EditableText, Card-Teile)
 → ShowFormatHint({ element, rect } | null) → ObjectFrame.formatHint
 Klick bzw. ⌘/Ctrl-Klick (ObjectFrame)
 → onFormatElement(element) → ChartGrid ergänzt objectId
-→ App.chooseFormatElement: gemerktes Element + kurzer Fokus
+→ App.chooseFormatElement: gemerktes Element, im Fokus bis zum nächsten Klick
 → resolveFormatElement (Auswahl) → getPanelElement → Format-Panel
 → chartActions.setAppearance → chart/updateAppearance
 ```
 
-- Teile unter dem Pointer: Achsentitel, Achsen-Labels, Legende, Marks
-  und Datenlabels melden ihren Hover über Adapter-Events
+- Teile unter dem Pointer: Achsentitel, Achsen-Labels, Marks und
+  Datenlabels melden ihren Hover über Adapter-Events
   (`createAxisTitleEditFromEvent`, `createFormatHintFromEvent`; beide
   messen mit `getElementRect`) und beim Verlassen `null` (`mouseout`).
-  Gemessen wird der Teil als Ganzes: die Legende bis zur Wurzel, die
-  Labels einer Achse als ihre Label-Gruppe; Marks messen die Form unter
-  dem Pointer (Punkt, Balken, Segment, bei Linien der ganze Pfad). Der
-  HTML-Titel und die Teile einer Card melden sich über `onPointerEnter`
-  und `onPointerLeave` und messen sich mit `getRectInFrame`
+  Gemessen wird der Teil als Ganzes: die Labels einer Achse als ihre
+  Label-Gruppe; Marks messen die Form unter dem Pointer (Punkt, Balken,
+  Segment, bei Linien der ganze Pfad). HTML-Teile (Titel, Legende,
+  Farbskala, Teile einer Card) melden sich über `onPointerEnter` und
+  `onPointerLeave` und messen sich mit `getRectInFrame`
   (`objects/elementRect.ts`). Alles kommt als `ElementRect` in
   Koordinaten des Frames im `formatHint` des `ObjectFrame` an.
 - Klick-Grammatik im Frame: Ein normaler Klick läuft erst zum Content
   (Filter, Legende umschalten, Brush) und formatiert danach nur, wenn
-  der Teil keine Daten-Aktion hat (`dataActionElements`: Marks,
-  Datenlabels, Legende) und der Druck sich höchstens 6 px bewegt hat;
-  ohne Teil unter dem Pointer ist es `container`. ⌘/Ctrl-Klick
+  der Teil keine Daten-Aktion hat und der Druck sich höchstens 6 px
+  bewegt hat; ohne Teil unter dem Pointer ist es `container`. Ob ein
+  Teil eine Daten-Aktion hat, sagt `hasDataAction`: der Hinweis selbst
+  (`FormatHint.hasDataAction`, die Legende nur, solange ihre Einträge
+  umschalten), sonst `dataActionElements` (Marks, Datenlabels). ⌘/Ctrl-Klick
   (`isFormatClick`, `shared/platform.ts`) hält der Frame in der
   Capture-Phase an (`onPointerDownCapture`, `onMouseDownCapture`,
   `onClickCapture`), bevor ECharts ihn sieht, und formatiert jeden Teil.
@@ -958,9 +1005,7 @@ Klick bzw. ⌘/Ctrl-Klick (ObjectFrame)
   `colorScale`, `tooltip` und `container`. `getFormatElements(chart,
 fields)` liefert nur die Panel-Elemente für das Dropdown: Container,
   Titel und Marks immer, Achsen nur kartesisch, Legende wie
-  `isLegendRelevant`, Color Scale bei kontinuierlicher Farbe. Color
-  Scale hat keine Region (die ECharts-`visualMap` liefert keine
-  Maus-Events) und ist nur über das Dropdown erreichbar.
+  `isLegendRelevant`, Color Scale bei kontinuierlicher Farbe.
 - `ChartFormatPanel` beantwortet pro Panel-Element per `switch` zwei
   Fragen: `getFormatGroups` liefert die Gruppen untereinander,
   `getElementVisibility` das Auge im Kopf (Titel, Legende, Farbskala,
@@ -979,28 +1024,25 @@ fields)` liefert nur die Panel-Elemente für das Dropdown: Container,
   und `DashboardFormatPanel` (`workspace/`, ohne Auswahl) liegen in
   ihrer Domäne. Eingeklappt bzw. offen ist UI-State
   (`useWorkspaceLayout`).
-- Format-Fokus: `useFormatFocus` (`app/`) liest beim `pointerover`, ob
-  der Pointer über dem Panel ist und welche Gruppe mit
-  `data-format-group` darunter liegt (`findFormatGroup`), und hält nach
-  einer Wahl einen Puls von etwa 1 s. `App` leitet daraus das
-  fokussierte Element ab (Gruppe unter dem Pointer, sonst Panel-Element;
-  beim Puls das gewählte Element) und gibt es als `formatTarget` an die
-  Canvas. Außerhalb dieser Momente ist es `null`, und nichts ist
-  gedimmt.
-- Mit fokussiertem Element legt `syncFormatFocus`
-  (`charts/echarts/syncFormatFocus.ts`) nach dem Rendern Editor-Zustand
-  in die ECharts-Instanz: Serien, Legende und nicht bearbeitete Achsen
-  gedimmt, die Legende oder der bearbeitete Teil einer Achse leuchtet;
-  bei Pie und Donut werden keine Achsen gesetzt. Legenden-Icons erben
-  die Deckkraft der Serien und werden beim Fokus auf die Legende
-  zurückgesetzt. `syncFormatTooltip` versteckt im Fokus den Tooltip
-  (`hideTip`, `downplay`, `show: false`); beim Element `tooltip` pinnt
-  er ihn als Vorschau am größten Wert (`findPreviewPoint`,
-  `alwaysShowContent`, `triggerOn: 'none'`, `showTip`). Das `downplay`
-  hebt die Hervorhebung auf, die die Vorschau eines Achsen-Tooltips am
-  größten Wert setzt. Beides gehört nicht zur `ChartSpec` und
-  verschwindet mit dem nächsten vollständigen `setOption`. Der Brush
-  ist immer aktiv (`syncBrush`).
+- Format-Fokus: Das gewählte Element bleibt im Fokus, bis ein anderer
+  Klick ein anderes wählt; es gibt keinen Hover-Fokus aus dem Panel und
+  keinen Puls. `App` gibt es mit dem ausgewählten Objekt als
+  `formatTarget` an die Canvas (ohne Auswahl `null`). Nichts wird
+  gedimmt: Der Frame legt Fokus-Rahmen (`.chart-format-region.is-focus`)
+  über die Teile des Elements.
+- Gemessen wird dort, wo der Teil entsteht. Teile, die ECharts zeichnet,
+  misst `measureFocusRects` (`charts/echarts/`, die einzige Stelle mit
+  ECharts-Interna) ohne neues Zeichnen: Labels, Marks (eine Linie als
+  ganzer Pfad), Achsen und Achsen-Labels; über `MAX_FRAMED_PARTS` (100)
+  Teilen bekommt der Plot einen Rahmen. `EChartCanvas` misst beim
+  Wechsel des Elements und nach jedem `finished`, wenn ECharts fertig
+  animiert hat, und meldet über `onFormatFocus`. HTML-Teile tragen
+  `data-format-element`; der Frame misst sie selbst im Layout-Effect
+  und wieder bei jeder Größenänderung (`ResizeObserver`), ein von React
+  ersetzter Teil wird neu gesucht. Ein Eingabefeld an seiner Stelle,
+  z. B. beim Bearbeiten des Titels, bekommt keinen Rahmen.
+- Der Tooltip hat keine Vorschau mehr; er zeigt sich wie beim Lesen.
+  Der Brush ist immer aktiv (`syncBrush`).
 - Solange ⌘/Ctrl gehalten wird (`useIsFormatKeyHeld`), setzt
   `EChartCanvas` per Merge `tooltip.show: false`, damit das Label am
   Pointer den Daten-Tooltip ersetzt.
@@ -1009,23 +1051,41 @@ fields)` liefert nur die Panel-Elemente für das Dropdown: Container,
   Objekttyp. Die Position schreibt `moveFormatLabel` bei `pointermove`
   direkt als CSS-Variablen ans Label, ohne React-State, damit
   Mausbewegungen weder Frame noch Content neu rendern.
-- Der Chart-Titel ist HTML und liegt außerhalb von ECharts.
-  `ChartItem` spiegelt den Fokus dort über eine CSS-Klasse
-  (`is-formatted` leuchtet, `is-dimmed` tritt zurück).
+  Das Plot-Grid kartesischer Charts (`createGridOption`) hat feste Ränder
+  für Achsen-Labels und -Titel (`BASE_GRID`); Legende und Farbskala
+  nehmen sich ihren Platz im Chart-Body, nicht im Canvas. Pie und Donut
+  sitzen mittig in ihrem Canvas.
 
-Das Plot-Grid kartesischer Charts (`createGridOption`) weicht einer
-sichtbaren Legende aus: Rand der Legende (`LEGEND_EDGE_OFFSETS`, auch
-für ihre Platzierung genutzt), ihre Größe (eine Zeile oben und unten,
-breitester Eintrag per Canvas-Messung links und rechts) und ein
-Abstand zum Plot pro Seite. Pie und Donut weichen über `getPieCenter`
-aus.
+Legende (`ChartLegend`):
+
+- Einträge kommen aus dem Adapter (`EChartRender.legend`), Form der
+  Symbole nach Charttyp (`legend.symbol: 'auto'`: Balken und Pie
+  Rechteck, Linie Strich, Scatter dessen Symbol).
+- Oben und unten eine Zeile, die nach `alignment` am Plot sitzt
+  (`justify-self`) und umbrochene Zeilen ebenso ausrichtet
+  (`justify-content`); ist sie breiter als der Plot, nimmt sie dessen
+  Breite und beginnt am Anfang. Links und rechts eine Spalte, mittig,
+  höchstens 40 % der Chartbreite (`cqw`), lange Namen mit „…“.
+  `overflow: 'plain'` umbricht, `auto` und `scroll` scrollen nativ.
+- Ausgeblendete Einträge sind React-State in `EChartCanvas`, nicht in
+  der Spec; sie gehen als `selected` in die versteckte ECharts-Legende
+  und gelten nur, solange die Legende sichtbar und interaktiv ist.
+  `multiple` schaltet einen Eintrag um, `single` zeigt nur den einen;
+  Hover hebt Serie bzw. Segment hervor (`highlight`, `downplay`).
+
+Farbskala (`ChartColorScale`): Balken mit Minimum und Maximum, an jeder
+Seite mittig zum Plot, vertikal mit dem Maximum oben, horizontal mit
+dem Minimum links. Den Bereich rechnet `getColorScaleRange` (`charts/`,
+ohne ECharts) aus Spec und Daten; dieselbe Funktion liefert der
+`visualMap` Minimum und Maximum, so passen Skala und Marks immer
+zusammen.
 
 Chart-Content wird über eine typsichere Registry erzeugt:
 
 ```text
 ChartType
 → ChartContentBuilder
-→ Series sowie optionale Visual Maps und Achsen
+→ Series, Legenden-Einträge sowie optionale Visual Maps und Achsen
 ```
 
 Aktuell existieren getrennte Builder für:
@@ -1704,20 +1764,20 @@ gehört als Gruppe zum Element, das es betrifft. Was Daten zuordnet,
 liegt im Build Panel, was das ganze Dashboard betrifft, im Format-Panel
 ohne Auswahl.
 
-| Bereich                           | Ort                                                          |
-| --------------------------------- | ------------------------------------------------------------ |
-| Container, Rahmen                 | Element „Chart“/„Card“ (Klick auf freie Fläche, Enter)       |
-| Titel                             | Element „Title“, per Doppelklick inline editierbar           |
-| Marks                             | Element „Marks“ (⌘/Ctrl-Klick auf eine Mark)                 |
-| Datenlabels                       | Gruppe Labels in „Marks“ (⌘/Ctrl-Klick auf ein Label)        |
-| Tooltip                           | Gruppe Tooltip in „Marks“ (Vorschau am größten Wert)         |
-| Achsen, Gridlines, Zoom           | Elemente „X/Y Axis“: Title, Labels, Line, Gridlines, Zoom    |
-| Card Selection                    | Gruppe Selection in „Value“                                  |
-| Legende, Legend Interaction       | Element „Legend“: Gruppen Layout, Text, Interaction          |
-| Color Scale                       | Element „Color Scale“ (Dropdown, bei kontinuierlicher Farbe) |
-| Charttyp, Encodings, Aggregation  | Build Panel, Abschnitt „Chart data“                          |
-| Dashboard-Name                    | inline im Canvas-Titel                                       |
-| Style, Gap, Background, Animation | Format-Panel ohne Auswahl                                    |
+| Bereich                           | Ort                                                       |
+| --------------------------------- | --------------------------------------------------------- |
+| Container, Rahmen                 | Element „Chart“/„Card“ (Klick auf freie Fläche, Enter)    |
+| Titel                             | Element „Title“, per Doppelklick inline editierbar        |
+| Marks                             | Element „Marks“ (⌘/Ctrl-Klick auf eine Mark)              |
+| Datenlabels                       | Gruppe Labels in „Marks“ (⌘/Ctrl-Klick auf ein Label)     |
+| Tooltip                           | Gruppe Tooltip in „Marks“                                 |
+| Achsen, Gridlines, Zoom           | Elemente „X/Y Axis“: Title, Labels, Line, Gridlines, Zoom |
+| Card Selection                    | Gruppe Selection in „Value“                               |
+| Legende, Legend Interaction       | Element „Legend“: Gruppen Layout, Text, Interaction       |
+| Color Scale                       | Element „Color Scale“ (Klick auf die Skala)               |
+| Charttyp, Encodings, Aggregation  | Build Panel, Abschnitt „Chart data“                       |
+| Dashboard-Name                    | inline im Canvas-Titel                                    |
+| Style, Gap, Background, Animation | Format-Panel ohne Auswahl                                 |
 
 Die Widgets liegen in ihrer Domäne (`charts/format/`, `charts/data/`,
 `cards/`, `objects/`, `workspace/`) und rendern ihre Zeilen über

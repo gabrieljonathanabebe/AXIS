@@ -36,7 +36,9 @@ Dashboard-Panel, Anwenden als ein Undo-Schritt). Canvas und Container
 tragen eine echte Füllung (`Fill`) mit Deckkraft. Flächen und Linien
 können Verläufe tragen, Serien einen Fade in ihrer Farbe. Marks haben
 Glow oder Schatten, Container eine Liste von Effekten (Schatten,
-Innenschatten, Background Blur, Korn).
+Innenschatten, Background Blur, Korn). Die Fläche eines Kastens ist ein
+eigener Baustein (`Surface`); Legende und Farbskala sind HTML in
+Plätzen um den Chart-Canvas.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -58,8 +60,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 7. Effekte: Schatten, Background Blur und Korn – implementiert
 8. Dashboard-Styles – implementiert
 9. Arbeitsfläche, Format-Panel und Objekt-Layout – implementiert
-10. Kästen als HTML (3.10a), dann Farbskala wie eine Achse und Flächen
-    für Kästen (3.10b) – **nächster Slice**
+10. Kästen als HTML (3.10a) – implementiert; Farbskala wie eine Achse
+    und Flächen für Kästen (3.10b) – **nächster Slice**
 11. DateFormat
 12. Sortierung und Top N
 13. Theme-Umschalter in der TopBar (provisorisch)
@@ -81,69 +83,10 @@ Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
   `SurfaceLayers`; `ObjectTitleAppearance` gilt für Chart und Card
   zugleich, die Optik bleibt ohne Fläche unverändert
 
-### 3.10a Kästen als HTML (geplant, nächster Slice)
+### 3.10b Farbskala wie eine Achse und Flächen für Kästen (geplant, nächster Slice)
 
-Ein Kasten ist Fläche + Layout + Inhalt. Container, Legende, Farbskala,
-Tooltip und später Textfelder und Formen unterscheiden sich nur im
-Inhalt; Fläche und Layout sind bei allen gleich. Die Fläche gibt es
-schon: `ObjectContainer` ohne `layout`, samt Widgets und Ebenen in
-`ObjectFrame`. 3.10a löst sie heraus und macht Legende und Farbskala zu
-HTML-Kästen; neue Formatier-Optionen kommen erst mit 3.10b.
-
-Entscheidungen:
-
-- jeder Baustein genau einmal: ein Typ `Surface` (`background: Fill[]`,
-  `border`, `borderRadius`, `effects`), ein Satz `SurfaceControls`
-  (Gruppen Background, Border, Radius, Effects aus `ContainerWidget`),
-  ein HTML-Renderer `SurfaceLayers` (Flächen, Blur, Korn, Innenschatten,
-  SVG-Rahmen aus `ObjectFrame`); `ObjectContainer` wird `Surface` plus
-  `layout`, die Spec der Objekte bleibt gleich
-- was ein Renderer zeichnen kann, steht in einer kleinen Tabelle an
-  einer Stelle, nicht als Sonderfall je Element; die Controls blenden
-  aus, was nicht geht (Tooltip: kein SVG-Rahmen)
-- Legende und Farbskala sind HTML und sitzen in Plätzen um den
-  Chart-Canvas (oben, rechts, unten, links); der Canvas schrumpft per
-  CSS, das Messen und Rechnen in `createGridOption`
-  (`measureTextWidth`, `LEGEND_TO_PLOT`) und das Ausweichen von Pie und
-  Donut (`getPieCenter`) entfallen; die ECharts-`visualMap` bleibt mit
-  `show: false` für die Farbzuordnung
-- Position als Kreuz: `PositionGrid` mit einer Prop für nur die vier
-  Seiten (oben, links, rechts, unten als Buttons, die Mitte steht für
-  den Plot und ist deaktiviert); die Legende hat daneben die Ausrichtung
-  entlang der Seite (Anfang, Mitte, Ende), die Farbskala nicht (immer
-  mittig); die Richtung folgt aus der Seite (links und rechts vertikal,
-  oben und unten horizontal)
-- die Spec trennt Position und Anordnung nicht: Sie bleibt bei `layout`
-  mit `Pick`, das Format-Panel trennt beides seit 3.9; ob
-  `continuous.layout.orientation` entfällt, wird vor der Persistenz
-  entschieden
-- Überlauf der Legende einfach halten: umbrechen oder scrollen, kein
-  Blättern mit Seitenzahlen
-
-Vorgehen:
-
-1. Vorbereitung: erst #51 (Scatter flackert bei Selection), dann #52
-   (Charts aktualisieren statt neu aufbauen, `replaceMerge` statt
-   `notMerge`); #52 vor dem Umbau der Legende, weil `replaceMerge` dort
-   aufpassen muss
-2. Menüs im Panel nicht schmaler als ihr Inhalt (z. B. die Namen im Menü
-   der Palette)
-3. `Surface` herauslösen: Typ, `SurfaceControls`, `SurfaceLayers`; der
-   Container sieht danach exakt aus wie vorher
-4. Plätze um den Chart-Canvas; Position als Kreuz, bei der Legende mit
-   Ausrichtung
-5. Farbskala als HTML in ihrem Platz, vorerst mit Minimum und Maximum
-   wie heute
-6. Legende als HTML in denselben Plätzen mit gleichem Verhalten
-   (Serien ein- und ausblenden, Auswahl-Modus, inaktive Farbe,
-   Überlauf, Cmd/Ctrl+Klick formatiert); behebt #9 und #55
-
-Nicht in 3.10a: freie Positionierung der Legende (Versatz, Ziehen),
-Textfelder und Formen, neue Formatier-Optionen.
-
-### 3.10b Farbskala wie eine Achse und Flächen für Kästen (geplant)
-
-Direkt nach 3.10a. Die Farbskala ist im Grunde eine Achse mit
+Baut auf 3.10a auf (Legende und Farbskala als HTML, `Surface`,
+`SURFACE_CAPABILITIES`). Die Farbskala ist im Grunde eine Achse mit
 Farbverlauf statt Linie; sie nutzt deshalb die Bausteine der Achsen,
 keine neuen, und hat im Format-Panel dieselben Gruppen.
 
@@ -534,8 +477,8 @@ Bearbeitung am Objekt
 - Format-Modus: Pinsel oder Enter öffnet das Format-Popover, Regionen
   für Titel, Achsen, Achsenbeschriftungen, Legende, Marks und die freie
   Fläche (Element „Chart“ bzw. „Card“), Hover-Label im Format-Modus
-- Tooltip als Element mit festgehaltener Vorschau, Datenlabels und
-  Color Scale im Popover
+- Tooltip, Datenlabels und Color Scale als Elemente bzw. Gruppen im
+  Popover
 - Inspector entfernt; Widgets in ihren Domänen; Dashboard-Einstellungen
   (Gap, Background, Animation) im Zahnrad der Canvas-Toolbar
 - Format-Popover mit Gruppen statt Sections: alle Gruppen untereinander,
@@ -551,8 +494,8 @@ Bearbeitung am Objekt
   und `Slider` entfernt
 - Icon-Gruppen mit Icon und Wort über die volle Breite, Optionen mit
   Icons auch in Selects (`OptionContent`, Aggregationen mit Σ, x̄, x̃),
-  dichtere Menüs; `PositionGrid` für die Legende, `RotationDial` als
-  Feld mit Nadel
+  dichtere Menüs; `PositionGrid` für Legende und Farbskala,
+  `RotationDial` als Feld mit Nadel
 - Data Labels als eigenes Element mit Positionen je Charttyp
   (`labelPositions`, eigene Icons); Zoom als Toggles Scroll | Slider,
   Legend Interaction als Off | Multiple | Single, Animation mit Easing
@@ -565,7 +508,7 @@ Bearbeitung am Objekt
   Auswahl, ohne Auswahl das Dashboard; Zeilen-Raster `1fr 1fr 24px`
   (`ControlRow` mit `pair`, `single`, `wide`, `action`, `isFull`)
 - Ort statt Modus: kein Format-Modus mehr; Klick-Grammatik (Klick,
-  ⌘/Ctrl-Klick, Doppelklick), Hover-Label und kurzer Format-Fokus
+  ⌘/Ctrl-Klick, Doppelklick) und Hover-Label
 - kleine Elemente als Gruppen ihres Elternteils (`formatGroups`):
   Datenlabels und Tooltip in Marks, Achsen-Labels in der Achse,
   Selection in Value
@@ -616,9 +559,41 @@ Style-Bausteine und Farben
   als ein Undo-Schritt, `takeStyleColors` übernimmt generisch jede
   Farbe der Defaults; neue Objekte entstehen im aktuellen Style; keine
   Theme-Tokens mehr; Galerie im Dashboard-Popover mit Vorschau live aus
-  dem Rezept (`ContainerSurface`); Schnellauswahl der Style-Farben in
+  dem Rezept (`SurfaceLayers`); Schnellauswahl der Style-Farben in
   jedem Farbwähler; Dashboards behalten ihre Farben im hellen und
   dunklen Editor
+
+Kästen als HTML (3.10a)
+
+- Vorbereitung: Scatter flackert nicht mehr bei einer Selection (#51);
+  Format-Fokus als Rahmen statt Abdunkeln: Ein Klick legt Fokus-Rahmen
+  über den Teil, bis ein anderer Klick etwas anderes wählt, kein Puls,
+  kein Hover-Fokus aus dem Panel, keine Tooltip-Vorschau; Umriss im
+  vollen Akzent mit Halo, im Fokus dicker
+- schnellere Updates (#52, offen): Brush-Action nur mit Fläche, Fokus
+  ohne Neuzeichnen, Scrubben einmal pro Frame; Scatter mit 2.000
+  Punkten beim Scrubben 345 → 132 ms. Merge statt `notMerge` brachte
+  gemessen nichts; der Rest liegt bei vielen Scatter-Punkten (#57)
+- die Palette füllt ihren Select-Button
+- `Surface` als eigener Baustein für jeden Kasten: Typ, `SurfaceControls`,
+  `SurfaceLayers`, `SurfaceBorder`, `SurfaceEffectsControls`; was ein
+  Renderer zeichnet, steht in `SURFACE_CAPABILITIES`; der Container
+  sieht aus wie vorher
+- Position von Legende und Farbskala als Feld, das ein `PositionGrid`
+  öffnet: die Legende mit vollem 3×3-Raster (links und rechts mittig,
+  kein eigenes Alignment-Control), die Farbskala als Kreuz der vier
+  Seiten (`variant="cross"`); statt des anfangs geplanten Kreuzes mit
+  Ausrichtung daneben
+- Plätze um den Chart-Canvas (`.chart-body`); Farbskala als HTML an
+  allen vier Seiten mit Minimum und Maximum wie bisher
+  (`getColorScaleRange`, `continuous.layout.orientation` entfällt);
+  engere Plot-Ränder
+- Legende als HTML mit gleichem Verhalten: Ein- und Ausblenden über
+  eine versteckte ECharts-Legende, Single und Multiple, inaktive Farbe,
+  Hervorheben beim Hover, Umbruch oder Scrollen; das Messen in
+  `createGridOption` und `getPieCenter` entfallen; Legende ohne
+  Interaction ist eine Format-Region (#9), lange Legenden oben und
+  unten richten sich richtig aus (#55)
 
 Ask Cevyn V1
 
