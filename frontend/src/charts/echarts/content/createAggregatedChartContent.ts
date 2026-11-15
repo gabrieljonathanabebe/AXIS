@@ -1,5 +1,6 @@
 import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
+import { getColorScaleRange } from '../../getColorScaleRange'
 import { getValueLabel } from '../../getEffectiveAggregation'
 import { createAxesOptions } from '../createAxesOptions'
 import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
@@ -119,13 +120,12 @@ export function createAggregatedChartContent(
       })
     : []
 
-  const colorVisualMap = hasColorValue
+  const colorRange = getColorScaleRange(context)
+  const colorVisualMap = colorRange
     ? createContinuousColorVisualMap({
         appearance: appearance.colorScale.continuous,
         dimension: 2,
-        values: points.map((point) => {
-          return point.color_value
-        }),
+        range: colorRange,
       })
     : null
 

@@ -13,8 +13,11 @@ type CreateGridOptionParams = {
 }
 
 // ===== CONSTANTS =============================================================
-/** Room for axis labels and titles on each side of the plot. */
-const BASE_GRID = { bottom: 72, left: 72, right: 56, top: 40 }
+/**
+ * Room for axis labels and titles on each side of the plot. HTML parts
+ * next to the canvas, e.g. the color scale, line up with the plot by it.
+ */
+export const BASE_GRID = { bottom: 48, left: 64, right: 32, top: 28 }
 
 /**
  * Distance from the legend to the plot. Left and bottom also hold the axis

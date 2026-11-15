@@ -3,17 +3,18 @@ import {
   isRowInSelection,
 } from '../../../workspace/dataSelection'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
+import { getColorScaleRange } from '../../getColorScaleRange'
 import { getValueLabel } from '../../getEffectiveAggregation'
+import { getNumericDomain } from '../../getNumericDomain'
 import { createAxesOptions } from '../createAxesOptions'
+import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
 import { createEffectOption } from '../createEffectOption'
 import { createFillOption } from '../createFillOption'
-import { createScatterVisualMaps } from '../createScatterVisualMaps'
 import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
 } from '../createSeriesLabelOption'
 import { createBorderOption } from '../createStrokeStyleOption'
-import { getNumericDomain } from '../getNumericDomain'
 import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
 
 import type { ScatterSeriesOption } from 'echarts'
@@ -131,6 +132,7 @@ export function createScatterChartContent(
     encoding,
     dataset.fields,
   )
+  const colorRange = getColorScaleRange(context)
   const rows = points
   const rowSelection = getRowSelection(rows, selection)
   const canGlow = rows.length <= MAX_GLOW_POINTS
@@ -205,12 +207,13 @@ export function createScatterChartContent(
 
   return {
     series,
-    visualMap: createScatterVisualMaps({
-      appearance,
-      colorEncodingMode,
-      encoding,
-      rows,
-    }),
+    visualMap: colorRange
+      ? createContinuousColorVisualMap({
+          appearance: appearance.colorScale.continuous,
+          dimension: 3,
+          range: colorRange,
+        })
+      : undefined,
     xAxis,
     yAxis,
   }

@@ -11,8 +11,10 @@ type ColorScaleWidgetProps = {
 }
 
 const positionOptions = [
-  { label: 'Left', value: 'left' },
+  { label: 'Top', value: 'top' },
   { label: 'Right', value: 'right' },
+  { label: 'Bottom', value: 'bottom' },
+  { label: 'Left', value: 'left' },
 ] satisfies {
   label: string
   value: ContinuousColorScale['layout']['position']

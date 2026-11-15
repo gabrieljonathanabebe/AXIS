@@ -113,7 +113,7 @@ export function createDefaultChartSpec(
           startColor: { kind: 'custom', color: '#fe0314' },
           endColor: { kind: 'custom', color: '#00fa2e' },
           visible: true,
-          layout: { orientation: 'vertical', position: 'right' },
+          layout: { position: 'right' },
           min: null,
           max: null,
           labels: true,

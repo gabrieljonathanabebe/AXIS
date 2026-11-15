@@ -218,7 +218,7 @@ export type ColorScaleAppearance = {
     startColor: ColorValue
     endColor: ColorValue
     visible: boolean
-    layout: Pick<Layout<'left' | 'right'>, 'orientation' | 'position'>
+    layout: Pick<Layout, 'position'>
     min: number | null
     max: number | null
     labels: boolean

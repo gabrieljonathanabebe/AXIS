@@ -6,6 +6,7 @@ import { getRectInFrame } from '../objects/elementRect'
 import EmptyState from '../shared/ui/EmptyState'
 import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { isSameSelection } from '../workspace/dataSelection'
+import ChartColorScale from './ChartColorScale'
 import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
 import {
   createChartQuery,
@@ -20,11 +21,13 @@ import {
 import { syncBrush } from './echarts/createBrushOption'
 import { createEChartOption } from './echarts/createEChartOption'
 import { createFormatHintFromEvent } from './echarts/createFormatHintFromEvent'
+import { BASE_GRID } from './echarts/createGridOption'
 import {
   createSelectionFromBrush,
   createSelectionFromEvent,
 } from './echarts/createSelectionFromEvent'
 import { measureFocusRects } from './echarts/measureFocusRects'
+import { getColorScaleRange } from './getColorScaleRange'
 import { useChartQuery } from './useChartQuery'
 import { useDocumentTheme } from './useDocumentTheme'
 import { usePointsQuery } from './usePointsQuery'
@@ -116,6 +119,15 @@ function EChartCanvas({
 
   const isEmpty = missingLabels.length > 0
   const ChartIcon = getChartDefinition(chart.type).icon
+  const colorScale = chart.spec.appearance.colorScale.continuous
+  const colorRange = getColorScaleRange({
+    chartType: chart.type,
+    dataset,
+    points,
+    queryResult: result,
+    spec: chart.spec,
+  })
+  const showsColorScale = colorScale.visible && !isEmpty && !chartError
 
   function getAxisTitleEdit(event: ECElementEvent): AxisTitleEdit | null {
     const edit = createAxisTitleEditFromEvent(event)
@@ -306,6 +318,14 @@ function EChartCanvas({
         className={`echart-canvas ${isEmpty || chartError ? 'is-empty' : ''}`}
         ref={containerRef}
       />
+      {showsColorScale && colorRange ? (
+        <ChartColorScale
+          plotInsets={BASE_GRID}
+          range={colorRange}
+          scale={colorScale}
+          onHover={onHoverElement}
+        />
+      ) : null}
       {isEmpty && (
         <div className="chart-state">
           <EmptyState

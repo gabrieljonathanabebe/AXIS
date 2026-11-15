@@ -1,0 +1,38 @@
+/* Place of the color scale next to the canvas. Its inline padding lines
+   the scale up with the plot. */
+.chart-color-scale {
+  --color-scale-length: 140px;
+  --color-scale-thickness: 20px;
+
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-1);
+}
+
+/* Format region: the bar and its labels. */
+.chart-color-scale-body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-body {
+  flex-direction: column;
+}
+
+.chart-color-scale-bar {
+  width: var(--color-scale-length);
+  height: var(--color-scale-thickness);
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-bar {
+  width: var(--color-scale-thickness);
+  height: var(--color-scale-length);
+}
