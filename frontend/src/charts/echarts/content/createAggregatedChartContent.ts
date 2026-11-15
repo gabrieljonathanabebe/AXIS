@@ -138,6 +138,14 @@ export function createAggregatedChartContent(
   })
 
   return {
+    legend:
+      colorEncodingMode === 'categorical'
+        ? seriesNames.flatMap((name, index) => {
+            return name === null
+              ? []
+              : [{ color: getPaletteColor(palette, index), name }]
+          })
+        : [],
     series: [...baseSeries, ...highlightSeries],
     visualMap: colorVisualMap ? [colorVisualMap] : undefined,
     xAxis: highlightPoints

@@ -2,11 +2,12 @@ import type { EChartsOption } from 'echarts'
 import type { DataRow, Dataset } from '../../../datasets/types'
 import type { DataSelection } from '../../../workspace/types'
 import type { ChartQueryResult } from '../../chartsApi'
-import type { ChartSpec, ChartType } from '../../types'
+import type { ChartSpec, ChartType, LegendEntry } from '../../types'
 import type { ChartTheme } from '../chartTheme'
 
 // ===== TYPES =================================================================
 export type ChartContent = {
+  legend: LegendEntry[]
   series: NonNullable<EChartsOption['series']>
   visualMap?: EChartsOption['visualMap']
   xAxis?: EChartsOption['xAxis']

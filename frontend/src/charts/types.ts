@@ -253,6 +253,15 @@ export type LegendAppearance = {
 
 export type LegendSelectionMode = 'multiple' | 'single'
 
+/**
+ * One entry of the legend as the chart draws it: the name of a series or
+ * category and its color, e.g. a palette color.
+ */
+export type LegendEntry = {
+  color: string
+  name: string
+}
+
 // ===== LINE ==================================================================
 export type LineAppearance = {
   stroke: SeriesStrokeStyle

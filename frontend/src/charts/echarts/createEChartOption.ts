@@ -11,6 +11,7 @@ import { resolveColor, resolvePalette } from './resolveColor'
 
 import type { EChartsOption } from 'echarts'
 import type { DashboardAnimation } from '../../workspace/types'
+import type { LegendEntry } from '../types'
 import type { ChartContentContext } from './content/chartContentTypes'
 
 // ===== TYPES =================================================================
@@ -19,11 +20,23 @@ type EChartOptionContext = ChartContentContext & {
   chartId: string
 }
 
+/**
+ * What a chart draws: the ECharts option for the canvas and the entries of
+ * its HTML legend.
+ */
+export type EChartRender = {
+  legend: LegendEntry[]
+  option: EChartsOption
+}
+
 // ===== FUNCTION ==============================================================
-/** Translates a chart and its query results into one ECharts option. */
-export function createEChartOption(
-  context: EChartOptionContext,
-): EChartsOption {
+/**
+ * Translates a chart and its query results into one ECharts option and
+ * the entries of its legend, which the chart shows as HTML.
+ * @param context Chart, query results, selection, theme and animation.
+ * @returns The option and the legend entries.
+ */
+export function createEChartOption(context: EChartOptionContext): EChartRender {
   // ===== CONSTANTS ===========================================================
   const { animation, chartId, chartType, dataset, selection, spec, theme } =
     context
@@ -42,8 +55,8 @@ export function createEChartOption(
     interaction: interaction.legend,
   })
 
-  // ===== RETURN ==============================================================
-  return {
+  // ===== OPTION ==============================================================
+  const option: EChartsOption = {
     animation: animation.enabled,
     animationDuration: animation.duration,
     animationEasing: animation.easing,
@@ -78,4 +91,7 @@ export function createEChartOption(
     xAxis: content.xAxis,
     yAxis: content.yAxis,
   }
+
+  // ===== RETURN ==============================================================
+  return { legend: content.legend, option }
 }

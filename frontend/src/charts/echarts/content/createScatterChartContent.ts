@@ -206,6 +206,9 @@ export function createScatterChartContent(
   })
 
   return {
+    legend: categoryNames.map((name, index) => {
+      return { color: getPaletteColor(palette, index), name }
+    }),
     series,
     visualMap: colorRange
       ? createContinuousColorVisualMap({

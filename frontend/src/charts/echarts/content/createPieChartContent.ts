@@ -91,6 +91,9 @@ export function createPieChartContent(
 
   // ===== RETURN ==============================================================
   return {
+    legend: categories.map((name, index) => {
+      return { color: getPaletteColor(palette, index), name }
+    }),
     series: [series],
   }
 }

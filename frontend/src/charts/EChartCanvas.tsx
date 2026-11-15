@@ -1,6 +1,6 @@
 import * as echarts from 'echarts'
 import { TriangleAlert } from 'lucide-react'
-import { useEffect, useEffectEvent, useRef } from 'react'
+import { useEffect, useEffectEvent, useMemo, useRef } from 'react'
 
 import { getRectInFrame } from '../objects/elementRect'
 import EmptyState from '../shared/ui/EmptyState'
@@ -42,7 +42,6 @@ import type {
   DashboardAnimation,
   DataSelection,
 } from '../workspace/types'
-import type { ChartTheme } from './echarts/chartTheme'
 import type { AxisTitleEdit, ChartFormatElement, ChartInstance } from './types'
 
 // Stable empty list, so non-scatter charts do not re-render the option.
@@ -128,6 +127,29 @@ function EChartCanvas({
     spec: chart.spec,
   })
   const showsColorScale = colorScale.visible && !isEmpty && !chartError
+  const render = useMemo(() => {
+    return createEChartOption({
+      animation,
+      chartId: chart.id,
+      chartType: chart.type,
+      dataset,
+      highlightResult,
+      points,
+      queryResult: result,
+      selection,
+      spec: chart.spec,
+      theme: { style },
+    })
+  }, [
+    animation,
+    chart,
+    dataset,
+    highlightResult,
+    points,
+    result,
+    selection,
+    style,
+  ])
 
   function getAxisTitleEdit(event: ECElementEvent): AxisTitleEdit | null {
     const edit = createAxisTitleEditFromEvent(event)
@@ -246,39 +268,16 @@ function EChartCanvas({
     }
   }, [])
 
+  // Draws every new option; the theme and an edited axis title redraw too.
   useEffect(() => {
     const instance = chartRef.current
     if (!instance) {
       return
     }
-    const theme: ChartTheme = { style }
-    const option = createEChartOption({
-      animation,
-      chartId: chart.id,
-      chartType: chart.type,
-      dataset,
-      highlightResult,
-      points,
-      queryResult: result,
-      selection,
-      spec: chart.spec,
-      theme,
-    })
-    instance.setOption(option, true)
+    instance.setOption(render.option, true)
     syncBrush(instance, chart, selection)
     syncAxisTitleEdit(instance, editingAxisTitle)
-  }, [
-    animation,
-    chart,
-    dataset,
-    documentTheme,
-    editingAxisTitle,
-    highlightResult,
-    points,
-    result,
-    selection,
-    style,
-  ])
+  }, [chart, documentTheme, editingAxisTitle, render, selection])
 
   // Measures when another element comes into focus; later changes report on
   // `finished`, once ECharts has animated to the new state.
