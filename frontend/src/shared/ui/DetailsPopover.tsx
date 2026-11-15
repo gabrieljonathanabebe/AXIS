@@ -17,6 +17,7 @@ export type DetailsTriggerProps = PopoverTriggerProps & {
 type DetailsPopoverProps = {
   actions?: ReactNode
   children: ReactNode
+  fitsContent?: boolean
   hasHeader?: boolean
   label: string
   open?: boolean
@@ -37,12 +38,14 @@ type DetailsPopoverProps = {
  * widget. `open` and `onOpenChange` let a parent open it, e.g. right
  * after adding a row. Inside the format popover it nests, so a click in
  * the details keeps both open.
+ * `fitsContent` gives it the width of its rows, e.g. a position grid.
  * @param props Rows of the details, their name, e.g. "Number format",
- *   header, actions, size of the gear, trigger and open state.
+ *   width, header, actions, size of the gear, trigger and open state.
  */
 function DetailsPopover({
   actions,
   children,
+  fitsContent = false,
   hasHeader = true,
   label,
   open,
@@ -66,7 +69,9 @@ function DetailsPopover({
       open={isOpen}
       placement="left-start"
       flipsAlignment={false}
-      className="details-popover glass glass-thick"
+      className={`details-popover glass glass-thick ${
+        fitsContent ? 'is-fit-content' : ''
+      }`}
       title={hasHeader ? label : undefined}
       onOpenChange={setIsOpen}
       renderTrigger={(triggerProps) =>

@@ -47,6 +47,21 @@ export type NumberBounds = {
 // ===== CONSTANTS =============================================================
 const SIDES: string[] = ['top', 'right', 'bottom', 'left'] satisfies Side[]
 
+/** Names of the sides, e.g. for a position field. */
+const SIDE_LABELS = {
+  bottom: 'Bottom',
+  left: 'Left',
+  right: 'Right',
+  top: 'Top',
+} satisfies Record<Side, string>
+
+/** Words of a place along the top or bottom side. */
+const ALIGNMENT_WORDS = {
+  center: 'center',
+  end: 'right',
+  start: 'left',
+} satisfies Record<HorizontalAlignment, string>
+
 // ===== FUNCTIONS =============================================================
 /**
  * Direction of an element at a side: along the top and bottom it runs
@@ -65,4 +80,23 @@ export function getSideOrientation(side: Side): Orientation {
  */
 export function isSide(position: string): position is Side {
   return SIDES.includes(position)
+}
+
+/**
+ * Names a place around a plot, e.g. "Top left" for a legend at the top,
+ * at the start. A left or right side, and a place without alignment, is
+ * named by its side alone, e.g. "Right".
+ * @param position Side the element sits at.
+ * @param alignment Place along the side, if the element has one.
+ * @returns The name, e.g. for a cell of the position grid or its field.
+ */
+export function getPlacementLabel(
+  position: Side,
+  alignment?: HorizontalAlignment,
+): string {
+  const side = SIDE_LABELS[position]
+  if (!alignment || getSideOrientation(position) === 'vertical') {
+    return side
+  }
+  return `${side} ${ALIGNMENT_WORDS[alignment]}`
 }

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 // ===== TYPES =================================================================
 type DetailsFieldProps = {
   children: ReactNode
+  fitsContent?: boolean
   icon: ReactNode
   label: string
   open?: boolean
@@ -19,12 +20,13 @@ type DetailsFieldProps = {
  * icon in place of the swatch, a short text next to it, e.g. the kind of
  * an effect or a preview of a number format. `open` and `onOpenChange`
  * let a list open the details itself, e.g. after adding, like the field
- * of a paint.
- * @param props Name for screen readers, icon, text, details and open
- *   state.
+ * of a paint. `fitsContent` gives the details the width of their rows.
+ * @param props Name for screen readers, icon, text, details, their width
+ *   and open state.
  */
 function DetailsField({
   children,
+  fitsContent,
   icon,
   label,
   open,
@@ -35,6 +37,7 @@ function DetailsField({
     <div className="field color-field">
       <div className="color-swatch">
         <DetailsPopover
+          fitsContent={fitsContent}
           hasHeader={false}
           label={label}
           open={open}

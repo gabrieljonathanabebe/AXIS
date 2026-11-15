@@ -1,8 +1,18 @@
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  PanelBottom,
+  PanelLeft,
+  PanelRight,
+  PanelTop,
+} from 'lucide-react'
 
-import { isSide } from '../layout'
+import { getPlacementLabel, isSide } from '../layout'
 import BoxFieldsRow from './BoxFieldsRow'
 import ControlRow from './ControlRow'
+import DetailsField from './DetailsField'
 import PositionGrid from './PositionGrid'
 import SegmentedControl from './SegmentedControl'
 
@@ -40,6 +50,14 @@ const sideIcons = {
   top: ArrowUp,
 } satisfies Record<Side, LucideIcon>
 
+/** Icons of the position field: the side an element sits at. */
+const placementIcons = {
+  bottom: PanelBottom,
+  left: PanelLeft,
+  right: PanelRight,
+  top: PanelTop,
+} satisfies Record<Side, LucideIcon>
+
 /** Icons that still fit one field column; more take both. */
 const MAX_ICONS_PER_COLUMN = 3
 
@@ -47,11 +65,13 @@ const MAX_ICONS_PER_COLUMN = 3
 /**
  * Rows of the Position group: where an element sits in its parent. A box
  * shows X | Y with the unit and bounds of the element, e.g. grid cells of
- * a chart. A side with an alignment, e.g. of a legend, is a
- * `PositionGrid`; other positions are an icon group: sides show only the
- * arrow, positions with their own icon, e.g. of the data labels, icon and
- * word across the row. A single position needs no control. Reads only its
- * fields, so it takes the same layout as `LayoutControls`.
+ * a chart. An element at all four sides gets a field that names its place
+ * and opens a `PositionGrid`: the full grid with an alignment, e.g. of a
+ * legend, the cross without, e.g. of a color scale. Other positions are
+ * an icon group: sides show only the arrow, positions with their own
+ * icon, e.g. of the data labels, icon and word across the row. A single
+ * position needs no control. Reads only its fields, so it takes the same
+ * layout as `LayoutControls`.
  */
 function PositionControls<TLayout extends PartialLayout>({
   box,
@@ -61,10 +81,14 @@ function PositionControls<TLayout extends PartialLayout>({
   onChange,
 }: PositionControlsProps<TLayout>) {
   const { alignment, position } = value
-  const showsGrid =
-    alignment !== undefined && position !== undefined && isSide(position)
+  const showsPlacement =
+    position !== undefined &&
+    isSide(position) &&
+    positions.length === sideOptions.length &&
+    positions.every((option) => isSide(option.value))
+  const PlacementIcon = showsPlacement ? placementIcons[position] : null
   const showsIcons =
-    !showsGrid && position !== undefined && positions.length > 1
+    !showsPlacement && position !== undefined && positions.length > 1
   const isWide =
     positions.length > MAX_ICONS_PER_COLUMN ||
     positions.some((option) => option.icon)
@@ -73,13 +97,21 @@ function PositionControls<TLayout extends PartialLayout>({
       {box ? (
         <BoxFieldsRow box={box} fields={['x', 'y']} label={label} />
       ) : null}
-      {showsGrid ? (
-        <ControlRow layout="single">
-          <PositionGrid
+      {showsPlacement && PlacementIcon ? (
+        <ControlRow layout="wide">
+          <DetailsField
+            fitsContent
+            icon={<PlacementIcon size={14} />}
             label={`${label} position`}
-            value={{ alignment, position }}
-            onChange={(placement) => onChange({ ...value, ...placement })}
-          />
+            text={getPlacementLabel(position, alignment)}
+          >
+            <PositionGrid
+              label={`${label} position`}
+              value={{ alignment, position }}
+              variant={alignment === undefined ? 'cross' : 'grid'}
+              onChange={(placement) => onChange({ ...value, ...placement })}
+            />
+          </DetailsField>
         </ControlRow>
       ) : null}
       {showsIcons ? (
