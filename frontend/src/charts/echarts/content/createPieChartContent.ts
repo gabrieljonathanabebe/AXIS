@@ -7,24 +7,7 @@ import { createBorderOption } from '../createStrokeStyleOption'
 import { getPaletteColor, resolvePalette } from '../resolveColor'
 
 import type { PieSeriesOption } from 'echarts'
-import type { Side } from '../../../shared/layout'
-import type { LegendAppearance } from '../../types'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
-
-// ===== HELPERS ===============================================================
-/** Moves the pie away from a visible legend so the two never overlap. */
-function getPieCenter(legend: LegendAppearance): [string, string] {
-  if (!legend.visible) {
-    return ['50%', '50%']
-  }
-  const centers: Record<Side, [string, string]> = {
-    bottom: ['50%', '44%'],
-    left: ['60%', '50%'],
-    right: ['40%', '50%'],
-    top: ['50%', '56%'],
-  }
-  return centers[legend.layout.position]
-}
 
 // ===== FUNCTION ==============================================================
 /**
@@ -69,7 +52,6 @@ export function createPieChartContent(
 
   const series: PieSeriesOption = {
     avoidLabelOverlap: true,
-    center: getPieCenter(spec.appearance.legend),
     data,
     itemStyle: {
       ...createFillOption(pie.fill),

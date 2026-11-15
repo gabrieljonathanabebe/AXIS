@@ -18,6 +18,7 @@ import type { ChartContentContext } from './content/chartContentTypes'
 type EChartOptionContext = ChartContentContext & {
   animation: DashboardAnimation
   chartId: string
+  hiddenLegendNames: ReadonlySet<string>
 }
 
 /**
@@ -38,8 +39,16 @@ export type EChartRender = {
  */
 export function createEChartOption(context: EChartOptionContext): EChartRender {
   // ===== CONSTANTS ===========================================================
-  const { animation, chartId, chartType, dataset, selection, spec, theme } =
-    context
+  const {
+    animation,
+    chartId,
+    chartType,
+    dataset,
+    hiddenLegendNames,
+    selection,
+    spec,
+    theme,
+  } = context
   const { appearance, interaction } = spec
   const colorEncodingMode = getColorEncodingMode(
     chartType,
@@ -49,11 +58,6 @@ export function createEChartOption(context: EChartOptionContext): EChartRender {
   const isRadialChart = isRadialChartType(chartType)
   const isSelectionSource = selection?.sourceChartId === chartId
   const content = createChartContent(context)
-  const legend = createLegendOption({
-    appearance: appearance.legend,
-    colorEncodingMode,
-    interaction: interaction.legend,
-  })
 
   // ===== OPTION ==============================================================
   const option: EChartsOption = {
@@ -70,14 +74,8 @@ export function createEChartOption(context: EChartOptionContext): EChartRender {
     dataZoom: isRadialChart
       ? undefined
       : createDataZoomOption(interaction.zoom),
-    grid: isRadialChart
-      ? undefined
-      : createGridOption({
-          legend: appearance.legend,
-          series: content.series,
-          showsLegend: legend.show === true,
-        }),
-    legend,
+    grid: isRadialChart ? undefined : createGridOption(),
+    legend: createLegendOption(hiddenLegendNames),
     series: content.series,
     tooltip: createTooltipOption({
       chartType,

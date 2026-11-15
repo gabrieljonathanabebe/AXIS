@@ -55,6 +55,7 @@
 @import './styles/canvas/ChartItem.css';
 @import './styles/canvas/EChartCanvas.css';
 @import './styles/canvas/ChartColorScale.css';
+@import './styles/canvas/ChartLegend.css';
 @import './styles/canvas/CardItem.css';
 @import './styles/canvas/EncodingDropSlots.css';
 @import './styles/canvas/StyleGallery.css';

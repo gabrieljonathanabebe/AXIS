@@ -76,6 +76,7 @@
   inset: var(--chart-canvas-inset);
   top: calc(var(--chart-header-top) + var(--chart-header-height));
   display: grid;
+  container-type: inline-size;
   grid-template:
     'top top top' auto
     'left canvas right' minmax(0, 1fr)

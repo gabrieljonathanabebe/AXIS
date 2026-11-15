@@ -1,0 +1,78 @@
+/* Place of the legend next to the canvas. Its inline padding lines the
+   legend up with the plot. */
+.chart-legend {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-1);
+}
+
+/* Format region: the entries in a row, at the left or right in a column;
+   a side legend takes at most 40 % of the chart width. */
+.chart-legend-body {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  max-height: 100%;
+  line-height: 1.2;
+  scrollbar-width: thin;
+}
+
+.chart-legend.is-vertical .chart-legend-body {
+  flex-direction: column;
+  max-width: 40cqw;
+}
+
+.chart-legend-body.is-wrapping {
+  flex-wrap: wrap;
+}
+
+.chart-legend-body.is-scrolling {
+  overflow: auto;
+}
+
+.chart-legend-entry {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+button.chart-legend-entry {
+  cursor: pointer;
+}
+
+.chart-legend-symbol {
+  flex: none;
+  border-radius: var(--radius-xs);
+}
+
+.chart-legend-symbol.is-circle,
+.chart-legend-symbol.is-line {
+  border-radius: var(--radius-pill);
+}
+
+.chart-legend-symbol.is-triangle {
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.chart-legend-symbol.is-diamond {
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.chart-legend-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

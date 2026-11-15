@@ -155,7 +155,7 @@ function measureParts(
  * @param instance ECharts instance of the chart.
  * @param element Element in focus.
  * @returns Bounds inside the canvas, or null for elements ECharts does not
- *   draw or that get no frame yet, e.g. the title or the legend.
+ *   draw, e.g. the title or the legend, which report themselves.
  */
 export function measureFocusRects(
   instance: ECharts,

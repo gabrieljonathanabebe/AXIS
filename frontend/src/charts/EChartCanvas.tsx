@@ -1,13 +1,18 @@
 import * as echarts from 'echarts'
 import { TriangleAlert } from 'lucide-react'
-import { useEffect, useEffectEvent, useMemo, useRef } from 'react'
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 
 import { getRectInFrame } from '../objects/elementRect'
 import EmptyState from '../shared/ui/EmptyState'
 import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
 import { isSameSelection } from '../workspace/dataSelection'
 import ChartColorScale from './ChartColorScale'
-import { getChartDefinition, getMissingEncodings } from './chartDefinitions'
+import {
+  getChartDefinition,
+  getMissingEncodings,
+  isRadialChartType,
+} from './chartDefinitions'
+import ChartLegend from './ChartLegend'
 import {
   createChartQuery,
   createHighlightQuery,
@@ -21,7 +26,7 @@ import {
 import { syncBrush } from './echarts/createBrushOption'
 import { createEChartOption } from './echarts/createEChartOption'
 import { createFormatHintFromEvent } from './echarts/createFormatHintFromEvent'
-import { BASE_GRID } from './echarts/createGridOption'
+import { getPlotInsets } from './echarts/createGridOption'
 import {
   createSelectionFromBrush,
   createSelectionFromEvent,
@@ -46,6 +51,9 @@ import type { AxisTitleEdit, ChartFormatElement, ChartInstance } from './types'
 
 // Stable empty list, so non-scatter charts do not re-render the option.
 const EMPTY_POINTS: DataRow[] = []
+
+// Stable empty set, so a legend without interaction hides nothing.
+const EMPTY_NAMES: ReadonlySet<string> = new Set()
 
 type EChartCanvasProps = {
   actions: CanvasActions
@@ -97,6 +105,8 @@ function EChartCanvas({
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ECharts | null>(null)
   const documentTheme = useDocumentTheme()
+  const [hiddenLegendNames, setHiddenLegendNames] =
+    useState<ReadonlySet<string>>(EMPTY_NAMES)
   const isFormatKeyHeld = useIsFormatKeyHeld()
   const isTooltipEnabled = chart.spec.interaction.tooltip.enabled
   const query = createChartQuery(chart, dataset.fields)
@@ -118,6 +128,8 @@ function EChartCanvas({
 
   const isEmpty = missingLabels.length > 0
   const ChartIcon = getChartDefinition(chart.type).icon
+  const { legend } = chart.spec.appearance
+  const legendInteraction = chart.spec.interaction.legend
   const colorScale = chart.spec.appearance.colorScale.continuous
   const colorRange = getColorScaleRange({
     chartType: chart.type,
@@ -126,13 +138,20 @@ function EChartCanvas({
     queryResult: result,
     spec: chart.spec,
   })
-  const showsColorScale = colorScale.visible && !isEmpty && !chartError
+  const showsParts = !isEmpty && !chartError
+  const showsColorScale = colorScale.visible && showsParts
+  const hiddenNames =
+    legend.visible && legendInteraction.enabled
+      ? hiddenLegendNames
+      : EMPTY_NAMES
+  const plotInsets = getPlotInsets(chart.type)
   const render = useMemo(() => {
     return createEChartOption({
       animation,
       chartId: chart.id,
       chartType: chart.type,
       dataset,
+      hiddenLegendNames: hiddenNames,
       highlightResult,
       points,
       queryResult: result,
@@ -144,12 +163,51 @@ function EChartCanvas({
     animation,
     chart,
     dataset,
+    hiddenNames,
     highlightResult,
     points,
     result,
     selection,
     style,
   ])
+  const showsLegend = legend.visible && render.legend.length > 0 && showsParts
+
+  /**
+   * Hides or shows the marks of a legend entry. In single mode the click
+   * shows only that entry, as the ECharts legend did.
+   * @param name Name of the entry.
+   */
+  function toggleLegendEntry(name: string): void {
+    if (legendInteraction.selectionMode === 'single') {
+      const otherNames = render.legend
+        .map((entry) => entry.name)
+        .filter((entryName) => entryName !== name)
+      setHiddenLegendNames(new Set(otherNames))
+      return
+    }
+    setHiddenLegendNames((current) => {
+      const next = new Set(current)
+      if (next.has(name)) {
+        next.delete(name)
+      } else {
+        next.add(name)
+      }
+      return next
+    })
+  }
+
+  /**
+   * Emphasizes the marks of the legend entry under the pointer, as the
+   * ECharts legend did: a series, or a segment of a pie.
+   * @param name Name of the entry.
+   * @param isActive Whether the pointer enters or leaves the entry.
+   */
+  function emphasizeLegendEntry(name: string, isActive: boolean): void {
+    chartRef.current?.dispatchAction({
+      type: isActive ? 'highlight' : 'downplay',
+      ...(isRadialChartType(chart.type) ? { name } : { seriesName: name }),
+    })
+  }
 
   function getAxisTitleEdit(event: ECElementEvent): AxisTitleEdit | null {
     const edit = createAxisTitleEditFromEvent(event)
@@ -319,10 +377,21 @@ function EChartCanvas({
       />
       {showsColorScale && colorRange ? (
         <ChartColorScale
-          plotInsets={BASE_GRID}
+          plotInsets={plotInsets}
           range={colorRange}
           scale={colorScale}
           onHover={onHoverElement}
+        />
+      ) : null}
+      {showsLegend ? (
+        <ChartLegend
+          chart={chart}
+          entries={render.legend}
+          hiddenNames={hiddenNames}
+          plotInsets={plotInsets}
+          onEmphasize={emphasizeLegendEntry}
+          onHover={onHoverElement}
+          onToggle={toggleLegendEntry}
         />
       ) : null}
       {isEmpty && (

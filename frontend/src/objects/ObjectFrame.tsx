@@ -31,9 +31,15 @@ import type {
 import type { DashboardObject, ElementRect, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================
-/** The element under the pointer and its bounds in the frame. */
+/**
+ * The element under the pointer and its bounds in the frame.
+ * `hasDataAction` tells whether a click on it acts on the data, e.g. a
+ * legend whose entries toggle; without it the element decides, e.g. a
+ * bar filters.
+ */
 export type FormatHint = {
   element: ObjectFormatElement
+  hasDataAction?: boolean
   rect: ElementRect
 }
 
@@ -105,12 +111,12 @@ const FORMAT_LABEL_OFFSET = 12
 const CLICK_TOLERANCE = 6
 
 /**
- * Elements whose click has a data action of its own, e.g. a bar filters or
- * a legend entry toggles its series; only Cmd/Ctrl+click formats them.
+ * Elements whose click has a data action of its own, e.g. a bar filters;
+ * only Cmd/Ctrl+click formats them. A hint can tell it itself, e.g. the
+ * legend only while its entries toggle.
  */
 const dataActionElements: ReadonlySet<ObjectFormatElement> = new Set([
   'labels',
-  'legend',
   'marks',
 ])
 
@@ -184,6 +190,19 @@ function isFrameControl(target: EventTarget): boolean {
   )
 }
 
+/**
+ * Tells whether a click on the element under the pointer acts on the
+ * data, e.g. a bar filters; then only Cmd/Ctrl+click formats it.
+ * @param hint Element under the pointer, or null on free space.
+ * @returns True when the click belongs to the data.
+ */
+function hasDataAction(hint: FormatHint | null): boolean {
+  if (!hint) {
+    return false
+  }
+  return hint.hasDataAction ?? dataActionElements.has(hint.element)
+}
+
 // ===== LAYOUT HANDLE =========================================================
 /** Moves or resizes the object when its edge or grip is dragged. */
 function LayoutHandle({ mode, objectId, objectLabel }: LayoutHandleProps) {
@@ -239,8 +258,7 @@ function ObjectFrame({
   // Places with a data action, e.g. bars, show their hint only while the
   // format key is held; free space shows one only on the selected object.
   const shownHint =
-    formatHint &&
-    (isFormatKeyHeld || !dataActionElements.has(formatHint.element))
+    formatHint && (isFormatKeyHeld || !hasDataAction(formatHint))
       ? formatHint
       : null
   const showsObjectHint = isSelected && isPointerInside && formatHint === null
@@ -350,8 +368,7 @@ function ObjectFrame({
   function startPress(event: MouseEvent<HTMLDivElement>): void {
     pressRef.current = { x: event.clientX, y: event.clientY }
     const element = formatHint?.element ?? 'container'
-    const formatsElement =
-      isFormatClick(event) || !dataActionElements.has(element)
+    const formatsElement = isFormatClick(event) || !hasDataAction(formatHint)
     if (!isSelected && formatsElement && !isFrameControl(event.target)) {
       onFormatElement(element)
     }
@@ -395,7 +412,7 @@ function ObjectFrame({
     if (
       !hasMoved &&
       !isFrameControl(event.target) &&
-      !dataActionElements.has(element)
+      !hasDataAction(formatHint)
     ) {
       onFormatElement(element)
     }
