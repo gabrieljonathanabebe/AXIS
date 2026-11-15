@@ -1,12 +1,11 @@
 .gradient-control {
   display: grid;
-  grid-template-columns: 20px minmax(48px, 1fr) 20px;
+  grid-template-columns: 20px minmax(0, 1fr) 20px;
   align-items: center;
   gap: var(--space-1);
   width: 100%;
   min-width: 0;
   height: var(--control-height-sm);
-  padding-inline: var(--space-1);
 }
 
 .gradient-control-preview {
