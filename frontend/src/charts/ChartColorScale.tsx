@@ -3,7 +3,9 @@ import { getColorCss } from '../shared/colorValue'
 import { createNumberFormatter } from '../shared/format/formatNumber'
 import { getSideOrientation } from '../shared/layout'
 import { getPaintColor } from '../shared/paint'
+import { getSurfaceStyle } from '../shared/surface'
 import { getTextStyleCss } from '../shared/textStyle'
+import SurfaceLayers from '../shared/ui/SurfaceLayers'
 import { getColorScaleTicks } from './getColorScaleTicks'
 
 import type { CSSProperties } from 'react'
@@ -101,6 +103,10 @@ function ChartColorScale({
       scale.startColor,
     )}, ${getColorCss(scale.endColor)})`,
   }
+  const bodyStyle: CSSProperties = {
+    ...getSurfaceStyle(scale.surface),
+    padding: scale.layout.padding,
+  }
   const { stroke } = scale.ticks
   const ticksStyle: TicksStyle = {
     ...getTextStyleCss(scale.labels.textStyle),
@@ -131,11 +137,13 @@ function ChartColorScale({
       style={placeStyle}
     >
       <div
-        className="chart-color-scale-body"
+        className="chart-color-scale-body surface"
         data-format-element="colorScale"
+        style={bodyStyle}
         onPointerEnter={(event) => showHint(event.currentTarget)}
         onPointerLeave={() => onHover(null)}
       >
+        <SurfaceLayers surface={scale.surface} />
         {scale.title.visible && title ? (
           <span
             className="chart-color-scale-title"

@@ -9,7 +9,9 @@
   padding: var(--space-1);
 }
 
-/* Format region: the title above the bar and its labels. */
+/* Format region: the title above the bar and its labels, on the surface
+   of the scale. A value near an end may reach past the bar, so the
+   surface does not clip. */
 .chart-color-scale-body {
   display: flex;
   flex-direction: column;
@@ -20,6 +22,7 @@
   font-variant-numeric: tabular-nums;
   line-height: 1;
   white-space: nowrap;
+  overflow: visible;
 }
 
 /* Name of the color metric; a long name ends in an ellipsis. */

@@ -2,6 +2,7 @@ import { getSideOrientation } from '../../shared/layout'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import LayoutControls from '../../shared/ui/LayoutControls'
 import PositionControls from '../../shared/ui/PositionControls'
+import SurfaceControls from '../../shared/ui/SurfaceControls'
 import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
 
@@ -67,10 +68,11 @@ function createSizeBox(
 }
 
 /**
- * Groups of the continuous color scale: where it sits, then title, labels
- * and ticks with the groups of an axis. Its direction follows from the
- * position, and its colors and range are part of the data color of the
- * marks. Whether it shows is the eye in the popover header.
+ * Groups of the continuous color scale: where it sits and its surface,
+ * then title, labels and ticks with the groups of an axis. Its direction
+ * follows from the position, and its colors and range are part of the
+ * data color of the marks. Whether it shows is the eye in the popover
+ * header.
  */
 function ColorScaleWidget({
   defaultTitle,
@@ -95,6 +97,13 @@ function ColorScaleWidget({
           onChange={(layout) => onChange({ ...value, layout })}
         />
       </FormatWidget>
+      <SurfaceControls
+        label="Color scale"
+        value={value.surface}
+        onChange={(key, property) => {
+          onChange({ ...value, surface: { ...value.surface, [key]: property } })
+        }}
+      />
       <AxisWidget
         defaultTitle={defaultTitle}
         label="Color scale"

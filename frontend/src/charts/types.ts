@@ -14,6 +14,7 @@ import type { SeriesFill } from '../shared/fill'
 import type { NumberFormat } from '../shared/format/valueFormats'
 import type { Layout } from '../shared/layout'
 import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
+import type { Surface } from '../shared/surface'
 import type { TextStyle } from '../shared/textStyle'
 
 // ===== ACTIONS ===============================================================
@@ -218,7 +219,7 @@ export type ColorScaleAppearance = {
     startColor: ColorValue
     endColor: ColorValue
     visible: boolean
-    layout: Pick<Layout, 'alignment' | 'position'>
+    layout: Pick<Layout, 'alignment' | 'padding' | 'position'>
     /** Size of the bar along its side and across it, in pixels. */
     size: { length: number; thickness: number }
     min: number | null
@@ -226,6 +227,7 @@ export type ColorScaleAppearance = {
     title: AxisTitleAppearance
     labels: ColorScaleLabelsAppearance
     ticks: AxisStrokeAppearance
+    surface: Surface
   }
 }
 
@@ -256,7 +258,7 @@ export type LabelsAppearance = {
 // ===== LEGEND ================================================================
 export type LegendAppearance = {
   visible: boolean
-  layout: Pick<Layout, 'alignment' | 'gap' | 'position'>
+  layout: Pick<Layout, 'alignment' | 'gap' | 'padding' | 'position'>
   symbol: 'auto' | 'circle' | 'rect' | 'line'
   textStyle: TextStyle
   /** Whether too many entries page by scrolling; `plain` shows all. */
@@ -264,6 +266,7 @@ export type LegendAppearance = {
   itemWidth: number
   itemHeight: 14
   inactiveColor: ColorValue
+  surface: Surface
 }
 
 export type LegendSelectionMode = 'multiple' | 'single'

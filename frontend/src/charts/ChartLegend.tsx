@@ -1,7 +1,9 @@
 import { getRectInFrame } from '../objects/elementRect'
 import { getColorCss } from '../shared/colorValue'
 import { getSideOrientation } from '../shared/layout'
+import { getSurfaceStyle } from '../shared/surface'
 import { getTextStyleCss } from '../shared/textStyle'
+import SurfaceLayers from '../shared/ui/SurfaceLayers'
 
 import type { CSSProperties, ReactNode } from 'react'
 import type { ShowFormatHint } from '../objects/ObjectFrame'
@@ -59,9 +61,9 @@ function getLegendSymbol(chart: ChartInstance): LegendSymbol {
  * Legend of a chart, as HTML in its place next to the canvas. At the top
  * or bottom the entries form a row that sits by its alignment along the
  * plot; at the left or right a column, centered on the plot. Too many
- * entries wrap with `plain` and scroll otherwise. While the legend is
- * interactive, a click on an entry hides or shows its marks. The legend
- * is a format region of its own.
+ * entries wrap with `plain` and scroll otherwise, inside the surface of
+ * the legend. While the legend is interactive, a click on an entry hides
+ * or shows its marks. The legend is a format region of its own.
  * @param props Chart, entries and the hidden ones, room around the plot,
  *   and callbacks for emphasis, format hint and toggling.
  */
@@ -91,10 +93,14 @@ function ChartLegend({
         paddingRight: plotInsets.right,
       }
   const bodyStyle: CSSProperties = {
+    ...getSurfaceStyle(legend.surface),
     ...getTextStyleCss(legend.textStyle),
+    justifySelf: isVertical ? undefined : alignment,
+    padding: legend.layout.padding,
+  }
+  const entriesStyle: CSSProperties = {
     gap,
     justifyContent: isVertical ? undefined : ROW_ALIGNMENTS[alignment],
-    justifySelf: isVertical ? undefined : alignment,
   }
   const symbolSize: CSSProperties = {
     height: symbol === 'line' ? LINE_THICKNESS : legend.itemHeight,
@@ -167,15 +173,21 @@ function ChartLegend({
       style={placeStyle}
     >
       <div
-        className={`chart-legend-body ${
-          legend.overflow === 'plain' ? 'is-wrapping' : 'is-scrolling'
-        }`}
+        className="chart-legend-body surface"
         data-format-element="legend"
         style={bodyStyle}
         onPointerEnter={(event) => showHint(event.currentTarget)}
         onPointerLeave={() => onHover(null)}
       >
-        {entries.map(renderEntry)}
+        <SurfaceLayers surface={legend.surface} />
+        <div
+          className={`chart-legend-entries ${
+            legend.overflow === 'plain' ? 'is-wrapping' : 'is-scrolling'
+          }`}
+          style={entriesStyle}
+        >
+          {entries.map(renderEntry)}
+        </div>
       </div>
     </div>
   )

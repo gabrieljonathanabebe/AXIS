@@ -10,10 +10,13 @@ import ScrubbableNumber from './ScrubbableNumber'
 import StrokeStyleControls from './StrokeStyleControls'
 import SurfaceEffectsControls from './SurfaceEffectsControls'
 
+import type { ReactNode } from 'react'
 import type { Surface, SurfaceRenderer } from '../surface'
 
 // ===== TYPES =================================================================
 type SurfaceControlsProps = {
+  /** Groups between Shape and Background, e.g. the text of a legend. */
+  children?: ReactNode
   label: string
   renderer?: SurfaceRenderer
   value: Surface
@@ -26,11 +29,15 @@ type SurfaceControlsProps = {
 // ===== COMPONENT =============================================================
 /**
  * Groups of a surface in the fixed order Shape → Fill → Stroke → Effects:
- * corner radius, background, border and effects. What the renderer draws
- * comes from `SURFACE_CAPABILITIES`; the effects offer only its kinds.
- * @param props Name, renderer, surface and a handler for one property.
+ * corner radius, background, border and effects. A box with text puts its
+ * Text group between Shape and Fill, as the fixed order has it. What the
+ * renderer draws comes from `SURFACE_CAPABILITIES`; the effects offer only
+ * its kinds.
+ * @param props Groups after Shape, name, renderer, surface and a handler
+ *   for one property.
  */
 function SurfaceControls({
+  children,
   label,
   renderer = 'html',
   value,
@@ -55,6 +62,7 @@ function SurfaceControls({
           />
         </ControlRow>
       </FormatWidget>
+      {children}
       <FormatWidget
         title="Background"
         onAdd={() => onChange('background', addFill(value.background))}

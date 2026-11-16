@@ -13,6 +13,7 @@ import {
 import type { DashboardStyle } from '../dashboardStyle/types'
 import type { ObjectLayout } from '../objects/types'
 import type { StrokeStyle } from '../shared/strokeStyle'
+import type { Surface } from '../shared/surface'
 import type { TextStyle } from '../shared/textStyle'
 import type {
   AxisStrokeAppearance,
@@ -71,6 +72,20 @@ function createMarkBorder(style: DashboardStyle): StrokeStyle {
   }
 }
 
+/**
+ * Default surface of a box in the chart, e.g. the legend: no fill and the
+ * border of the marks, off, so the box looks as before; a border made
+ * wider takes the border color of the style.
+ */
+function createBoxSurface(style: DashboardStyle): Surface {
+  return {
+    background: [],
+    border: createMarkBorder(style),
+    borderRadius: 8,
+    effects: [],
+  }
+}
+
 type CreateChartInstanceParams = {
   type: ChartType
   layout: ObjectLayout
@@ -113,7 +128,7 @@ export function createDefaultChartSpec(
           startColor: { kind: 'custom', color: '#fe0314' },
           endColor: { kind: 'custom', color: '#00fa2e' },
           visible: true,
-          layout: { alignment: 'center', position: 'right' },
+          layout: { alignment: 'center', padding: 0, position: 'right' },
           size: { length: 200, thickness: 20 },
           min: null,
           max: null,
@@ -125,6 +140,7 @@ export function createDefaultChartSpec(
             visible: true,
           },
           ticks: { ...axisLine, visible: false },
+          surface: createBoxSurface(style),
         },
       },
       title: createDefaultTitle(style),
@@ -163,6 +179,7 @@ export function createDefaultChartSpec(
         layout: {
           alignment: 'center',
           gap: 8,
+          padding: 0,
           position: isRadialChart ? 'right' : 'bottom',
         },
         symbol: 'auto',
@@ -171,6 +188,7 @@ export function createDefaultChartSpec(
         itemWidth: 24,
         itemHeight: 14,
         inactiveColor: createColorValue(style.colors.inactive),
+        surface: createBoxSurface(style),
       },
       labels: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
