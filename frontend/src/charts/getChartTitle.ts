@@ -1,5 +1,5 @@
-import { isPointsChartType } from './chartDefinitions'
-import { getValueLabel } from './getEffectiveAggregation'
+import { hasAggregatedColor, isPointsChartType } from './chartDefinitions'
+import { getAggregatedLabel, getValueLabel } from './getEffectiveAggregation'
 
 import type { DataField } from '../datasets/types'
 import type { ChartInstance } from './types'
@@ -38,4 +38,21 @@ export function getDefaultAxisTitle(
 ): string {
   const { data } = chart.spec
   return (axis === 'x' ? data.encoding.x : getValueLabel(data, fields)) ?? ''
+}
+
+/**
+ * Default title of the continuous color scale: the field that colors the
+ * marks, with its aggregation when the chart aggregates it, e.g. "Mean of
+ * profit" on bars or "profit" on a scatter.
+ * @param chart Chart with the color field.
+ * @returns Name of the color metric, or an empty text without one.
+ */
+export function getDefaultColorScaleTitle(chart: ChartInstance): string {
+  const { colorAggregation, encoding } = chart.spec.data
+  if (!encoding.color) {
+    return ''
+  }
+  return hasAggregatedColor(chart.type, encoding)
+    ? getAggregatedLabel(encoding.color, colorAggregation)
+    : encoding.color
 }

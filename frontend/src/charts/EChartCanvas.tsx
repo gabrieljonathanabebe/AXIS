@@ -32,6 +32,7 @@ import {
   createSelectionFromEvent,
 } from './echarts/createSelectionFromEvent'
 import { measureFocusRects } from './echarts/measureFocusRects'
+import { getDefaultColorScaleTitle } from './getChartTitle'
 import { getColorScaleRange } from './getColorScaleRange'
 import { useChartQuery } from './useChartQuery'
 import { useDocumentTheme } from './useDocumentTheme'
@@ -131,6 +132,8 @@ function EChartCanvas({
   const { legend } = chart.spec.appearance
   const legendInteraction = chart.spec.interaction.legend
   const colorScale = chart.spec.appearance.colorScale.continuous
+  const colorScaleTitle =
+    colorScale.title.text.trim() || getDefaultColorScaleTitle(chart)
   const colorRange = getColorScaleRange({
     chartType: chart.type,
     dataset,
@@ -380,6 +383,7 @@ function EChartCanvas({
           plotInsets={plotInsets}
           range={colorRange}
           scale={colorScale}
+          title={colorScaleTitle}
           onHover={onHoverElement}
         />
       ) : null}

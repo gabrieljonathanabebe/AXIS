@@ -221,8 +221,21 @@ export type ColorScaleAppearance = {
     layout: Pick<Layout, 'position'>
     min: number | null
     max: number | null
-    labels: boolean
+    title: AxisTitleAppearance
+    labels: ColorScaleLabelsAppearance
+    ticks: AxisStrokeAppearance
   }
+}
+
+/**
+ * Values along the continuous color scale: like the labels of an axis,
+ * without rotation and dates, since the color field is always a number.
+ */
+export type ColorScaleLabelsAppearance = Pick<
+  AxisLabelsAppearance,
+  'numberFormat' | 'textStyle' | 'tickCount'
+> & {
+  visible: boolean
 }
 
 // ===== INTERACTION ===========================================================

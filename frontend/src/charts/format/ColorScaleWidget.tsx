@@ -40,8 +40,10 @@ function ColorScaleWidget({ value, onChange }: ColorScaleWidgetProps) {
       <FormatWidget
         title="Labels"
         visibility={{
-          visible: value.labels,
-          onChange: (labels) => onChange({ ...value, labels }),
+          visible: value.labels.visible,
+          onChange: (visible) => {
+            onChange({ ...value, labels: { ...value.labels, visible } })
+          },
         }}
       />
     </>

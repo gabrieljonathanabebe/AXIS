@@ -207,10 +207,16 @@ Nach relevanten Frontend-Änderungen mindestens, im Ordner `frontend/`:
 ```bash
 npm run format
 npm run build
+npm run test
 ```
 
 `npm run format` formatiert neben dem Frontend auch `docs/`, `AGENTS.md`
 und `README.md`.
+
+Frontend-Tests laufen mit Vitest (`npm run test`, einmaliger Lauf ohne
+Watch-Modus). Sie liegen als `*.test.ts` neben der getesteten Datei,
+z. B. `charts/getColorScaleTicks.test.ts`, und decken reine Funktionen
+ohne React und ECharts ab.
 
 Nach relevanten Backend-Änderungen, im Ordner `backend/`:
 

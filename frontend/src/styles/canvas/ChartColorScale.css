@@ -11,10 +11,11 @@
   padding: var(--space-1);
 }
 
-/* Format region: the bar and its labels. */
+/* Format region: the title above the bar and its labels. */
 .chart-color-scale-body {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-1);
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
@@ -23,8 +24,49 @@
   white-space: nowrap;
 }
 
-.chart-color-scale.is-vertical .chart-color-scale-body {
+/* Name of the color metric; a long name ends in an ellipsis. */
+.chart-color-scale-title {
+  max-width: var(--color-scale-length);
+  overflow: hidden;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+}
+
+/* At the left or right the title runs along the bar like the title of
+   the Y axis: beyond the values, centered, read from bottom to top. */
+.chart-color-scale.is-right .chart-color-scale-body {
+  flex-direction: row-reverse;
+}
+
+.chart-color-scale.is-left .chart-color-scale-body {
+  flex-direction: row;
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-title {
+  align-self: center;
+  max-width: none;
+  max-height: var(--color-scale-length);
+  rotate: 180deg;
+  writing-mode: vertical-rl;
+}
+
+/* Bar with its ticks on the side away from the plot, like at an axis:
+   below at the bottom, above at the top, beside at the left or right. */
+.chart-color-scale-axis {
+  display: flex;
   flex-direction: column;
+}
+
+.chart-color-scale.is-top .chart-color-scale-axis {
+  flex-direction: column-reverse;
+}
+
+.chart-color-scale.is-right .chart-color-scale-axis {
+  flex-direction: row;
+}
+
+.chart-color-scale.is-left .chart-color-scale-axis {
+  flex-direction: row-reverse;
 }
 
 .chart-color-scale-bar {
@@ -35,4 +77,82 @@
 .chart-color-scale.is-vertical .chart-color-scale-bar {
   width: var(--color-scale-thickness);
   height: var(--color-scale-length);
+}
+
+/* Ticks along the bar, as long as the bar; each sits at its share. */
+.chart-color-scale-ticks {
+  display: grid;
+  grid-template-columns: 100%;
+  width: var(--color-scale-length);
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-ticks {
+  grid-template-rows: 100%;
+  grid-template-columns: auto;
+  width: auto;
+  height: var(--color-scale-length);
+}
+
+/* One tick: its mark at the bar, its value beyond. It centers on its
+   place; at an end of the bar it aligns inward. */
+.chart-color-scale-tick {
+  position: relative;
+  left: var(--color-scale-tick-position);
+  display: flex;
+  flex-direction: column;
+  grid-area: 1 / 1;
+  align-items: center;
+  justify-self: start;
+  gap: 2px;
+  translate: -50% 0;
+}
+
+.chart-color-scale-tick.is-start {
+  align-items: flex-start;
+  translate: 0 0;
+}
+
+.chart-color-scale-tick.is-end {
+  align-items: flex-end;
+  translate: -100% 0;
+}
+
+.chart-color-scale.is-top .chart-color-scale-tick {
+  flex-direction: column-reverse;
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-tick {
+  bottom: var(--color-scale-tick-position);
+  left: auto;
+  flex-direction: row;
+  align-self: end;
+  translate: 0 50%;
+}
+
+.chart-color-scale.is-left .chart-color-scale-tick {
+  flex-direction: row-reverse;
+  justify-self: end;
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-tick.is-start {
+  align-items: flex-end;
+  translate: 0 0;
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-tick.is-end {
+  align-items: flex-start;
+  translate: 0 100%;
+}
+
+/* Mark of a tick in the color and width of its stroke; transparent when
+   the marks are hidden, so the values keep their distance to the bar. */
+.chart-color-scale-tick-mark {
+  width: var(--color-scale-tick-width);
+  height: 4px;
+  background: var(--color-scale-tick-color);
+}
+
+.chart-color-scale.is-vertical .chart-color-scale-tick-mark {
+  width: 4px;
+  height: var(--color-scale-tick-width);
 }
