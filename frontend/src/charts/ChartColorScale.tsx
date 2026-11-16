@@ -13,6 +13,12 @@ import type { NumericDomain } from './getNumericDomain'
 import type { ColorScaleAppearance } from './types'
 
 // ===== TYPES =================================================================
+/** Place of the scale and the size of its bar, read by the bar and ticks. */
+type ScaleStyle = CSSProperties & {
+  '--color-scale-length': string
+  '--color-scale-thickness': string
+}
+
 type ChartColorScaleProps = {
   plotInsets: Record<Side, number>
   range: NumericDomain
@@ -66,19 +72,27 @@ function ChartColorScale({
   title,
   onHover,
 }: ChartColorScaleProps) {
-  const { position } = scale.layout
+  const { alignment, position } = scale.layout
   const isVertical = getSideOrientation(position) === 'vertical'
   const ticks = getColorScaleTicks(range, scale.labels.tickCount)
   const formatValue = createNumberFormatter(scale.labels.numberFormat)
   const span = range.max - range.min
-  const placeStyle: CSSProperties = isVertical
+  const sizeStyle = {
+    '--color-scale-length': `${scale.size.length}px`,
+    '--color-scale-thickness': `${scale.size.thickness}px`,
+  }
+  const placeStyle: ScaleStyle = isVertical
     ? {
+        ...sizeStyle,
+        alignItems: alignment,
         gridArea: position,
         paddingBottom: plotInsets.bottom,
         paddingTop: plotInsets.top,
       }
     : {
+        ...sizeStyle,
         gridArea: position,
+        justifyItems: alignment,
         paddingLeft: plotInsets.left,
         paddingRight: plotInsets.right,
       }

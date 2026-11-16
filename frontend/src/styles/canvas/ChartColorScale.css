@@ -1,9 +1,7 @@
 /* Place of the color scale next to the canvas. Its inline padding lines
-   the scale up with the plot. */
+   the scale up with the plot; its alignment and the size of its bar come
+   from the spec. */
 .chart-color-scale {
-  --color-scale-length: 140px;
-  --color-scale-thickness: 20px;
-
   display: grid;
   place-items: center;
   min-width: 0;

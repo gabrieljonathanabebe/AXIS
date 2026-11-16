@@ -5,7 +5,11 @@ import { getObjectDefinition } from '../../objects/objectDefinitions'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
 import FormatPanel from '../../shared/ui/FormatPanel'
 import FormatWidget from '../../shared/ui/FormatWidget'
-import { getDefaultAxisTitle, getDefaultChartTitle } from '../getChartTitle'
+import {
+  getDefaultAxisTitle,
+  getDefaultChartTitle,
+  getDefaultColorScaleTitle,
+} from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
 import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
@@ -61,6 +65,7 @@ function getFormatGroups(
     case 'colorScale':
       return (
         <ColorScaleWidget
+          defaultTitle={getDefaultColorScaleTitle(chart)}
           value={appearance.colorScale.continuous}
           onChange={(continuous) =>
             actions.setAppearance('colorScale', {
@@ -122,14 +127,14 @@ function getFormatGroups(
         <>
           <AxisWidget
             defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
-            orientation={axis}
+            label={elementTitles[element]}
             part="title"
             value={axisAppearance}
             onChange={setAxis}
           />
           <FormatWidget group={`${axis}AxisLabels`} title="Labels">
             <AxisWidget
-              orientation={axis}
+              label={elementTitles[element]}
               part="labels"
               value={axisAppearance}
               onChange={setAxis}

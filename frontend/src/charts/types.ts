@@ -218,7 +218,9 @@ export type ColorScaleAppearance = {
     startColor: ColorValue
     endColor: ColorValue
     visible: boolean
-    layout: Pick<Layout, 'position'>
+    layout: Pick<Layout, 'alignment' | 'position'>
+    /** Size of the bar along its side and across it, in pixels. */
+    size: { length: number; thickness: number }
     min: number | null
     max: number | null
     title: AxisTitleAppearance

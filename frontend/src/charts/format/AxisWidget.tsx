@@ -8,37 +8,49 @@ import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import TextInput from '../../shared/ui/TextInput'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
 
-import type { AxisAppearance } from '../types'
+import type { AxisLabelsAppearance, AxisTitleAppearance } from '../types'
 
 // ===== TYPES =================================================================
-type AxisOrientation = 'x' | 'y'
+/**
+ * Parts the groups edit, shared by an axis and the color scale; rotation
+ * and dates exist only at an axis.
+ */
+type AxisParts = {
+  labels: Pick<
+    AxisLabelsAppearance,
+    'numberFormat' | 'textStyle' | 'tickCount'
+  > &
+    Partial<Pick<AxisLabelsAppearance, 'rotation' | 'valueType'>>
+  title: AxisTitleAppearance
+}
 
 /** Part of the axis: its title group or the groups of its labels. */
 type AxisWidgetPart = 'labels' | 'title'
 
-type AxisWidgetProps = {
+type AxisWidgetProps<TValue extends AxisParts> = {
   defaultTitle?: string
-  onChange: (value: AxisAppearance) => void
-  orientation: AxisOrientation
+  /** Name of the element in the control labels, e.g. "X Axis". */
+  label: string
+  onChange: (value: TValue) => void
   part: AxisWidgetPart
-  value: AxisAppearance
+  value: TValue
 }
 
 // ===== FUNCTIONS =============================================================
 /**
  * Groups of one axis part: the title group, or the subgroups of its labels
- * (ticks, rotation, text and format as number or date), which the axis
- * element shows in its Labels group. Whether the axis shows is the eye in
- * the panel header.
+ * (ticks, rotation, text and format as number or date), which the element
+ * shows in its Labels group. The color scale has the same groups, without
+ * rotation and dates. Whether the element shows is the eye in the panel
+ * header.
  */
-function AxisWidget({
+function AxisWidget<TValue extends AxisParts>({
   defaultTitle,
-  orientation,
+  label,
   value,
   part,
   onChange,
-}: AxisWidgetProps) {
-  const title = orientation === 'x' ? 'X Axis' : 'Y Axis'
+}: AxisWidgetProps<TValue>) {
   const { labels } = value
   if (part === 'title') {
     return (
@@ -53,7 +65,7 @@ function AxisWidget({
       >
         <ControlRow layout="wide">
           <TextInput
-            label={`${title} title`}
+            label={`${label} title`}
             value={value.title.text}
             placeholder={defaultTitle || 'Automatic'}
             onValueChange={(text) => {
@@ -62,7 +74,7 @@ function AxisWidget({
           />
         </ControlRow>
         <TextStyleControls
-          label={`${title} title`}
+          label={`${label} title`}
           value={value.title.textStyle}
           onChange={(textStyle) =>
             onChange({ ...value, title: { ...value.title, textStyle } })
@@ -77,7 +89,7 @@ function AxisWidget({
         <ControlRow>
           <ScrubbableNumber
             icon={<Ruler size={14} />}
-            label={`${title} tick count`}
+            label={`${label} tick count`}
             max={20}
             min={2}
             step={1}
@@ -89,18 +101,20 @@ function AxisWidget({
               onChange({ ...value, labels: { ...labels, tickCount } })
             }}
           />
-          <RotationDial
-            label={`${title} label rotation`}
-            value={labels.rotation}
-            onValueChange={(rotation) => {
-              onChange({ ...value, labels: { ...labels, rotation } })
-            }}
-          />
+          {labels.rotation === undefined ? null : (
+            <RotationDial
+              label={`${label} label rotation`}
+              value={labels.rotation}
+              onValueChange={(rotation) => {
+                onChange({ ...value, labels: { ...labels, rotation } })
+              }}
+            />
+          )}
         </ControlRow>
       </FormatWidget>
       <FormatWidget title="Text">
         <TextStyleControls
-          label={`${title} label`}
+          label={`${label} label`}
           value={labels.textStyle}
           onChange={(textStyle) =>
             onChange({ ...value, labels: { ...labels, textStyle } })
@@ -110,17 +124,27 @@ function AxisWidget({
       <FormatWidget title="Format">
         <NumberFormatControls
           isDate={labels.valueType === 'date'}
-          label={title}
+          label={label}
           value={labels.numberFormat}
           onChange={(numberFormat) => {
+            const next = { ...labels, numberFormat }
             onChange({
               ...value,
-              labels: { ...labels, numberFormat, valueType: 'number' },
+              labels: labels.valueType
+                ? { ...next, valueType: 'number' }
+                : next,
             })
           }}
-          onDate={() => {
-            onChange({ ...value, labels: { ...labels, valueType: 'date' } })
-          }}
+          onDate={
+            labels.valueType
+              ? () => {
+                  onChange({
+                    ...value,
+                    labels: { ...labels, valueType: 'date' },
+                  })
+                }
+              : undefined
+          }
         />
       </FormatWidget>
     </>
