@@ -141,6 +141,7 @@ export type ChartAppearanceSpec = {
   line: LineAppearance
   bar: BarAppearance
   pie: PieAppearance
+  tooltip: TooltipAppearance
 }
 
 export type ChartDataSpec = {
@@ -243,6 +244,16 @@ export type ColorScaleLabelsAppearance = Pick<
 }
 
 // ===== INTERACTION ===========================================================
+/**
+ * Look of the data tooltip: its surface, drawn as CSS, and its text; the
+ * color and weight are those of the values, the labels fade the color.
+ * What it shows and when is interaction.
+ */
+export type TooltipAppearance = {
+  surface: Surface
+  textStyle: TextStyle
+}
+
 export type TooltipTrigger = 'item' | 'axis'
 
 // ===== LABEL =================================================================

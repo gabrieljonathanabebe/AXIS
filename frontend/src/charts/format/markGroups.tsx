@@ -578,8 +578,12 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
         }}
       >
         <TooltipWidget
+          appearance={chart.spec.appearance.tooltip}
           showTrigger={!isRadial}
           value={tooltip}
+          onAppearanceChange={(value) =>
+            actions.setAppearance('tooltip', value)
+          }
           onChange={(value) => actions.setInteraction('tooltip', value)}
         />
       </FormatWidget>

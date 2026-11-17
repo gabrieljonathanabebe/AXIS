@@ -27,7 +27,7 @@
   align-items: center;
   gap: var(--space-4);
   min-width: 160px;
-  color: var(--chart-tooltip-text-muted);
+  color: color-mix(in srgb, var(--chart-tooltip-text) 64%, transparent);
 }
 
 .chart-tooltip-row + .chart-tooltip-row {
@@ -42,6 +42,6 @@
 
 .chart-tooltip-row strong {
   color: var(--chart-tooltip-text);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--chart-tooltip-value-weight);
   font-variant-numeric: tabular-nums;
 }

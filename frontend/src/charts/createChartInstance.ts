@@ -238,6 +238,10 @@ export function createDefaultChartSpec(
         fill: { opacity: 1, paint: { kind: 'solid' } },
         innerRadius: 42,
       },
+      tooltip: {
+        surface: style.tooltip,
+        textStyle: { ...textStyle, fontSize: 13 },
+      },
     },
     interaction: {
       legend: {

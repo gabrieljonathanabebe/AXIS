@@ -4,6 +4,7 @@ import { createMaterialContainer } from './materials'
 
 import type { Shadow } from '../shared/effect'
 import type { Fill } from '../shared/fill'
+import type { Surface } from '../shared/surface'
 import type { DashboardCanvas } from '../workspace/types'
 import type {
   CanvasGlow,
@@ -11,7 +12,6 @@ import type {
   DashboardStyle,
   StyleColors,
   StyleRecipe,
-  StyleTooltip,
 } from './types'
 
 // ===== CONSTANTS =============================================================
@@ -120,33 +120,37 @@ function createCanvas(recipe: StyleRecipe): DashboardCanvas {
 }
 
 /**
- * Builds the tooltip of every chart: a veil in a tone the texts of the
- * scheme read on, with a border in the accent of the dashboard. A dark
- * scheme takes the canvas base, which is always dark, since the surface
- * of glass is a light tint; a light scheme takes the surface.
+ * Builds the tooltip surface of new charts: a blurred veil in a tone the
+ * texts of the scheme read on, with a border in the accent of the
+ * dashboard. A dark scheme takes the canvas base, which is always dark,
+ * since the surface of glass is a light tint; a light scheme takes the
+ * surface.
  * @param recipe Recipe with scheme, canvas and surface color.
  * @param colors Role colors of the style.
- * @returns Fill, border, shadow and sizes of the tooltip.
+ * @returns Fill, border, radius, background blur and shadow.
  */
-function createTooltip(recipe: StyleRecipe, colors: StyleColors): StyleTooltip {
+function createTooltip(recipe: StyleRecipe, colors: StyleColors): Surface {
   const { backgroundOpacity, shadow } = SCHEME_TOOLTIPS[recipe.scheme]
   const background =
     recipe.scheme === 'dark' ? recipe.canvas.base : recipe.surface
   return {
-    background: {
-      opacity: backgroundOpacity,
-      paint: { color: createColorValue(background), kind: 'solid' },
-    },
-    blur: 18,
+    background: [
+      {
+        opacity: backgroundOpacity,
+        paint: { color: createColorValue(background), kind: 'solid' },
+      },
+    ],
     border: {
       lineStyle: 'solid',
       opacity: 0.42,
       paint: { color: createColorValue(colors.accent), kind: 'solid' },
       width: 1,
     },
-    fontSize: 13,
-    radius: 18,
-    shadow,
+    borderRadius: 18,
+    effects: [
+      { blur: 18, kind: 'backgroundBlur' },
+      { ...shadow, kind: 'shadow' },
+    ],
   }
 }
 

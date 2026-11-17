@@ -1,8 +1,6 @@
 import type { ObjectContainer } from '../objects/types'
-import type { Shadow } from '../shared/effect'
-import type { Fill } from '../shared/fill'
 import type { RadialShape } from '../shared/paint'
-import type { StrokeStyle } from '../shared/strokeStyle'
+import type { Surface } from '../shared/surface'
 import type { DashboardCanvas } from '../workspace/types'
 
 // ===== RECIPE ================================================================
@@ -46,20 +44,10 @@ export type StyleColors = {
   textMuted: string
 }
 
-/** Tooltip of every chart in the dashboard, built from building blocks. */
-export type StyleTooltip = {
-  background: Fill
-  blur: number
-  border: StrokeStyle
-  fontSize: number
-  radius: number
-  shadow: Shadow
-}
-
 /**
- * All values that follow from a recipe: canvas and container as written
- * into the spec, role colors and palette for the defaults of new objects,
- * dimming and tooltip for every chart.
+ * All values that follow from a recipe: canvas, container and tooltip
+ * surface as written into the spec, role colors and palette for the
+ * defaults of new objects, dimming for every chart.
  */
 export type DashboardStyle = {
   canvas: DashboardCanvas
@@ -67,5 +55,5 @@ export type DashboardStyle = {
   container: Pick<ObjectContainer, 'background' | 'border' | 'effects'>
   dimmedOpacity: number
   palette: string[]
-  tooltip: StyleTooltip
+  tooltip: Surface
 }

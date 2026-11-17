@@ -1,14 +1,12 @@
 import { getColorCss } from '../../shared/colorValue'
-import { getShadowsCss } from '../../shared/effect'
-import { getFillsCss } from '../../shared/fill'
-import { getPaintColor } from '../../shared/paint'
+import { getSurfaceCssText } from '../../shared/surface'
+import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
 import { isRadialChartType } from '../chartDefinitions'
 import { createTooltipFormatter } from './createTooltipFormatter'
 
 import type { TooltipComponentOption } from 'echarts'
 import type { DataSelection } from '../../workspace/types'
 import type { ChartSpec, ChartType } from '../types'
-import type { ChartTheme } from './chartTheme'
 
 // ===== TYPES =================================================================
 type CreateTooltipOptionsParams = {
@@ -16,39 +14,34 @@ type CreateTooltipOptionsParams = {
   isSelectionSource: boolean
   selection: DataSelection | null
   spec: ChartSpec
-  theme: ChartTheme
   valueLabel: string | undefined
 }
 
 // ===== FUNCTION ==============================================================
 /**
- * Creates the tooltip of a chart: content from the spec, look from the
- * dashboard style, drawn as HTML with CSS of the shared building blocks.
+ * Creates the tooltip of a chart from the spec: its content, and its look
+ * as CSS of the shared building blocks, since ECharts renders the element.
+ * The values take the color and weight of the text style; the labels fade
+ * that color in the CSS of the chart.
  */
 export function createTooltipOption({
   chartType,
   isSelectionSource,
   selection,
   spec,
-  theme,
   valueLabel,
 }: CreateTooltipOptionsParams): TooltipComponentOption {
   const { tooltip } = spec.interaction
-  const { colors, tooltip: tooltipStyle } = theme.style
-  const { border } = tooltipStyle
-  const borderColor = getColorCss(getPaintColor(border.paint), border.opacity)
+  const { surface, textStyle } = spec.appearance.tooltip
+  const textColor = getColorCss(textStyle.color)
   return {
     appendTo: 'body',
     backgroundColor: 'transparent',
     borderWidth: 0,
     extraCssText: [
-      `--chart-tooltip-text: ${colors.text}`,
-      `--chart-tooltip-text-muted: ${colors.textMuted}`,
-      `backdrop-filter: blur(${tooltipStyle.blur}px)`,
-      `background: ${getFillsCss([tooltipStyle.background])}`,
-      `border: ${border.width}px ${border.lineStyle} ${borderColor}`,
-      `border-radius: ${tooltipStyle.radius}px`,
-      `box-shadow: ${getShadowsCss([tooltipStyle.shadow])}`,
+      `--chart-tooltip-text: ${textColor}`,
+      `--chart-tooltip-value-weight: ${FONT_WEIGHT_VALUES[textStyle.fontWeight]}`,
+      getSurfaceCssText(surface),
     ].join(';'),
     formatter: createTooltipFormatter({
       chartType,
@@ -60,8 +53,9 @@ export function createTooltipOption({
     show: tooltip.enabled,
     showDelay: tooltip.delay,
     textStyle: {
-      color: colors.text,
-      fontSize: tooltipStyle.fontSize,
+      color: textColor,
+      fontSize: textStyle.fontSize,
+      fontStyle: textStyle.fontStyle,
     },
     trigger: isRadialChartType(chartType) ? 'item' : tooltip.trigger,
   }

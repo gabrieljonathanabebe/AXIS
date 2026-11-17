@@ -82,7 +82,6 @@ export function createEChartOption(context: EChartOptionContext): EChartRender {
       isSelectionSource,
       selection,
       spec,
-      theme,
       valueLabel: getValueLabel(spec.data, dataset.fields),
     }),
     visualMap: content.visualMap,

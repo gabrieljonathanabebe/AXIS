@@ -1,5 +1,7 @@
+import { getColorCss } from './colorValue'
 import { getShadowsCss } from './effect'
 import { getFillsCss } from './fill'
+import { getPaintColor } from './paint'
 
 import type { CSSProperties } from 'react'
 import type { SurfaceEffect } from './effect'
@@ -94,4 +96,30 @@ export function getSurfaceStyle(surface: Surface): SurfaceStyle {
     '--surface-radius': `${surface.borderRadius}px`,
     '--surface-shadow': getShadowsCss(shadows),
   }
+}
+
+/**
+ * CSS of a surface on one element that ECharts renders, e.g. the tooltip:
+ * fills, a plain border in the color of its paint, radius, shadows and
+ * background blur. Inner shadows join the drop shadows; grain has no CSS.
+ * @param surface Fills, border, radius and effects.
+ * @returns Declarations for the inline style of the element.
+ */
+export function getSurfaceCssText(surface: Surface): string {
+  const { backgroundBlur, innerShadows, shadows } = getSurfaceEffects(
+    surface.effects,
+  )
+  const { border } = surface
+  const borderColor = getColorCss(getPaintColor(border.paint), border.opacity)
+  const boxShadows = [
+    getShadowsCss(shadows),
+    getShadowsCss(innerShadows, true),
+  ].filter((shadow) => shadow !== 'none')
+  return [
+    `backdrop-filter: blur(${backgroundBlur?.blur ?? 0}px)`,
+    `background: ${getFillsCss(surface.background)}`,
+    `border: ${border.width}px ${border.lineStyle} ${borderColor}`,
+    `border-radius: ${surface.borderRadius}px`,
+    `box-shadow: ${boxShadows.join(', ') || 'none'}`,
+  ].join(';')
 }

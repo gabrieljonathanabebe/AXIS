@@ -31,8 +31,8 @@ type SurfaceControlsProps = {
  * Groups of a surface in the fixed order Shape → Fill → Stroke → Effects:
  * corner radius, background, border and effects. A box with text puts its
  * Text group between Shape and Fill, as the fixed order has it. What the
- * renderer draws comes from `SURFACE_CAPABILITIES`; the effects offer only
- * its kinds.
+ * renderer draws comes from `SURFACE_CAPABILITIES`: the border offers a
+ * gradient only where it can be drawn, the effects only its kinds.
  * @param props Groups after Shape, name, renderer, surface and a handler
  *   for one property.
  */
@@ -43,7 +43,7 @@ function SurfaceControls({
   value,
   onChange,
 }: SurfaceControlsProps) {
-  const { effects } = SURFACE_CAPABILITIES[renderer]
+  const { borderGradient, effects } = SURFACE_CAPABILITIES[renderer]
   return (
     <>
       <FormatWidget title="Shape">
@@ -76,6 +76,7 @@ function SurfaceControls({
       <FormatWidget title="Border">
         <StrokeStyleControls
           label={`${label} border`}
+          paintTypes={borderGradient ? undefined : ['solid']}
           value={value.border}
           onChange={(border) => onChange('border', border)}
         />

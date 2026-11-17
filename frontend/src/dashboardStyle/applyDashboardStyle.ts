@@ -10,7 +10,8 @@ import type { DashboardStyle, StyleRecipe } from './types'
 // ===== HELPERS ===============================================================
 /**
  * Restyles one object: its container completely from the material, the
- * colors of its content from the defaults its kind gets in the style.
+ * colors of its content from the defaults its kind gets in the style; the
+ * surface of a chart tooltip, like a container, comes completely.
  * @param object Object on the canvas.
  * @param style Style to apply.
  * @returns Container action and appearance action of the object.
@@ -25,18 +26,23 @@ function createObjectStyleActions(
     patch: style.container,
   }
   switch (object.kind) {
-    case 'chart':
+    case 'chart': {
+      const appearance = takeStyleColors(
+        object.spec.appearance,
+        createDefaultChartSpec(object.type, style).appearance,
+      )
       return [
         containerAction,
         {
           type: 'chart/updateAppearance',
           chartId: object.id,
-          patch: takeStyleColors(
-            object.spec.appearance,
-            createDefaultChartSpec(object.type, style).appearance,
-          ),
+          patch: {
+            ...appearance,
+            tooltip: { ...appearance.tooltip, surface: style.tooltip },
+          },
         },
       ]
+    }
     case 'card':
       return [
         containerAction,
