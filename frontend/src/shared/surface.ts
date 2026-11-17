@@ -6,7 +6,7 @@ import { getPaintColor } from './paint'
 import type { CSSProperties } from 'react'
 import type { SurfaceEffect } from './effect'
 import type { Fill } from './fill'
-import type { StrokeStyle } from './strokeStyle'
+import type { StrokeAppearance } from './strokeStyle'
 
 // ===== TYPES =================================================================
 /**
@@ -15,7 +15,7 @@ import type { StrokeStyle } from './strokeStyle'
  */
 export type Surface = {
   background: Fill[]
-  border: StrokeStyle
+  border: StrokeAppearance
   borderRadius: number
   effects: SurfaceEffect[]
 }
@@ -109,8 +109,11 @@ export function getSurfaceCssText(surface: Surface): string {
   const { backgroundBlur, innerShadows, shadows } = getSurfaceEffects(
     surface.effects,
   )
-  const { border } = surface
-  const borderColor = getColorCss(getPaintColor(border.paint), border.opacity)
+  const { stroke, visible } = surface.border
+  const borderColor = getColorCss(getPaintColor(stroke.paint), stroke.opacity)
+  const borderCss = visible
+    ? `${stroke.width}px ${stroke.lineStyle} ${borderColor}`
+    : 'none'
   const boxShadows = [
     getShadowsCss(shadows),
     getShadowsCss(innerShadows, true),
@@ -118,7 +121,7 @@ export function getSurfaceCssText(surface: Surface): string {
   return [
     `backdrop-filter: blur(${backgroundBlur?.blur ?? 0}px)`,
     `background: ${getFillsCss(surface.background)}`,
-    `border: ${border.width}px ${border.lineStyle} ${borderColor}`,
+    `border: ${borderCss}`,
     `border-radius: ${surface.borderRadius}px`,
     `box-shadow: ${boxShadows.join(', ') || 'none'}`,
   ].join(';')

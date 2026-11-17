@@ -27,6 +27,7 @@ import PaletteControl from '../../shared/ui/PaletteControl'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
+import StrokeWidget from '../../shared/ui/StrokeWidget'
 import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
 import { getCategoricalPalettes } from '../colorPalettes'
 import { getColorEncodingMode } from '../getColorEncodingMode'
@@ -274,15 +275,12 @@ function getFilledMarkGroups(
       actions.setChartAppearance(mark, 'effect', value)
     }),
     stroke: (
-      <FormatWidget title="Border">
-        <StrokeStyleControls
-          label={`${label} border`}
-          value={border}
-          onChange={(value) =>
-            actions.setChartAppearance(mark, 'border', value)
-          }
-        />
-      </FormatWidget>
+      <StrokeWidget
+        label={`${label} border`}
+        title="Border"
+        value={border}
+        onChange={(value) => actions.setChartAppearance(mark, 'border', value)}
+      />
     ),
   }
 }

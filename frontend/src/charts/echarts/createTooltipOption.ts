@@ -32,13 +32,14 @@ export function createTooltipOption({
   valueLabel,
 }: CreateTooltipOptionsParams): TooltipComponentOption {
   const { tooltip } = spec.interaction
-  const { surface, textStyle } = spec.appearance.tooltip
+  const { layout, surface, textStyle } = spec.appearance.tooltip
   const textColor = getColorCss(textStyle.color)
   return {
     appendTo: 'body',
     backgroundColor: 'transparent',
     borderWidth: 0,
     extraCssText: [
+      `--chart-tooltip-gap: ${layout.gap}px`,
       `--chart-tooltip-text: ${textColor}`,
       `--chart-tooltip-value-weight: ${FONT_WEIGHT_VALUES[textStyle.fontWeight]}`,
       getSurfaceCssText(surface),
@@ -50,6 +51,7 @@ export function createTooltipOption({
       spec,
       valueLabel,
     }),
+    padding: layout.padding,
     show: tooltip.enabled,
     showDelay: tooltip.delay,
     textStyle: {

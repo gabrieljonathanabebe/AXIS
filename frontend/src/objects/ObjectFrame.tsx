@@ -470,6 +470,7 @@ function ObjectFrame({
         <span
           aria-hidden="true"
           className="chart-format-region"
+          data-element={shownHint.element}
           style={getRectStyle(shownHint.rect)}
         />
       ) : null}
@@ -477,6 +478,7 @@ function ObjectFrame({
         <span
           aria-hidden="true"
           className="chart-format-region is-focus"
+          data-element={formattedElement}
           key={index}
           style={getRectStyle(rect)}
         />

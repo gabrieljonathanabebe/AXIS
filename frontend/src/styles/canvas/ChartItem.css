@@ -133,7 +133,13 @@
 }
 
 .chart-format-region.is-focus {
-  --region-width: 2px;
+  --region-width: 1px;
+}
+
+/* Marks sit close together, e.g. grouped bars; a tighter frame keeps
+   their frames from touching. */
+.chart-format-region[data-element='marks'] {
+  --chart-region-frame: 2px;
 }
 
 /* Names what a click formats. Follows the pointer like a tooltip, with the

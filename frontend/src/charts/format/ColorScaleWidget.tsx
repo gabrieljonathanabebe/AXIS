@@ -2,8 +2,8 @@ import { getSideOrientation } from '../../shared/layout'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import LayoutControls from '../../shared/ui/LayoutControls'
 import PositionControls from '../../shared/ui/PositionControls'
+import StrokeWidget from '../../shared/ui/StrokeWidget'
 import SurfaceControls from '../../shared/ui/SurfaceControls'
-import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
 
 import type { LayoutBox } from '../../shared/ui/BoxFieldsRow'
@@ -127,8 +127,9 @@ function ColorScaleWidget({
           onChange={onChange}
         />
       </FormatWidget>
-      <AxisStrokeWidget
+      <StrokeWidget
         label="Color scale ticks"
+        maxWidth={4}
         title="Ticks"
         value={value.ticks}
         onChange={(ticks) => onChange({ ...value, ticks })}

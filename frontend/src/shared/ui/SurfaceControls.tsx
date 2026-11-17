@@ -7,7 +7,7 @@ import ControlRow from './ControlRow'
 import FillListControls from './FillListControls'
 import FormatWidget from './FormatWidget'
 import ScrubbableNumber from './ScrubbableNumber'
-import StrokeStyleControls from './StrokeStyleControls'
+import StrokeWidget from './StrokeWidget'
 import SurfaceEffectsControls from './SurfaceEffectsControls'
 
 import type { ReactNode } from 'react'
@@ -73,14 +73,13 @@ function SurfaceControls({
           onChange={(background) => onChange('background', background)}
         />
       </FormatWidget>
-      <FormatWidget title="Border">
-        <StrokeStyleControls
-          label={`${label} border`}
-          paintTypes={borderGradient ? undefined : ['solid']}
-          value={value.border}
-          onChange={(border) => onChange('border', border)}
-        />
-      </FormatWidget>
+      <StrokeWidget
+        label={`${label} border`}
+        paintTypes={borderGradient ? undefined : ['solid']}
+        title="Border"
+        value={value.border}
+        onChange={(border) => onChange('border', border)}
+      />
       <FormatWidget
         title="Effects"
         onAdd={() => {

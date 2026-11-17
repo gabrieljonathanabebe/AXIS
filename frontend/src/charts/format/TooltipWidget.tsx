@@ -2,6 +2,7 @@ import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
 
 import ControlRow from '../../shared/ui/ControlRow'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import LayoutControls from '../../shared/ui/LayoutControls'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import SegmentedControl from '../../shared/ui/SegmentedControl'
 import SurfaceControls from '../../shared/ui/SurfaceControls'
@@ -28,11 +29,12 @@ const triggerOptions = [
 ] satisfies OptionItem<TooltipTrigger>[]
 
 /**
- * Subgroups of the data tooltip in the fixed order: its surface as CSS
- * (no gradient in the border, no grain) with its text after Shape, the
- * number format of its values, then what triggers it, the hovered mark
- * or all marks at one position of the axis. Whether it shows is the eye
- * of its group in the marks; radial charts have no trigger.
+ * Subgroups of the data tooltip in the fixed order: its padding and the
+ * gap between its rows, its surface as CSS (no gradient in the border, no
+ * grain) with its text after Shape, the number format of its values, then
+ * what triggers it, the hovered mark or all marks at one position of the
+ * axis. Whether it shows is the eye of its group in the marks; radial
+ * charts have no trigger.
  */
 function TooltipWidget({
   appearance,
@@ -43,6 +45,14 @@ function TooltipWidget({
 }: TooltipWidgetProps) {
   return (
     <>
+      <FormatWidget title="Layout">
+        <LayoutControls
+          label="Tooltip"
+          maxGap={24}
+          value={appearance.layout}
+          onChange={(layout) => onAppearanceChange({ ...appearance, layout })}
+        />
+      </FormatWidget>
       <SurfaceControls
         label="Tooltip"
         renderer="css"

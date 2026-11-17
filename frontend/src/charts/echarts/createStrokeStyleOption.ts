@@ -4,6 +4,7 @@ import { createPaintColor, createSeriesPaintColor } from './createPaintColor'
 import type {
   LineStyle,
   SeriesStrokeStyle,
+  StrokeAppearance,
   StrokeStyle,
 } from '../../shared/strokeStyle'
 import type { PaintColor } from './createPaintColor'
@@ -27,15 +28,17 @@ type StrokeStyleOption = {
 // ===== FUNCTIONS =============================================================
 /**
  * Translates a border of the spec into ECharts item style fields. Item
- * styles have no border opacity, so the opacity goes into the colors.
+ * styles have no border opacity, so the opacity goes into the colors; a
+ * hidden border has no width.
  * @param border Border of one mark, e.g. of a bar or a pie segment.
  * @returns Color or gradient with opacity, dash type and width.
  */
-export function createBorderOption(border: StrokeStyle): BorderOption {
+export function createBorderOption(border: StrokeAppearance): BorderOption {
+  const { stroke, visible } = border
   return {
-    borderColor: createPaintColor(border.paint, border.opacity),
-    borderType: border.lineStyle,
-    borderWidth: border.width,
+    borderColor: createPaintColor(stroke.paint, stroke.opacity),
+    borderType: stroke.lineStyle,
+    borderWidth: visible ? stroke.width : 0,
   }
 }
 

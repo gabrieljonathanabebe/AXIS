@@ -13,7 +13,7 @@ import type { Effect } from '../shared/effect'
 import type { SeriesFill } from '../shared/fill'
 import type { NumberFormat } from '../shared/format/valueFormats'
 import type { Layout } from '../shared/layout'
-import type { SeriesStrokeStyle, StrokeStyle } from '../shared/strokeStyle'
+import type { SeriesStrokeStyle, StrokeAppearance } from '../shared/strokeStyle'
 import type { Surface } from '../shared/surface'
 import type { TextStyle } from '../shared/textStyle'
 
@@ -81,9 +81,9 @@ export type AxisAppearance = {
   title: AxisTitleAppearance
   min: number | null
   max: number | null
-  gridLines: AxisStrokeAppearance
+  gridLines: StrokeAppearance
   labels: AxisLabelsAppearance
-  line: AxisStrokeAppearance
+  line: StrokeAppearance
 }
 
 export type AxisLabelsAppearance = {
@@ -92,12 +92,6 @@ export type AxisLabelsAppearance = {
   textStyle: TextStyle
   tickCount: number | null
   valueType: AxisValueType
-}
-
-/** A line an axis draws: its axis line or its gridlines. */
-export type AxisStrokeAppearance = {
-  visible: boolean
-  stroke: StrokeStyle
 }
 
 /** Title of an axis; text, style and visibility match the object title. */
@@ -116,7 +110,7 @@ export type AxisValueType = 'number' | 'date'
 
 // ===== BAR ===================================================================
 export type BarAppearance = {
-  border: StrokeStyle
+  border: StrokeAppearance
   borderRadius: number
   barWidth: number
   effect: Effect
@@ -227,7 +221,7 @@ export type ColorScaleAppearance = {
     max: number | null
     title: AxisTitleAppearance
     labels: ColorScaleLabelsAppearance
-    ticks: AxisStrokeAppearance
+    ticks: StrokeAppearance
     surface: Surface
   }
 }
@@ -245,11 +239,13 @@ export type ColorScaleLabelsAppearance = Pick<
 
 // ===== INTERACTION ===========================================================
 /**
- * Look of the data tooltip: its surface, drawn as CSS, and its text; the
- * color and weight are those of the values, the labels fade the color.
- * What it shows and when is interaction.
+ * Look of the data tooltip: its padding and the gap between its rows, its
+ * surface, drawn as CSS, and its text; the color and weight are those of
+ * the values, the labels fade the color. What it shows and when is
+ * interaction.
  */
 export type TooltipAppearance = {
+  layout: Pick<Layout, 'gap' | 'padding'>
   surface: Surface
   textStyle: TextStyle
 }
@@ -310,7 +306,7 @@ export type LinePoints = 'auto' | 'on' | 'off'
 // ===== PIE ===================================================================
 /** Segments of pie and donut charts; the inner radius applies to donuts. */
 export type PieAppearance = {
-  border: StrokeStyle
+  border: StrokeAppearance
   effect: Effect
   fill: SeriesFill
   innerRadius: number
@@ -318,7 +314,7 @@ export type PieAppearance = {
 
 // ===== SCATTER ===============================================================
 export type ScatterAppearance = {
-  border: StrokeStyle
+  border: StrokeAppearance
   effect: Effect
   fill: SeriesFill
   pointSize: number

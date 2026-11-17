@@ -18,3 +18,12 @@ export type StrokeStyle<TPaint extends Paint | SeriesPaint = Paint> = {
 
 /** Stroke of a data series, e.g. a line; its color comes from the series. */
 export type SeriesStrokeStyle = StrokeStyle<SeriesPaint>
+
+/**
+ * A stroke with an eye, e.g. a border or the gridlines of an axis: hiding
+ * it keeps its values, so showing it again brings them back.
+ */
+export type StrokeAppearance<TPaint extends Paint | SeriesPaint = Paint> = {
+  visible: boolean
+  stroke: StrokeStyle<TPaint>
+}

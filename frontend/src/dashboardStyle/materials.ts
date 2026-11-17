@@ -5,7 +5,7 @@ import { createColorStops, DEFAULT_RADIAL_SHAPE } from '../shared/paint'
 import type { ColorValue } from '../shared/colorValue'
 import type { SurfaceEffect } from '../shared/effect'
 import type { GradientStop, Paint } from '../shared/paint'
-import type { StrokeStyle } from '../shared/strokeStyle'
+import type { StrokeAppearance } from '../shared/strokeStyle'
 import type { DashboardStyle, StyleColors, StyleRecipe } from './types'
 
 // ===== TYPES =================================================================
@@ -57,22 +57,25 @@ function createMaterialGradient(
 }
 
 /**
- * Creates a solid border in the border color of the scheme.
+ * Creates a solid 1 px border in the border color of the scheme.
  * @param colors Role colors of the style.
- * @param width Width in px; 0 hides the border.
+ * @param visible Whether the material shows the border.
  * @param opacity Opacity of the border.
- * @returns A solid stroke.
+ * @returns A solid stroke with its eye.
  */
 function createBorder(
   colors: StyleColors,
-  width: number,
+  visible: boolean,
   opacity: number,
-): StrokeStyle {
+): StrokeAppearance {
   return {
-    lineStyle: 'solid',
-    opacity,
-    paint: createSolidPaint(createColorValue(colors.border)),
-    width,
+    stroke: {
+      lineStyle: 'solid',
+      opacity,
+      paint: createSolidPaint(createColorValue(colors.border)),
+      width: 1,
+    },
+    visible,
   }
 }
 
@@ -85,7 +88,7 @@ function createSolidContainer(
     background: [
       { opacity: 1, paint: createSolidPaint(createColorValue(recipe.surface)) },
     ],
-    border: createBorder(colors, 1, 0.12),
+    border: createBorder(colors, true, 0.12),
     effects: recipe.scheme === 'light' ? [SOFT_SHADOW] : [],
   }
 }
@@ -108,7 +111,7 @@ function createFrostedContainer(
         ]),
       },
     ],
-    border: createBorder(colors, 0, 1),
+    border: createBorder(colors, false, 1),
     effects: [
       { blur: 40, kind: 'backgroundBlur' },
       { kind: 'noise', opacity: 0.04, size: DEFAULT_NOISE_SIZE },
@@ -132,14 +135,17 @@ function createGlassContainer(recipe: StyleRecipe): StyleContainer {
       },
     ],
     border: {
-      lineStyle: 'solid',
-      opacity: 1,
-      paint: createMaterialGradient(LIGHT_COLOR, [
-        { opacity: 0.35, position: 0 },
-        { opacity: 0.06, position: 0.5 },
-        { opacity: 0.14, position: 1 },
-      ]),
-      width: 1,
+      stroke: {
+        lineStyle: 'solid',
+        opacity: 1,
+        paint: createMaterialGradient(LIGHT_COLOR, [
+          { opacity: 0.35, position: 0 },
+          { opacity: 0.06, position: 0.5 },
+          { opacity: 0.14, position: 1 },
+        ]),
+        width: 1,
+      },
+      visible: true,
     },
     effects: [
       {

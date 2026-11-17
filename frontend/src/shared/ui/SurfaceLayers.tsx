@@ -40,8 +40,11 @@ function SurfaceLayers({ children, surface }: SurfaceLayersProps) {
         <span aria-hidden="true" className="surface-inner-shadow" />
       ) : null}
       {children}
-      {surface.border.width > 0 ? (
-        <SurfaceBorder radius={surface.borderRadius} stroke={surface.border} />
+      {surface.border.visible ? (
+        <SurfaceBorder
+          radius={surface.borderRadius}
+          stroke={surface.border.stroke}
+        />
       ) : null}
     </>
   )

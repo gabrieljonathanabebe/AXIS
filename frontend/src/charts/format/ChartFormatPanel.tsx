@@ -5,13 +5,13 @@ import { getObjectDefinition } from '../../objects/objectDefinitions'
 import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
 import FormatPanel from '../../shared/ui/FormatPanel'
 import FormatWidget from '../../shared/ui/FormatWidget'
+import StrokeWidget from '../../shared/ui/StrokeWidget'
 import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
   getDefaultColorScaleTitle,
 } from '../getChartTitle'
 import { getFormatElements } from '../getFormatElements'
-import AxisStrokeWidget from './AxisStrokeWidget'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
@@ -140,14 +140,16 @@ function getFormatGroups(
               onChange={setAxis}
             />
           </FormatWidget>
-          <AxisStrokeWidget
+          <StrokeWidget
             label="Axis line"
+            maxWidth={4}
             title="Line"
             value={axisAppearance.line}
             onChange={(line) => setAxis({ ...axisAppearance, line })}
           />
-          <AxisStrokeWidget
+          <StrokeWidget
             label="Grid"
+            maxWidth={4}
             title="Gridlines"
             value={axisAppearance.gridLines}
             onChange={(gridLines) => setAxis({ ...axisAppearance, gridLines })}

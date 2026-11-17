@@ -12,15 +12,10 @@ import {
 
 import type { DashboardStyle } from '../dashboardStyle/types'
 import type { ObjectLayout } from '../objects/types'
-import type { StrokeStyle } from '../shared/strokeStyle'
+import type { StrokeAppearance } from '../shared/strokeStyle'
 import type { Surface } from '../shared/surface'
 import type { TextStyle } from '../shared/textStyle'
-import type {
-  AxisStrokeAppearance,
-  ChartInstance,
-  ChartSpec,
-  ChartType,
-} from './types'
+import type { ChartInstance, ChartSpec, ChartType } from './types'
 
 /**
  * Default look of a text drawn by ECharts, e.g. axis labels or legend.
@@ -37,7 +32,7 @@ function createChartTextStyle(color: string): TextStyle {
 }
 
 /** Default gridlines; each axis draws its own. */
-function createGridLines(style: DashboardStyle): AxisStrokeAppearance {
+function createGridLines(style: DashboardStyle): StrokeAppearance {
   return {
     stroke: {
       lineStyle: 'solid',
@@ -50,7 +45,7 @@ function createGridLines(style: DashboardStyle): AxisStrokeAppearance {
 }
 
 /** Default axis line; each axis draws its own. */
-function createAxisLine(style: DashboardStyle): AxisStrokeAppearance {
+function createAxisLine(style: DashboardStyle): StrokeAppearance {
   return {
     stroke: {
       lineStyle: 'solid',
@@ -62,25 +57,31 @@ function createAxisLine(style: DashboardStyle): AxisStrokeAppearance {
   }
 }
 
-/** Default border of filled marks: bars, points and pie segments; off. */
-function createMarkBorder(style: DashboardStyle): StrokeStyle {
+/**
+ * Default border of a box or a filled mark in the chart, e.g. the legend
+ * or a bar: hidden, 1 px in the border color of the style, so showing it
+ * takes that color.
+ */
+function createBorder(style: DashboardStyle): StrokeAppearance {
   return {
-    lineStyle: 'solid',
-    opacity: 1,
-    paint: { color: createColorValue(style.colors.border), kind: 'solid' },
-    width: 0,
+    stroke: {
+      lineStyle: 'solid',
+      opacity: 1,
+      paint: { color: createColorValue(style.colors.border), kind: 'solid' },
+      width: 1,
+    },
+    visible: false,
   }
 }
 
 /**
- * Default surface of a box in the chart, e.g. the legend: no fill and the
- * border of the marks, off, so the box looks as before; a border made
- * wider takes the border color of the style.
+ * Default surface of a box in the chart, e.g. the legend: no fill and a
+ * hidden border, so the box looks as before.
  */
 function createBoxSurface(style: DashboardStyle): Surface {
   return {
     background: [],
-    border: createMarkBorder(style),
+    border: createBorder(style),
     borderRadius: 8,
     effects: [],
   }
@@ -111,7 +112,7 @@ export function createDefaultChartSpec(
   const axisTextStyle = createChartTextStyle(style.colors.textMuted)
   const gridLines = createGridLines(style)
   const axisLine = createAxisLine(style)
-  const markBorder = createMarkBorder(style)
+  const markBorder = createBorder(style)
   return {
     data: {
       encoding: {},
@@ -239,6 +240,7 @@ export function createDefaultChartSpec(
         innerRadius: 42,
       },
       tooltip: {
+        layout: { gap: 4, padding: 10 },
         surface: style.tooltip,
         textStyle: { ...textStyle, fontSize: 13 },
       },

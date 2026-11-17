@@ -31,7 +31,7 @@
 }
 
 .chart-tooltip-row + .chart-tooltip-row {
-  margin-top: var(--space-1);
+  margin-top: var(--chart-tooltip-gap);
 }
 
 .chart-tooltip-row span {

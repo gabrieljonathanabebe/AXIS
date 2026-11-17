@@ -141,10 +141,13 @@ function createTooltip(recipe: StyleRecipe, colors: StyleColors): Surface {
       },
     ],
     border: {
-      lineStyle: 'solid',
-      opacity: 0.42,
-      paint: { color: createColorValue(colors.accent), kind: 'solid' },
-      width: 1,
+      stroke: {
+        lineStyle: 'solid',
+        opacity: 0.42,
+        paint: { color: createColorValue(colors.accent), kind: 'solid' },
+        width: 1,
+      },
+      visible: true,
     },
     borderRadius: 18,
     effects: [
