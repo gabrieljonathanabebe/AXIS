@@ -122,6 +122,8 @@ const dataActionElements: ReadonlySet<ObjectFormatElement> = new Set([
 
 const formatRegionLabels: Record<ObjectFormatElement, string> = {
   colorScale: 'Format color scale',
+  colorScaleLabels: 'Format color scale labels',
+  colorScaleTitle: 'Format color scale title',
   container: 'Format container',
   labels: 'Format data labels',
   legend: 'Format legend',

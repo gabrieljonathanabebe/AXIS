@@ -347,7 +347,8 @@ Zahlen oder Datumswerte zeigt, ist ein eigenes Feld
 - Datenlabels (Bar, Line, Scatter) und Tooltip übernehmen bei `auto`
   das ganze Format der Y-Achse (`resolveNumberFormat`,
   `createLabelNumberFormatter`); Pie zeigt Anteile (`{d}%`);
-- die Enden der Colorbar nutzen `formatCompactNumber`;
+- die Werte der Farbskala haben ein eigenes Format
+  (`continuous.labels.numberFormat`, Standard kompakt);
 - Datumsachsen nutzen `formatDate` wie Table und Filter.
 
 ### Text-Formatierung
@@ -373,12 +374,16 @@ Ausrichtung und Position liegen im Baustein `layout` (siehe
 
 Linien und Umrisse folgen demselben Muster: `StrokeStyle` aus
 `src/shared/strokeStyle.ts` (`lineStyle`, `opacity`, `paint`, `width`;
-`LineStyle` liegt ebenfalls dort). Ihn nutzen der Rahmen des Containers
-(`ObjectContainer.border`), Achsenlinie und Gridlines jeder Achse
-(`xAxis.line` und `xAxis.gridLines`, beide `AxisStrokeAppearance` mit
-`visible` und `stroke`) und die Rahmen der Flächen-Marks (`bar.border`,
-`scatter.border`, `pie.border`, Standard `CHART_MARK_BORDER` mit Breite
-0). Linien-Marks tragen `SeriesStrokeStyle` (`StrokeStyle<SeriesPaint>`),
+`LineStyle` liegt ebenfalls dort). Ein Strich mit Auge ist
+`StrokeAppearance` (`visible`, `stroke`, ebenfalls dort): Ihn tragen
+die Ränder aller Kästen (`Surface.border`, also Container, Legende,
+Tooltip, und der Balken der Farbskala), Achsenlinie und Gridlines jeder
+Achse (`xAxis.line`, `xAxis.gridLines`), die Ticks der Farbskala und
+die Rahmen der Flächen-Marks (`bar.border`, `scatter.border`,
+`pie.border`). Ausgeblendet heißt `visible: false`, nicht Breite 0; die
+Werte bleiben. Neue Ränder sind ausgeblendet mit 1 px in der Randfarbe
+des Styles (`createBorder`). Linien-Marks tragen `SeriesStrokeStyle`
+(`StrokeStyle<SeriesPaint>`), ohne Auge,
 weil ihre Farbe aus der Serie kommt (Palette oder `appearance.color`);
 zur Farbe beider Formen siehe „Paint“.
 
@@ -388,7 +393,8 @@ zur Farbe beider Formen siehe „Paint“.
 - Rahmen von Flächen übersetzt `createBorderOption` in `borderColor`,
   `borderType` und `borderWidth` des `itemStyle`; ECharts kennt dort
   keine Rahmen-Deckkraft, daher geht `opacity` als Alpha in die Farbe
-  bzw. in jeden Stopp (`createPaintColor`)
+  bzw. in jeden Stopp (`createPaintColor`). Das Auge kennt ECharts
+  nicht: Ein ausgeblendeter Rahmen bekommt dort Breite 0
 - Achsenlinie und Gridlines folgen der Achse: eine ausgeblendete Achse
   blendet beide aus, die Ticks hängen nur an der Achse
 - Der Rahmen einer HTML-Fläche ist ein SVG (`SurfaceBorder` in
@@ -571,18 +577,26 @@ Marks in ECharts:
 **Surface**
 
 Die Fläche eines Kastens ist ein eigener Baustein (`shared/surface.ts`),
-genau einmal für alle Kästen: heute der Container jedes Objekts, später
-Legende, Farbskala, Tooltip und Textfelder.
+genau einmal für alle Kästen: der Container jedes Objekts, die Legende
+(`legend.surface`), der Tooltip (`tooltip.surface`) und in Teilen der
+Balken der Farbskala (`continuous.bar`); später Textfelder.
 
 ```ts
 type Surface = {
   background: Fill[]
-  border: StrokeStyle
+  border: StrokeAppearance
   borderRadius: number
   effects: SurfaceEffect[]
 }
 
 type ObjectContainer = Surface & { layout: Pick<Layout, 'padding'> }
+type TooltipAppearance = {
+  layout: Pick<Layout, 'gap' | 'padding'>
+  surface: Surface
+  textStyle: TextStyle
+}
+// Balken der Farbskala: Füllung ist die Datenfarbe
+type ColorScaleBar = Pick<Surface, 'border' | 'borderRadius'>
 ```
 
 - Namensregel: `Surface…` für die Fläche und ihre Teile
@@ -593,10 +607,21 @@ type ObjectContainer = Surface & { layout: Pick<Layout, 'padding'> }
   (`SURFACE_CAPABILITIES`, `SurfaceRenderer`): `html` zeichnet alles,
   `css` (CSS an einem Element, das ECharts rendert, z. B. der Tooltip)
   keinen Verlauf im Rahmen und kein Korn. `SurfaceControls` fragt die
-  Tabelle über `renderer` und bietet nur zeichenbare Effekte an; das
-  Ausblenden des Rahmen-Verlaufs folgt mit der ersten CSS-Fläche (3.10b).
-- `ContainerWidget` setzt Position, Layout und darunter
-  `SurfaceControls`; die Spec der Objekte ist unverändert.
+  Tabelle über `renderer`: beim Renderer `css` bietet der Rand nur Solid
+  an, die Effekte kein Korn.
+- Der Renderer `css` ist `getSurfaceCssText` (`surface.ts`): eine Liste
+  von CSS-Angaben für `extraCssText` des Tooltips; ein Verlauf im Rand
+  wird zu seiner Farbe (`getPaintColor`), Innen- und Schlagschatten
+  teilen `box-shadow`, Korn entfällt.
+- `SurfaceControls` nimmt `Partial<Surface>` und zeigt nur die Gruppen
+  der vorhandenen Felder, z. B. Shape und Border am Balken der
+  Farbskala. Jedes Widget setzt davor seine eigenen Gruppen (Position,
+  Layout).
+- Der Tooltip hat sein Aussehen pro Chart in `appearance.tooltip`; sein
+  Verhalten (an/aus, Trigger, Felder, Zahlenformat, Verzögerung) bleibt
+  in `interaction.tooltip`. Der Default kommt aus
+  `DashboardStyle.tooltip` (eine `Surface`); `createTooltipOption` liest
+  nur die Spec.
 
 Flächen in HTML (`SurfaceLayers` in `shared/ui/`, gemeinsam für
 `ObjectFrame` und die Vorschau der Style-Galerie;
@@ -645,19 +670,23 @@ und `Orientation`). Jedes Element trägt nur die Felder, die es hat, als
 `Pick` im Unterobjekt `layout`; die Positionen lassen sich über den
 Typparameter einschränken:
 
-| Element     | Spec                | Typ                                                |
-| ----------- | ------------------- | -------------------------------------------------- |
-| Titel       | `title.layout`      | `Pick<Layout, 'alignment'>`                        |
-| Container   | `container.layout`  | `Pick<Layout, 'padding'>`                          |
-| Dashboard   | `dashboard.layout`  | `Pick<Layout, 'gap'>`                              |
-| Legende     | `legend.layout`     | `Pick<Layout, 'alignment' \| 'gap' \| 'position'>` |
-| Farbskala   | `continuous.layout` | `Pick<Layout, 'position'>`                         |
-| Datenlabels | `labels.layout`     | `Pick<Layout<LabelPosition>, 'position'>`          |
+| Element     | Spec                | Typ                                                             |
+| ----------- | ------------------- | --------------------------------------------------------------- |
+| Titel       | `title.layout`      | `Pick<Layout, 'alignment'>`                                     |
+| Container   | `container.layout`  | `Pick<Layout, 'padding'>`                                       |
+| Dashboard   | `dashboard.layout`  | `Pick<Layout, 'gap'>`                                           |
+| Legende     | `legend.layout`     | `Pick<Layout, 'alignment' \| 'gap' \| 'padding' \| 'position'>` |
+| Farbskala   | `continuous.layout` | `Pick<Layout, 'alignment' \| 'position'>`                       |
+| Tooltip     | `tooltip.layout`    | `Pick<Layout, 'gap' \| 'padding'>`                              |
+| Datenlabels | `labels.layout`     | `Pick<Layout<LabelPosition>, 'position'>`                       |
 
 - `alignment` meint die Lage entlang der Seite, gemessen am Plot: Eine
   Legende unten mit `start` beginnt am Anfang des Plots. Links und
-  rechts sitzt die Legende immer mittig; die Farbskala hat kein
-  `alignment` und sitzt an jeder Seite mittig.
+  rechts sitzen Legende und Farbskala immer mittig (`PositionGrid`
+  bietet dort nur die Mitte).
+- die Größe des Farbskala-Balkens steht nicht im Layout, sondern in
+  `continuous.size` (`length`, `thickness`); das Panel zeigt sie als
+  W | H je nach Seite
 - ein neues Layout-Feld eines Elements erweitert sein `Pick`, kein neuer
   Typ; das bisherige Legendenfeld für den Überlauf heißt `overflow`
 - die Richtung an einer Seite folgt aus der Seite (`getSideOrientation`
@@ -687,8 +716,8 @@ werden als Kasten beschrieben, wie Frames und Textebenen in Figma:
 - Seit 3.10a gibt es die Fläche als `Surface` (siehe „Surface“) mit
   `SurfaceControls` und dem HTML-Renderer `SurfaceLayers`; Legende und
   Farbskala sind HTML (siehe „Container vs. Content“). Ihre Flächen und
-  die des Tooltips folgen mit „Farbskala wie eine Achse und Flächen für
-  Kästen“ (3.10b, `ROADMAP.md`).
+  die des Tooltips kamen mit 3.10b; die Farbskala hat keine Fläche um
+  alles, nur ihr Balken ist ein Kasten.
 - Entschieden: Die Spec trennt Position und Anordnung nicht; sie bleibt
   bei `layout` mit `Pick`, das Format-Panel trennt beides seit 3.9.
 - Der Tooltip bleibt ein Kasten in ECharts; seine Fläche zeichnet der
@@ -789,9 +818,10 @@ Werkzeug, Farbe gehört dem Inhalt.
   steht, setzt die Stelle eine CSS-Variable aus dem Style: `CanvasPanel`
   setzt an der Seite (`.dashboard-page`) `--canvas-text` und
   `--canvas-text-muted` (Dashboard-Titel,
-  Empty States im Dashboard), der Tooltip setzt `--chart-tooltip-text`
-  und `--chart-tooltip-text-muted` an seinem eigenen Element, weil er am
-  `body` hängt.
+  Empty States im Dashboard). Der Tooltip setzt `--chart-tooltip-text`,
+  `--chart-tooltip-value-weight` und `--chart-tooltip-gap` aus seinem
+  Text-Stil und Layout an seinem eigenen Element, weil er am `body`
+  hängt; die Labels mischen die Textfarbe gedämpft (`color-mix`).
 - Canvas und Container sind Flächen aus echten Werten: eine Liste von
   `Fill` mit Farbe oder Verlauf und Deckkraft, z. B. Grundfarbe plus
   radiale Leuchtflächen. Rand und Effekte (Schatten, Lichtkante als
@@ -838,8 +868,8 @@ Dimmen, Tooltip), Galerie und Schnellauswahl im Farbwähler.
   Charts nur bei einem echten Wechsel neu zeichnen. `DashboardStyle`
   enthält Canvas und Container in der Form der Spec, die Rollenfarben
   (`StyleColors`: `text`, `textMuted`, `axis`, `gridLine`, `border`,
-  `inactive`, `accent`), die Datenpalette, `dimmedOpacity` und den
-  Tooltip aus Bausteinen (`Fill`, `StrokeStyle`, `Shadow`).
+  `inactive`, `accent`), die Datenpalette, `dimmedOpacity` und die
+  Fläche des Tooltips als `Surface` (Default neuer Charts).
 - Das Schema liefert Rollenfarben, Datenpalette (die geteilte Palette in
   einer hellen und einer dunklen Variante), Dimmen und Tooltip-Schatten.
   Der Tooltip nimmt im dunklen Schema die Grundfarbe der Canvas, im
@@ -867,7 +897,9 @@ Dimmen, Tooltip), Galerie und Schnellauswahl im Farbwähler.
   (`applyDashboardStyle.ts`) erzeugt `dashboard/update` (Rezept und
   Canvas), je Objekt `object/updateContainer` (Fläche, Rand und Effekte
   aus dem Material; Radius und Padding bleiben) sowie
-  `chart/updateAppearance` bzw. `card/updateAppearance`. `applyStyle`
+  `chart/updateAppearance` bzw. `card/updateAppearance`; bei Charts
+  ersetzt es zusätzlich die Fläche des Tooltips komplett, weil
+  `takeStyleColors` Füllungen nicht anfasst. `applyStyle`
   (`CanvasActions`) wendet sie als `history/applyBatch` an, also als ein
   Undo-Schritt; danach ist jedes Feld frei änderbar.
 - `takeStyleColors(current, defaults)` läuft Appearance und Defaults des
@@ -995,14 +1027,16 @@ Klick bzw. ⌘/Ctrl-Klick (ObjectFrame)
   z. B. die Legende von Chart zu Chart. `getPanelElement`
   (`objects/formatPanelElement.ts`) macht aus kleinen Elementen ihr
   Elternteil: `labels` und `tooltip` → `marks`, `xAxisLabels` →
-  `xAxis`, `yAxisLabels` → `yAxis`, `selectionLabel` → `value`. Das ist
+  `xAxis`, `yAxisLabels` → `yAxis`, `colorScaleTitle` und
+  `colorScaleLabels` → `colorScale`, `selectionLabel` → `value`. Das ist
   die einzige Zuordnung (`formatGroups`); das Panel zeigt das
   Elternteil, die Region bleibt Gruppe für Hinscrollen und Fokus.
 - `ChartFormatElement` (`charts/types.ts`) sind die Teile eines Charts:
   Schlüssel von `ChartAppearanceSpec` (`labels`, `legend`, `title`,
   `xAxis`, `yAxis`) plus `xAxisLabels` und `yAxisLabels` für die
   Tick-Labels, `marks` für Datenfarbe und die Marks des Charttyps sowie
-  `colorScale`, `tooltip` und `container`. `getFormatElements(chart,
+  `colorScale` (Balken) mit `colorScaleTitle` und `colorScaleLabels`,
+  `tooltip` und `container`. `getFormatElements(chart,
 fields)` liefert nur die Panel-Elemente für das Dropdown: Container,
   Titel und Marks immer, Achsen nur kartesisch, Legende wie
   `isLegendRelevant`, Color Scale bei kontinuierlicher Farbe.
@@ -1073,12 +1107,17 @@ Legende (`ChartLegend`):
   `multiple` schaltet einen Eintrag um, `single` zeigt nur den einen;
   Hover hebt Serie bzw. Segment hervor (`highlight`, `downplay`).
 
-Farbskala (`ChartColorScale`): Balken mit Minimum und Maximum, an jeder
-Seite mittig zum Plot, vertikal mit dem Maximum oben, horizontal mit
-dem Minimum links. Den Bereich rechnet `getColorScaleRange` (`charts/`,
-ohne ECharts) aus Spec und Daten; dieselbe Funktion liefert der
-`visualMap` Minimum und Maximum, so passen Skala und Marks immer
-zusammen.
+Farbskala (`ChartColorScale`): aufgebaut wie eine Achse aus Titel,
+Balken und Werten, am Plot ausgerichtet, vertikal mit dem Maximum oben,
+horizontal mit dem Minimum links. Den Bereich rechnet
+`getColorScaleRange` (`charts/`, ohne ECharts) aus Spec und Daten;
+dieselbe Funktion liefert der `visualMap` Minimum und Maximum, so passen
+Skala und Marks immer zusammen. Die Werte rechnet `getColorScaleTicks`
+(rein, mit Tests): Auto zeigt Minimum und Maximum, eine Tick-Anzahl
+runde Werte innerhalb des Bereichs, der Bereich bleibt. Weil der Balken
+HTML ist, liegen die Ticks per CSS an ihrem Anteil der Balkenlänge,
+ohne Messen. Titel, Balken und Werte sind eigene Format-Regionen
+(`data-format-element`).
 
 Chart-Content wird über eine typsichere Registry erzeugt:
 

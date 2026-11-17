@@ -35,6 +35,8 @@ type ChartFormatPanelProps = ChartFormatProps & {
 // ===== CONSTANTS =============================================================
 const elementTitles: Record<ChartFormatElement, string> = {
   colorScale: 'Color Scale',
+  colorScaleLabels: 'Color Scale Labels',
+  colorScaleTitle: 'Color Scale Title',
   container: 'Chart',
   labels: 'Data Labels',
   legend: 'Legend',

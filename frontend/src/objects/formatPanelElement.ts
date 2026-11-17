@@ -8,6 +8,8 @@ import type { ObjectFormatElement } from './types'
  * `data-format-group`.
  */
 const formatGroups = [
+  { element: 'colorScaleLabels', parent: 'colorScale' },
+  { element: 'colorScaleTitle', parent: 'colorScale' },
   { element: 'labels', parent: 'marks' },
   { element: 'selectionLabel', parent: 'value' },
   { element: 'tooltip', parent: 'marks' },

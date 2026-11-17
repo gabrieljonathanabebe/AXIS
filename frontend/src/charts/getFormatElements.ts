@@ -8,6 +8,8 @@ import type { ChartFormatElement, ChartInstance } from './types'
 
 const chartFormatElements: readonly ObjectFormatElement[] = [
   'colorScale',
+  'colorScaleLabels',
+  'colorScaleTitle',
   'container',
   'labels',
   'legend',
@@ -24,7 +26,7 @@ const chartFormatElements: readonly ObjectFormatElement[] = [
  * Tells whether a format element belongs to charts.
  * @param element Element of a format target, or null when none is open.
  * @returns True for container, title, marks, data labels, tooltip, axes,
- *   axis labels, legend and color scale.
+ *   axis labels, legend, and color scale with its title and labels.
  */
 export function isChartFormatElement(
   element: ObjectFormatElement | null,

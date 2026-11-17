@@ -38,7 +38,9 @@ können Verläufe tragen, Serien einen Fade in ihrer Farbe. Marks haben
 Glow oder Schatten, Container eine Liste von Effekten (Schatten,
 Innenschatten, Background Blur, Korn). Die Fläche eines Kastens ist ein
 eigener Baustein (`Surface`); Legende und Farbskala sind HTML in
-Plätzen um den Chart-Canvas.
+Plätzen um den Chart-Canvas. Legende und Tooltip tragen eine eigene
+Fläche, die Farbskala ist aufgebaut wie eine Achse, und jeder Rand hat
+ein Auge.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -60,9 +62,9 @@ Slices; Abhängigkeiten stehen beim Punkt):
 7. Effekte: Schatten, Background Blur und Korn – implementiert
 8. Dashboard-Styles – implementiert
 9. Arbeitsfläche, Format-Panel und Objekt-Layout – implementiert
-10. Kästen als HTML (3.10a) – implementiert; Farbskala wie eine Achse
-    und Flächen für Kästen (3.10b) – **nächster Slice**
-11. DateFormat
+10. Kästen als HTML (3.10a) und Farbskala wie eine Achse und Flächen
+    für Kästen (3.10b) – implementiert
+11. DateFormat – **nächster Slice**
 12. Sortierung und Top N
 13. Theme-Umschalter in der TopBar (provisorisch)
 14. Table-Objekt
@@ -83,43 +85,7 @@ Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
   `SurfaceLayers`; `ObjectTitleAppearance` gilt für Chart und Card
   zugleich, die Optik bleibt ohne Fläche unverändert
 
-### 3.10b Farbskala wie eine Achse und Flächen für Kästen (geplant, nächster Slice)
-
-Baut auf 3.10a auf (Legende und Farbskala als HTML, `Surface`,
-`SURFACE_CAPABILITIES`). Die Farbskala ist im Grunde eine Achse mit
-Farbverlauf statt Linie; sie nutzt deshalb die Bausteine der Achsen,
-keine neuen, und hat im Format-Panel dieselben Gruppen.
-
-- Farbskala:
-  - Titel (Name der Metrik) als `title` wie der Achsentitel
-    (`AxisTitleAppearance`)
-  - Werte als `labels` wie die Achsenbeschriftung
-    (`AxisLabelsAppearance`: `textStyle`, `numberFormat`, `tickCount`)
-  - Ticks: Anzahl Auto oder fest, Striche sichtbar ja oder nein;
-    Standard nur Minimum und Maximum wie heute, Zwischenwerte über die
-    Tick-Anzahl (wie in Databricks)
-  - horizontal: Minimum links, Maximum rechts, Werte darunter wie an der
-    X-Achse; vertikal: Minimum unten, Maximum oben, Werte daneben wie an
-    der Y-Achse
-  - runde Tick-Werte (0, 25, 50 …) rechnet eine kleine eigene Funktion,
-    weil der Balken HTML ist; mit Tests
-  - ob die Enden des Verlaufs (`GradientControl`) ein `PaintField`
-    werden, hier klären; die Farben bleiben Datenfarbe der Marks
-- Fläche und Padding für Legende und Farbskala über `SurfaceControls`
-  und Padding in ihrem `layout`
-- Tooltip: Fläche als CSS (Flächen, Rand, Radius, Schatten, Blur; kein
-  SVG-Rahmen), Text und Zahlenformat (`NumberFormatControls` für
-  `interaction.tooltip.numberFormat`, das heute ausgewertet wird, aber
-  kein Control hat)
-- Standard-Optik unverändert: Die Flächen von Legende, Farbskala und
-  Tooltip kommen als Default aus dem Dashboard-Style; „Style anwenden“
-  färbt sie mit
-- die neuen Zeilen entstehen im Format-Panel nach dem Muster aus
-  `DESIGN_SYSTEM.md`, Abschnitt 6 „Kompakte Controls im Figma-Stil“;
-  Icon-Check am Slice-Ende
-- neue Felder; Formänderungen nur vor der Persistenz
-
-### 3.11 DateFormat (geplant)
+### 3.11 DateFormat (geplant, nächster Slice)
 
 Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
 es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
@@ -594,6 +560,28 @@ Kästen als HTML (3.10a)
   `createGridOption` und `getPieCenter` entfallen; Legende ohne
   Interaction ist eine Format-Region (#9), lange Legenden oben und
   unten richten sich richtig aus (#55)
+
+Farbskala wie eine Achse und Flächen für Kästen (3.10b)
+
+- Farbskala mit den Bausteinen der Achse: Titel (Name der Metrik),
+  Werte mit Text und Zahlenformat, Ticks (Auto: Minimum und Maximum,
+  sonst runde Werte über `getColorScaleTicks`, mit Vitest-Tests),
+  Werte auf der vom Plot abgewandten Seite, vertikal ein gedrehter
+  Titel wie an der Y-Achse; W | H des Balkens und Ausrichtung oben und
+  unten; nur der Balken ist ein Kasten (Radius, Rand), Titel und Werte
+  sind eigene Format-Regionen mit Sprung zu ihrer Gruppe
+- Legende mit Fläche (`surface`) und Padding (Standard 8); ihre
+  Einträge scrollen innerhalb der Fläche
+- Tooltip-Aussehen pro Chart (`appearance.tooltip`): Layout (Gap,
+  Padding), Fläche über den Renderer `css` (`getSurfaceCssText`, ohne
+  Rand-Verlauf und Korn), Text und Zahlenformat; „Style anwenden“
+  übernimmt seine Fläche komplett
+- Ränder mit Auge (`StrokeAppearance`, `StrokeWidget`) für Container,
+  Legende, Farbskala, Tooltip, Balken, Punkte und Segmente;
+  ausgeblendet mit 1 px statt Breite 0
+- `SurfaceControls` zeigt nur die Gruppen, deren Felder ein Kasten hat;
+  Fokus-Rahmen um Marks mit 2 px Abstand; Frontend-Tests mit Vitest
+  (`npm run test`)
 
 Ask Cevyn V1
 

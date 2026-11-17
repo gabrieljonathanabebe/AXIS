@@ -19,7 +19,8 @@ type SurfaceControlsProps = {
   children?: ReactNode
   label: string
   renderer?: SurfaceRenderer
-  value: Surface
+  /** Fields of the surface the box has, e.g. only radius and border. */
+  value: Partial<Surface>
   onChange: <TKey extends keyof Surface>(
     key: TKey,
     value: Surface[TKey],
@@ -29,7 +30,9 @@ type SurfaceControlsProps = {
 // ===== COMPONENT =============================================================
 /**
  * Groups of a surface in the fixed order Shape → Fill → Stroke → Effects:
- * corner radius, background, border and effects. A box with text puts its
+ * corner radius, background, border and effects. Shows only the groups
+ * whose fields the surface has, e.g. Shape and Border for the bar of a
+ * color scale, whose fill is the data color. A box with text puts its
  * Text group between Shape and Fill, as the fixed order has it. What the
  * renderer draws comes from `SURFACE_CAPABILITIES`: the border offers a
  * gradient only where it can be drawn, the effects only its kinds.
@@ -43,58 +46,68 @@ function SurfaceControls({
   value,
   onChange,
 }: SurfaceControlsProps) {
-  const { borderGradient, effects } = SURFACE_CAPABILITIES[renderer]
+  const { borderGradient, effects: effectKinds } =
+    SURFACE_CAPABILITIES[renderer]
+  const { background, border, borderRadius, effects } = value
   return (
     <>
-      <FormatWidget title="Shape">
-        <ControlRow>
-          <ScrubbableNumber
-            icon={<SquareRoundCorner size={14} />}
-            label={`${label} radius`}
-            max={32}
-            min={0}
-            step={2}
-            unit="px"
-            value={value.borderRadius}
-            onValueChange={(borderRadius) => {
-              onChange('borderRadius', borderRadius)
-            }}
-          />
-        </ControlRow>
-      </FormatWidget>
+      {borderRadius === undefined ? null : (
+        <FormatWidget title="Shape">
+          <ControlRow>
+            <ScrubbableNumber
+              icon={<SquareRoundCorner size={14} />}
+              label={`${label} radius`}
+              max={32}
+              min={0}
+              step={2}
+              unit="px"
+              value={borderRadius}
+              onValueChange={(nextRadius) => {
+                onChange('borderRadius', nextRadius)
+              }}
+            />
+          </ControlRow>
+        </FormatWidget>
+      )}
       {children}
-      <FormatWidget
-        title="Background"
-        onAdd={() => onChange('background', addFill(value.background))}
-      >
-        <FillListControls
-          label={label}
-          value={value.background}
-          onChange={(background) => onChange('background', background)}
-        />
-      </FormatWidget>
-      <StrokeWidget
-        label={`${label} border`}
-        paintTypes={borderGradient ? undefined : ['solid']}
-        title="Border"
-        value={value.border}
-        onChange={(border) => onChange('border', border)}
-      />
-      <FormatWidget
-        title="Effects"
-        onAdd={() => {
-          onChange('effects', [...value.effects, createSurfaceEffect('shadow')])
-        }}
-      >
-        {value.effects.length > 0 ? (
-          <SurfaceEffectsControls
-            kinds={effects}
+      {background === undefined ? null : (
+        <FormatWidget
+          title="Background"
+          onAdd={() => onChange('background', addFill(background))}
+        >
+          <FillListControls
             label={label}
-            value={value.effects}
-            onChange={(effects) => onChange('effects', effects)}
+            value={background}
+            onChange={(nextFills) => onChange('background', nextFills)}
           />
-        ) : null}
-      </FormatWidget>
+        </FormatWidget>
+      )}
+      {border === undefined ? null : (
+        <StrokeWidget
+          label={`${label} border`}
+          paintTypes={borderGradient ? undefined : ['solid']}
+          title="Border"
+          value={border}
+          onChange={(nextBorder) => onChange('border', nextBorder)}
+        />
+      )}
+      {effects === undefined ? null : (
+        <FormatWidget
+          title="Effects"
+          onAdd={() => {
+            onChange('effects', [...effects, createSurfaceEffect('shadow')])
+          }}
+        >
+          {effects.length > 0 ? (
+            <SurfaceEffectsControls
+              kinds={effectKinds}
+              label={label}
+              value={effects}
+              onChange={(nextEffects) => onChange('effects', nextEffects)}
+            />
+          ) : null}
+        </FormatWidget>
+      )}
     </>
   )
 }

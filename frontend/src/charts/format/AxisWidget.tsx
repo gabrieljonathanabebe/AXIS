@@ -33,6 +33,8 @@ type AxisWidgetProps<TValue extends AxisParts> = {
   label: string
   onChange: (value: TValue) => void
   part: AxisWidgetPart
+  /** Element whose click opens the title group, e.g. of a color scale. */
+  titleGroup?: string
   value: TValue
 }
 
@@ -49,12 +51,14 @@ function AxisWidget<TValue extends AxisParts>({
   label,
   value,
   part,
+  titleGroup,
   onChange,
 }: AxisWidgetProps<TValue>) {
   const { labels } = value
   if (part === 'title') {
     return (
       <FormatWidget
+        group={titleGroup}
         title="Title"
         visibility={{
           visible: value.title.visible,

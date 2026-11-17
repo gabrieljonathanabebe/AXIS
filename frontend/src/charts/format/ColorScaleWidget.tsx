@@ -68,11 +68,11 @@ function createSizeBox(
 }
 
 /**
- * Groups of the continuous color scale: where it sits and its surface,
- * then title, labels and ticks with the groups of an axis. Its direction
- * follows from the position, and its colors and range are part of the
- * data color of the marks. Whether it shows is the eye in the popover
- * header.
+ * Groups of the continuous color scale: where it sits, its size, the
+ * corners and border of its bar, then title, labels and ticks with the
+ * groups of an axis. Its direction follows from the position, and its
+ * colors and range are part of the data color of the marks. Whether it
+ * shows is the eye in the popover header.
  */
 function ColorScaleWidget({
   defaultTitle,
@@ -99,19 +99,21 @@ function ColorScaleWidget({
       </FormatWidget>
       <SurfaceControls
         label="Color scale"
-        value={value.surface}
+        value={value.bar}
         onChange={(key, property) => {
-          onChange({ ...value, surface: { ...value.surface, [key]: property } })
+          onChange({ ...value, bar: { ...value.bar, [key]: property } })
         }}
       />
       <AxisWidget
         defaultTitle={defaultTitle}
         label="Color scale"
         part="title"
+        titleGroup="colorScaleTitle"
         value={value}
         onChange={onChange}
       />
       <FormatWidget
+        group="colorScaleLabels"
         title="Labels"
         visibility={{
           visible: value.labels.visible,

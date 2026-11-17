@@ -600,35 +600,38 @@ Eine Vorlage, die die folgenden Gruppen auf einmal setzt, steht auf dem
 Platz Inhalt vor ihnen, wie Figmas Textstil über den
 Typografie-Details: Style ist die erste Gruppe des Dashboards.
 
-| Element                  | Gruppen                                                                                       |
-| ------------------------ | --------------------------------------------------------------------------------------------- |
-| Chart bzw. Card          | Position (X \| Y) · Layout (W \| H, Padding) · Shape (Radius) · Background · Border · Effects |
-| Title                    | Content (Text) · Text (mit Alignment)                                                         |
-| Marks                    | siehe Tabelle unten, zuletzt Labels und Tooltip                                               |
-| X Axis, Y Axis           | Title · Labels (Layout: Ticks, Rotation · Text · Format) · Line · Gridlines · Zoom (X)        |
-| Legend                   | Position (Feld mit Raster) · Layout (Gap) · Text · Interaction                                |
-| Color Scale              | Position (Feld mit Kreuz) · Labels                                                            |
-| Card Value               | Function (Aggregation) · Text · Format · Selection (Text)                                     |
-| Dashboard (ohne Auswahl) | Style · Layout (Gap) · Background · Animation                                                 |
+| Element                  | Gruppen                                                                                                                |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Chart bzw. Card          | Position (X \| Y) · Layout (W \| H, Padding) · Shape (Radius) · Background · Border · Effects                          |
+| Title                    | Content (Text) · Text (mit Alignment)                                                                                  |
+| Marks                    | siehe Tabelle unten, zuletzt Labels und Tooltip                                                                        |
+| X Axis, Y Axis           | Title · Labels (Layout: Ticks, Rotation · Text · Format) · Line · Gridlines · Zoom (X)                                 |
+| Legend                   | Position (Feld mit Raster) · Layout (Gap, Padding) · Shape · Text · Background · Border · Effects · Interaction        |
+| Color Scale              | Position (Feld mit Raster) · Layout (W \| H) · Shape · Border · Title · Labels (Layout: Ticks · Text · Format) · Ticks |
+| Card Value               | Function (Aggregation) · Text · Format · Selection (Text)                                                              |
+| Dashboard (ohne Auswahl) | Style · Layout (Gap) · Background · Animation                                                                          |
 
 Labels in Marks enthält Position, Text und Format (nicht bei
-Pie und Donut), Tooltip enthält Behavior (Trigger; bei Pie und Donut
-nur Überschrift und Auge).
+Pie und Donut). Tooltip ist ein Kasten mit Layout (Gap, Padding) ·
+Shape · Text · Background · Border · Effects · Format · Behavior
+(Trigger; nicht bei Pie und Donut). Die Farbskala hat keine Fläche um
+alles: Nur ihr Balken ist ein Kasten (Shape, Border); Title, Labels und
+Ticks sind Unterelemente wie an der Achse.
 
 Marks haben feste Plätze in `MARK_GROUP_ORDER`
 (`charts/format/markGroups.tsx`), der einzigen Stelle mit ihrer
 Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
 
-| Platz      | Scatter                                  | Line                   | Bar           | Pie / Donut          |
-| ---------- | ---------------------------------------- | ---------------------- | ------------- | -------------------- |
-| Data color | Fill mit Datenfarbe                      | Line mit Datenfarbe    | wie Scatter   | Fill mit Palette     |
-| Shape      | Symbol, Size bzw. Size range (Size-Feld) | Straight \| Smooth     | Width, Radius | Inner radius (Donut) |
-| Fill       | –                                        | Area (Deckkraft, Auge) | –             | –                    |
-| Stroke     | Border                                   | –                      | Border        | Border               |
-| Effect     | Effect (＋/−)                            | Effect (＋/−)          | Effect (＋/−) | Effect (＋/−)        |
-| Points     | –                                        | Auto \| Always, Auge   | –             | –                    |
-| Labels     | Labels mit Auge, Layout, Text, Format    | wie Scatter            | wie Scatter   | ohne Format          |
-| Tooltip    | Tooltip mit Auge, Behavior               | wie Scatter            | wie Scatter   | nur Auge             |
+| Platz      | Scatter                                    | Line                   | Bar           | Pie / Donut          |
+| ---------- | ------------------------------------------ | ---------------------- | ------------- | -------------------- |
+| Data color | Fill mit Datenfarbe                        | Line mit Datenfarbe    | wie Scatter   | Fill mit Palette     |
+| Shape      | Symbol, Size bzw. Size range (Size-Feld)   | Straight \| Smooth     | Width, Radius | Inner radius (Donut) |
+| Fill       | –                                          | Area (Deckkraft, Auge) | –             | –                    |
+| Stroke     | Border                                     | –                      | Border        | Border               |
+| Effect     | Effect (＋/−)                              | Effect (＋/−)          | Effect (＋/−) | Effect (＋/−)        |
+| Points     | –                                          | Auto \| Always, Auge   | –             | –                    |
+| Labels     | Labels mit Auge, Layout, Text, Format      | wie Scatter            | wie Scatter   | ohne Format          |
+| Tooltip    | Tooltip mit Auge, Kasten, Format, Behavior | wie Scatter            | wie Scatter   | ohne Behavior        |
 
 - Data color ist die Gruppe, die mit der Datenfarbe gezeichnet wird;
   siehe „Datenfarbe in der Farbzeile“ unter „Kompakte Controls“.
@@ -674,6 +677,9 @@ LAYOUT
 - Die Richtung folgt aus der Position (`getSideOrientation`): oben oder
   unten horizontal, links oder rechts vertikal, bei Legende und
   Farbskala gleich. Die Farbskala hat deshalb kein Richtungs-Control.
+- W | H der Farbskala gelten für ihren Balken. Die Spec speichert Länge
+  und Dicke (`continuous.size`); welche davon W und welche H ist, folgt
+  aus der Seite, so behält eine verschobene Skala ihre Form.
 - Die Spec ändert sich nicht: X | Y und W | H bleiben `ObjectLayout`,
   Padding bleibt `container.layout`. Entschieden mit 3.10a: Die Spec
   trennt Position und Anordnung nicht (`ARCHITECTURE.md`,
@@ -681,16 +687,16 @@ LAYOUT
 
 Welches Element was bekommt:
 
-| Element                  | Position              | Layout                                    |
-| ------------------------ | --------------------- | ----------------------------------------- |
-| Chart, Card              | X \| Y                | W \| H, Padding                           |
-| Dashboard                | –                     | Gap (später Seitengröße W \| H, Padding)  |
-| Legende                  | Positionsfeld, Raster | Gap (in 3.10b dazu Padding)               |
-| Farbskala                | Positionsfeld, Kreuz  | (in 3.10b Padding; später Länge \| Dicke) |
-| Datenlabels              | Positions-Icons       | –                                         |
-| Tooltip                  | –                     | (in 3.10b Padding)                        |
-| Rechteck, Kreis (später) | X \| Y, Drehung       | W \| H mit 🔒                             |
-| Textfeld (später)        | X \| Y                | W \| H, Padding                           |
+| Element                  | Position              | Layout                                   |
+| ------------------------ | --------------------- | ---------------------------------------- |
+| Chart, Card              | X \| Y                | W \| H, Padding                          |
+| Dashboard                | –                     | Gap (später Seitengröße W \| H, Padding) |
+| Legende                  | Positionsfeld, Raster | Gap, Padding                             |
+| Farbskala                | Positionsfeld, Raster | W \| H des Balkens                       |
+| Datenlabels              | Positions-Icons       | –                                        |
+| Tooltip                  | –                     | Gap (zwischen den Zeilen), Padding       |
+| Rechteck, Kreis (später) | X \| Y, Drehung       | W \| H mit 🔒                            |
+| Textfeld (später)        | X \| Y                | W \| H, Padding                          |
 
 Jede Gruppe ist kurz, und keine Zeile steht an zwei Orten. Einträge ohne
 Klammern sind implementiert, Einträge in Klammern und „später“ geplant.
@@ -698,7 +704,7 @@ Klammern sind implementiert, Einträge in Klammern und „später“ geplant.
 ### Format-Widgets (implementiert)
 
 Ein Widget repräsentiert ein Feature oder eine logisch
-zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
+zusammengehörige Property-Gruppe, z. B. `StrokeWidget` oder
 `LegendWidget`; es liefert eine oder mehrere Gruppen.
 
 - `FormatWidget` (`shared/ui`) ist die Gruppe: `title` wird zur
@@ -730,7 +736,15 @@ zusammengehörige Property-Gruppe, z. B. `AxisStrokeWidget` oder
   Widget legt sie in seine Gruppen.
 - `AxisWidget` zeigt mit `part` (`title` | `labels`) die Gruppe Title
   bzw. die Untergruppen der Achsen-Labels (Layout, Text, Format), die
-  die Achse in ihre Gruppe Labels legt.
+  die Achse in ihre Gruppe Labels legt. Es ist generisch über alles mit
+  `title` und `labels` (`AxisParts`): Achse und Farbskala nutzen es
+  gleich; Drehung und Datum erscheinen nur, wenn die Labels sie haben.
+  `label` nennt das Element („X Axis“, „Color scale“), `titleGroup`
+  macht die Gruppe Title zum Ziel einer eigenen Region.
+- `StrokeWidget` (`shared/ui`) ist die Gruppe eines Strichs mit Auge
+  (`StrokeAppearance`): Ränder, Achsenlinie, Gridlines und Ticks. Das
+  Auge blendet aus und behält die Werte; ein sichtbarer Strich hat
+  mindestens 1 px.
 
 Nicht jede einzelne Scalar Property erhält ein eigenes Widget.
 
@@ -1071,8 +1085,9 @@ Verlaufs. Es arbeitet auf `GradientStop[]`: Die Swatches zeigen den
 ersten und letzten Stopp nach Position, die Vorschau alle Stopps samt
 Deckkraft. Genutzt nur noch für die Enden der kontinuierlichen
 Farbskala, weil dort Anfang und Ende direkt klickbar sein
-sollen; ob sie ein `PaintField` wird, klärt „Farbskala wie eine Achse
-und Flächen für Kästen“ (`ROADMAP.md`).
+sollen. Entschieden mit 3.10b: Es bleibt `GradientControl` und wird kein
+`PaintField`, weil dessen Editor mehrere Stopps anbietet, die Spec aber
+nur `startColor` und `endColor` kennt.
 
 `GradientStopsControl` ist die Stopp-Liste im Editor eines Verlaufs
 (Section Stops): je Stopp Swatch | Position (%) | Deckkraft (%) | −, ＋
@@ -1510,8 +1525,8 @@ eines Umrisses (`StrokeStyle`), nach demselben Muster wie
 - zuerst die Farbzeile (`PaintControl`, siehe 9q): Feld und Opacity,
   Typ und Verlauf im Editor hinter dem Swatch bzw. dem ⚙
 - darunter Width (`ScrubbableNumber`, Icon ═, px, `minWidth` bis
-  `maxWidth`, Standard 0–8; 0 heißt kein Strich) | Style (Icon-Gruppe
-  Solid/Dashed/Dotted mit `.line-style-preview`)
+  `maxWidth`, Standard 0–8) | Style (Icon-Gruppe Solid/Dashed/Dotted
+  mit `.line-style-preview`)
 - generisch über den Wert (`StrokeStyle<Paint | SeriesPaint>`): Ein
   `StrokeStyle` hat eine eigene Farbe, ein `SeriesStrokeStyle` nimmt
   sie aus der Serie; dann zeigt die Farbzeile `seriesColor`, das Feld
@@ -1519,13 +1534,13 @@ eines Umrisses (`StrokeStyle`), nach demselben Muster wie
   Typ zurück
 - `paintTypes` schränkt die Typen ein, z. B. nur Solid unter einer
   kontinuierlichen Farbskala
-- genutzt vom Rahmen im `ContainerWidget` (Gruppe Border), von
-  Achsenlinie und Gridlines im `AxisStrokeWidget` (Breite 1–4, Auge in
-  der Überschrift; Titel und `label` per Prop, damit ein
-  Widget beide Linien einer Achse bedient), von Linien-Marks (Gruppe
-  Line mit der Datenfarbe, Breite 1–8) und den Rahmen der Balken,
-  Scatter-Punkte und Pie-Segmente (Gruppe Border) in `markGroups.tsx`;
-  später Tables
+- genutzt von `StrokeWidget` (Gruppe mit Auge in der Überschrift,
+  `StrokeAppearance`, Breite ab 1 px; Titel, `label`, `paintTypes` und
+  `maxWidth` per Prop): Ränder aller Kästen (Border in
+  `SurfaceControls`), Rahmen der Balken, Scatter-Punkte und
+  Pie-Segmente, Achsenlinie, Gridlines und Ticks der Farbskala (bis
+  4 px); direkt von Linien-Marks (Gruppe Line mit der Datenfarbe,
+  Breite 1–8); später Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -1539,16 +1554,18 @@ entspricht.
 Vorhandene Bausteine:
 
 - `TextStyle` mit `TextStyleControls` (siehe 9j)
-- `StrokeStyle` mit `StrokeStyleControls` (siehe 9k): Container-Rahmen
-  (`ObjectContainer.border`), Achsenlinie und Gridlines
-  (`AxisStrokeAppearance.stroke` in `xAxis.line` und
-  `xAxis.gridLines`), Rahmen der Marks (`bar.border`, `scatter.border`,
-  `pie.border`) und Linien-Marks (`LineAppearance.stroke` als
+- `StrokeStyle` mit `StrokeStyleControls` (siehe 9k), mit Auge als
+  `StrokeAppearance` (`visible`, `stroke`) und `StrokeWidget`: Ränder
+  der Kästen (`surface.border`, `container.border`, `bar.border` der
+  Farbskala), Rahmen der Marks (`bar.border`, `scatter.border`,
+  `pie.border`), Achsenlinie und Gridlines (`xAxis.line`,
+  `xAxis.gridLines`) und Ticks der Farbskala (`continuous.ticks`);
+  ohne Auge die Linien-Marks (`LineAppearance.stroke` als
   `SeriesStrokeStyle`)
 - `NumberFormat` mit `NumberFormatControls` (siehe 9m):
-  Achsenbeschriftung (`AxisLabelsAppearance.numberFormat`), Card-Wert,
-  Datenlabels und Tooltip (`interaction.tooltip.numberFormat`, ohne
-  Control)
+  Achsenbeschriftung (`AxisLabelsAppearance.numberFormat`), Werte der
+  Farbskala (`continuous.labels.numberFormat`), Card-Wert, Datenlabels
+  und Tooltip (`interaction.tooltip.numberFormat`)
 - `Fill` mit `PaintControl` (siehe 9q): Fläche unter Linien
   (`line.area`), Balken (`bar.fill`), Scatter-Punkte (`scatter.fill`)
   und Pie-Segmente (`pie.fill`), alle als `SeriesFill` in der Farbe
@@ -1561,14 +1578,17 @@ Vorhandene Bausteine:
   (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`)
 - `Surface` mit `SurfaceControls` (siehe 9o): die Fläche eines Kastens
   aus Gruppen Shape (Radius), Background (`FillListControls`), Border
-  (`StrokeStyleControls`) und Effects (`SurfaceEffect[]` mit
+  (`StrokeWidget`) und Effects (`SurfaceEffect[]` mit
   `SurfaceEffectsControls`: Schatten, Innenschatten, Background Blur
-  und Korn); heute am Container (`container.background`, `.border`,
-  `.borderRadius`, `.effects`)
+  und Korn); am Container (`container.background`, `.border`,
+  `.borderRadius`, `.effects`), an der Legende (`legend.surface`), am
+  Tooltip (`tooltip.surface`, Renderer `css`) und in Teilen am Balken
+  der Farbskala (`continuous.bar`: Radius und Rand)
 - `Layout` mit `PositionControls` und `LayoutControls` (siehe 9p):
   Container (`container.layout`, dazu X | Y und W | H aus
   `ObjectLayout`), Dashboard (`dashboard.layout`), Legende
-  (`legend.layout`), Farbskala (`continuous.layout`) und Datenlabels
+  (`legend.layout`), Farbskala (`continuous.layout`, dazu W | H aus
+  `continuous.size`), Tooltip (`tooltip.layout`) und Datenlabels
   (`labels.layout`); die Ausrichtung des Titels (`title.layout`) steht
   beim Text (`TextStyleControls`)
 
@@ -1630,20 +1650,22 @@ Objekt (Chart und Card)
 
 Chart
 
-| Teil               | Form         | Ist                                                                                  | Soll                                   | Status    |
-| ------------------ | ------------ | ------------------------------------------------------------------------------------ | -------------------------------------- | --------- |
-| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`, `.visible`                                         | –                                      | ✓         |
-| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`                                            | –                                      | ✓         |
-| Achsenbeschriftung | Datum        | festes Format über `formatDate`                                                      | `xAxis.labels.dateFormat`              | ○         |
-| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                                                      | –                                      | ✓         |
-| Gridlines          | Linie        | `xAxis.gridLines.stroke`                                                             | –                                      | ✓         |
-| Legende            | Text         | `legend.textStyle`, `.layout`                                                        | –                                      | ✓         |
-| Legende            | Fläche       | –                                                                                    | `legend.background`, `.border`         | ○         |
-| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.layout`                                       | Label-Box (Fill, Stroke)               | ✓, später |
-| Tooltip            | Zahl         | `interaction.tooltip.numberFormat` (ohne Control)                                    | Control                                | ✓, ○      |
-| Tooltip            | Datum        | festes Format über `formatDate`                                                      | `interaction.tooltip.dateFormat`       | ○         |
-| Tooltip            | Text, Fläche | fest im Adapter                                                                      | `textStyle`, `background`, `border`    | ○         |
-| Farbskala          | –            | `colorScale.continuous.startColor`, `.endColor`, `.layout`, HTML (`ChartColorScale`) | Titel, Labels und Ticks wie eine Achse | ○         |
+| Teil               | Form         | Ist                                                                      | Soll                             | Status    |
+| ------------------ | ------------ | ------------------------------------------------------------------------ | -------------------------------- | --------- |
+| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`, `.visible`                             | –                                | ✓         |
+| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`                                | –                                | ✓         |
+| Achsenbeschriftung | Datum        | festes Format über `formatDate`                                          | `xAxis.labels.dateFormat`        | ○         |
+| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                                          | –                                | ✓         |
+| Gridlines          | Linie        | `xAxis.gridLines.stroke`                                                 | –                                | ✓         |
+| Legende            | Text         | `legend.textStyle`, `.layout`                                            | –                                | ✓         |
+| Legende            | Fläche       | `legend.surface`, `.layout.padding`                                      | –                                | ✓         |
+| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.layout`                           | Label-Box (Fill, Stroke)         | ✓, später |
+| Tooltip            | Zahl         | `interaction.tooltip.numberFormat`                                       | –                                | ✓         |
+| Tooltip            | Datum        | festes Format über `formatDate`                                          | `interaction.tooltip.dateFormat` | ○         |
+| Tooltip            | Text, Fläche | `tooltip.textStyle`, `.surface`, `.layout`                               | –                                | ✓         |
+| Farbskala          | Fläche       | `continuous.startColor`, `.endColor`, `.bar`, `.size`, `.layout`         | –                                | ✓         |
+| Farbskala          | Text + Zahl  | `continuous.title`, `.labels` (`textStyle`, `numberFormat`, `tickCount`) | –                                | ✓         |
+| Farbskala          | Linie        | `continuous.ticks.visible`, `.stroke`                                    | –                                | ✓         |
 
 Marks
 
@@ -1735,8 +1757,8 @@ BACKGROUND                         ＋
   Control zeigt keinen Hinweis
 
 `SurfaceEffectsControls` sind die Zeilen der Gruppe Effects einer
-Fläche (`SurfaceEffect[]`), heute am Container im Element „Chart“ bzw.
-„Card“:
+Fläche (`SurfaceEffect[]`), am Container im Element „Chart“ bzw.
+„Card“, an der Legende und am Tooltip:
 
 - ＋ in der Überschrift hängt immer einen Schatten an; ohne Effekte zeigt
   die Gruppe nur die Überschrift
@@ -1752,12 +1774,22 @@ Fläche (`SurfaceEffect[]`), heute am Container im Element „Chart“ bzw.
   zeichnet
 
 `SurfaceControls` sind die Gruppen der Fläche eines Kastens, für jeden
-Kasten dieselben: Shape (Radius), Background, Border, Effects. Props
-`label`, `renderer` (Standard `html`), `value: Surface` und ein
-generisches `onChange(key, value)` für eine Eigenschaft. Was der Renderer zeichnen kann, liest es aus
-`SURFACE_CAPABILITIES` (`ARCHITECTURE.md`, „Surface“) und zeigt nur
-das; ein Kasten bringt davor seine eigenen Gruppen mit, der Container
-Position und Layout (`ContainerWidget`).
+Kasten dieselben: Shape (Radius), Background, Border (`StrokeWidget`
+mit Auge), Effects. Props `label`, `renderer` (Standard `html`),
+`value: Partial<Surface>` und ein generisches `onChange(key, value)`
+für eine Eigenschaft.
+
+- es zeigt nur die Gruppen, deren Felder der Wert hat, z. B. Shape und
+  Border für den Balken der Farbskala, dessen Füllung die Datenfarbe
+  ist
+- `children` stehen zwischen Shape und Background, z. B. die Gruppe
+  Text von Legende und Tooltip (feste Reihenfolge)
+- was der Renderer zeichnen kann, liest es aus `SURFACE_CAPABILITIES`
+  (`ARCHITECTURE.md`, „Surface“): beim Renderer `css` (Tooltip) bietet
+  Border nur Solid an und Effects kein Korn
+- ein Kasten bringt davor seine eigenen Gruppen mit, z. B. Position und
+  Layout (`ContainerWidget`, `LegendWidget`, `ColorScaleWidget`,
+  `TooltipWidget`)
 
 `ShadowControls` ist der Inhalt hinter dem ⚙ eines Schattens, für Marks
 und Container gleich: Section Offset mit X | Y (Buchstaben als Icon,
@@ -1777,7 +1809,7 @@ Aufrufer teilt nichts auf.
   über die ganze Zeile): Icon der Seite (`PanelTop` usw.) und ihr Name
   (`getPlacementLabel`, z. B. „Bottom left“, links und rechts nur die
   Seite). Es öffnet ein `PositionGrid` (siehe 9r), mit Alignment das
-  Raster (Legende), ohne das Kreuz (Farbskala). Sonst eine Icon-Gruppe,
+  Raster (Legende, Farbskala), ohne das Kreuz. Sonst eine Icon-Gruppe,
   eingeschränkt über `positions` (Standard: die vier Seiten). Seiten
   erscheinen als Pfeile (`.layout-position-control`), bis drei in einer
   Feldspalte, ab vier über beide; Positionen mit eigenem `icon`, z. B.
@@ -1855,7 +1887,7 @@ Formänderung des `Layout`. Es steht im Popover des Positionsfelds
 die Form:
 
 ```text
-grid (Legende)                    cross (Farbskala)
+grid (Legende, Farbskala)         cross (ohne Alignment)
 [↖] [↑] [↗]  top: start | center | end      [ ] [↑] [ ]
 [←] [ ] [→]  left | Plot | right            [←] [ ] [→]
 [↙] [↓] [↘]  bottom: start | center | end   [ ] [↓] [ ]
@@ -1865,7 +1897,7 @@ grid (Legende)                    cross (Farbskala)
   left“, „Right“) und zeigt, wo das Element sitzt; die Mitte steht für
   den Plot und ist deaktiviert
 - `grid` (Standard): Seite und Alignment; links und rechts nur mittig,
-  weil die Legende dort vertikal läuft und eine Spalte bleibt
+  weil Legende und Farbskala dort vertikal laufen
 - `cross`: nur die vier Seiten, die Ecken bleiben leer; es meldet nur
   `position`, ohne `alignment`, und die Zelle einer Seite steht für die
   ganze Seite
@@ -1957,8 +1989,12 @@ Format-Panel:
 ```text
 Legend                👁
 ├── Position     (Feld mit PositionGrid, Raster)
-├── Layout       (Gap)
+├── Layout       (Gap, Padding)
+├── Shape
 ├── Text
+├── Background
+├── Border       👁
+├── Effects
 └── Interaction  [ Off | Multi | Single ]
 ```
 
@@ -1976,6 +2012,11 @@ neben dem Canvas:
   Blätter-Pfeile
 - Pie und Donut sitzen mittig im Rest des Canvas; ihre Legend steht per
   Default rechts, Prozent-Labels innerhalb der Segmente
+- Fläche: Die Legend ist ein Kasten (`legend.surface`, `SurfaceLayers`)
+  mit Padding; standardmäßig ohne Füllung, mit ausgeblendetem Rand,
+  Radius 8 und Padding 8, damit runde Ecken keine Einträge anschneiden.
+  Die Einträge scrollen in einem inneren Element, so bleiben Fläche
+  und Rand beim Scrollen stehen
 
 Die Legend Interaction erscheint nur bei einer relevanten Legend. Sie
 legt fest, was ein Klick auf einen Eintrag tut: nichts (Off,
@@ -2009,17 +2050,40 @@ ECharts `visualMap` ist ein Renderer-Detail.
 
 Im Cevyn UI heißt das Feature `Color Scale`.
 
-Die Color Scale ist HTML (`ChartColorScale`) und liegt im Platz ihrer
-Seite neben dem Canvas, mittig zum Plot: links und rechts aufrecht mit
-dem Maximum oben, oben und unten liegend mit dem Minimum links; Balken
-20 × 140 px, Endlabels kompakt formatiert. Sie ist eine eigene
-Format-Region; ein Klick auf sie zeigt sie im Panel.
+Die Color Scale ist im Grunde eine Achse mit Farbverlauf statt Linie
+und nutzt deshalb deren Bausteine. Sie ist HTML (`ChartColorScale`) und
+liegt im Platz ihrer Seite neben dem Canvas, am Plot ausgerichtet:
 
-Das Element „Color Scale“ im Format-Panel hat sein Auge im Kopf und
-die Gruppen Position (Feld mit Kreuz; die Richtung folgt aus der Seite)
-und Labels (Auge für die Endlabels). Start- und Endfarbe
-(`GradientControl`) und Range (⚙) stehen als Datenfarbe in der
-Farbzeile der Marks.
+- Balken: links und rechts aufrecht mit dem Maximum oben, oben und
+  unten liegend mit dem Minimum links; Länge und Dicke frei (Standard
+  200 × 20 px), Radius und Rand mit Auge; seine Füllung ist die
+  Datenfarbe
+- Werte auf der vom Plot abgewandten Seite, wie an einer Achse auf
+  dieser Seite: Auto zeigt Minimum und Maximum bündig an den Enden,
+  eine Tick-Anzahl runde Werte innerhalb des Bereichs
+  (`getColorScaleTicks`; der Bereich und damit die Farben bleiben);
+  Striche optional, standardmäßig aus
+- Titel: der Name der Metrik (bei aggregierter Farbe z. B. „Mean of
+  profit“) oder ein eigener Text; oben und unten waagerecht über dem
+  Balken, links und rechts gedreht außen wie an der Y-Achse, höchstens
+  so lang wie der Balken
+- drei Format-Regionen wie bei einer Achse: Balken (`colorScale`),
+  Titel (`colorScaleTitle`) und Werte (`colorScaleLabels`); Titel und
+  Werte öffnen das Element mit ihrer Gruppe
+
+```text
+Color Scale           👁
+├── Position     (Feld mit PositionGrid, Raster)
+├── Layout       (W | H des Balkens)
+├── Shape
+├── Border       👁
+├── Title        👁
+├── Labels       👁  (Layout: Ticks · Text · Format)
+└── Ticks        👁
+```
+
+Start- und Endfarbe (`GradientControl`) und Range (⚙) stehen als
+Datenfarbe in der Farbzeile der Marks.
 
 ## 12. Chart Tooltips
 
@@ -2033,6 +2097,15 @@ escaped.
 
 Tooltips werden an `body` angehängt und daher nicht vom Chart-Rahmen
 abgeschnitten.
+
+Jeder Chart hat sein eigenes Tooltip-Aussehen (`appearance.tooltip`),
+in Marks › Tooltip mit Layout (Padding, Gap zwischen den Zeilen),
+Shape, Text, Background, Border, Effects, Format und Behavior. Die
+Fläche zeichnet ECharts als CSS (Renderer `css`): kein Verlauf im Rand,
+kein Korn. Farbe und Gewicht des Text-Stils gelten für Überschrift und
+Werte, die Labels nehmen die Farbe gedämpft (`color-mix`, 64 %). Der
+Default kommt aus dem Dashboard-Style; „Style anwenden“ ersetzt die
+Fläche komplett wie beim Container und färbt den Text um.
 
 ## 13. Reuse Rules
 
@@ -2268,10 +2341,15 @@ legt Fokus-Rahmen über ihn, und sie bleiben, bis ein anderer Klick
 etwas anderes wählt. Nichts wird abgedunkelt, es gibt keinen Puls und
 keinen Fokus beim Hovern über das Panel.
 
-- Fokus-Rahmen haben den Look der Region mit 2 px statt 1,5 px
+- Fokus-Rahmen haben den Look der Region mit 1 px statt 1,5 px
   (`.chart-format-region.is-focus`); ein Teil aus mehreren Stücken
   bekommt einen Rahmen je Stück (z. B. jedes Label, jeder Balken), ab
   100 Stücken einen Rahmen um den Plot.
+- Um Marks liegen Region und Fokus-Rahmen 2 px statt
+  `--chart-region-frame` (4 px) vom Teil, damit sich die Rahmen
+  gruppierter Balken nicht berühren. Jede Region trägt ihr Element als
+  `data-element`; den Abstand setzt das Chart-CSS, `ObjectFrame`
+  bleibt generisch.
 - Die Rahmen folgen dem Chart: nach jeder Änderung, wenn ECharts fertig
   animiert hat, und bei jeder Größenänderung eines HTML-Teils.
 - Beim Objekt als Ganzem zeigt der Ring volle Stärke. Während ein Text

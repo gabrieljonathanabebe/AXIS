@@ -3,16 +3,15 @@ import { getColorCss } from '../shared/colorValue'
 import { createNumberFormatter } from '../shared/format/formatNumber'
 import { getSideOrientation } from '../shared/layout'
 import { getPaintColor } from '../shared/paint'
-import { getSurfaceStyle } from '../shared/surface'
 import { getTextStyleCss } from '../shared/textStyle'
-import SurfaceLayers from '../shared/ui/SurfaceLayers'
+import SurfaceBorder from '../shared/ui/SurfaceBorder'
 import { getColorScaleTicks } from './getColorScaleTicks'
 
-import type { CSSProperties } from 'react'
+import type { CSSProperties, PointerEvent } from 'react'
 import type { ShowFormatHint } from '../objects/ObjectFrame'
 import type { Side } from '../shared/layout'
 import type { NumericDomain } from './getNumericDomain'
-import type { ColorScaleAppearance } from './types'
+import type { ChartFormatElement, ColorScaleAppearance } from './types'
 
 // ===== TYPES =================================================================
 /** Place of the scale and the size of its bar, read by the bar and ticks. */
@@ -102,10 +101,7 @@ function ChartColorScale({
     background: `linear-gradient(${isVertical ? 'to top' : 'to right'}, ${getColorCss(
       scale.startColor,
     )}, ${getColorCss(scale.endColor)})`,
-  }
-  const bodyStyle: CSSProperties = {
-    ...getSurfaceStyle(scale.surface),
-    padding: scale.layout.padding,
+    borderRadius: scale.bar.borderRadius,
   }
   const { stroke } = scale.ticks
   const ticksStyle: TicksStyle = {
@@ -116,11 +112,23 @@ function ChartColorScale({
     '--color-scale-tick-width': `${stroke.width}px`,
   }
 
-  /** Shows the scale as format hint. */
-  function showHint(target: HTMLElement): void {
-    const rect = getRectInFrame(target)
-    if (rect) {
-      onHover({ element: 'colorScale', rect })
+  /**
+   * Makes one part of the scale a format region of its own, like the parts
+   * of an axis: the bar opens the whole scale, the title and the labels
+   * their group.
+   * @param element Format element of the part.
+   * @returns Its element and the hint on hover.
+   */
+  function getRegionProps(element: ChartFormatElement) {
+    return {
+      'data-format-element': element,
+      onPointerEnter: (event: PointerEvent<HTMLElement>) => {
+        const rect = getRectInFrame(event.currentTarget)
+        if (rect) {
+          onHover({ element, rect })
+        }
+      },
+      onPointerLeave: () => onHover(null),
     }
   }
 
@@ -136,26 +144,35 @@ function ChartColorScale({
       }`}
       style={placeStyle}
     >
-      <div
-        className="chart-color-scale-body surface"
-        data-format-element="colorScale"
-        style={bodyStyle}
-        onPointerEnter={(event) => showHint(event.currentTarget)}
-        onPointerLeave={() => onHover(null)}
-      >
-        <SurfaceLayers surface={scale.surface} />
+      <div className="chart-color-scale-body">
         {scale.title.visible && title ? (
           <span
             className="chart-color-scale-title"
             style={getTextStyleCss(scale.title.textStyle)}
+            {...getRegionProps('colorScaleTitle')}
           >
             {title}
           </span>
         ) : null}
         <div className="chart-color-scale-axis">
-          <span className="chart-color-scale-bar" style={barStyle} />
+          <span
+            className="chart-color-scale-bar"
+            style={barStyle}
+            {...getRegionProps('colorScale')}
+          >
+            {scale.bar.border.visible ? (
+              <SurfaceBorder
+                radius={scale.bar.borderRadius}
+                stroke={scale.bar.border.stroke}
+              />
+            ) : null}
+          </span>
           {scale.labels.visible || scale.ticks.visible ? (
-            <div className="chart-color-scale-ticks" style={ticksStyle}>
+            <div
+              className="chart-color-scale-ticks"
+              style={ticksStyle}
+              {...getRegionProps('colorScaleLabels')}
+            >
               {ticks.map((value) => {
                 const share = getTickShare(value)
                 const tickStyle: TickStyle = {

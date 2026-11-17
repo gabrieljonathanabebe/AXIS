@@ -160,6 +160,8 @@ export type ChartFormatElement =
       'labels' | 'legend' | 'title' | 'xAxis' | 'yAxis'
     >
   | 'colorScale'
+  | 'colorScaleLabels'
+  | 'colorScaleTitle'
   | ContainerFormatElement
   | 'marks'
   | 'tooltip'
@@ -214,15 +216,16 @@ export type ColorScaleAppearance = {
     startColor: ColorValue
     endColor: ColorValue
     visible: boolean
-    layout: Pick<Layout, 'alignment' | 'padding' | 'position'>
+    layout: Pick<Layout, 'alignment' | 'position'>
     /** Size of the bar along its side and across it, in pixels. */
     size: { length: number; thickness: number }
+    /** Corners and border of the bar; its fill is the data color. */
+    bar: Pick<Surface, 'border' | 'borderRadius'>
     min: number | null
     max: number | null
     title: AxisTitleAppearance
     labels: ColorScaleLabelsAppearance
     ticks: StrokeAppearance
-    surface: Surface
   }
 }
 
