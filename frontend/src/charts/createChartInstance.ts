@@ -3,7 +3,10 @@ import {
   createDefaultTitle,
 } from '../objects/objectDefaults'
 import { createColorValue } from '../shared/colorValue'
-import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
+import {
+  DEFAULT_DATE_FORMAT,
+  DEFAULT_NUMBER_FORMAT,
+} from '../shared/format/valueFormats'
 import {
   getChartDefinition,
   isPointsChartType,
@@ -152,6 +155,7 @@ export function createDefaultChartSpec(
         max: null,
         gridLines: gridLines,
         labels: {
+          dateFormat: DEFAULT_DATE_FORMAT,
           numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
           textStyle: axisTextStyle,
@@ -167,6 +171,7 @@ export function createDefaultChartSpec(
         max: null,
         gridLines: gridLines,
         labels: {
+          dateFormat: DEFAULT_DATE_FORMAT,
           numberFormat: DEFAULT_NUMBER_FORMAT,
           rotation: 0,
           textStyle: axisTextStyle,

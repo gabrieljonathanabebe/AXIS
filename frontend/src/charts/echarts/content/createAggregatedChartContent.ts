@@ -134,6 +134,7 @@ export function createAggregatedChartContent(
     categories,
     chartType,
     encoding,
+    fields: dataset.fields,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

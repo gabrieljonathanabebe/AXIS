@@ -6,8 +6,12 @@ import {
 import { formatSelectionLabel } from '../../workspace/dataSelection'
 import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
 import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
-import { createAxisNumberFormatter } from './createAxisLabelFormatter'
+import {
+  createAxisDateFormatter,
+  createAxisNumberFormatter,
+} from './createAxisLabelFormatter'
 
+import type { DataField } from '../../datasets/types'
 import type { NumberFormatter } from '../../shared/format/formatNumber'
 import type { DataSelection } from '../../workspace/types'
 import type { ChartSpec, ChartType } from '../types'
@@ -82,6 +86,7 @@ function asParams(params: unknown): TooltipParam[] {
 
 type CreateTooltipFormatterParams = {
   chartType: ChartType
+  fields: DataField[]
   isSelectionSource: boolean
   selection: DataSelection | null
   spec: ChartSpec
@@ -90,6 +95,7 @@ type CreateTooltipFormatterParams = {
 
 export function createTooltipFormatter({
   chartType,
+  fields,
   isSelectionSource,
   selection,
   spec,
@@ -99,6 +105,10 @@ export function createTooltipFormatter({
   const hasColorValue = hasAggregatedColor(chartType, encoding)
   const formatMeasureValue = createValueFormatter(spec)
   const formatXValue = createAxisNumberFormatter(spec.appearance.xAxis)
+  const formatXDate = createAxisDateFormatter(
+    spec.appearance.xAxis,
+    fields.find((field) => field.name === encoding.x),
+  )
   return (params) => {
     const entries = asParams(params)
     const first = entries[0]
@@ -123,7 +133,11 @@ export function createTooltipFormatter({
         .join('')
     }
 
-    const heading = first.axisValue ?? first.name ?? ''
+    const { axisValue } = first
+    const heading =
+      formatXDate && axisValue !== null && axisValue !== undefined
+        ? formatXDate(axisValue)
+        : (axisValue ?? first.name ?? '')
     const rows = entries.flatMap((entry) => {
       const rawValue = entry.value
       const values = Array.isArray(rawValue) ? rawValue : null

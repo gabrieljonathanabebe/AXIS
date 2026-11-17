@@ -3,6 +3,7 @@ import { createStrokeStyleOption } from './createStrokeStyleOption'
 import { createTextStyleOption } from './createTextStyleOption'
 
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
+import type { DataField } from '../../datasets/types'
 import type {
   AxisAppearance,
   AxisTitleAppearance,
@@ -17,6 +18,7 @@ type CreateAxesOptionsParams = {
   categories: string[]
   chartType: ChartType
   encoding: ChartEncoding
+  fields: DataField[]
   valueLabel: string | undefined
 }
 
@@ -82,6 +84,7 @@ export function createAxesOptions({
   categories,
   chartType,
   encoding,
+  fields,
   valueLabel,
 }: CreateAxesOptionsParams): AxesOptions {
   const isCategoryXAxis = chartType !== 'scatter'
@@ -89,7 +92,10 @@ export function createAxesOptions({
     xAxis: {
       axisLabel: {
         ...createTextStyleOption(appearance.xAxis.labels.textStyle),
-        formatter: createAxisLabelFormatter(appearance.xAxis),
+        formatter: createAxisLabelFormatter(
+          appearance.xAxis,
+          fields.find((field) => field.name === encoding.x),
+        ),
         interval: isCategoryXAxis
           ? getCategoryLabelInterval(
               appearance.xAxis.labels.tickCount,

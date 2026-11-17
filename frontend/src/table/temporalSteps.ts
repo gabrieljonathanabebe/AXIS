@@ -1,3 +1,5 @@
+import { parseDateValue } from '../shared/format/formatDate'
+
 import type { TemporalGranularity } from '../datasets/types'
 
 // ===== CONSTANTS =============================================================
@@ -24,17 +26,28 @@ function addStep(date: Date, granularity: TemporalGranularity | null): Date {
 }
 
 // ===== FUNCTIONS =============================================================
-// ISO dates from min to max in steps of the detected granularity (UTC,
-// like formatDate); without a granularity in days. The last step is max.
+/**
+ * ISO dates from min to max in steps of the detected granularity, read as
+ * wall-clock dates; without a granularity in days. The last step is max.
+ * @param min First date of the field.
+ * @param max Last date of the field.
+ * @param granularity Detected granularity of the field.
+ * @returns The steps, or none if min or max is no date.
+ */
 export function createTemporalSteps(
   min: string,
   max: string,
   granularity: TemporalGranularity | null,
 ): string[] {
-  const end = toIsoDate(new Date(max))
+  const start = parseDateValue(min)
+  const last = parseDateValue(max)
+  if (!start || !last) {
+    return []
+  }
+  const end = toIsoDate(last)
   const steps: string[] = []
   for (
-    let date = new Date(min);
+    let date = start;
     toIsoDate(date) <= end;
     date = addStep(date, granularity)
   ) {

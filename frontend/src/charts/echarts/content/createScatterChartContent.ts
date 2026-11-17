@@ -202,6 +202,7 @@ export function createScatterChartContent(
     categories: [],
     chartType,
     encoding,
+    fields: dataset.fields,
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

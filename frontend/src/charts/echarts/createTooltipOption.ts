@@ -5,12 +5,14 @@ import { isRadialChartType } from '../chartDefinitions'
 import { createTooltipFormatter } from './createTooltipFormatter'
 
 import type { TooltipComponentOption } from 'echarts'
+import type { DataField } from '../../datasets/types'
 import type { DataSelection } from '../../workspace/types'
 import type { ChartSpec, ChartType } from '../types'
 
 // ===== TYPES =================================================================
 type CreateTooltipOptionsParams = {
   chartType: ChartType
+  fields: DataField[]
   isSelectionSource: boolean
   selection: DataSelection | null
   spec: ChartSpec
@@ -26,6 +28,7 @@ type CreateTooltipOptionsParams = {
  */
 export function createTooltipOption({
   chartType,
+  fields,
   isSelectionSource,
   selection,
   spec,
@@ -46,6 +49,7 @@ export function createTooltipOption({
     ].join(';'),
     formatter: createTooltipFormatter({
       chartType,
+      fields,
       isSelectionSource,
       selection,
       spec,

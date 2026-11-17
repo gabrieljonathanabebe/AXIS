@@ -405,6 +405,9 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   ohne Syntax-Erklärungen; Ziel ist Überblick ohne langes Lesen;
 - Antworten insgesamt knapp halten;
 - nach dem Block den gespeicherten Ist-Zustand prüfen;
+- am Ende eines Schritts, der sichtbar etwas ändert, eine Tabelle für
+  die Prüfung im Browser: was sich ändert | vorher sichtbar | jetzt
+  sichtbar; ohne sichtbare Änderung entfällt sie;
 - erst dann mit dem nächsten Block fortfahren.
 
 Graphify ist derzeit kein verpflichtender Teil des Workflows und wird

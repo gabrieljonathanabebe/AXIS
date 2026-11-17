@@ -79,6 +79,7 @@ export function createEChartOption(context: EChartOptionContext): EChartRender {
     series: content.series,
     tooltip: createTooltipOption({
       chartType,
+      fields: dataset.fields,
       isSelectionSource,
       selection,
       spec,

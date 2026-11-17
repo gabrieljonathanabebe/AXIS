@@ -1,3 +1,5 @@
+import type { TimeGrain } from '../shared/format/valueFormats'
+
 // ===== FIELD =================================================================
 /** Storage type of a column, as detected by the backend. */
 export type PhysicalType =
@@ -63,7 +65,7 @@ export type DimensionStatistics = {
   value_counts: ValueCount[]
 }
 
-export type TemporalGranularity = 'day' | 'week' | 'month' | 'quarter' | 'year'
+export type TemporalGranularity = TimeGrain
 
 export type TemporalStatistics = {
   kind: 'temporal'

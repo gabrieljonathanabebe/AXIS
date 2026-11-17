@@ -11,7 +11,7 @@ import type {
 import type { ColorValue } from '../shared/colorValue'
 import type { Effect } from '../shared/effect'
 import type { SeriesFill } from '../shared/fill'
-import type { NumberFormat } from '../shared/format/valueFormats'
+import type { DateFormat, NumberFormat } from '../shared/format/valueFormats'
 import type { Layout } from '../shared/layout'
 import type { SeriesStrokeStyle, StrokeAppearance } from '../shared/strokeStyle'
 import type { Surface } from '../shared/surface'
@@ -87,6 +87,7 @@ export type AxisAppearance = {
 }
 
 export type AxisLabelsAppearance = {
+  dateFormat: DateFormat
   numberFormat: NumberFormat
   rotation: number
   textStyle: TextStyle
