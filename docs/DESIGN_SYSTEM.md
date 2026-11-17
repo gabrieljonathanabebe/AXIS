@@ -888,7 +888,8 @@ ANIMATION                      ＋
 - **Number Format:** Format-Select (Auto, Number, Percent und die
   Währungen) | Decimals mit Auto (`onAuto`) | ⚙ mit Notation und
   Prefix | Suffix; an Achsenlabels zusätzlich Date im Select. DateFormat
-  kommt nach demselben Muster.
+  kommt als breites Select mit Beispielen je Zeitraster, ohne ⚙
+  („Zeitraster und DateFormat“, `ROADMAP.md`).
 - **Zahlenpaare** in einer Zeile: Size range (⤓ min | ⤒ max), Bar width
   | Radius, Ticks | Rotation der Achsenlabels, X | Y und W | H von Chart
   und Card (`BoxFieldsRow`, 9p).

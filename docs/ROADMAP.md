@@ -64,7 +64,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 9. Arbeitsfläche, Format-Panel und Objekt-Layout – implementiert
 10. Kästen als HTML (3.10a) und Farbskala wie eine Achse und Flächen
     für Kästen (3.10b) – implementiert
-11. DateFormat – **nächster Slice**
+11. Zeitraster und DateFormat – **nächster Slice**
 12. Sortierung und Top N
 13. Theme-Umschalter in der TopBar (provisorisch)
 14. Table-Objekt
@@ -78,48 +78,74 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-- nach 3.10b: Chart- und Card-Titel als Kasten mit Text; der Titel
-  bleibt Teil des Objekts (er bewegt und skaliert sich mit, sein
-  Standardtext kommt aus den Daten) und bekommt eine optionale
-  `surface` (Standard durchsichtig) über `SurfaceControls` und
-  `SurfaceLayers`; `ObjectTitleAppearance` gilt für Chart und Card
-  zugleich, die Optik bleibt ohne Fläche unverändert
+### 3.11 Zeitraster und DateFormat (geplant, nächster Slice)
 
-### 3.11 DateFormat (geplant, nächster Slice)
+Zwei zusammengehörige Teile: Das Zeitraster legt fest, wie die Daten
+über die Zeit zusammengefasst werden (Abfrage), das DateFormat, wie ein
+Datum geschrieben wird (Darstellung); „Auto“ im Format folgt dem Raster.
+Heute gruppiert die `chart-query` nach dem rohen Datumswert (tägliche
+Daten über zwei Jahre ergeben über 700 Punkte), und `formatDate`
+(`shared/format/formatDate.ts`) nutzt immer `dateStyle: 'medium'` in
+UTC, an der Achse z. B. „Jan 1, 2025“ auch bei Monatsdaten.
 
-Baustein für Datumswerte nach dem Muster von `NumberFormat`. Heute gibt
-es ein festes Format: `formatDate` (`shared/format/formatDate.ts`) nutzt
-immer `dateStyle: 'medium'` in UTC, an der Achse z. B. „Jan 1, 2025 ·
-Feb 1, 2025“ auch bei Monatsdaten.
+Entscheidungen:
 
-- Typ in `shared/format/` (Vorschlag):
+- Zeitraster: Tag, Woche, Monat, Quartal, Jahr, also die
+  Granularitäten, die das Profiling erkennt
+  (`TemporalStatistics.granularity`); Standard ist die erkannte
+  Granularität des Felds
+  - gehört zu den Daten, nicht zur Darstellung: Auswahl im Build Panel
+    am Datumsfeld („date ▾ | Month ▾“), wie in Power BI und Tableau; das
+    zweite Select erscheint nur bei Datumsfeldern
+  - Spec: neues Feld in `ChartDataSpec` (z. B. `timeGrain`), keine
+    Formänderung
+  - Backend: Die `chart-query` kürzt das Datum auf das Raster
+    (`dt.truncate`) und gruppiert danach; Wochen beginnen am Montag
+- Selection auf Zeiträume: Ein Klick auf „März 2025“ filtert den ganzen
+  Monat, nicht nur `date = 2025-03-01`; die Chart-Filter bekommen einen
+  Datumsbereich (Vorbild `DateRangeTableFilter` der Table), und
+  Highlight-Query, Scatter und Cards werten ihn aus
+- DateFormat als Auswahl per Beispiel wie in Excel, Tableau und Power
+  BI, nicht als Einzelschalter:
 
   ```ts
-  type DateFormat = {
-    style: 'auto' | 'custom'
-    unit: 'year' | 'quarter' | 'month' | 'day' // feinste Einheit
-    month: 'numeric' | 'short' | 'long' // 03 · Mar · March
-    year: 'numeric' | '2-digit' // 2025 · 25
-    time: boolean // Uhrzeit bei Datetime-Feldern
-  }
+  type DateFormat = { style: 'auto' } | { style: 'preset'; preset: DatePreset }
   ```
 
-- `auto` richtet sich nach der erkannten Granularität des Felds
-  (`TemporalStatistics.granularity`): Monatsdaten „Jan 2025“,
-  Jahresdaten „2025“, Tagesdaten „1 Jan 2025“
-- Formatter auf Basis von `Intl.DateTimeFormat` mit der Locale aus
-  `shared/config.ts` (später aus den Dashboard-Einstellungen, 3.16);
-  Quartale („Q1 2025“) selbst zusammensetzen
-- `DateFormatControls` in `shared/ui` wie `NumberFormatControls`: bei
-  Auto nur das Select, bei Custom Einheit in der Zeile, Monat, Jahr und
-  Uhrzeit hinter ⚙ (`DetailsPopover`)
-- Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`;
-  im `AxisWidget`, sobald im Format-Select Date gewählt ist, statt
-  bisher nichts), Überschrift des Tooltips bei Datums-X, später die
-  Datums-Spalten der Table (3.14)
-- neues Feld, keine Formänderung
-- die neuen Zeilen entstehen direkt in der Gruppen-Struktur aus 3.3 und
-  im kompakten Stil aus 3.4
+  - ein breites Select unter dem Format-Select der Achsenbeschriftung,
+    kein ⚙; jede Option zeigt ein Beispiel aus den echten Daten (erster
+    Wert der Achse; Fallback ein Datum mit einem Tag über 12, z. B. der
+    14., damit Tag und Monat nicht verwechselt werden)
+  - nur Vorlagen, die zum Raster passen: Tag „14 Mar 2025 · 14.03.2025 ·
+    2025-03-14 · Fri, 14 Mar“; Woche „10 Mar 2025 (Wochenbeginn) · W11
+    2025“; Monat „Mar 2025 · March 2025 · 03/2025 · 2025-03“; Quartal
+    „Q1 2025 · Q1 '25“; Jahr „2025 · '25“
+  - „Auto“ zeigt, was es gewählt hat („Auto · Mar 2025“); passt eine
+    Vorlage nach einem Wechsel des Rasters nicht mehr, gilt wieder Auto
+  - kein Feld für die Einheit (sie kommt aus dem Raster) und keine
+    Uhrzeit (Tag ist das feinste Raster)
+
+- Formatter auf `Intl.DateTimeFormat` mit der Locale als Parameter
+  (Standard aus `shared/config.ts`, später `format.locale` aus 3.16);
+  Instanzen je Format und Locale zwischengespeichert; Quartale („Q1
+  2025“) und Wochen selbst zusammensetzen
+- Datumswerte sind Wanduhrzeit: Einlesen und Formatieren an einer
+  Stelle, ohne Umrechnung in eine Zeitzone; behebt #34
+- Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`,
+  sobald im Format-Select Date gewählt ist) und Überschrift des Tooltips
+  bei Datums-X; die übrigen Aufrufer von `formatDate` (Profil,
+  Table-Filter) behalten das Standardformat
+
+Vorgehen:
+
+1. DateFormat „Auto“ und Formatter mit Tests (Vitest), dabei #34
+2. Zeitraster: Backend mit Tests, Build Panel, „Auto“ folgt dem Raster
+3. Selection auf Zeiträume
+4. Vorlagen im Format-Panel (kürzbar, falls die Zeit knapp wird)
+
+Nicht in 3.11: Drill-down (nach dem Alpha, baut auf dem Zeitraster
+auf), relative Daten („vor 3 Tagen“), Geschäftsjahre, eine
+Zeitzonen-Einstellung, ein Wechsel des Achsentyps.
 
 ### 3.12 Sortierung und Top N (geplant)
 
@@ -213,6 +239,14 @@ Persistenz festlegen soll:
   - ein Textobjekt ist ein Kasten mit Text (Container mit `Surface`,
     `EditableText`, `TextStyle`) und im Kern ein neuer Objekttyp in der
     Registry; eine Card ist fast dasselbe, nur mit Daten
+  - direkt danach nutzen Chart- und Card-Titel denselben Baustein,
+    eingebettet im Objekt: Sie bewegen und skalieren sich mit ihm (keine
+    freie Position), ihr Standardtext kommt aus den Daten, die Fläche ist
+    optional und standardmäßig durchsichtig; `ObjectTitleAppearance`
+    gilt für Chart und Card zugleich, ohne Fläche bleibt die Optik
+    gleich (vorher als Lückenfüller nach 3.10b geplant, verschoben,
+    damit der Titel den allgemeinen Baustein nutzt statt einer
+    Sonderlösung)
   - vor der Persistenz, weil Dokumentname und Titel ins Dateiformat
     eingehen
 - `canvas.background` ist seit 3.5 da (`Fill`, Gruppe Background)
