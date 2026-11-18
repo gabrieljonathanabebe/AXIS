@@ -16,6 +16,12 @@ export type ChartFilter =
       min: number | null
       max: number | null
     }
+  | {
+      kind: 'date_range'
+      field: string
+      start: string | null
+      end: string | null
+    }
 
 export type ChartQueryRequest = {
   aggregation: GroupAggregation

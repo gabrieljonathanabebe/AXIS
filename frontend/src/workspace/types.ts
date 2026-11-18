@@ -196,6 +196,13 @@ export type SelectionFilter =
       min: number
       max: number
     }
+  | {
+      kind: 'date_range'
+      field: string
+      start: string
+      end: string
+      grain: TimeGrain
+    }
 
 export type DataSelection = {
   sourceChartId: string

@@ -1,5 +1,7 @@
+import { getPeriodEnd } from '../../shared/timeGrain'
 import { isPointsChartType } from '../chartDefinitions'
 import { getColorEncodingMode } from '../getColorEncodingMode'
+import { getEffectiveTimeGrain } from '../getEffectiveTimeGrain'
 
 import type { ECElementEvent } from 'echarts'
 import type { DataField } from '../../datasets/types'
@@ -52,7 +54,8 @@ function createScatterSelection(
 // ===== FUNCTION ==============================================================
 /**
  * Turns a click on a mark into a selection: the category of a bar, line
- * point or pie segment, the color category of a scatter point.
+ * point or pie segment (a date selects its whole period), the color
+ * category of a scatter point.
  * @param chart Chart that was clicked.
  * @param event ECharts click event.
  * @param fields Dataset fields, which decide the color encoding mode.
@@ -73,6 +76,16 @@ export function createSelectionFromEvent(
   const fieldName = chart.spec.data.encoding.x
   if (!fieldName) {
     return null
+  }
+  const grain = getEffectiveTimeGrain(chart.spec.data, fields)
+  const end = grain ? getPeriodEnd(event.name, grain) : null
+  if (grain && end) {
+    return {
+      sourceChartId: chart.id,
+      filters: [
+        { kind: 'date_range', field: fieldName, start: event.name, end, grain },
+      ],
+    }
   }
   return createValueSelection(chart.id, fieldName, event.name)
 }

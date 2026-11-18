@@ -1,13 +1,28 @@
+import {
+  createDateFormatter,
+  parseDateValue,
+} from '../shared/format/formatDate'
 import { formatNumber } from '../shared/format/formatNumber'
+import { DEFAULT_DATE_FORMAT } from '../shared/format/valueFormats'
+import { toIsoDate } from '../shared/timeGrain'
 
 import type { ChartFilter } from '../charts/chartsApi'
-import type { DataRow } from '../datasets/types'
+import type { DataRow, DataValue } from '../datasets/types'
 import type { DataSelection, SelectionFilter } from './types'
 
-// ===== FUNCTIONS =============================================================
+// ===== HELPERS ===============================================================
+/**
+ * Turns a selection filter into the filter of chart and card queries.
+ * @param filter Filter of the selection.
+ * @returns The query filter; values as text, a date range without grain.
+ */
 function toQueryFilter(filter: SelectionFilter): ChartFilter {
   if (filter.kind === 'range') {
     return filter
+  }
+  if (filter.kind === 'date_range') {
+    const { end, field, kind, start } = filter
+    return { end, field, kind, start }
   }
   return {
     ...filter,
@@ -15,6 +30,20 @@ function toQueryFilter(filter: SelectionFilter): ChartFilter {
   }
 }
 
+/**
+ * Reads a row value as ISO date.
+ * @param value Value of a row.
+ * @returns E.g. "2025-03-14", or null for values that are no date.
+ */
+function toRowDate(value: DataValue | undefined): string | null {
+  if (typeof value !== 'string' && typeof value !== 'number') {
+    return null
+  }
+  const date = parseDateValue(value)
+  return date ? toIsoDate(date) : null
+}
+
+// ===== FUNCTIONS =============================================================
 /** Filters of a selection as chart and card queries expect them. */
 export function getSelectionQueryFilters(
   selection: DataSelection | null,
@@ -22,6 +51,7 @@ export function getSelectionQueryFilters(
   return selection ? selection.filters.map(toQueryFilter) : []
 }
 
+/** Whether two selections come from the same chart with the same filters. */
 export function isSameSelection(
   first: DataSelection | null,
   second: DataSelection | null,
@@ -35,6 +65,7 @@ export function isSameSelection(
   )
 }
 
+/** Whether a row matches one filter of a selection. */
 export function matchesSelectionFilter(
   row: DataRow,
   filter: SelectionFilter,
@@ -45,9 +76,14 @@ export function matchesSelectionFilter(
       typeof value === 'number' && value >= filter.min && value <= filter.max
     )
   }
+  if (filter.kind === 'date_range') {
+    const day = toRowDate(value)
+    return day !== null && day >= filter.start && day <= filter.end
+  }
   return filter.values.includes(String(value ?? ''))
 }
 
+/** Whether a row matches every filter of a selection. */
 export function isRowInSelection(
   row: DataRow,
   selection: DataSelection | null,
@@ -81,6 +117,7 @@ export function getRowSelection(
   return hasAllFields ? selection : null
 }
 
+/** Label of a selection, e.g. "United States" or "Mar 2025". */
 export function formatSelectionLabel(selection: DataSelection): string {
   return selection.filters
     .map((filter) => {
@@ -88,6 +125,12 @@ export function formatSelectionLabel(selection: DataSelection): string {
         const min = formatNumber(filter.min)
         const max = formatNumber(filter.max)
         return `${filter.field} ${min}–${max}`
+      }
+      if (filter.kind === 'date_range') {
+        return createDateFormatter(
+          DEFAULT_DATE_FORMAT,
+          filter.grain,
+        )(filter.start)
       }
       return filter.values.join(', ')
     })

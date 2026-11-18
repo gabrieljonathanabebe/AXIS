@@ -5,14 +5,7 @@ import type { DataRow, ValueCount } from '../datasets/types'
 import type { SortDirection } from './types'
 
 // Table only; charts filter with ChartFilter. Dates are ISO strings.
-export type TableFilter =
-  | ChartFilter
-  | {
-      kind: 'date_range'
-      field: string
-      start: string | null
-      end: string | null
-    }
+export type TableFilter = ChartFilter
 
 export type TableQueryRequest = {
   filters: TableFilter[]

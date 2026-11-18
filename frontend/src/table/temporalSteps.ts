@@ -1,31 +1,7 @@
 import { parseDateValue } from '../shared/format/formatDate'
+import { addTimeGrain, toIsoDate } from '../shared/timeGrain'
 
 import type { TimeGrain } from '../shared/format/valueFormats'
-
-// ===== CONSTANTS =============================================================
-const monthsByGrain: Partial<Record<TimeGrain, number>> = {
-  month: 1,
-  quarter: 3,
-  year: 12,
-}
-
-// ===== HELPERS ===============================================================
-/** ISO date part of a date, e.g. "2025-03-14". */
-function toIsoDate(date: Date): string {
-  return date.toISOString().slice(0, 10)
-}
-
-/** The next step after a date: months for coarse grains, else days. */
-function addStep(date: Date, grain: TimeGrain | null): Date {
-  const next = new Date(date)
-  const months = grain ? monthsByGrain[grain] : undefined
-  if (months) {
-    next.setUTCMonth(next.getUTCMonth() + months)
-  } else {
-    next.setUTCDate(next.getUTCDate() + (grain === 'week' ? 7 : 1))
-  }
-  return next
-}
 
 // ===== FUNCTIONS =============================================================
 /**
@@ -48,7 +24,11 @@ export function createTemporalSteps(
   }
   const end = toIsoDate(last)
   const steps: string[] = []
-  for (let date = start; toIsoDate(date) <= end; date = addStep(date, grain)) {
+  for (
+    let date = start;
+    toIsoDate(date) <= end;
+    date = addTimeGrain(date, grain)
+  ) {
     steps.push(toIsoDate(date))
   }
   return steps.at(-1) === end ? steps : [...steps, end]
