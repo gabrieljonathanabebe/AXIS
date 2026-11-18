@@ -37,11 +37,8 @@ class RangeChartFilter(BaseModel):
     max: float | None = None
 
 
-ChartFilter = ValuesChartFilter | RangeChartFilter
-
-
-class DateRangeTableFilter(BaseModel):
-    """Keep rows whose date lies in the range; table only, None is open."""
+class DateRangeFilter(BaseModel):
+    """Keep rows whose date lies in the range, bounds included; None is open."""
 
     kind: Literal["date_range"]
     field: str
@@ -49,7 +46,8 @@ class DateRangeTableFilter(BaseModel):
     end: date | None = None
 
 
-TableFilter = ChartFilter | DateRangeTableFilter
+ChartFilter = ValuesChartFilter | RangeChartFilter | DateRangeFilter
+TableFilter = ChartFilter
 
 
 # ===== CHART QUERY ===========================================================

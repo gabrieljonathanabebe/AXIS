@@ -4,7 +4,7 @@ import polars as pl
 
 from app.datasets.models import DatasetSummary, PhysicalType
 from app.queries.models import (
-    DateRangeTableFilter,
+    DateRangeFilter,
     RangeChartFilter,
     TableFilter,
 )
@@ -42,7 +42,7 @@ def build_filter_expression(item: TableFilter) -> pl.Expr:
     """
     if isinstance(item, RangeChartFilter):
         return build_bounds_expression(pl.col(item.field), item.min, item.max)
-    if isinstance(item, DateRangeTableFilter):
+    if isinstance(item, DateRangeFilter):
         column = pl.col(item.field).cast(pl.Date)
         return build_bounds_expression(column, item.start, item.end)
     return pl.col(item.field).cast(pl.Utf8).is_in(item.values)
@@ -88,7 +88,7 @@ def validate_filters(
                 raise ValueError("Range filters need a min or max.")
             if physical_type not in (PhysicalType.INTEGER, PhysicalType.FLOAT):
                 raise ValueError("Range filters require a numeric field.")
-        if isinstance(item, DateRangeTableFilter):
+        if isinstance(item, DateRangeFilter):
             if item.start is None and item.end is None:
                 raise ValueError("Date ranges need a start or end.")
             if physical_type not in (PhysicalType.DATE, PhysicalType.DATETIME):

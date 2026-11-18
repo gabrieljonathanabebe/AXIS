@@ -7,6 +7,7 @@ from app.datasets.models import DatasetSummary, TimeGrain
 from app.queries import chart_query
 from app.queries.models import (
     ChartQueryRequest,
+    DateRangeFilter,
     GroupAggregation,
     ValuesChartFilter,
 )
@@ -233,3 +234,38 @@ def test_validate_chart_query_rejects_a_time_grain_without_dates(
 
     with pytest.raises(ValueError, match="Time grain needs a date field"):
         chart_query.validate_chart_query(sales_summary, query)
+
+
+def test_date_range_filter_keeps_the_whole_period() -> None:
+    """A selected month keeps every row of it, also late on its last day."""
+    frame = pl.DataFrame(
+        {
+            "date": [
+                datetime(2025, 2, 28, 23, 0),
+                datetime(2025, 3, 1, 0, 30),
+                datetime(2025, 3, 31, 23, 30),
+                datetime(2025, 4, 1, 0, 0),
+            ],
+            "revenue": [1.0, 2.0, 4.0, 8.0],
+        }
+    )
+    query = ChartQueryRequest(
+        x="date",
+        y="revenue",
+        aggregation=GroupAggregation.SUM,
+        time_grain=TimeGrain.MONTH,
+        filters=[
+            DateRangeFilter(
+                kind="date_range",
+                field="date",
+                start=date(2025, 3, 1),
+                end=date(2025, 3, 31),
+            )
+        ],
+    )
+
+    result = chart_query.build_chart_query_result(frame, query)
+
+    assert [(point.x, point.value) for point in result.points] == [
+        ("2025-03-01", 6.0)
+    ]
