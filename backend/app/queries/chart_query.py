@@ -1,6 +1,10 @@
 import polars as pl
 
-from app.datasets.models import DatasetSummary, PhysicalType
+from app.datasets.models import (
+    DatasetSummary,
+    PhysicalType,
+    TemporalGranularity,
+)
 from app.queries import filters
 from app.queries.models import (
     ChartQueryPoint,
@@ -12,6 +16,14 @@ from app.queries.models import (
 )
 
 MAX_CHART_POINTS = 2_000
+
+TRUNCATE_EVERY: dict[TemporalGranularity, str] = {
+    TemporalGranularity.DAY: "1d",
+    TemporalGranularity.WEEK: "1w",
+    TemporalGranularity.MONTH: "1mo",
+    TemporalGranularity.QUARTER: "1q",
+    TemporalGranularity.YEAR: "1y",
+}
 
 
 def build_aggregation_expression(
@@ -44,6 +56,22 @@ def build_aggregation_expression(
     raise ValueError(f"Unsupported aggregation: {aggregation}")
 
 
+def build_x_expression(query: ChartQueryRequest) -> pl.Expr:
+    """
+    Build the X column of the chart groups.
+    Args:
+        query: Encoding of the chart; a time grain truncates dates to it.
+    Returns:
+        X as is, or as date at the start of its day, week (Monday),
+        month, quarter or year.
+    """
+    column = pl.col(query.x)
+    if query.time_grain is None:
+        return column.alias("x")
+    every = TRUNCATE_EVERY[query.time_grain]
+    return column.dt.truncate(every).cast(pl.Date).alias("x")
+
+
 def aggregate_chart_frame(
     frame: pl.DataFrame,
     query: ChartQueryRequest,
@@ -58,7 +86,7 @@ def aggregate_chart_frame(
         sorted by X if X is numeric or temporal, else by the total value
         per X in descending order.
     """
-    group_fields = [pl.col(query.x).alias("x")]
+    group_fields = [build_x_expression(query)]
     if query.series is not None:
         group_fields.append(pl.col(query.series).alias("series"))
     expressions = [
@@ -169,8 +197,9 @@ def validate_chart_query(
         summary: Dataset whose fields the query addresses.
         query: Encoding, aggregations and filters of the chart.
     Raises:
-        ValueError: If fields are unknown, duplicated across encodings or
-            not numeric where an aggregation needs numbers.
+        ValueError: If fields are unknown, duplicated across encodings,
+            not numeric where an aggregation needs numbers, or if a time
+            grain is set on X that is no date.
     """
     fields = {field.name: field for field in summary.fields}
     has_color = query.color is not None
@@ -187,6 +216,12 @@ def validate_chart_query(
             raise ValueError(f"Unknown field: {name}")
     if query.series == query.x:
         raise ValueError("Series must differ from X.")
+    x_type = fields[query.x].physical_type
+    if query.time_grain is not None and x_type not in (
+        PhysicalType.DATE,
+        PhysicalType.DATETIME,
+    ):
+        raise ValueError("Time grain needs a date field on X.")
     if query.color is not None:
         if query.color in (query.x, query.series):
             raise ValueError("Color must differ from X and Series.")

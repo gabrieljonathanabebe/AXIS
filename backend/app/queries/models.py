@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel
 
-from app.datasets.models import ValueCount
+from app.datasets.models import TemporalGranularity, ValueCount
 
 
 # ===== AGGREGATION ===========================================================
@@ -63,6 +63,7 @@ class ChartQueryRequest(BaseModel):
     color_aggregation: GroupAggregation | None = None
     aggregation: GroupAggregation
     filters: list[ChartFilter] = []
+    time_grain: TemporalGranularity | None = None
 
 
 class ChartQueryPoint(BaseModel):

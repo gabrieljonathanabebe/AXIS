@@ -1,7 +1,9 @@
+from datetime import date, datetime
+
 import polars as pl
 import pytest
 
-from app.datasets.models import DatasetSummary
+from app.datasets.models import DatasetSummary, TemporalGranularity
 from app.queries import chart_query
 from app.queries.models import (
     ChartQueryRequest,
@@ -135,3 +137,99 @@ def test_count_accepts_a_text_y(sales_summary: DatasetSummary) -> None:
     )
 
     chart_query.validate_chart_query(sales_summary, query)
+
+
+# ===== TIME GRAIN ============================================================
+@pytest.mark.parametrize(
+    ("time_grain", "expected"),
+    [
+        (
+            TemporalGranularity.DAY,
+            [
+                ("2025-03-10", 1.0),
+                ("2025-03-16", 2.0),
+                ("2025-03-17", 4.0),
+                ("2025-04-02", 8.0),
+            ],
+        ),
+        (
+            TemporalGranularity.WEEK,
+            [("2025-03-10", 3.0), ("2025-03-17", 4.0), ("2025-03-31", 8.0)],
+        ),
+        (
+            TemporalGranularity.MONTH,
+            [("2025-03-01", 7.0), ("2025-04-01", 8.0)],
+        ),
+        (
+            TemporalGranularity.QUARTER,
+            [("2025-01-01", 7.0), ("2025-04-01", 8.0)],
+        ),
+        (TemporalGranularity.YEAR, [("2025-01-01", 15.0)]),
+    ],
+)
+def test_time_grain_groups_dates_by_period(
+    time_grain: TemporalGranularity,
+    expected: list[tuple[str, float]],
+) -> None:
+    """Dates group by the start of their period; weeks start on Monday."""
+    frame = pl.DataFrame(
+        {
+            "date": [
+                date(2025, 3, 10),
+                date(2025, 3, 16),
+                date(2025, 3, 17),
+                date(2025, 4, 2),
+            ],
+            "revenue": [1.0, 2.0, 4.0, 8.0],
+        }
+    )
+    query = ChartQueryRequest(
+        x="date",
+        y="revenue",
+        aggregation=GroupAggregation.SUM,
+        time_grain=time_grain,
+    )
+
+    result = chart_query.build_chart_query_result(frame, query)
+
+    assert [(point.x, point.value) for point in result.points] == expected
+
+
+def test_time_grain_keeps_datetimes_on_their_day() -> None:
+    """Times at the edge of a day stay on the day written in the data."""
+    frame = pl.DataFrame(
+        {
+            "date": [
+                datetime(2025, 3, 1, 0, 30),
+                datetime(2025, 3, 1, 23, 30),
+            ],
+            "revenue": [1.0, 2.0],
+        }
+    )
+    query = ChartQueryRequest(
+        x="date",
+        y="revenue",
+        aggregation=GroupAggregation.SUM,
+        time_grain=TemporalGranularity.DAY,
+    )
+
+    result = chart_query.build_chart_query_result(frame, query)
+
+    assert [(point.x, point.value) for point in result.points] == [
+        ("2025-03-01", 3.0)
+    ]
+
+
+def test_validate_chart_query_rejects_a_time_grain_without_dates(
+    sales_summary: DatasetSummary,
+) -> None:
+    """A time grain on a text X fails."""
+    query = ChartQueryRequest(
+        x="country",
+        y="revenue",
+        aggregation=GroupAggregation.SUM,
+        time_grain=TemporalGranularity.MONTH,
+    )
+
+    with pytest.raises(ValueError, match="Time grain needs a date field"):
+        chart_query.validate_chart_query(sales_summary, query)
