@@ -11,6 +11,7 @@ import {
   getDefaultChartTitle,
   getDefaultColorScaleTitle,
 } from '../getChartTitle'
+import { getEffectiveTimeGrain, isDateField } from '../getEffectiveTimeGrain'
 import { getFormatElements } from '../getFormatElements'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
@@ -136,6 +137,18 @@ function getFormatGroups(
           />
           <FormatWidget group={`${axis}AxisLabels`} title="Labels">
             <AxisWidget
+              dateAxis={
+                axis === 'x'
+                  ? {
+                      grain: getEffectiveTimeGrain(chart.spec.data, fields),
+                      hasDateField: fields.some(
+                        (field) =>
+                          field.name === chart.spec.data.encoding.x &&
+                          isDateField(field),
+                      ),
+                    }
+                  : undefined
+              }
               label={elementTitles[element]}
               part="labels"
               value={axisAppearance}

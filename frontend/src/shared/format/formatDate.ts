@@ -1,28 +1,41 @@
 import { LOCALE } from '../config'
+import { DATE_PRESETS_BY_GRAIN } from './valueFormats'
 
-import type { DateFormat, TimeGrain } from './valueFormats'
+import type { DateFormat, DatePreset, TimeGrain } from './valueFormats'
 
 // ===== TYPES =================================================================
 /** Formats one date value; values that are no date come back as text. */
 export type DateFormatter = (value: string | number) => string
 
+/** How a preset is written: Intl options, or composed from the date. */
+type PresetFormat = Intl.DateTimeFormatOptions | ((date: Date) => string)
+
 // ===== CONSTANTS =============================================================
 /** Year, month and day at the start of an ISO text, as written. */
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})/
 
-/** Intl options of the auto format per grain; quarters are composed. */
-const AUTO_OPTIONS: Record<
-  Exclude<TimeGrain, 'quarter'>,
-  Intl.DateTimeFormatOptions
-> = {
-  day: { day: 'numeric', month: 'short', year: 'numeric' },
-  week: { day: 'numeric', month: 'short', year: 'numeric' },
-  month: { month: 'short', year: 'numeric' },
-  year: { year: 'numeric' },
-}
+const DAY_MS = 86_400_000
 
 /** Standard format of profile and table filters. */
 const STANDARD_OPTIONS: Intl.DateTimeFormatOptions = { dateStyle: 'medium' }
+
+/** How each preset is written; Intl orders the parts by locale. */
+const PRESET_FORMATS: Record<DatePreset, PresetFormat> = {
+  'day-medium': { day: 'numeric', month: 'short', year: 'numeric' },
+  'day-numeric': { day: '2-digit', month: '2-digit', year: 'numeric' },
+  'day-iso': (date) => date.toISOString().slice(0, 10),
+  'day-weekday': { day: 'numeric', month: 'short', weekday: 'short' },
+  'week-start': { day: 'numeric', month: 'short', year: 'numeric' },
+  'week-number': formatIsoWeek,
+  'month-short': { month: 'short', year: 'numeric' },
+  'month-long': { month: 'long', year: 'numeric' },
+  'month-numeric': { month: '2-digit', year: 'numeric' },
+  'month-iso': (date) => date.toISOString().slice(0, 7),
+  quarter: (date) => `Q${getQuarter(date)} ${date.getUTCFullYear()}`,
+  'quarter-short': (date) => `Q${getQuarter(date)} ${formatShortYear(date)}`,
+  year: { year: 'numeric' },
+  'year-short': formatShortYear,
+}
 
 const intlFormats = new Map<string, Intl.DateTimeFormat>()
 
@@ -47,25 +60,46 @@ function getIntlFormat(
   return format
 }
 
+/** Quarter of a date, 1 to 4. */
+function getQuarter(date: Date): number {
+  return Math.floor(date.getUTCMonth() / 3) + 1
+}
+
+/** Year with two digits after an apostrophe, e.g. "'25". */
+function formatShortYear(date: Date): string {
+  return `'${String(date.getUTCFullYear() % 100).padStart(2, '0')}`
+}
+
 /**
- * Creates the auto format of a grain, e.g. "Mar 2025" for months.
- * @param grain Time grain the dates are grouped by.
+ * ISO week of a date: weeks start on Monday, and week 1 holds the first
+ * Thursday of its year, so late December can belong to the next year.
+ * @param date Date in UTC.
+ * @returns E.g. "W11 2025", or "W1 2025" for Monday, Dec 30, 2024.
+ */
+function formatIsoWeek(date: Date): string {
+  const weekday = (date.getUTCDay() + 6) % 7
+  const thursday = new Date(date.getTime() + (3 - weekday) * DAY_MS)
+  const year = thursday.getUTCFullYear()
+  const days = (thursday.getTime() - Date.UTC(year, 0, 1)) / DAY_MS
+  return `W${Math.floor(days / 7) + 1} ${year}`
+}
+
+/**
+ * Creates the formatter of a preset for parsed dates.
+ * @param preset Preset to write.
  * @param locale Locale of the text.
  * @returns Formatter for parsed dates.
  */
-function createAutoFormatter(
-  grain: TimeGrain,
+function createPresetFormatter(
+  preset: DatePreset,
   locale: string,
 ): (date: Date) => string {
-  if (grain === 'quarter') {
-    const yearFormat = getIntlFormat(locale, AUTO_OPTIONS.year)
-    return (date) => {
-      const quarter = Math.floor(date.getUTCMonth() / 3) + 1
-      return `Q${quarter} ${yearFormat.format(date)}`
-    }
+  const format = PRESET_FORMATS[preset]
+  if (typeof format === 'function') {
+    return format
   }
-  const format = getIntlFormat(locale, AUTO_OPTIONS[grain])
-  return (date) => format.format(date)
+  const intlFormat = getIntlFormat(locale, format)
+  return (date) => intlFormat.format(date)
 }
 
 // ===== FUNCTIONS =============================================================
@@ -90,8 +124,25 @@ export function parseDateValue(value: string | number): Date | null {
 }
 
 /**
+ * Preset a date format shows for a grain: its own preset if it fits the
+ * grain, else the auto preset of the grain.
+ * @param format Date format of the element.
+ * @param grain Time grain of the dates; without one they show as days.
+ * @returns The preset that is written.
+ */
+export function resolveDatePreset(
+  format: DateFormat,
+  grain: TimeGrain | null,
+): DatePreset {
+  const presets = DATE_PRESETS_BY_GRAIN[grain ?? 'day']
+  return format.style === 'preset' && presets.includes(format.preset)
+    ? format.preset
+    : presets[0]
+}
+
+/**
  * Creates the formatter of a date format.
- * @param format Date format; auto follows the grain.
+ * @param format Date format; auto and unfitting presets follow the grain.
  * @param grain Time grain of the dates; without one they show as days.
  * @param locale Locale of the text.
  * @returns Formatter for date values.
@@ -101,7 +152,10 @@ export function createDateFormatter(
   grain: TimeGrain | null,
   locale: string = LOCALE,
 ): DateFormatter {
-  const formatParsed = createParsedFormatter(format, grain ?? 'day', locale)
+  const formatParsed = createPresetFormatter(
+    resolveDatePreset(format, grain),
+    locale,
+  )
   return (value) => {
     const date = parseDateValue(value)
     return date ? formatParsed(date) : String(value)
@@ -122,22 +176,4 @@ export function formatDate(
   return date
     ? getIntlFormat(locale, STANDARD_OPTIONS).format(date)
     : String(value)
-}
-
-/**
- * Picks the formatter for parsed dates of a date format.
- * @param format Date format.
- * @param grain Time grain of the dates.
- * @param locale Locale of the text.
- * @returns Formatter for parsed dates.
- */
-function createParsedFormatter(
-  format: DateFormat,
-  grain: TimeGrain,
-  locale: string,
-): (date: Date) => string {
-  switch (format.style) {
-    case 'auto':
-      return createAutoFormatter(grain, locale)
-  }
 }

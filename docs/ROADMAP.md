@@ -40,7 +40,9 @@ Innenschatten, Background Blur, Korn). Die Fläche eines Kastens ist ein
 eigener Baustein (`Surface`); Legende und Farbskala sind HTML in
 Plätzen um den Chart-Canvas. Legende und Tooltip tragen eine eigene
 Fläche, die Farbskala ist aufgebaut wie eine Achse, und jeder Rand hat
-ein Auge.
+ein Auge. Datumsachsen gruppieren nach einem wählbaren Zeitraster und
+schreiben Daten per Vorlage; ein Klick auf einen Zeitraum wählt ihn
+ganz.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -64,7 +66,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 9. Arbeitsfläche, Format-Panel und Objekt-Layout – implementiert
 10. Kästen als HTML (3.10a) und Farbskala wie eine Achse und Flächen
     für Kästen (3.10b) – implementiert
-11. Zeitraster und DateFormat – **nächster Slice**
+11. Zeitraster und DateFormat – implementiert
 12. Sortierung und Top N
 13. Theme-Umschalter in der TopBar (provisorisch)
 14. Table-Objekt
@@ -77,75 +79,6 @@ Slices; Abhängigkeiten stehen beim Punkt):
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
-
-### 3.11 Zeitraster und DateFormat (geplant, nächster Slice)
-
-Zwei zusammengehörige Teile: Das Zeitraster legt fest, wie die Daten
-über die Zeit zusammengefasst werden (Abfrage), das DateFormat, wie ein
-Datum geschrieben wird (Darstellung); „Auto“ im Format folgt dem Raster.
-Heute gruppiert die `chart-query` nach dem rohen Datumswert (tägliche
-Daten über zwei Jahre ergeben über 700 Punkte), und `formatDate`
-(`shared/format/formatDate.ts`) nutzt immer `dateStyle: 'medium'` in
-UTC, an der Achse z. B. „Jan 1, 2025“ auch bei Monatsdaten.
-
-Entscheidungen:
-
-- Zeitraster: Tag, Woche, Monat, Quartal, Jahr, also die
-  Granularitäten, die das Profiling erkennt
-  (`TemporalStatistics.granularity`); Standard ist die erkannte
-  Granularität des Felds
-  - gehört zu den Daten, nicht zur Darstellung: Auswahl im Build Panel
-    am Datumsfeld („date ▾ | Month ▾“), wie in Power BI und Tableau; das
-    zweite Select erscheint nur bei Datumsfeldern
-  - Spec: neues Feld in `ChartDataSpec` (z. B. `timeGrain`), keine
-    Formänderung
-  - Backend: Die `chart-query` kürzt das Datum auf das Raster
-    (`dt.truncate`) und gruppiert danach; Wochen beginnen am Montag
-- Selection auf Zeiträume: Ein Klick auf „März 2025“ filtert den ganzen
-  Monat, nicht nur `date = 2025-03-01`; die Chart-Filter bekommen einen
-  Datumsbereich (Vorbild `DateRangeTableFilter` der Table), und
-  Highlight-Query, Scatter und Cards werten ihn aus
-- DateFormat als Auswahl per Beispiel wie in Excel, Tableau und Power
-  BI, nicht als Einzelschalter:
-
-  ```ts
-  type DateFormat = { style: 'auto' } | { style: 'preset'; preset: DatePreset }
-  ```
-
-  - ein breites Select unter dem Format-Select der Achsenbeschriftung,
-    kein ⚙; jede Option zeigt ein Beispiel aus den echten Daten (erster
-    Wert der Achse; Fallback ein Datum mit einem Tag über 12, z. B. der
-    14., damit Tag und Monat nicht verwechselt werden)
-  - nur Vorlagen, die zum Raster passen: Tag „14 Mar 2025 · 14.03.2025 ·
-    2025-03-14 · Fri, 14 Mar“; Woche „10 Mar 2025 (Wochenbeginn) · W11
-    2025“; Monat „Mar 2025 · March 2025 · 03/2025 · 2025-03“; Quartal
-    „Q1 2025 · Q1 '25“; Jahr „2025 · '25“
-  - „Auto“ zeigt, was es gewählt hat („Auto · Mar 2025“); passt eine
-    Vorlage nach einem Wechsel des Rasters nicht mehr, gilt wieder Auto
-  - kein Feld für die Einheit (sie kommt aus dem Raster) und keine
-    Uhrzeit (Tag ist das feinste Raster)
-
-- Formatter auf `Intl.DateTimeFormat` mit der Locale als Parameter
-  (Standard aus `shared/config.ts`, später `format.locale` aus 3.16);
-  Instanzen je Format und Locale zwischengespeichert; Quartale („Q1
-  2025“) und Wochen selbst zusammensetzen
-- Datumswerte sind Wanduhrzeit: Einlesen und Formatieren an einer
-  Stelle, ohne Umrechnung in eine Zeitzone; behebt #34
-- Nutzer: Achsenbeschriftung (`labels.dateFormat` neben `numberFormat`,
-  sobald im Format-Select Date gewählt ist) und Überschrift des Tooltips
-  bei Datums-X; die übrigen Aufrufer von `formatDate` (Profil,
-  Table-Filter) behalten das Standardformat
-
-Vorgehen:
-
-1. DateFormat „Auto“ und Formatter mit Tests (Vitest), dabei #34
-2. Zeitraster: Backend mit Tests, Build Panel, „Auto“ folgt dem Raster
-3. Selection auf Zeiträume
-4. Vorlagen im Format-Panel (kürzbar, falls die Zeit knapp wird)
-
-Nicht in 3.11: Drill-down (nach dem Alpha, baut auf dem Zeitraster
-auf), relative Daten („vor 3 Tagen“), Geschäftsjahre, eine
-Zeitzonen-Einstellung, ein Wechsel des Achsentyps.
 
 ### 3.12 Sortierung und Top N (geplant)
 
@@ -387,6 +320,10 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
   Treemap, Sankey, Radar, Maps
 - Drill-down, Referenzlinien, Mehrfachauswahl (#39), Range-Selection für Line
   und Bar
+- Datum: Drill-down baut auf dem Zeitraster auf; später relative Daten
+  („vor 3 Tagen“), Geschäftsjahre, eine Zeitzonen-Einstellung, Beispiele
+  aus den echten Daten im DateFormat-Select, Datumsformat für Pie und
+  Donut (#60)
 - kleine Anteile bei Pie und Donut als „Other“ zusammenfassen (Idee)
 
 ### Canvas und Dashboard-Objekte
@@ -616,6 +553,24 @@ Farbskala wie eine Achse und Flächen für Kästen (3.10b)
 - `SurfaceControls` zeigt nur die Gruppen, deren Felder ein Kasten hat;
   Fokus-Rahmen um Marks mit 2 px Abstand; Frontend-Tests mit Vitest
   (`npm run test`)
+
+Zeitraster und DateFormat
+
+- Zeitraster in der `chart-query` (`time_grain`, `dt.truncate`, Wochen
+  ab Montag); Standard ist das native Raster des Felds
+  (`Field.native_grain`), wählbar in der Zeile „Grain“ des Build Panels
+  (`ChartDataSpec.timeGrain`, `null` = nativ)
+- Datumswerte als Wanduhrzeit (`parseDateValue`), behebt #34; ein
+  Formatter auf `Intl.DateTimeFormat` mit Locale als Parameter und
+  zwischengespeicherten Instanzen
+- DateFormat als Auswahl per Beispiel: Auto folgt dem Raster, Vorlagen
+  je Raster im breiten Select unter dem Format-Select der X-Achse
+  (`DateFormatSelect`); Achse, Tooltip-Überschrift, Pie-Legende und
+  Titel („… by month“) folgen dem Raster
+- Klick auf einen Zeitraum wählt den ganzen Zeitraum: Datumsbereich als
+  Chart-Filter für Highlight-Query, Scatter und Cards
+- Modell: `FieldProfile` baut auf `Field` auf; `Field` ordnet ein,
+  `statistics` beschreibt
 
 Ask Cevyn V1
 

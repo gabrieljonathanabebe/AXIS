@@ -522,6 +522,21 @@ ID   Identifiers   identifier (standardmäßig eingeklappt)
 
 Nicht jedes Field als große Card darstellen.
 
+### Zeitraster am Encoding
+
+- `EncodingsWidget` (`charts/data`) zeigt pro Encoding eine Zeile mit
+  Feld-Select; liegt ein Datumsfeld auf X, folgt direkt darunter die
+  Zeile „Grain“ (Day, Week, Month, Quarter, Year).
+- Ob die Zeile erscheint und was Auto zeigt, kommt aus
+  `getEffectiveTimeGrain`, derselben Funktion wie Query und Achse; bei
+  Text auf X und beim Scatter fehlt sie.
+- Auto steht im Menü als „Auto · Month“ (das native Raster des Felds),
+  im Button als „Auto“ (`shortLabel`), weil zwei Wörter nicht ins Feld
+  passen; Auto schreibt `timeGrain: null`.
+- Eine eigene Zeile statt eines zweiten Selects neben dem Feld
+  („date ▾ | Month ▾“), weil zwei Selects nebeneinander im Panel keinen
+  Platz haben. Undo über die Action `chart/updateTimeGrain`.
+
 ## 6. Format-Panel
 
 Einstellungen stehen im Format-Panel rechts der Arbeitsfläche, wie das
@@ -887,9 +902,10 @@ ANIMATION                      ＋
   zeigt eine Zeile pro Effekt (siehe 9o).
 - **Number Format:** Format-Select (Auto, Number, Percent und die
   Währungen) | Decimals mit Auto (`onAuto`) | ⚙ mit Notation und
-  Prefix | Suffix; an Achsenlabels zusätzlich Date im Select. DateFormat
-  kommt als breites Select mit Beispielen je Zeitraster, ohne ⚙
-  („Zeitraster und DateFormat“, `ROADMAP.md`).
+  Prefix | Suffix; an Achsenlabels zusätzlich Date im Select.
+- **Date Format:** darunter ein breites Select ohne ⚙
+  (`DateFormatSelect`, siehe 9m), nur die Vorlagen des Zeitrasters, jede
+  als Beispiel; Auto zeigt, was es wählt („Auto · Mar 2025“).
 - **Zahlenpaare** in einer Zeile: Size range (⤓ min | ⤒ max), Bar width
   | Radius, Ticks | Rotation der Achsenlabels, X | Y und W | H von Chart
   und Card (`BoxFieldsRow`, 9p).
@@ -1651,22 +1667,22 @@ Objekt (Chart und Card)
 
 Chart
 
-| Teil               | Form         | Ist                                                                      | Soll                             | Status    |
-| ------------------ | ------------ | ------------------------------------------------------------------------ | -------------------------------- | --------- |
-| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`, `.visible`                             | –                                | ✓         |
-| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`                                | –                                | ✓         |
-| Achsenbeschriftung | Datum        | festes Format über `formatDate`                                          | `xAxis.labels.dateFormat`        | ○         |
-| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                                          | –                                | ✓         |
-| Gridlines          | Linie        | `xAxis.gridLines.stroke`                                                 | –                                | ✓         |
-| Legende            | Text         | `legend.textStyle`, `.layout`                                            | –                                | ✓         |
-| Legende            | Fläche       | `legend.surface`, `.layout.padding`                                      | –                                | ✓         |
-| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.layout`                           | Label-Box (Fill, Stroke)         | ✓, später |
-| Tooltip            | Zahl         | `interaction.tooltip.numberFormat`                                       | –                                | ✓         |
-| Tooltip            | Datum        | festes Format über `formatDate`                                          | `interaction.tooltip.dateFormat` | ○         |
-| Tooltip            | Text, Fläche | `tooltip.textStyle`, `.surface`, `.layout`                               | –                                | ✓         |
-| Farbskala          | Fläche       | `continuous.startColor`, `.endColor`, `.bar`, `.size`, `.layout`         | –                                | ✓         |
-| Farbskala          | Text + Zahl  | `continuous.title`, `.labels` (`textStyle`, `numberFormat`, `tickCount`) | –                                | ✓         |
-| Farbskala          | Linie        | `continuous.ticks.visible`, `.stroke`                                    | –                                | ✓         |
+| Teil               | Form         | Ist                                                                      | Soll                     | Status    |
+| ------------------ | ------------ | ------------------------------------------------------------------------ | ------------------------ | --------- |
+| Achsentitel        | Text         | `xAxis.title.text`, `.textStyle`, `.visible`                             | –                        | ✓         |
+| Achsenbeschriftung | Text + Zahl  | `xAxis.labels.textStyle`, `.numberFormat`                                | –                        | ✓         |
+| Achsenbeschriftung | Datum        | `xAxis.labels.dateFormat` (Auto oder Vorlage des Rasters)                | –                        | ✓         |
+| Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                                          | –                        | ✓         |
+| Gridlines          | Linie        | `xAxis.gridLines.stroke`                                                 | –                        | ✓         |
+| Legende            | Text         | `legend.textStyle`, `.layout`                                            | –                        | ✓         |
+| Legende            | Fläche       | `legend.surface`, `.layout.padding`                                      | –                        | ✓         |
+| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.layout`                           | Label-Box (Fill, Stroke) | ✓, später |
+| Tooltip            | Zahl         | `interaction.tooltip.numberFormat`                                       | –                        | ✓         |
+| Tooltip            | Datum        | Überschrift folgt `xAxis.labels.dateFormat`                              | –                        | ✓         |
+| Tooltip            | Text, Fläche | `tooltip.textStyle`, `.surface`, `.layout`                               | –                        | ✓         |
+| Farbskala          | Fläche       | `continuous.startColor`, `.endColor`, `.bar`, `.size`, `.layout`         | –                        | ✓         |
+| Farbskala          | Text + Zahl  | `continuous.title`, `.labels` (`textStyle`, `numberFormat`, `tickCount`) | –                        | ✓         |
+| Farbskala          | Linie        | `continuous.ticks.visible`, `.stroke`                                    | –                        | ✓         |
 
 Marks
 
@@ -1705,9 +1721,34 @@ Card
   (Standard | Compact) und Prefix | Suffix (`TextInput`)
 - an Achsenlabels zusätzlich Date im Select (`isDate`, `onDate`) statt
   eines eigenen Typ-Selects; bei Date entfallen Decimals und ⚙
+- Date gilt auch ohne Wahl, wenn ein Datumsfeld mit Auto auf der Achse
+  liegt (`showsDateLabels`); das Select zeigt dann Date
 - genutzt vom Card-Wert im `CardValueWidget`, von der Achsenbeschriftung
   im `AxisWidget` und von den Datenlabels im `LabelsWidget` (nicht bei
   Pie und Donut, die Anteile zeigen)
+
+`DateFormatSelect` (`shared/ui`) ist der Baustein für ein Datumsformat
+(`DateFormat`): ein breites Select ohne ⚙ unter dem Format-Select, mit
+`grain` und `label`.
+
+```text
+[ Date ▾                ]
+[ Auto · Mar 2025 ▾     ]
+```
+
+- Optionen: Auto mit seinem Ergebnis, dann die Vorlagen des Rasters aus
+  `DATE_PRESETS_BY_GRAIN`, jede als Beispiel, z. B. bei Month „Mar
+  2025 · March 2025 · 03/2025 · 2025-03“
+- Beispiel ist der 14.03.2025 (ein Tag über 12, damit Tag und Monat
+  nicht verwechselt werden), bei Wochen dessen Montag; Beispiele aus
+  den echten Daten wären besser, das Format-Panel kennt das
+  Query-Ergebnis aber nicht
+- eine gespeicherte Vorlage, die nicht zum Raster passt, erscheint als
+  Auto, so wie der Chart sie zeichnet; die Wahl bleibt in der Spec
+- kein Feld für die Einheit (sie kommt aus dem Raster) und keine
+  Uhrzeit (Tag ist das feinste Raster)
+- genutzt von der X-Achse im `AxisWidget` (`dateAxis` mit Raster und
+  Datumsfeld); die Table (3.14) kann ihn für Datumszellen übernehmen
 
 ## 9n. FillListControls
 
@@ -1906,7 +1947,10 @@ grid (Legende, Farbskala)         cross (ohne Alignment)
 ## 9s. Optionen mit Icons
 
 `OptionItem` (`OptionsMenu.tsx`) ist eine Option von Select, Menü und
-Icon-Gruppe: `label`, `value` und optional `icon` (`LucideIcon`).
+Icon-Gruppe: `label`, `value`, optional `icon` (`LucideIcon`) und
+`shortLabel`, ein kürzerer Text für den Button von `SelectControl`,
+wenn das Wort im Menü nicht ins Feld passt (Menü „Auto · Month“, Button
+„Auto“).
 
 - `OptionContent` zeigt Icon und Wort einer Option, gleich in
   `SegmentedControl`, `OptionsMenu` und im Button von `SelectControl`;

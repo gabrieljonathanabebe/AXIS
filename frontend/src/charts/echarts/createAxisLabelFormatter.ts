@@ -1,6 +1,6 @@
 import { createDateFormatter } from '../../shared/format/formatDate'
 import { createNumberFormatter } from '../../shared/format/formatNumber'
-import { isDateField } from '../getEffectiveTimeGrain'
+import { isDateField, showsDateLabels } from '../getEffectiveTimeGrain'
 
 import type { DataField } from '../../datasets/types'
 import type { DateFormatter } from '../../shared/format/formatDate'
@@ -40,12 +40,10 @@ export function createAxisDateFormatter(
   field: DataField | undefined,
   grain: TimeGrain | null,
 ): DateFormatter | null {
-  const { dateFormat, numberFormat, valueType } = axis.labels
-  const isAutoDate =
-    field !== undefined && isDateField(field) && numberFormat.style === 'auto'
+  const hasDateField = field !== undefined && isDateField(field)
 
-  return valueType === 'date' || isAutoDate
-    ? createDateFormatter(dateFormat, grain)
+  return showsDateLabels(axis.labels, hasDateField)
+    ? createDateFormatter(axis.labels.dateFormat, grain)
     : null
 }
 

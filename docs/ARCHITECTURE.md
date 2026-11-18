@@ -349,7 +349,35 @@ Zahlen oder Datumswerte zeigt, ist ein eigenes Feld
   `createLabelNumberFormatter`); Pie zeigt Anteile (`{d}%`);
 - die Werte der Farbskala haben ein eigenes Format
   (`continuous.labels.numberFormat`, Standard kompakt);
-- Datumsachsen nutzen `formatDate` wie Table und Filter.
+- Datumsachsen nutzen ein eigenes Datumsformat (unten).
+
+Datumswerte sind Wanduhrzeit: `parseDateValue` (`formatDate.ts`) ist
+die einzige Stelle, die sie einliest. Jahr, Monat und Tag gelten wie
+geschrieben, Uhrzeit und Offset werden ignoriert; formatiert wird in
+UTC, also ohne Umrechnung in eine Zeitzone. `"2025-03-01T00:30:00"`
+bleibt so in jeder Zeitzone der 1. März.
+
+Ein Datumsformat ist der Baustein `DateFormat` aus `valueFormats.ts`:
+`{ style: 'auto' }` oder `{ style: 'preset'; preset: DatePreset }`.
+`DATE_PRESETS_BY_GRAIN` legt fest, welche Vorlagen zu welchem
+Zeitraster passen (z. B. Month: `month-short`, `month-long`,
+`month-numeric`, `month-iso`); die erste ist Auto.
+`createDateFormatter(format, grain, locale)` löst über
+`resolveDatePreset` auf: Eine Vorlage, die nicht zum Raster passt,
+fällt beim Zeichnen auf Auto zurück, ohne die Spec zu ändern; nach einem
+Wechsel zurück gilt sie wieder. Die `Intl.DateTimeFormat`-Instanzen sind
+je Locale und Optionen zwischengespeichert; Quartal, ISO-Woche
+(„W11 2025“), ISO-Texte und kurze Jahre setzt der Formatter selbst
+zusammen.
+
+- Eine Achse zeigt Datumswerte, wenn im Format-Select Date gewählt ist
+  oder ein Datumsfeld mit Format „Auto“ auf ihr liegt
+  (`showsDateLabels`); ihr Format ist `AxisLabelsAppearance.dateFormat`,
+  das Raster kommt aus `getEffectiveTimeGrain`.
+- Tooltip-Überschrift und die Kategorien von Pie und Donut (Legende)
+  folgen dem Datumsformat der X-Achse; Pie und Donut haben dafür noch
+  keine Bedienung (#60).
+- `formatDate` bleibt das Standardformat von Profil und Table-Filter.
 
 ### Text-Formatierung
 
@@ -1154,13 +1182,16 @@ ECharts click
 ```
 
 Eine Selection besteht aus einer Liste von Filtern, die gemeinsam gelten
-(UND). Ein Filter ist entweder eine Werteliste (`values`) oder ein
-numerischer Bereich (`range`).
+(UND). Ein Filter ist eine Werteliste (`values`), ein numerischer
+Bereich (`range`) oder ein Datumsbereich (`date_range`, Grenzen
+eingeschlossen, mit dem Zeitraster für das Label).
 
 Quellen:
 
 - Klick in Line, Bar, Pie und Donut: Wertefilter auf die Kategorie des
-  X-Felds;
+  X-Felds; gilt ein Zeitraster (Datumsfeld auf X), ein Datumsbereich
+  über den ganzen Zeitraum (`getPeriodEnd` in `shared/timeGrain.ts`),
+  z. B. 2025-03-01 bis 2025-03-31 für „Mar 2025“;
 - Klick in Scatter: Wertefilter auf die Kategorie eines kategorialen
   Color-Felds (Serienname);
 - Brush in Scatter: zwei Bereichsfilter auf das X- und das Y-Feld
@@ -1192,8 +1223,8 @@ Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
   Frontend abgeblendet, ohne zusätzliche Query.
 - Card: Die `card-query` trägt die Selection als Filter; die Card zeigt
   den gefilterten Wert und darunter die Selection als Label in
-  Akzentfarbe (z. B. „United States“), bei einem Bereich (Brush) nur
-  „Filtered“. Ohne Selection bleibt das Label leer; seine Zeile ist
+  Akzentfarbe (z. B. „United States“, bei einem Zeitraum „Q1 2025“),
+  bei einem Bereich (Brush) nur „Filtered“. Ohne Selection bleibt das Label leer; seine Zeile ist
   immer reserviert, damit der Wert nicht springt.
 
 Die Bedeutung einer Selection (Zeilenzugehörigkeit, Vergleich,
@@ -1925,17 +1956,32 @@ Implementiert in `backend/app/datasets/profiling.py`:
   ausgeliefert. Die Upload-Response (`DatasetSummary`) bleibt schlank.
 - Dataset-Ebene: `row_count`, `column_count`, `missing_count` (Summe
   der Null-Zellen), `duplicate_rows` (überzählige identische Zeilen).
-- Field-Ebene: `name`, `physical_type`, `semantic_role`,
-  `missing_count`, `unique_count` (ohne Nulls) und `statistics`.
+- Field-Ebene: `FieldProfile` baut auf `Field` auf (Backend
+  `class FieldProfile(Field)`, Frontend `DataField & {…}`), das JSON
+  bleibt flach: `name`, `physical_type`, `semantic_role`,
+  `native_grain`, dazu `missing_count`, `unique_count` (ohne Nulls) und
+  `statistics`. `create_fields` reduziert die Profile auf ihren
+  `Field`-Teil für die `DatasetSummary`.
 - `statistics` ist eine über `kind` unterschiedene Union und hängt von
   der Semantic Role ab: Measure (min, max, mean, median), Dimension
   (häufigste Werte, bei Gleichstand nach Wert sortiert), Temporal
-  (min/max als ISO-String und `granularity`). Identifier haben keine
-  Statistiken.
-- `granularity` (`day`, `week`, `month`, `quarter`, `year` oder `null`)
-  ergibt sich aus dem häufigsten Abstand in Tagen zwischen aufeinander
-  folgenden eindeutigen Datumswerten; Monate, Quartale und Jahre über
-  Bereiche (z. B. 28–31 Tage).
+  (min/max als ISO-String). Identifier haben keine Statistiken.
+- `native_grain` (`TimeGrain`: `day`, `week`, `month`, `quarter`,
+  `year` oder `null`) ist das native Raster eines Datumsfelds (nach
+  physischem Typ, `is_date_type`): der häufigste Abstand in Tagen
+  zwischen aufeinander folgenden eindeutigen Datumswerten; Monate,
+  Quartale und Jahre über Bereiche (z. B. 28–31 Tage).
+
+Regel (seit 3.11): `Field` ordnet ein, `statistics` beschreibt. Trifft
+Code außerhalb der Data-Ansicht mit einem Wert eine Entscheidung (Typ →
+Kompatibilität, Rolle → Aggregation, natives Raster → Standardraster),
+gehört er an `Field`; wird er nur angezeigt, in `statistics`. Alles an
+`Field` ist erkannt und überschreibbar (Rolle per Override, Raster per
+`ChartDataSpec.timeGrain`), nach dem Muster „`null` = abgeleitet“. Die
+Zählwerte (`missing_count`, `unique_count`) stehen heute noch direkt am
+Profil; sie nach `statistics` zu verschieben, ist geplant (Refactoring
+nach 3.11).
+
 - Measure und Temporal enthalten ein Histogramm (`histogram`): Anzahl
   der Werte in gleich breiten Bins zwischen min und max, höchstens 20
   Bins und nicht mehr als eindeutige Werte. Die Bin-Grenzen werden
@@ -1999,17 +2045,30 @@ Backend-Resultset. Der Request enthält:
 - `aggregation` für den Y-Wert;
 - optional `color` und `color_aggregation`;
 - `filters` als Liste von Wertefiltern `{ kind: 'values', field,
-values }` und Bereichsfiltern `{ kind: 'range', field, min, max }`;
-  bei Bereichsfiltern darf eine Grenze `null` (offen) sein, aber nicht
-  beide.
+values }`, Bereichsfiltern `{ kind: 'range', field, min, max }` und
+  Datumsbereichen `{ kind: 'date_range', field, start, end }`; bei
+  Bereichen darf eine Grenze `null` (offen) sein, aber nicht beide;
+- optional `time_grain` (`day`, `week`, `month`, `quarter`, `year`).
+
+Mit `time_grain` kürzt die Query X vor dem Gruppieren auf den Beginn
+seines Zeitraums (`build_x_expression`, Polars `dt.truncate`, Wochen ab
+Montag) und castet auf `Date`; X kommt dann als `"2025-03-01"` an. Ein
+Raster auf einem X ohne Datum wird mit 422 abgelehnt
+(`is_date_type`). Das Frontend leitet das Raster mit
+`getEffectiveTimeGrain(data, fields)` ab: Datumsfeld auf X (nach
+physischem Typ, nicht nach Rolle) → `timeGrain ?? native_grain ??
+'day'`; Charts ohne Aggregation (Scatter) und X ohne Datum haben kein
+Raster. Dieselbe Funktion nutzen Achse, Tooltip, Titel („Mean of profit
+by month“), Build Panel und Selection.
 
 Filter werden vor der Gruppierung angewendet und untereinander mit UND
 verknüpft. Wertefilter vergleichen auf dem als String gecasteten
 Feldwert, damit Kategorien aus dem Resultset direkt als Filterwerte
 dienen können. Bereichsfilter vergleichen numerisch inklusive der
-Grenzen und sind nur für numerische Felder erlaubt. Unbekannte
-Filterfelder und Bereichsfilter auf nicht numerischen Feldern werden mit
-422 abgelehnt.
+Grenzen und sind nur für numerische Felder erlaubt. Datumsbereiche
+vergleichen das Datum (Datetime nach seinem Tag) inklusive der Grenzen
+und sind nur für Datumsfelder erlaubt. Unbekannte Filterfelder und
+Bereiche auf unpassenden Feldern werden mit 422 abgelehnt.
 
 Das Resultset enthält pro Gruppe:
 
@@ -2082,9 +2141,10 @@ DataTable (sort, filters)
 → Rows im Virtualizer (@tanstack/react-virtual)
 ```
 
-`TableFilter` ist `ChartFilter` plus `date_range` (`start`, `end` als
-ISO-Datum, eine Seite darf offen sein). Werte- und Bereichsfilter laufen
-über dieselbe `build_filter_expression` wie die Chart Query; offene
+`TableFilter` ist derselbe Typ wie `ChartFilter`; den Datumsbereich
+(`date_range`, `start`, `end` als ISO-Datum, eine Seite darf offen sein)
+teilen Table und Charts seit 3.11. Alle Filter laufen über dieselbe
+`build_filter_expression` wie die Chart Query; offene
 Grenzen über `build_bounds_expression` für Zahlen und Datumswerte.
 Validierung (unbekanntes Field, Range nur numerisch, Date Range nur auf
 Datumsfeldern) ist mit der Chart Query geteilt.

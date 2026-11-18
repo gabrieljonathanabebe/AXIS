@@ -3,8 +3,30 @@ import type { NumberStyle } from './formatNumber'
 // ===== TYPES =================================================================
 export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'JPY'
 
-/** How a date is shown; auto follows the time grain of the data. */
-export type DateFormat = { style: 'auto' }
+/**
+ * How a date is shown: auto follows the time grain, a preset is one of the
+ * examples of its grain; a preset that does not fit the grain falls back
+ * to auto.
+ */
+export type DateFormat =
+  { style: 'auto' } | { style: 'preset'; preset: DatePreset }
+
+/** Examples a date format can follow, grouped by the grain they fit. */
+export type DatePreset =
+  | 'day-medium'
+  | 'day-numeric'
+  | 'day-iso'
+  | 'day-weekday'
+  | 'week-start'
+  | 'week-number'
+  | 'month-short'
+  | 'month-long'
+  | 'month-numeric'
+  | 'month-iso'
+  | 'quarter'
+  | 'quarter-short'
+  | 'year'
+  | 'year-short'
 
 /**
  * How a number is shown: style, currency, fraction digits, compact notation
@@ -26,6 +48,15 @@ export type TimeGrain = 'day' | 'week' | 'month' | 'quarter' | 'year'
 export type ValueFormat = 'auto' | NumberStyle
 
 // ===== CONSTANTS =============================================================
+/** Presets that fit each grain; the first is the auto preset of the grain. */
+export const DATE_PRESETS_BY_GRAIN: Record<TimeGrain, DatePreset[]> = {
+  day: ['day-medium', 'day-numeric', 'day-iso', 'day-weekday'],
+  week: ['week-start', 'week-number'],
+  month: ['month-short', 'month-long', 'month-numeric', 'month-iso'],
+  quarter: ['quarter', 'quarter-short'],
+  year: ['year', 'year-short'],
+}
+
 /** Date format of a new element: follows the time grain. */
 export const DEFAULT_DATE_FORMAT: DateFormat = { style: 'auto' }
 

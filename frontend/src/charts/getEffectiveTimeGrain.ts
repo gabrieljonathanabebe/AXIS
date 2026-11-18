@@ -1,6 +1,6 @@
 import type { DataField } from '../datasets/types'
 import type { TimeGrain } from '../shared/format/valueFormats'
-import type { ChartDataSpec } from './types'
+import type { AxisLabelsAppearance, ChartDataSpec } from './types'
 
 /**
  * Whether a field holds dates; decided by the physical type, since only
@@ -10,6 +10,23 @@ import type { ChartDataSpec } from './types'
  */
 export function isDateField(field: DataField): boolean {
   return field.physical_type === 'date' || field.physical_type === 'datetime'
+}
+
+/**
+ * Whether axis labels show dates: chosen as Date, or a date field with the
+ * auto format, since numbers make no sense for dates.
+ * @param labels Number format and value type of the labels.
+ * @param hasDateField Whether the field on the axis holds dates.
+ * @returns True if the labels are formatted as dates.
+ */
+export function showsDateLabels(
+  labels: Pick<AxisLabelsAppearance, 'numberFormat' | 'valueType'>,
+  hasDateField: boolean,
+): boolean {
+  return (
+    labels.valueType === 'date' ||
+    (hasDateField && labels.numberFormat.style === 'auto')
+  )
 }
 
 /**

@@ -1,13 +1,16 @@
 import { Ruler } from 'lucide-react'
 
 import ControlRow from '../../shared/ui/ControlRow'
+import DateFormatSelect from '../../shared/ui/DateFormatSelect'
 import FormatWidget from '../../shared/ui/FormatWidget'
 import NumberFormatControls from '../../shared/ui/NumberFormatControls'
 import RotationDial from '../../shared/ui/RotationDial'
 import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
 import TextInput from '../../shared/ui/TextInput'
 import TextStyleControls from '../../shared/ui/TextStyleControls'
+import { showsDateLabels } from '../getEffectiveTimeGrain'
 
+import type { TimeGrain } from '../../shared/format/valueFormats'
 import type { AxisLabelsAppearance, AxisTitleAppearance } from '../types'
 
 // ===== TYPES =================================================================
@@ -20,7 +23,7 @@ type AxisParts = {
     AxisLabelsAppearance,
     'numberFormat' | 'textStyle' | 'tickCount'
   > &
-    Partial<Pick<AxisLabelsAppearance, 'rotation' | 'valueType'>>
+    Partial<Pick<AxisLabelsAppearance, 'dateFormat' | 'rotation' | 'valueType'>>
   title: AxisTitleAppearance
 }
 
@@ -28,6 +31,8 @@ type AxisParts = {
 type AxisWidgetPart = 'labels' | 'title'
 
 type AxisWidgetProps<TValue extends AxisParts> = {
+  /** Field and grain of the axis dates; only the X axis of a chart has one. */
+  dateAxis?: { grain: TimeGrain | null; hasDateField: boolean }
   defaultTitle?: string
   /** Name of the element in the control labels, e.g. "X Axis". */
   label: string
@@ -47,6 +52,7 @@ type AxisWidgetProps<TValue extends AxisParts> = {
  * header.
  */
 function AxisWidget<TValue extends AxisParts>({
+  dateAxis,
   defaultTitle,
   label,
   value,
@@ -55,6 +61,12 @@ function AxisWidget<TValue extends AxisParts>({
   onChange,
 }: AxisWidgetProps<TValue>) {
   const { labels } = value
+  const isDate =
+    labels.valueType !== undefined &&
+    showsDateLabels(
+      { numberFormat: labels.numberFormat, valueType: labels.valueType },
+      dateAxis?.hasDateField ?? false,
+    )
   if (part === 'title') {
     return (
       <FormatWidget
@@ -127,7 +139,7 @@ function AxisWidget<TValue extends AxisParts>({
       </FormatWidget>
       <FormatWidget title="Format">
         <NumberFormatControls
-          isDate={labels.valueType === 'date'}
+          isDate={isDate}
           label={label}
           value={labels.numberFormat}
           onChange={(numberFormat) => {
@@ -150,6 +162,16 @@ function AxisWidget<TValue extends AxisParts>({
               : undefined
           }
         />
+        {isDate && labels.dateFormat && (
+          <DateFormatSelect
+            grain={dateAxis?.grain ?? null}
+            label={label}
+            value={labels.dateFormat}
+            onChange={(dateFormat) => {
+              onChange({ ...value, labels: { ...labels, dateFormat } })
+            }}
+          />
+        )}
       </FormatWidget>
     </>
   )
