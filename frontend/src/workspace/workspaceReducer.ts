@@ -248,6 +248,14 @@ export function workspaceReducer(
           },
         },
       }))
+    case 'chart/updateTimeGrain':
+      return updateChart(state, action.chartId, (chart) => ({
+        ...chart,
+        spec: {
+          ...chart.spec,
+          data: { ...chart.spec.data, timeGrain: action.timeGrain },
+        },
+      }))
     case 'dashboard/update':
       return {
         ...state,

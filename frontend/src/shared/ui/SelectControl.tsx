@@ -47,16 +47,16 @@ function SelectControl<TValue extends string>({
     setIsOpen(false)
   }
 
-  /** Content of the button: the selected option, else the placeholder. */
+  /** Content of the button: the selected option (short label if set). */
   function renderValue(): ReactNode {
     if (!selectedOption) {
       return placeholder ?? value
     }
-    return (
-      renderOption?.(selectedOption) ?? (
-        <OptionContent option={selectedOption} />
-      )
-    )
+    const { shortLabel } = selectedOption
+    const shown = shortLabel
+      ? { ...selectedOption, label: shortLabel }
+      : selectedOption
+    return renderOption?.(shown) ?? <OptionContent option={shown} />
   }
 
   return (

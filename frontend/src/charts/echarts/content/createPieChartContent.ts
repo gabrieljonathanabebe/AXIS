@@ -1,4 +1,6 @@
 import { isRadialChartType } from '../../chartDefinitions'
+import { getEffectiveTimeGrain } from '../../getEffectiveTimeGrain'
+import { createAxisDateFormatter } from '../createAxisLabelFormatter'
 import { createEffectOption } from '../createEffectOption'
 import { createFillOption } from '../createFillOption'
 import { createSeriesPaintColor } from '../createPaintColor'
@@ -24,13 +26,19 @@ export function createPieChartContent(
   }
 
   // ===== CONSTANTS ===========================================================
-  const { chartType, highlightResult, queryResult, selection, spec } = context
+  const { chartType, dataset, highlightResult, queryResult, selection, spec } =
+    context
   const label = createSeriesLabelOption(spec.appearance.labels)
   const { pie } = spec.appearance
   const palette = resolvePalette(spec.appearance.colorScale.categorical.palette)
   const basePoints = queryResult?.points ?? []
   const points = selection ? (highlightResult?.points ?? []) : basePoints
   const categories = basePoints.map((point) => point.x ?? 'No category')
+  const formatCategory = createAxisDateFormatter(
+    spec.appearance.xAxis,
+    dataset.fields.find((field) => field.name === spec.data.encoding.x),
+    getEffectiveTimeGrain(spec.data, dataset.fields),
+  )
   const data: NonNullable<PieSeriesOption['data']> = points.flatMap((point) => {
     if (typeof point.value !== 'number') {
       return []
@@ -74,7 +82,11 @@ export function createPieChartContent(
   // ===== RETURN ==============================================================
   return {
     legend: categories.map((name, index) => {
-      return { color: getPaletteColor(palette, index), name }
+      return {
+        color: getPaletteColor(palette, index),
+        label: formatCategory?.(name),
+        name,
+      }
     }),
     series: [series],
   }

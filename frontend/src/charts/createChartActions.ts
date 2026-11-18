@@ -89,5 +89,12 @@ export function createChartActions({
         patch: layout,
       }))
     },
+    setTimeGrain: (timeGrain) => {
+      dispatchForChart((chartId) => ({
+        type: 'chart/updateTimeGrain',
+        chartId,
+        timeGrain,
+      }))
+    },
   }
 }

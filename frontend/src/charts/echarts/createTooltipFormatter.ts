@@ -135,11 +135,11 @@ export function createTooltipFormatter({
         .join('')
     }
 
-    const { axisValue } = first
+    const category = first.axisValue ?? first.name
     const heading =
-      formatXDate && axisValue !== null && axisValue !== undefined
-        ? formatXDate(axisValue)
-        : (axisValue ?? first.name ?? '')
+      formatXDate && category !== null && category !== undefined
+        ? formatXDate(category)
+        : (category ?? '')
     const rows = entries.flatMap((entry) => {
       const rawValue = entry.value
       const values = Array.isArray(rawValue) ? rawValue : null

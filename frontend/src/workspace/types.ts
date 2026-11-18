@@ -18,6 +18,7 @@ import type {
   ObjectLayout,
 } from '../objects/types'
 import type { Fill } from '../shared/fill'
+import type { TimeGrain } from '../shared/format/valueFormats'
 import type { Layout } from '../shared/layout'
 
 // ===== STATE =================================================================
@@ -71,6 +72,11 @@ export type WorkspaceAction =
       chartId: string
       mark: ChartMarkKey
       patch: Partial<ChartAppearanceSpec[ChartMarkKey]>
+    }
+  | {
+      type: 'chart/updateTimeGrain'
+      chartId: string
+      timeGrain: TimeGrain | null
     }
   | {
       type: 'dashboard/update'

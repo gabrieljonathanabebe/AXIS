@@ -134,7 +134,7 @@ function ChartLegend({
           className={`chart-legend-symbol is-${symbol}`}
           style={{ ...symbolSize, backgroundColor: color }}
         />
-        <span className="chart-legend-text">{entry.name}</span>
+        <span className="chart-legend-text">{entry.label ?? entry.name}</span>
       </>
     )
     if (!isInteractive) {
@@ -142,7 +142,7 @@ function ChartLegend({
         <span
           className="chart-legend-entry"
           key={entry.name}
-          title={entry.name}
+          title={entry.label ?? entry.name}
           onPointerEnter={() => onEmphasize(entry.name, true)}
           onPointerLeave={() => onEmphasize(entry.name, false)}
         >
@@ -156,7 +156,7 @@ function ChartLegend({
         className="chart-legend-entry"
         key={entry.name}
         style={isHidden ? { color } : undefined}
-        title={entry.name}
+        title={entry.label ?? entry.name}
         type="button"
         onClick={() => onToggle(entry.name)}
         onPointerEnter={() => onEmphasize(entry.name, true)}

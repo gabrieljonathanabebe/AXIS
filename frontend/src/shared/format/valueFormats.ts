@@ -46,3 +46,12 @@ export const CURRENCY_OPTIONS = [
   { label: '£ GBP', value: 'GBP' },
   { label: '¥ JPY', value: 'JPY' },
 ] satisfies { label: string; value: CurrencyCode }[]
+
+/** Time grains from the finest to the coarsest, as options. */
+export const TIME_GRAIN_OPTIONS = [
+  { label: 'Day', value: 'day' },
+  { label: 'Week', value: 'week' },
+  { label: 'Month', value: 'month' },
+  { label: 'Quarter', value: 'quarter' },
+  { label: 'Year', value: 'year' },
+] satisfies { label: string; value: TimeGrain }[]

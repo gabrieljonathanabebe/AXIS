@@ -63,6 +63,7 @@ export type ChartActions = {
   setEncodingField: SetEncodingField
   setInteraction: SetInteraction
   setLayout: (layout: ObjectLayout) => void
+  setTimeGrain: (timeGrain: TimeGrain | null) => void
 }
 
 /** What a chart format widget needs: the chart, its fields and actions. */
@@ -294,6 +295,8 @@ export type LegendSelectionMode = 'multiple' | 'single'
 export type LegendEntry = {
   color: string
   name: string
+  /** Shown text if it differs from the name, e.g. a formatted date. */
+  label?: string
 }
 
 // ===== LINE ==================================================================
