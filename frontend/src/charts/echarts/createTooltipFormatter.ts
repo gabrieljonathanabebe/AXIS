@@ -5,6 +5,7 @@ import {
 } from '../../shared/format/formatNumber'
 import { formatSelectionLabel } from '../../workspace/dataSelection'
 import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
+import { getEffectiveTimeGrain } from '../getEffectiveTimeGrain'
 import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
 import {
   createAxisDateFormatter,
@@ -108,6 +109,7 @@ export function createTooltipFormatter({
   const formatXDate = createAxisDateFormatter(
     spec.appearance.xAxis,
     fields.find((field) => field.name === encoding.x),
+    getEffectiveTimeGrain(spec.data, fields),
   )
   return (params) => {
     const entries = asParams(params)

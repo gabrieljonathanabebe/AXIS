@@ -2,6 +2,7 @@ import { hasAggregatedColor } from '../../chartDefinitions'
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getColorScaleRange } from '../../getColorScaleRange'
 import { getValueLabel } from '../../getEffectiveAggregation'
+import { getEffectiveTimeGrain } from '../../getEffectiveTimeGrain'
 import { createAxesOptions } from '../createAxesOptions'
 import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
 import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
@@ -135,6 +136,7 @@ export function createAggregatedChartContent(
     chartType,
     encoding,
     fields: dataset.fields,
+    timeGrain: getEffectiveTimeGrain(spec.data, dataset.fields),
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

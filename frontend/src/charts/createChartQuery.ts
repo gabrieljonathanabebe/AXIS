@@ -4,6 +4,7 @@ import {
   getEffectiveAggregation,
   getValueField,
 } from './getEffectiveAggregation'
+import { getEffectiveTimeGrain } from './getEffectiveTimeGrain'
 
 import type { DataField } from '../datasets/types'
 import type { DataSelection } from '../workspace/types'
@@ -35,6 +36,7 @@ export function createChartQuery(
     color_aggregation: colorField ? colorAggregation : null,
     filters: [],
     series: encoding.series ?? null,
+    time_grain: getEffectiveTimeGrain(chart.spec.data, fields),
     x: encoding.x,
     y: valueField,
   }

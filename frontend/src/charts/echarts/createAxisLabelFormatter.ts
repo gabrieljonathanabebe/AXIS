@@ -1,9 +1,11 @@
 import { createDateFormatter } from '../../shared/format/formatDate'
 import { createNumberFormatter } from '../../shared/format/formatNumber'
+import { isDateField } from '../getEffectiveTimeGrain'
 
 import type { DataField } from '../../datasets/types'
 import type { DateFormatter } from '../../shared/format/formatDate'
 import type { NumberFormatter } from '../../shared/format/formatNumber'
+import type { TimeGrain } from '../../shared/format/valueFormats'
 import type { AxisAppearance } from '../types'
 
 type AxisLabelValue = string | number
@@ -27,22 +29,24 @@ function toFiniteNumber(value: AxisLabelValue): number | null {
 
 /**
  * Creates the date formatter of an axis if it shows dates: chosen as Date,
- * or a date field with the auto format.
+ * or a date field with the auto format; auto follows the time grain.
  * @param axis Appearance of the axis.
  * @param field Field on the axis, if known.
+ * @param grain Time grain the dates are grouped by.
  * @returns Formatter for the dates, or null for an axis without dates.
  */
 export function createAxisDateFormatter(
   axis: AxisAppearance,
   field: DataField | undefined,
+  grain: TimeGrain | null,
 ): DateFormatter | null {
   const { dateFormat, numberFormat, valueType } = axis.labels
-  const isDateField =
-    field?.physical_type === 'date' || field?.physical_type === 'datetime'
-  const showsDates =
-    valueType === 'date' || (isDateField && numberFormat.style === 'auto')
+  const isAutoDate =
+    field !== undefined && isDateField(field) && numberFormat.style === 'auto'
 
-  return showsDates ? createDateFormatter(dateFormat, null) : null
+  return valueType === 'date' || isAutoDate
+    ? createDateFormatter(dateFormat, grain)
+    : null
 }
 
 /**
@@ -50,13 +54,15 @@ export function createAxisDateFormatter(
  * its number format; auto leaves the labels to ECharts.
  * @param axis Appearance of the axis.
  * @param field Field on the axis, if known; a date field shows dates.
+ * @param grain Time grain the dates are grouped by.
  * @returns Formatter for ECharts, or undefined for the default labels.
  */
 export function createAxisLabelFormatter(
   axis: AxisAppearance,
   field?: DataField,
+  grain: TimeGrain | null = null,
 ): AxisLabelFormatter | undefined {
-  const formatDateValue = createAxisDateFormatter(axis, field)
+  const formatDateValue = createAxisDateFormatter(axis, field, grain)
   if (formatDateValue) {
     return formatDateValue
   }

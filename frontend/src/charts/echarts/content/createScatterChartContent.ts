@@ -5,6 +5,7 @@ import {
 import { getColorEncodingMode } from '../../getColorEncodingMode'
 import { getColorScaleRange } from '../../getColorScaleRange'
 import { getValueLabel } from '../../getEffectiveAggregation'
+import { getEffectiveTimeGrain } from '../../getEffectiveTimeGrain'
 import { getNumericDomain } from '../../getNumericDomain'
 import { createAxesOptions } from '../createAxesOptions'
 import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
@@ -203,6 +204,7 @@ export function createScatterChartContent(
     chartType,
     encoding,
     fields: dataset.fields,
+    timeGrain: getEffectiveTimeGrain(spec.data, dataset.fields),
     valueLabel: getValueLabel(spec.data, dataset.fields),
   })
 

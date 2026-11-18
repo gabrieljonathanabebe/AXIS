@@ -121,6 +121,7 @@ export function createDefaultChartSpec(
       encoding: {},
       aggregation: definition.defaultAggregation,
       colorAggregation: 'mean',
+      timeGrain: null,
     },
     appearance: {
       color: createColorValue(style.palette[0]),

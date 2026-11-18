@@ -4,6 +4,7 @@ import { createTextStyleOption } from './createTextStyleOption'
 
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
 import type { DataField } from '../../datasets/types'
+import type { TimeGrain } from '../../shared/format/valueFormats'
 import type {
   AxisAppearance,
   AxisTitleAppearance,
@@ -19,6 +20,7 @@ type CreateAxesOptionsParams = {
   chartType: ChartType
   encoding: ChartEncoding
   fields: DataField[]
+  timeGrain: TimeGrain | null
   valueLabel: string | undefined
 }
 
@@ -85,6 +87,7 @@ export function createAxesOptions({
   chartType,
   encoding,
   fields,
+  timeGrain,
   valueLabel,
 }: CreateAxesOptionsParams): AxesOptions {
   const isCategoryXAxis = chartType !== 'scatter'
@@ -95,6 +98,7 @@ export function createAxesOptions({
         formatter: createAxisLabelFormatter(
           appearance.xAxis,
           fields.find((field) => field.name === encoding.x),
+          timeGrain,
         ),
         interval: isCategoryXAxis
           ? getCategoryLabelInterval(

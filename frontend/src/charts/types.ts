@@ -11,7 +11,11 @@ import type {
 import type { ColorValue } from '../shared/colorValue'
 import type { Effect } from '../shared/effect'
 import type { SeriesFill } from '../shared/fill'
-import type { DateFormat, NumberFormat } from '../shared/format/valueFormats'
+import type {
+  DateFormat,
+  NumberFormat,
+  TimeGrain,
+} from '../shared/format/valueFormats'
 import type { Layout } from '../shared/layout'
 import type { SeriesStrokeStyle, StrokeAppearance } from '../shared/strokeStyle'
 import type { Surface } from '../shared/surface'
@@ -143,6 +147,7 @@ export type ChartDataSpec = {
   encoding: ChartEncoding
   aggregation: Aggregation
   colorAggregation: GroupAggregation
+  timeGrain: TimeGrain | null
 }
 
 // Field names; roles and types are resolved from the dataset when read.
