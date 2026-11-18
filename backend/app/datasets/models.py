@@ -25,8 +25,8 @@ class SemanticRole(StrEnum):
     IDENTIFIER = "identifier"
 
 
-class TemporalGranularity(StrEnum):
-    """Most common step between consecutive dates of a field."""
+class TimeGrain(StrEnum):
+    """Step in which dates are grouped: native on a field, chosen on a chart."""
 
     DAY = "day"
     WEEK = "week"
@@ -37,11 +37,16 @@ class TemporalGranularity(StrEnum):
 
 # ===== DATASET ===============================================================
 class Field(BaseModel):
-    """Name, physical type and detected semantic role of a column."""
+    """
+    What the app needs to work with a column: name, physical type, detected
+    semantic role and native time grain (None without dates). Values that
+    only describe the column stay in its statistics.
+    """
 
     name: str
     physical_type: PhysicalType
     semantic_role: SemanticRole
+    native_grain: TimeGrain | None
 
 
 class DatasetSummary(BaseModel):
@@ -80,25 +85,20 @@ class DimensionStatistics(BaseModel):
 
 
 class TemporalStatistics(BaseModel):
-    """Date range as ISO text, granularity and distribution of a field."""
+    """Date range as ISO text and distribution of a field."""
 
     kind: Literal["temporal"] = "temporal"
     min: str | None
     max: str | None
-    granularity: TemporalGranularity | None
     histogram: list[int]
 
 
 FieldStatistics = MeasureStatistics | DimensionStatistics | TemporalStatistics
 
 
-# ===== PROFILE ===============================================================
-class FieldProfile(BaseModel):
-    """Profile of one field; statistics follow the detected role."""
+class FieldProfile(Field):
+    """A field with the statistics of its values; they follow the role."""
 
-    name: str
-    physical_type: PhysicalType
-    semantic_role: SemanticRole
     missing_count: int
     unique_count: int
     statistics: FieldStatistics | None

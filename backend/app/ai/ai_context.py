@@ -73,9 +73,9 @@ def describe_values(field: FieldProfile, role: SemanticRole) -> str:
         )
         return f"{field.unique_count} distinct values, top: {top}"
     period = f"{statistics.min} to {statistics.max}"
-    if statistics.granularity is None:
+    if field.native_grain is None:
         return period
-    return f"{period}, by {statistics.granularity}"
+    return f"{period}, by {field.native_grain}"
 
 
 # ===== CHART RULES ===========================================================

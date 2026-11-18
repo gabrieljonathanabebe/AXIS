@@ -9,9 +9,10 @@ from app.datasets.models import (
     FieldProfile,
     FieldStatistics,
     MeasureStatistics,
+    PhysicalType,
     SemanticRole,
-    TemporalGranularity,
     TemporalStatistics,
+    TimeGrain,
     ValueCount,
 )
 
@@ -19,12 +20,12 @@ from app.datasets.models import (
 VALUE_COUNT_LIMIT = 5
 HISTOGRAM_BIN_LIMIT = 20
 
-GRANULARITY_DAY_RANGES = [
-    (TemporalGranularity.DAY, 1, 1),
-    (TemporalGranularity.WEEK, 7, 7),
-    (TemporalGranularity.MONTH, 28, 31),
-    (TemporalGranularity.QUARTER, 89, 92),
-    (TemporalGranularity.YEAR, 365, 366),
+GRAIN_DAY_RANGES = [
+    (TimeGrain.DAY, 1, 1),
+    (TimeGrain.WEEK, 7, 7),
+    (TimeGrain.MONTH, 28, 31),
+    (TimeGrain.QUARTER, 89, 92),
+    (TimeGrain.YEAR, 365, 366),
 ]
 
 
@@ -54,7 +55,7 @@ def build_dataset_profile(
 
 def build_field_profile(column: pl.Series) -> FieldProfile:
     """
-    Detect type and role of a column and compute its statistics.
+    Detect type, role and native grain of a column; compute its statistics.
     Args:
         column: One column of the dataset.
     Returns:
@@ -73,6 +74,7 @@ def build_field_profile(column: pl.Series) -> FieldProfile:
         name=column.name,
         physical_type=physical_type,
         semantic_role=semantic_role,
+        native_grain=detect_native_grain(values, physical_type),
         missing_count=column.null_count(),
         unique_count=unique_count,
         statistics=build_statistics(values, semantic_role),
@@ -134,32 +136,38 @@ def build_dimension_statistics(values: pl.Series) -> DimensionStatistics:
 
 
 def build_temporal_statistics(values: pl.Series) -> TemporalStatistics:
-    """Compute date range, granularity and histogram of a date field."""
+    """Compute date range and histogram of a date field."""
     return TemporalStatistics(
         min=format_temporal(values.min()),
         max=format_temporal(values.max()),
-        granularity=detect_granularity(values),
         histogram=build_histogram(values),
     )
 
 
-def detect_granularity(values: pl.Series) -> TemporalGranularity | None:
+def detect_native_grain(
+    values: pl.Series,
+    physical_type: PhysicalType,
+) -> TimeGrain | None:
     """
-    Detect the typical step between consecutive distinct dates.
+    Detect the native time grain: the typical step between consecutive
+    distinct dates.
     Args:
-        values: Non-null date or datetime values.
+        values: Non-null values of the column.
+        physical_type: Physical type of the column; only dates have a grain.
     Returns:
-        The granularity whose day range contains the most common gap, or
-        None for a single date or an irregular gap.
+        The grain whose day range contains the most common gap, or None for
+        a field without dates, a single date or an irregular gap.
     """
+    if not schema_detection.is_date_type(physical_type):
+        return None
     gaps = values.cast(pl.Date).unique().sort().diff().drop_nulls()
     if gaps.is_empty():
         return None
     days = gaps.dt.total_days().mode().min()
     return next(
         (
-            granularity
-            for granularity, low, high in GRANULARITY_DAY_RANGES
+            grain
+            for grain, low, high in GRAIN_DAY_RANGES
             if low <= days <= high  # type: ignore
         ),
         None,

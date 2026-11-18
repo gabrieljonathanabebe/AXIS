@@ -8,11 +8,15 @@ export type PhysicalType =
 /** Analytical meaning of a field; decides how charts may use it. */
 export type SemanticRole = 'measure' | 'dimension' | 'temporal' | 'identifier'
 
-/** Name, physical type and (possibly overridden) semantic role. */
+/**
+ * What the app needs to work with a field: name, physical type,
+ * (possibly overridden) semantic role and native time grain.
+ */
 export type DataField = {
   name: string
   physical_type: PhysicalType
   semantic_role: SemanticRole
+  native_grain: TimeGrain | null
 }
 
 /** User corrections of the detected semantic role, keyed by field name. */
@@ -39,10 +43,8 @@ export type DatasetProfile = {
   fields: FieldProfile[]
 }
 
-export type FieldProfile = {
-  name: string
-  physical_type: PhysicalType
-  semantic_role: SemanticRole
+/** A field with the statistics of its values, for the profile. */
+export type FieldProfile = DataField & {
   missing_count: number
   unique_count: number
   statistics: FieldStatistics | null
@@ -65,13 +67,10 @@ export type DimensionStatistics = {
   value_counts: ValueCount[]
 }
 
-export type TemporalGranularity = TimeGrain
-
 export type TemporalStatistics = {
   kind: 'temporal'
   min: string | null
   max: string | null
-  granularity: TemporalGranularity | null
   histogram: number[]
 }
 

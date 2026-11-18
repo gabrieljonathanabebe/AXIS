@@ -135,7 +135,7 @@ function MeasureRangeFilterForm({
   )
 }
 
-// Steps follow the profile's range and detected granularity.
+// Steps follow the profile's range and the field's native grain.
 function DateRangeFilterForm({
   fieldName,
   filter,
@@ -156,7 +156,7 @@ function DateRangeFilterForm({
       steps={createTemporalSteps(
         statistics.min,
         statistics.max,
-        statistics.granularity,
+        profileField?.native_grain ?? null,
       )}
       formatStep={formatDate}
       onRangeChange={(start, end) => {

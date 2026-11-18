@@ -3,7 +3,7 @@ from datetime import date, datetime
 import polars as pl
 import pytest
 
-from app.datasets.models import DatasetSummary, TemporalGranularity
+from app.datasets.models import DatasetSummary, TimeGrain
 from app.queries import chart_query
 from app.queries.models import (
     ChartQueryRequest,
@@ -144,7 +144,7 @@ def test_count_accepts_a_text_y(sales_summary: DatasetSummary) -> None:
     ("time_grain", "expected"),
     [
         (
-            TemporalGranularity.DAY,
+            TimeGrain.DAY,
             [
                 ("2025-03-10", 1.0),
                 ("2025-03-16", 2.0),
@@ -153,22 +153,22 @@ def test_count_accepts_a_text_y(sales_summary: DatasetSummary) -> None:
             ],
         ),
         (
-            TemporalGranularity.WEEK,
+            TimeGrain.WEEK,
             [("2025-03-10", 3.0), ("2025-03-17", 4.0), ("2025-03-31", 8.0)],
         ),
         (
-            TemporalGranularity.MONTH,
+            TimeGrain.MONTH,
             [("2025-03-01", 7.0), ("2025-04-01", 8.0)],
         ),
         (
-            TemporalGranularity.QUARTER,
+            TimeGrain.QUARTER,
             [("2025-01-01", 7.0), ("2025-04-01", 8.0)],
         ),
-        (TemporalGranularity.YEAR, [("2025-01-01", 15.0)]),
+        (TimeGrain.YEAR, [("2025-01-01", 15.0)]),
     ],
 )
 def test_time_grain_groups_dates_by_period(
-    time_grain: TemporalGranularity,
+    time_grain: TimeGrain,
     expected: list[tuple[str, float]],
 ) -> None:
     """Dates group by the start of their period; weeks start on Monday."""
@@ -210,7 +210,7 @@ def test_time_grain_keeps_datetimes_on_their_day() -> None:
         x="date",
         y="revenue",
         aggregation=GroupAggregation.SUM,
-        time_grain=TemporalGranularity.DAY,
+        time_grain=TimeGrain.DAY,
     )
 
     result = chart_query.build_chart_query_result(frame, query)
@@ -228,7 +228,7 @@ def test_validate_chart_query_rejects_a_time_grain_without_dates(
         x="country",
         y="revenue",
         aggregation=GroupAggregation.SUM,
-        time_grain=TemporalGranularity.MONTH,
+        time_grain=TimeGrain.MONTH,
     )
 
     with pytest.raises(ValueError, match="Time grain needs a date field"):

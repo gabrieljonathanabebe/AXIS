@@ -1,9 +1,10 @@
 import polars as pl
 
+from app.datasets import schema_detection
 from app.datasets.models import (
     DatasetSummary,
     PhysicalType,
-    TemporalGranularity,
+    TimeGrain,
 )
 from app.queries import filters
 from app.queries.models import (
@@ -17,12 +18,12 @@ from app.queries.models import (
 
 MAX_CHART_POINTS = 2_000
 
-TRUNCATE_EVERY: dict[TemporalGranularity, str] = {
-    TemporalGranularity.DAY: "1d",
-    TemporalGranularity.WEEK: "1w",
-    TemporalGranularity.MONTH: "1mo",
-    TemporalGranularity.QUARTER: "1q",
-    TemporalGranularity.YEAR: "1y",
+TRUNCATE_EVERY: dict[TimeGrain, str] = {
+    TimeGrain.DAY: "1d",
+    TimeGrain.WEEK: "1w",
+    TimeGrain.MONTH: "1mo",
+    TimeGrain.QUARTER: "1q",
+    TimeGrain.YEAR: "1y",
 }
 
 
@@ -217,9 +218,8 @@ def validate_chart_query(
     if query.series == query.x:
         raise ValueError("Series must differ from X.")
     x_type = fields[query.x].physical_type
-    if query.time_grain is not None and x_type not in (
-        PhysicalType.DATE,
-        PhysicalType.DATETIME,
+    if query.time_grain is not None and not schema_detection.is_date_type(
+        x_type
     ):
         raise ValueError("Time grain needs a date field on X.")
     if query.color is not None:

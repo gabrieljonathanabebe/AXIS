@@ -60,13 +60,14 @@ def infer_semantic_role(
     return SemanticRole.DIMENSION
 
 
+def is_date_type(physical_type: PhysicalType) -> bool:
+    """Whether a physical type holds dates, with or without a time."""
+    return physical_type in (PhysicalType.DATE, PhysicalType.DATETIME)
+
+
 def create_fields(profile: DatasetProfile) -> list[Field]:
-    """Reduce the field profiles to the fields of the dataset summary."""
+    """Reduce the field profiles to their Field part for the summary."""
     return [
-        Field(
-            name=field.name,
-            physical_type=field.physical_type,
-            semantic_role=field.semantic_role,
-        )
+        Field(**field.model_dump(include=set(Field.model_fields)))
         for field in profile.fields
     ]
