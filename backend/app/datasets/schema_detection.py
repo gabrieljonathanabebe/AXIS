@@ -65,6 +65,11 @@ def is_date_type(physical_type: PhysicalType) -> bool:
     return physical_type in (PhysicalType.DATE, PhysicalType.DATETIME)
 
 
+def is_category_type(physical_type: PhysicalType) -> bool:
+    """Whether a physical type holds categories: text or booleans."""
+    return physical_type in (PhysicalType.STRING, PhysicalType.BOOLEAN)
+
+
 def create_fields(profile: DatasetProfile) -> list[Field]:
     """Reduce the field profiles to their Field part for the summary."""
     return [

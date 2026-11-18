@@ -2,7 +2,7 @@ from datetime import date
 from enum import StrEnum
 from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.datasets.models import TimeGrain, ValueCount
 
@@ -51,8 +51,22 @@ TableFilter = ChartFilter
 
 
 # ===== CHART QUERY ===========================================================
+class ChartSort(BaseModel):
+    """Order of the categories: by their total value or by their name."""
+
+    by: Literal["value", "category"]
+    order: Literal["asc", "desc"]
+
+
+class ChartLimit(BaseModel):
+    """Keep the categories with the largest or smallest total value."""
+
+    kind: Literal["top", "bottom"]
+    count: int = Field(ge=1)
+
+
 class ChartQueryRequest(BaseModel):
-    """Encoding, aggregations and filters of a bar, line, pie or donut."""
+    """Encoding, aggregations, filters and order of an aggregated chart."""
 
     x: str
     y: str
@@ -62,6 +76,9 @@ class ChartQueryRequest(BaseModel):
     aggregation: GroupAggregation
     filters: list[ChartFilter] = []
     time_grain: TimeGrain | None = None
+    sort: ChartSort | None = None
+    limit: ChartLimit | None = None
+    categories: list[str | None] | None = None
 
 
 class ChartQueryPoint(BaseModel):

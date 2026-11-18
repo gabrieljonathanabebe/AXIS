@@ -8,9 +8,11 @@ from app.datasets.models import (
 )
 from app.queries import filters
 from app.queries.models import (
+    ChartLimit,
     ChartQueryPoint,
     ChartQueryRequest,
     ChartQueryResult,
+    ChartSort,
     GroupAggregation,
     PointsQueryRequest,
     PointsQueryResult,
@@ -25,6 +27,8 @@ TRUNCATE_EVERY: dict[TimeGrain, str] = {
     TimeGrain.QUARTER: "1q",
     TimeGrain.YEAR: "1y",
 }
+
+DEFAULT_SORT = ChartSort(by="value", order="desc")
 
 
 def build_aggregation_expression(
@@ -73,6 +77,94 @@ def build_x_expression(query: ChartQueryRequest) -> pl.Expr:
     return column.dt.truncate(every).cast(pl.Date).alias("x")
 
 
+def select_categories(
+    frame: pl.DataFrame,
+    categories: list[str | None],
+) -> pl.DataFrame:
+    """
+    Keep the given categories in their order, e.g. those of the base query.
+    Args:
+        frame: Aggregated groups with a text or boolean X.
+        categories: X values as the chart result sends them; None is the
+            group without category.
+    Returns:
+        The groups of these categories in this order; series keep their
+        order within a category, categories without groups are left out.
+    """
+    order = pl.DataFrame(
+        {"x_text": categories, "position": range(len(categories))},
+        schema={"x_text": pl.Utf8, "position": pl.Int64},
+    )
+    return (
+        frame.with_columns(pl.col("x").cast(pl.Utf8).alias("x_text"))
+        .join(
+            order,
+            on="x_text",
+            how="inner",
+            nulls_equal=True,
+            maintain_order="left",
+        )
+        .sort("position", maintain_order=True)
+        .drop("x_text", "position")
+    )
+
+
+def limit_categories(
+    frame: pl.DataFrame,
+    limit: ChartLimit,
+) -> pl.DataFrame:
+    """
+    Keep the categories with the largest or smallest total value.
+    Args:
+        frame: Aggregated groups with a text or boolean X.
+        limit: Top or bottom and how many categories stay.
+    Returns:
+        The groups of the kept categories in their previous order; the
+        total adds the values of all series of a category.
+    """
+    totals = frame.group_by("x", maintain_order=True).agg(
+        pl.col("value").sum()
+    )
+    kept = totals.sort(
+        "value",
+        descending=limit.kind == "top",
+        maintain_order=True,
+        nulls_last=True,
+    ).head(limit.count)
+    return frame.filter(
+        pl.col("x").is_in(kept.get_column("x").implode(), nulls_equal=True)
+    )
+
+
+def sort_categories(
+    frame: pl.DataFrame,
+    sort: ChartSort,
+) -> pl.DataFrame:
+    """
+    Order the groups by the total value or the name of their category.
+    Args:
+        frame: Aggregated groups with a text or boolean X.
+        sort: Value or category, ascending or descending.
+    Returns:
+        The groups category by category. Names compare without case and
+        false before true; the group without category comes last when
+        sorted by name. Ties keep the order of first occurrence.
+    """
+    if sort.by == "value":
+        key = pl.col("value").sum().over("x")
+    elif frame.schema["x"] == pl.String:
+        key = pl.col("x").str.to_lowercase()
+    else:
+        key = pl.col("x")
+    first_position = pl.int_range(pl.len()).min().over("x")
+    return frame.sort(
+        [key, first_position],
+        descending=[sort.order == "desc", False],
+        maintain_order=True,
+        nulls_last=True,
+    )
+
+
 def aggregate_chart_frame(
     frame: pl.DataFrame,
     query: ChartQueryRequest,
@@ -83,9 +175,10 @@ def aggregate_chart_frame(
         frame: Filtered rows of the dataset.
         query: Encoding and aggregations of the chart.
     Returns:
-        One row per group with columns x, series, value and color_value;
-        sorted by X if X is numeric or temporal, else by the total value
-        per X in descending order.
+        One row per group with columns x, series, value and color_value.
+        A numeric or temporal X is sorted by X; a text or boolean X keeps
+        the given categories, or is limited and then sorted by the query,
+        by default by total value in descending order.
     """
     group_fields = [build_x_expression(query)]
     if query.series is not None:
@@ -112,13 +205,27 @@ def aggregate_chart_frame(
     x_dtype = aggregated.schema["x"]
     if x_dtype.is_numeric() or x_dtype.is_temporal():
         return aggregated.sort("x", maintain_order=True, nulls_last=True)
-    x_total = pl.col("value").sum().over("x")
-    return aggregated.sort(
-        x_total,
-        descending=True,
-        maintain_order=True,
-        nulls_last=True,
-    )
+    if query.categories is not None:
+        return select_categories(aggregated, query.categories)
+    if query.limit is not None:
+        aggregated = limit_categories(aggregated, query.limit)
+    return sort_categories(aggregated, query.sort or DEFAULT_SORT)
+
+
+def format_group_value(value: object) -> str | None:
+    """
+    Turn an X or series value into the text the chart result sends.
+    Args:
+        value: Value of a group column.
+    Returns:
+        The value as text; booleans as "true" or "false", like the text
+        that values filters and categories compare with. None stays None.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
 
 
 def build_chart_query_result(
@@ -141,14 +248,10 @@ def build_chart_query_result(
         raise ValueError("Chart result exceeds 2000 points.")
     points: list[ChartQueryPoint] = []
     for row in aggregated.iter_rows(named=True):
-        x_value = row["x"]
-        series_value = row.get("series")
         points.append(
             ChartQueryPoint(
-                x=str(x_value) if x_value is not None else None,
-                series=(
-                    str(series_value) if series_value is not None else None
-                ),
+                x=format_group_value(row["x"]),
+                series=format_group_value(row.get("series")),
                 value=row["value"],
                 color_value=row.get("color_value"),
             )
@@ -199,8 +302,10 @@ def validate_chart_query(
         query: Encoding, aggregations and filters of the chart.
     Raises:
         ValueError: If fields are unknown, duplicated across encodings,
-            not numeric where an aggregation needs numbers, or if a time
-            grain is set on X that is no date.
+            not numeric where an aggregation needs numbers, if a time
+            grain is set on X that is no date, if sort, limit or
+            categories are set on X that is no category, or if limit and
+            categories are combined.
     """
     fields = {field.name: field for field in summary.fields}
     has_color = query.color is not None
@@ -222,6 +327,15 @@ def validate_chart_query(
         x_type
     ):
         raise ValueError("Time grain needs a date field on X.")
+    has_category_order = (
+        query.sort is not None
+        or query.limit is not None
+        or query.categories is not None
+    )
+    if has_category_order and not schema_detection.is_category_type(x_type):
+        raise ValueError("Category order needs a text or boolean X.")
+    if query.limit is not None and query.categories is not None:
+        raise ValueError("Limit and categories cannot be combined.")
     if query.color is not None:
         if query.color in (query.x, query.series):
             raise ValueError("Color must differ from X and Series.")
