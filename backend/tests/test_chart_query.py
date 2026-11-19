@@ -516,3 +516,55 @@ def test_validate_chart_query_rejects_invalid_category_order(
     """Sort on a numeric X and limit next to categories fail."""
     with pytest.raises(ValueError, match=message):
         chart_query.validate_chart_query(sales_summary, query)
+
+
+# ===== MISSING VALUES ========================================================
+def test_missing_x_is_its_own_group_sorted_by_total_without_sort() -> None:
+    """
+    Current state (#32): rows without X form one group with X None.
+    Without a sort it takes its place by total, like any category.
+    """
+    frame = pl.DataFrame(
+        {
+            "country": ["US", None, None, "DE"],
+            "revenue": [1.0, 5.0, 4.0, 2.0],
+        }
+    )
+    query = ChartQueryRequest(
+        x="country",
+        y="revenue",
+        aggregation=GroupAggregation.SUM,
+    )
+
+    result = chart_query.build_chart_query_result(frame, query)
+
+    assert [(point.x, point.value) for point in result.points] == [
+        (None, 9.0),
+        ("DE", 2.0),
+        ("US", 1.0),
+    ]
+
+
+def test_values_filter_null_text_misses_rows_without_value() -> None:
+    """
+    Current state (#32): the frontend sends a missing value as "null",
+    which matches no row without value.
+    """
+    frame = pl.DataFrame(
+        {
+            "country": ["US", None],
+            "revenue": [1.0, 5.0],
+        }
+    )
+    query = ChartQueryRequest(
+        x="country",
+        y="revenue",
+        aggregation=GroupAggregation.SUM,
+        filters=[
+            ValuesChartFilter(kind="values", field="country", values=["null"])
+        ],
+    )
+
+    result = chart_query.build_chart_query_result(frame, query)
+
+    assert result.points == []

@@ -63,4 +63,14 @@ describe('createHighlightQuery', () => {
   it('has no highlight without a selection', () => {
     expect(createHighlightQuery(createQuery(), null, result)).toBeNull()
   })
+
+  it('currently skips the base result for a text X without sort (E1)', () => {
+    const query = createQuery({ limit: null, sort: null })
+    expect(createHighlightQuery(query, selection, null)?.categories).toBeNull()
+  })
+
+  it('currently waits for the base result for a date X with sort (E1)', () => {
+    const query = createQuery({ time_grain: 'month', x: 'order_date' })
+    expect(createHighlightQuery(query, selection, null)).toBeNull()
+  })
 })

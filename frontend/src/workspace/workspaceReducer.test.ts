@@ -77,3 +77,18 @@ describe('chart/setType', () => {
     })
   })
 })
+
+describe('chart/updateEncoding', () => {
+  it('keeps the other encodings when one changes', () => {
+    const state = workspaceReducer(createState(), {
+      type: 'chart/updateEncoding',
+      chartId: 'chart',
+      patch: { series: 'segment' },
+    })
+    expect(getChart(state).spec.data.encoding).toEqual({
+      series: 'segment',
+      x: 'country',
+      y: 'revenue',
+    })
+  })
+})

@@ -127,7 +127,7 @@ versioniert) und ist Eingabe für jeden Teil. Wichtigste Funde:
 
 Teile:
 
-1. Sicherheitsnetz: Playwright mit Bildvergleich (`npm run smoke`):
+1. Sicherheitsnetz (erledigt): Playwright mit Bildvergleich (`npm run smoke`):
    Demo-Daten, jeder Charttyp und eine Card, Legende, Farbskala,
    Format-Panel mit Untergruppen, offene Popover, Drag-Überlagerung, Hell
    und Dunkel; Referenzbilder vor dem ersten Umbau, danach pixelgenauer

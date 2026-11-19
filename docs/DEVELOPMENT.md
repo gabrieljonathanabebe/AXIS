@@ -234,7 +234,31 @@ Die Tests liegen in `backend/tests/` (pytest, Dev-Abhängigkeit über
 von Hand prüfbaren Summen und ein `TestClient`, der die App ohne Server
 startet und dabei das Demo-Dataset lädt.
 
-Bei der Arbeit in Vertical Slices werden diese beiden Befehle einmalig
+Nach Änderungen, die das Aussehen oder die Bedienung nicht verändern
+sollen (z. B. Refactorings), zusätzlich im Ordner `frontend/`:
+
+```bash
+npm run smoke
+```
+
+Der Smoke-Test (Playwright, nur Chromium) öffnet die App mit den
+Demo-Daten in Hell und Dunkel und vergleicht jeden Zustand pixelgenau mit
+einem Referenzbild: jeden Charttyp, die Card, die Format-Panels mit
+Untergruppen, offene Popover, Hover, Drag und die Data View. Laufende
+Server auf den Ports 8000 und 5173 nutzt er, sonst startet er sie selbst.
+Die Tests liegen in `frontend/smoke/` (`*.smoke.ts`), die Referenzbilder
+in `frontend/smoke/__screenshots__/<plattform>/`. Chromium läuft mit
+`--disable-partial-raster`, sonst schwankt die Kantenglättung zwischen
+zwei Läufen um einzelne Farbwerte.
+
+Referenzbilder nur bewusst neu erzeugen, wenn sich das Aussehen gewollt
+ändert (`npm run smoke -- --update-snapshots`), und die neuen Bilder vor
+dem Commit ansehen. Sie sind plattformabhängig: Heute gibt es den Satz
+für macOS (`darwin`), Linux für die CI kommt später als eigener Satz
+dazu. Bei einem roten Vergleich zeigt `npx playwright show-report`
+Referenz, neues Bild und Unterschied.
+
+Bei der Arbeit in Vertical Slices werden diese Befehle einmalig
 am Ende des vollständigen Slices ausgeführt, nicht nach jedem einzelnen
 Implementierungsblock.
 

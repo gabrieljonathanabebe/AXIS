@@ -28,3 +28,7 @@ __pycache__/
 *.py[cod]
 .venv*/
 .env
+
+# Playwright
+frontend/playwright-report/
+frontend/test-results/

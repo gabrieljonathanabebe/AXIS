@@ -9,6 +9,7 @@
     "format": "prettier --write . ../docs ../AGENTS.md ../README.md",
     "lint": "eslint .",
     "preview": "vite preview",
+    "smoke": "playwright test",
     "test": "vitest run"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
