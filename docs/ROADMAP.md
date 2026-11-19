@@ -114,13 +114,17 @@ Vorgehen:
 3. Werkzeuge: Pfad-Alias `@/`, ESLint-Grenzen, `import-linter`,
    `madge`, `knip`, `jscpd` als Skripte
 4. Basiskomponenten `Panel`, `Group` (Untergruppe per Context), `Row`,
-   `Field`, `Editor`, `Tile`; Umbenennungen nach der Namensgrammatik
-   (`FormatWidget` → `Group`, `…Widget` → `…Group` bzw. `…Groups`,
-   `…Controls` → `…Rows` bzw. `…Groups`, `…Control` → `…Field`,
-   `Widget` → `Tile`); `PaintControl` teilt sich in `PaintField` und
-   `PaintEditor`
+   `Control`, `Input`, `Editor`, `Tile`; Umbenennungen nach der
+   Namensgrammatik (`FormatWidget` → `Group`, `…Widget` → `…Group`
+   bzw. `…Groups`, `…Controls` → `…Rows` bzw. `…Groups`, `…Field` →
+   `…Control`, `Widget` → `Tile`); `field.css` wird das CSS von
+   `Control` (`.field` → `.control`), damit `field` nur noch Daten
+   meint. Reihenfolge wegen gleicher Namen: zuerst teilt sich
+   `PaintControl` (heute die Zeile) in `PaintRow` und `PaintEditor`,
+   danach wird `PaintField` zu `PaintControl`. Prüfen, ob
+   `DropdownField` und `SelectControl` dasselbe leisten
 5. Verschieben: Domänen nach S1 bis S5, `shared/ui` nach Aufgabe
-   gruppiert (z. B. Felder, Farbe, Layout, Panels, Rückmeldung), CSS neben
+   gruppiert (z. B. Controls, Farbe, Layout, Panels, Rückmeldung), CSS neben
    die Komponenten (#12); rein mechanisch
 6. Zusammenführen:
    - gemeinsames Query-Vokabular in `queries/` (Aggregation, Filter,
