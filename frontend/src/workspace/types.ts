@@ -2,6 +2,7 @@ import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
+  ChartCategoryOrder,
   ChartDataSpec,
   ChartEncoding,
   ChartInteractionSpec,
@@ -56,6 +57,11 @@ export type WorkspaceAction =
       type: 'chart/updateAppearance'
       chartId: string
       patch: Partial<ChartAppearanceSpec>
+    }
+  | {
+      type: 'chart/updateCategoryOrder'
+      chartId: string
+      patch: Partial<ChartCategoryOrder>
     }
   | {
       type: 'chart/updateEncoding'

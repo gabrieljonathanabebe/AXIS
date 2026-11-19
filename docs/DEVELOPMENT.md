@@ -361,9 +361,19 @@ Am Slice-Anfang zuerst entscheiden, dann vertiefen:
 
 - nur die Doku und die relevanten Abschnitte der genannten Dateien
   lesen, keine ganzen Dateien;
-- danach sofort einen kurzen Plan und die offenen Entscheidungen
-  gesammelt als Fragen stellen, je mit Empfehlung; Varianten nicht
-  lange intern durchspielen, bei echter Unklarheit fragen;
+- danach sofort einen kurzen Plan als Text und die offenen
+  Entscheidungen gesammelt als Fragen stellen; Varianten nicht lange
+  intern durchspielen, bei echter Unklarheit fragen;
+- Fragen über die interaktive Fragen-Ansicht des Agents stellen (in
+  Claude Code `AskUserQuestion`), nicht als Fließtext: je Frage die
+  Antworten als auswählbare Optionen, die Empfehlung als erste Option
+  mit „(Recommended)“ im Label; höchstens vier Fragen pro Runde, mehr in
+  einer zweiten Runde;
+- stellen die Optionen etwas Sichtbares dar (Layout, Control, Anordnung
+  im Panel, Darstellung im Chart), bekommt jede Option eine
+  minimalistische Skizze als Vorschau, die beim Hovern erscheint (z. B.
+  eine ASCII-Skizze der Panel-Zeilen); reine Logik- oder
+  Benennungsfragen brauchen keine Skizze;
 - Library-Quellcode und Detailprüfungen erst in dem Block, dessen Code
   davon abhängt;
 - je Block nur die Dateiabschnitte lesen, die er braucht;

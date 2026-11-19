@@ -6,7 +6,16 @@ import FormatWidget from '../../shared/ui/FormatWidget'
 import SelectControl from '../../shared/ui/SelectControl'
 import { chartDefinitionList, getChartDefinition } from '../chartDefinitions'
 import { getCompatibleFields } from '../getCompatibleFields'
+import { getEffectiveCategoryOrder } from '../getEffectiveCategoryOrder'
 import { getEffectiveTimeGrain } from '../getEffectiveTimeGrain'
+import {
+  fromLimitChoice,
+  fromSortChoice,
+  getLimitOptions,
+  SORT_OPTIONS,
+  toLimitChoice,
+  toSortChoice,
+} from './categoryOrderOptions'
 
 import type { TimeGrain } from '../../shared/format/valueFormats'
 import type { OptionItem } from '../../shared/ui/OptionsMenu'
@@ -22,7 +31,7 @@ type GrainChoice = TimeGrain | 'auto'
 
 /**
  * Chart type and encoded fields of a chart; a date field on X gets a grain
- * row right below it.
+ * row right below it, categories on X get sort and show rows.
  */
 function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
   const definition = getChartDefinition(chart.type)
@@ -42,6 +51,7 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
     { label: `Auto · ${autoLabel}`, shortLabel: 'Auto', value: 'auto' },
     ...TIME_GRAIN_OPTIONS,
   ]
+  const categoryOrder = getEffectiveCategoryOrder(chart.spec.data, fields)
   return (
     <FormatWidget>
       <ControlRow label="Chart">
@@ -96,6 +106,32 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
                   }}
                 />
               </ControlRow>
+            )}
+            {encoding.key === 'x' && categoryOrder && (
+              <>
+                <ControlRow label="Sort">
+                  <SelectControl
+                    label="Sort categories"
+                    options={SORT_OPTIONS}
+                    value={toSortChoice(categoryOrder.sort)}
+                    onChange={(choice) => {
+                      actions.setCategoryOrder({ sort: fromSortChoice(choice) })
+                    }}
+                  />
+                </ControlRow>
+                <ControlRow label="Show">
+                  <SelectControl
+                    label="Show categories"
+                    options={getLimitOptions(categoryOrder.limit)}
+                    value={toLimitChoice(categoryOrder.limit)}
+                    onChange={(choice) => {
+                      actions.setCategoryOrder({
+                        limit: fromLimitChoice(choice),
+                      })
+                    }}
+                  />
+                </ControlRow>
+              </>
             )}
           </Fragment>
         )

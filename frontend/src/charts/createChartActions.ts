@@ -45,6 +45,13 @@ export function createChartActions({
         patch: { [key]: value },
       }))
     },
+    setCategoryOrder: (patch) => {
+      dispatchForChart((chartId) => ({
+        type: 'chart/updateCategoryOrder',
+        chartId,
+        patch,
+      }))
+    },
     setChartAppearance: (mark, optionKey, value) => {
       dispatchForChart((chartId) => ({
         type: 'chart/updateMarkAppearance',

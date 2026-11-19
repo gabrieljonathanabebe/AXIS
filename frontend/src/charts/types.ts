@@ -57,6 +57,7 @@ export type SetEncodingField = (
 export type ChartActions = {
   setAggregation: SetAggregation
   setAppearance: SetAppearance
+  setCategoryOrder: (patch: Partial<ChartCategoryOrder>) => void
   setChartAppearance: SetChartAppearance
   setChartType: SetChartType
   setContainer: SetContainer
@@ -143,6 +144,9 @@ export type ChartAppearanceSpec = {
   pie: PieAppearance
   tooltip: TooltipAppearance
 }
+
+/** How the chart sorts and limits the categories on X. */
+export type ChartCategoryOrder = Pick<ChartDataSpec, 'limit' | 'sort'>
 
 export type ChartDataSpec = {
   encoding: ChartEncoding

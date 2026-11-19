@@ -537,6 +537,26 @@ Nicht jedes Field als große Card darstellen.
   („date ▾ | Month ▾“), weil zwei Selects nebeneinander im Panel keinen
   Platz haben. Undo über die Action `chart/updateTimeGrain`.
 
+### Sortierung und Top N am Encoding
+
+- Liegt eine Kategorie auf X (Text oder Boolean), folgen im
+  `EncodingsWidget` direkt unter dem Feld zwei Zeilen als einfache
+  Selects:
+  - Sort: Value ↓ · Value ↑ · A–Z · Z–A
+  - Show: All · Top 5 · Top 10 · Bottom 5 · Bottom 10
+- Ob die Zeilen erscheinen, kommt aus `getEffectiveCategoryOrder`,
+  derselben Funktion wie die Query; bei Datums- und Zahlen-X und beim
+  Scatter fehlen sie. Grain und Sort/Show schließen sich aus, unter X
+  steht höchstens eine der beiden Gruppen.
+- Top und Bottom wählen nach Wert aus, Sort ordnet nur die Anzeige
+  („Top 5 + A–Z“ = die 5 größten, alphabetisch).
+- Die Selects arbeiten mit Choices (`"value-desc"`, `"top-5"`), die
+  `charts/data/categoryOrderOptions.ts` in die Spec übersetzt. Ein
+  `count` außerhalb der Vorlagen erscheint als eigene Option („Top 7“),
+  damit ein späteres Eingabefeld die Spec nicht ändert.
+- Kein Details-Popover und kein Eingabefeld; das Build Panel wird später
+  als Ganzes umgebaut. Undo über die Action `chart/updateCategoryOrder`.
+
 ## 6. Format-Panel
 
 Einstellungen stehen im Format-Panel rechts der Arbeitsfläche, wie das

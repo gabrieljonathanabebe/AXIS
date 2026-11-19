@@ -42,7 +42,8 @@ Plätzen um den Chart-Canvas. Legende und Tooltip tragen eine eigene
 Fläche, die Farbskala ist aufgebaut wie eine Achse, und jeder Rand hat
 ein Auge. Datumsachsen gruppieren nach einem wählbaren Zeitraster und
 schreiben Daten per Vorlage; ein Klick auf einen Zeitraum wählt ihn
-ganz.
+ganz. Kategorien lassen sich nach Wert oder Name sortieren und auf Top
+oder Bottom N begrenzen.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -67,8 +68,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 10. Kästen als HTML (3.10a) und Farbskala wie eine Achse und Flächen
     für Kästen (3.10b) – implementiert
 11. Zeitraster und DateFormat – implementiert
-12. Sortierung und Top N
-13. Theme-Umschalter in der TopBar (provisorisch)
+12. Sortierung und Top N – implementiert
+13. Theme-Umschalter in der TopBar (provisorisch) – **nächster Slice**
 14. Table-Objekt
 15. Tooltip-Felder
 16. Dashboard-Einstellungen
@@ -80,27 +81,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.12 Sortierung und Top N (geplant)
-
-Die Spec kennt heute keine Sortierung; die Reihenfolge der Kategorien
-kommt aus der Query. Balken nach Wert absteigend oder „Top 10 Länder“
-sind in BI-Dashboards Alltag.
-
-- neue Felder in `ChartDataSpec`: Sortierung nach Wert oder Kategorie,
-  auf- oder absteigend, und eine Begrenzung (Top N); Standard je
-  Charttyp zu Beginn festlegen (z. B. Balken nach Wert absteigend)
-- Datums-X bleibt chronologisch; nach Wert sortiert nur eine
-  kategorische X
-- das Backend sortiert und begrenzt in der `chart-query` über den ganzen
-  Datensatz, nicht das Frontend
-- die Highlight-Query übernimmt die Kategorien der Basis-Query; ein
-  eigenes Top N unter der Selection würde andere Kategorien zeigen
-- Bedienung im Build Panel beim Encoding oder als Gruppe im Element
-  „Chart“; zu Beginn klären
-- „Other“ für die übrigen Kategorien bleibt eine Idee (Nach dem Alpha)
-- neue Felder, keine Formänderung
-
-### 3.13 Theme-Umschalter in der TopBar (geplant, provisorisch)
+### 3.13 Theme-Umschalter in der TopBar (geplant, provisorisch, nächster Slice)
 
 Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
 prüfen; wird später wieder entfernt oder durch eine echte Einstellung
@@ -571,6 +552,18 @@ Zeitraster und DateFormat
   Chart-Filter für Highlight-Query, Scatter und Cards
 - Modell: `FieldProfile` baut auf `Field` auf; `Field` ordnet ein,
   `statistics` beschreibt
+
+Sortierung und Top N
+
+- `ChartDataSpec.sort` (Wert oder Kategorie, auf- oder absteigend) und
+  `limit` (Top/Bottom N, `null` = alle); Standard Value ↓ wie zuvor
+- die `chart-query` begrenzt und sortiert über den ganzen Datensatz,
+  nur bei kategorischer X; Top N nach der Summe über alle Series
+- die Highlight-Query übernimmt die Kategorien der Basis-Query
+  (`categories`), statt ein eigenes Top N zu rechnen
+- Zeilen Sort und Show im Build Panel unter Category, undo-fähig
+- Booleans durchgängig als „true“/„false“: Selection auf
+  Boolean-Kategorien, Zellen der Table View und Farben im Scatter
 
 Ask Cevyn V1
 

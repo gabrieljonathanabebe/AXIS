@@ -1218,7 +1218,8 @@ Kennzahl hervor, der auf die ausgewählten Zeilen entfällt:
   Highlight-Serien liegen auf einer versteckten zweiten X-Achse mit
   denselben Kategorien darüber. Die Highlight-Linie verbindet Lücken.
 - Pie und Donut: Bei aktiver Selection werden nur die gefilterten Werte
-  gezeigt. Die Farben hängen am Kategorienamen der Basis-Query.
+  gezeigt, in der Reihenfolge der Basis-Query (siehe „Aggregated Chart
+  Query“). Die Farben hängen am Kategorienamen der Basis-Query.
 - Scatter: Punkte des Samples, die nicht zur Selection passen, werden im
   Frontend abgeblendet, ohne zusätzliche Query.
 - Card: Die `card-query` trägt die Selection als Filter; die Card zeigt
@@ -1523,6 +1524,7 @@ Aktuelle Actions:
   `object/remove`, `object/select`, `object/updateContainer`,
   `object/updateLayout` (adressiert über `objectId`);
 - Inhalt eines Charts: `chart/setType`, `chart/updateAggregation`,
+  `chart/updateCategoryOrder` (Sort und Show), `chart/updateTimeGrain`,
   `chart/updateEncoding`, `chart/updateAppearance`,
   `chart/updateMarkAppearance`, `chart/updateInteraction` (adressiert
   über `chartId`);
@@ -2048,7 +2050,12 @@ Backend-Resultset. Der Request enthält:
 values }`, Bereichsfiltern `{ kind: 'range', field, min, max }` und
   Datumsbereichen `{ kind: 'date_range', field, start, end }`; bei
   Bereichen darf eine Grenze `null` (offen) sein, aber nicht beide;
-- optional `time_grain` (`day`, `week`, `month`, `quarter`, `year`).
+- optional `time_grain` (`day`, `week`, `month`, `quarter`, `year`);
+- optional `sort` (`{ by: 'value' | 'category', order: 'asc' |
+'desc' }`) und `limit` (`{ kind: 'top' | 'bottom', count }`, `count`
+  ab 1);
+- optional `categories`, die X-Werte der Basis-Query für die
+  Highlight-Query (siehe unten).
 
 Mit `time_grain` kürzt die Query X vor dem Gruppieren auf den Beginn
 seines Zeitraums (`build_x_expression`, Polars `dt.truncate`, Wochen ab
@@ -2077,11 +2084,39 @@ Das Resultset enthält pro Gruppe:
 - `value`;
 - optional `color_value`.
 
-Reihenfolge der Gruppen: Ist X numerisch oder temporal, sortiert das
-Backend aufsteigend nach X; sonst absteigend nach der Summe von `value`
-je X über alle Series (größte Kategorie zuerst). `null` steht zuletzt,
-die Series-Reihenfolge innerhalb eines X bleibt stabil. Das Frontend
-übernimmt die Reihenfolge unverändert.
+X und Series kommen als Text; Booleans als `"true"` und `"false"`
+(`format_group_value`), dieselbe Schreibweise wie der Text-Cast der
+Wertefilter und `String(value)` im Frontend, damit eine Kategorie aus
+dem Resultset als Filterwert wieder passt.
+
+Reihenfolge und Begrenzung der Gruppen (`aggregate_chart_frame`):
+
+- Zahlen- und Datums-X: aufsteigend nach X; `sort`, `limit` und
+  `categories` sind dort nicht erlaubt (422).
+- Kategorische X (physischer Typ `string` oder `boolean`,
+  `is_category_type`): Zuerst begrenzt `limit` auf die Kategorien mit
+  der größten (`top`) bzw. kleinsten (`bottom`) Summe von `value` über
+  alle Series, danach ordnet `sort` die Anzeige. Top und Bottom wählen
+  also immer nach Wert aus, auch bei Sort A–Z; ohne `sort` gilt
+  Value ↓. Namen vergleichen ohne Groß- und Kleinschreibung, `false`
+  vor `true`; die Gruppe ohne Kategorie steht bei Sort nach Namen
+  zuletzt, bei Sort nach Wert zählt sie wie jede andere.
+- Bei Gleichstand bleibt die Reihenfolge des ersten Vorkommens; die
+  Gruppen einer Kategorie bleiben zusammen, die Series-Reihenfolge
+  innerhalb eines X stabil.
+- Mit `categories` behält die Query genau diese Kategorien in genau
+  dieser Reihenfolge; Kategorien ohne Gruppe entfallen. `categories`
+  und `limit` schließen sich aus (422).
+
+`MAX_CHART_POINTS` gilt nach der Begrenzung; ein Top 10 aus mehr als
+2.000 Kategorien ist also möglich. Das Frontend übernimmt die
+Reihenfolge unverändert.
+
+Das Frontend schickt `sort` und `limit` nur bei kategorischer X:
+`getEffectiveCategoryOrder(data, fields)` liefert `{ sort, limit }`
+aus der Spec oder `null` (Datums- und Zahlen-X, Scatter). Dieselbe
+Funktion entscheidet, ob das Build Panel die Zeilen Sort und Show
+zeigt.
 
 `color_value` ist ein zusätzlich aggregiertes Ergebnisfeld und verändert
 weder die Gruppierung noch `value`. Color darf dasselbe Feld wie Y mit einer
@@ -2093,6 +2128,21 @@ Der Request wird in der Chart-Domäne aus der `ChartInstance` abgeleitet
 aktiver Selection leitet `createHighlightQuery` daraus eine zweite
 Query ab, die die Selection als Filter trägt. Die Basis-Query bleibt
 dabei unverändert und wird nicht erneut geladen.
+
+Bei kategorischer X rechnet die Highlight-Query kein eigenes Top N:
+Ein Top 5 unter der Selection wäre ein anderes Top 5. Sie übernimmt
+stattdessen die Kategorien aus dem Ergebnis der Basis-Query
+(`categories`, ohne Duplikate durch Series) und setzt `sort` und
+`limit` auf `null`. Sie wartet dafür auf das Basis-Ergebnis;
+`useChartQuery` behält kein altes Ergebnis, die Kategorien sind also
+nie veraltet. Bei Datums- und Zahlen-X läuft sie wie bisher parallel
+zur Basis-Query.
+
+```text
+Basis-Query (sort, limit) → Ergebnis → X-Werte
+→ createHighlightQuery (categories, Selection als Filter)
+→ dieselben Kategorien in derselben Reihenfolge, gefilterte Werte
+```
 
 ### Card Query
 

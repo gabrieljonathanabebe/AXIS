@@ -1,5 +1,5 @@
 import type { DataField } from '../datasets/types'
-import type { ChartDataSpec } from './types'
+import type { ChartCategoryOrder, ChartDataSpec } from './types'
 
 /**
  * Whether a field holds categories; decided by the physical type, like the
@@ -21,7 +21,7 @@ export function isCategoryField(field: DataField): boolean {
 export function getEffectiveCategoryOrder(
   data: ChartDataSpec,
   fields: DataField[],
-): Pick<ChartDataSpec, 'limit' | 'sort'> | null {
+): ChartCategoryOrder | null {
   if (data.aggregation === 'none') {
     return null
   }

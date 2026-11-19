@@ -200,6 +200,7 @@ export function workspaceReducer(
         return setChartType(chart, action.chartType, action.defaultSpec)
       })
     case 'chart/updateAggregation':
+    case 'chart/updateCategoryOrder':
       return updateChart(state, action.chartId, (chart) => ({
         ...chart,
         spec: {
