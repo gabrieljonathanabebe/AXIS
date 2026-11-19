@@ -624,24 +624,25 @@ um.
 
 ### Prinzipien
 
-| Nr. | Regel                                                                                                                                                                                                 | Prüfung                                                          |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| S1  | **Domäne zuerst:** Oben stehen Fachbereiche (`charts/`, `cards/`, `objects/`, `workspace/`, `datasets/`, `queries/`, `ai/`), keine Dateiarten.                                                        | Prüffrage im Review                                              |
-| S2  | **Besitz bestimmt den Ort:** Was nur ein Teil nutzt, liegt bei ihm; nutzt es ein zweiter, wandert es zum nächsten gemeinsamen Ordner. Höchstens drei Ebenen unter der Domäne.                         | Prüffrage im Review                                              |
-| S3  | **`shared` kennt keine Domäne** und enthält nur, was mindestens zwei Domänen nutzen.                                                                                                                  | ESLint-Grenzen, `import-linter`                                  |
-| S4  | **Abhängigkeiten in eine Richtung:** Domänen nutzen `shared`, nie umgekehrt; eine Domäne greift nicht in die Interna einer anderen; keine Ringabhängigkeiten.                                         | ESLint-Grenzen, `import-linter`, `madge --circular`              |
-| S5  | **Was sich zusammen ändert, liegt zusammen.** Frontend: Komponente, CSS und Test nebeneinander; `styles/` hält nur Tokens, Themes und Basis. Backend: `tests/` spiegelt die Struktur von `app/`.      | Prüffrage im Review                                              |
-| C1  | **Eine Quelle je Wissen:** Jede Regel, jeder Standard, jede Tatsache steht an genau einer Stelle (Typ, Konstante, Registry); andere lesen sie.                                                        | `jscpd`, Prüffrage im Review                                     |
-| C2  | **Ein Begriff pro Sache:** Dasselbe heißt überall gleich, in Frontend und Backend, in Typen, Funktionen und Texten (Glossar unten).                                                                   | Glossar, Prüffrage im Review                                     |
-| C3  | **Explizit statt implizit:** Eine Bedeutung wird ausdrücklich übergeben, nicht aus einer Nebenwirkung erschlossen.                                                                                    | Prüffrage: Stimmt das noch, wenn jemand anderes das Objekt baut? |
-| C4  | **Logik in Funktionen, Oberflächen dünn:** Komponenten und Router verdrahten; Berechnungen stecken in reinen Funktionen, die ohne UI und Server testbar sind.                                         | Tests (Vitest, pytest)                                           |
-| C5  | **Die Rolle steht im Namen** (Namensgrammatik unten).                                                                                                                                                 | Prüffrage im Review                                              |
-| C6  | **Bestehendes erweitern statt Sonderfall bauen** (`AGENTS.md`, „Reuse before creation“).                                                                                                              | Prüffrage im Review                                              |
-| C7  | **Zusammenführen nur bei gleichem Wissen:** Zwei Stellen, die gleich aussehen, aber aus verschiedenen Gründen geändert werden, bleiben getrennt; zusammengeführt wird ab dem zweiten echten Gebrauch. | Prüffrage im Review                                              |
-| C8  | **Defaults so früh wie möglich:** Ein Prop, der an jeder Aufrufstelle gleich wäre, setzt die Komponente selbst; Aufrufe übergeben nur, was sich unterscheidet.                                        | Prüffrage im Review                                              |
-| M1  | **Einordnen vs. beschreiben:** Was Verhalten steuert, gehört an die Entität (z. B. `Field` mit Typ, Rolle, `native_grain`); was nur angezeigt wird, in ein eigenes Unterobjekt (`statistics`).        | Prüffrage im Review                                              |
-| M2  | **Spec-Regeln für alles, was gespeichert wird:** Unterobjekte für Zusammengehöriges, `kind`-Unions, `null` heißt abgeleitet, `visible` statt Breite 0, gemeinsame Bausteine statt Kopien.             | Prüffrage im Review, Prüfung der Spec vor der Persistenz         |
-| P1  | **Jede Regel hat eine Prüfung;** was sich automatisch prüfen lässt, prüft die CI.                                                                                                                     | CI                                                               |
+| Nr. | Regel                                                                                                                                                                                                                                                                    | Prüfung                                                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| S1  | **Domäne zuerst:** Oben stehen Fachbereiche (`charts/`, `cards/`, `objects/`, `workspace/`, `datasets/`, `queries/`, `ai/`), keine Dateiarten.                                                                                                                           | Prüffrage im Review                                              |
+| S2  | **Besitz bestimmt den Ort:** Was nur ein Teil nutzt, liegt bei ihm; nutzt es ein zweiter, wandert es zum nächsten gemeinsamen Ordner. Höchstens drei Ebenen unter der Domäne.                                                                                            | Prüffrage im Review                                              |
+| S3  | **`shared` kennt keine Domäne** und enthält nur, was mindestens zwei Domänen nutzen.                                                                                                                                                                                     | ESLint-Grenzen, `import-linter`                                  |
+| S4  | **Abhängigkeiten in eine Richtung:** Domänen nutzen `shared`, nie umgekehrt; eine Domäne greift nicht in die Interna einer anderen; keine Ringabhängigkeiten.                                                                                                            | ESLint-Grenzen, `import-linter`, `madge --circular`              |
+| S5  | **Was sich zusammen ändert, liegt zusammen.** Frontend: Komponente, CSS und Test nebeneinander; `styles/` hält nur Tokens, Themes und Basis. Backend: `tests/` spiegelt die Struktur von `app/`.                                                                         | Prüffrage im Review                                              |
+| S6  | **Objektarten unterscheidet nur ihr Bauplan:** Was je Objektart verschieden ist (Anlegen, Inhalt, Format-Panel, Abfrage, Titel, Style), steht in ihrem Eintrag in `objectDefinitions`; anderer Code fragt nicht nach `kind`.                                             | Suche nach `kind ===` außerhalb von `objects/`                   |
+| C1  | **Eine Quelle je Wissen:** Jede Regel, jeder Standard, jede Tatsache steht an genau einer Stelle (Typ, Konstante, Registry); andere lesen sie.                                                                                                                           | `jscpd`, Prüffrage im Review                                     |
+| C2  | **Ein Begriff pro Sache:** Dasselbe heißt überall gleich, in Frontend und Backend, in Typen, Funktionen und Texten (Glossar unten).                                                                                                                                      | Glossar, Prüffrage im Review                                     |
+| C3  | **Explizit statt implizit:** Eine Bedeutung wird ausdrücklich übergeben, nicht aus einer Nebenwirkung erschlossen.                                                                                                                                                       | Prüffrage: Stimmt das noch, wenn jemand anderes das Objekt baut? |
+| C4  | **Logik in Funktionen, Oberflächen dünn:** Komponenten und Router verdrahten; Berechnungen stecken in reinen Funktionen, die ohne UI und Server testbar sind.                                                                                                            | Tests (Vitest, pytest)                                           |
+| C5  | **Die Rolle steht im Namen** (Namensgrammatik unten).                                                                                                                                                                                                                    | Prüffrage im Review                                              |
+| C6  | **Bestehendes erweitern statt Sonderfall bauen** (`AGENTS.md`, „Reuse before creation“).                                                                                                                                                                                 | Prüffrage im Review                                              |
+| C7  | **Zusammenführen nur bei gleichem Wissen:** Zwei Stellen, die gleich aussehen, aber aus verschiedenen Gründen geändert werden, bleiben getrennt; zusammengeführt wird ab dem zweiten echten Gebrauch.                                                                    | Prüffrage im Review                                              |
+| C8  | **Defaults so früh wie möglich:** Ein Prop, der an jeder Aufrufstelle gleich wäre, setzt die Komponente selbst; Aufrufe übergeben nur, was sich unterscheidet.                                                                                                           | Prüffrage im Review                                              |
+| M1  | **Einordnen vs. beschreiben:** Was Verhalten steuert, gehört an die Entität (z. B. `Field` mit Typ, Rolle, `native_grain`); was nur angezeigt wird, in ein eigenes Unterobjekt (`statistics`).                                                                           | Prüffrage im Review                                              |
+| M2  | **Spec-Regeln für alles, was gespeichert wird:** Unterobjekte für Zusammengehöriges, `kind`-Unions, `null` heißt abgeleitet (wo nichts abzuleiten ist, heißt es „nicht gesetzt“, nie beides an einem Feld), `visible` statt Breite 0, gemeinsame Bausteine statt Kopien. | Prüffrage im Review, Prüfung der Spec vor der Persistenz         |
+| P1  | **Jede Regel hat eine Prüfung;** was sich automatisch prüfen lässt, prüft die CI.                                                                                                                                                                                        | CI                                                               |
 
 ### Namensgrammatik im Frontend
 
@@ -679,13 +680,15 @@ setzen ihre festen Props selbst (C8).
   über React-Context und zeigt statt des Titels in Großbuchstaben eine
   kleine Überschrift; Auge, ＋ und Icon-Spalte bleiben gleich. So
   rendern Container (oberste Ebene) und Tooltip (Untergruppen)
-  dieselben `SurfaceGroups`. Höchstens zwei Ebenen.
+  dieselben `SurfaceGroups`. Höchstens zwei Ebenen. Ein `Editor`
+  beginnt wieder auf oberster Ebene, weil der Context auch durch das
+  Portal eines Popovers reicht.
 - **In einer `Row` steht immer ein `Control`;** ein `Input` ist der
   Teil, in den man tippt. Es steht in einem `Control` oder frei
   außerhalb der Panels, z. B. in der Suche oder der Ask-Leiste.
 - **`Field` meint nur Datenfelder:** Ein Name mit `Field` bzw. `field`
   zeigt im Frontend ein Datenfeld (`FieldList`, `.field-chip`), nie ein
-  Control; der Rahmen eines Controls ist `.control`.
+  Control; der Rahmen eines Controls ist `.control-frame`.
 - **Grundbausteine** ohne Endungsregel: `Button`, `IconButton`,
   `Popover`, `ScrubbableNumber`.
 - **Funktionen:** `use…` (Hook), `create…` bzw. `build…` (erzeugt
@@ -714,14 +717,15 @@ dasselbe auffallen (C2).
 
 ### Werkzeuge
 
-| Werkzeug           | Prüft                   | Seite    |
-| ------------------ | ----------------------- | -------- |
-| ESLint-Grenzen     | S3, S4                  | Frontend |
-| `import-linter`    | S3, S4                  | Backend  |
-| `madge --circular` | Ringabhängigkeiten (S4) | Frontend |
-| `knip`             | Ungenutztes (C1)        | Frontend |
-| `jscpd`            | Kopien (C1, C7)         | beide    |
-| Vitest, pytest     | Logik (C4)              | beide    |
+| Werkzeug             | Prüft                                                 | Seite    |
+| -------------------- | ----------------------------------------------------- | -------- |
+| ESLint-Grenzen       | S3, S4                                                | Frontend |
+| `import-linter`      | S3, S4                                                | Backend  |
+| `madge --circular`   | Ringabhängigkeiten (S4)                               | Frontend |
+| `knip`               | Ungenutztes (C1)                                      | Frontend |
+| `jscpd`              | Kopien (C1, C7)                                       | beide    |
+| `openapi-typescript` | API-Typen aus dem Backend erzeugt statt von Hand (C1) | beide    |
+| Vitest, pytest       | Logik (C4)                                            | beide    |
 
 Eingerichtet werden sie im Refactoring-Slice, in der CI laufen sie ab
 „Alpha-Infrastruktur und Vollbild“.
