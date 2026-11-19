@@ -71,28 +71,94 @@ Slices; Abhängigkeiten stehen beim Punkt):
 11. Zeitraster und DateFormat – implementiert
 12. Sortierung und Top N – implementiert
 13. Theme-Umschalter in der TopBar (provisorisch) – implementiert
-14. Table-Objekt
-15. Tooltip-Felder
-16. Dashboard-Einstellungen
-17. Ask Cevyn ausbauen
-18. Unabhängigkeit vom App-Namen
-19. Persistenz
-20. Alpha-Infrastruktur und Vollbild
+14. Refactoring: Struktur und Modelle vor der Persistenz – **nächster
+    Slice**
+15. Table-Objekt
+16. Tooltip-Felder
+17. Dashboard-Einstellungen
+18. Build Panel neu ordnen und Ebenen-Baum
+19. Ask Cevyn ausbauen
+20. Unabhängigkeit vom App-Namen
+21. Persistenz
+22. Alpha-Infrastruktur und Vollbild
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.14 Table-Objekt (geplant)
+### 3.14 Refactoring: Struktur und Modelle vor der Persistenz (geplant, nächster Slice)
+
+Die Struktur ist seit dem letzten Refactoring wieder auseinandergelaufen,
+`shared/ui` liegt flach, CSS liegt zentral statt bei den Komponenten, und
+einiges ist doppelt. Vor der Persistenz (3.21) ist außerdem die letzte
+günstige Gelegenheit, die Modelle zu vereinfachen. Ziel sind die Regeln
+in `DEVELOPMENT.md`, Abschnitt 21 „Struktur- und Code-Regeln“
+(Prinzipien, Namensgrammatik mit Basiskomponenten, Glossar, Werkzeuge).
+
+Regeln für den Slice:
+
+- ohne Verhaltensänderung: Die App sieht danach exakt aus wie vorher und
+  verhält sich so; Build, Lint, Tests und Smoke-Test belegen das
+- Verschieben (`git mv`) und Ändern nie im selben Commit
+- keine Feature-Arbeit parallel, auch keine PRs am Frontend von außen;
+  das Refactoring berührt sehr viele Dateien
+- in Teilen, je mit Checkpoint
+
+Vorgehen:
+
+1. Inventur: Scan gegen die Regeln aus Abschnitt 21 (nur lesen, Bericht
+   mit Fund, Dateien, Vorschlag, Aufwand, Risiko); danach entscheidet
+   der Nutzer, was gemacht wird
+2. Sicherheitsnetz: Playwright-Smoke-Skript (`npm run smoke`: Demo-Daten,
+   jeder Charttyp, Legende, Styles, Screenshots), Vitest für riskante
+   reine Logik
+3. Werkzeuge: Pfad-Alias `@/`, ESLint-Grenzen, `import-linter`,
+   `madge`, `knip`, `jscpd` als Skripte
+4. Basiskomponenten `Panel`, `Group` (Untergruppe per Context), `Row`,
+   `Field`, `Editor`, `Tile`; Umbenennungen nach der Namensgrammatik
+   (`FormatWidget` → `Group`, `…Widget` → `…Group` bzw. `…Groups`,
+   `…Controls` → `…Rows` bzw. `…Groups`, `…Control` → `…Field`,
+   `Widget` → `Tile`); `PaintControl` teilt sich in `PaintField` und
+   `PaintEditor`
+5. Verschieben: Domänen nach S1 bis S5, `shared/ui` nach Aufgabe
+   gruppiert (z. B. Felder, Farbe, Layout, Panels, Rückmeldung), CSS neben
+   die Komponenten (#12); rein mechanisch
+6. Zusammenführen:
+   - gemeinsames Query-Vokabular in `queries/` (Aggregation, Filter,
+     `SortDirection` statt `direction` und `order`), statt Imports von
+     `cards/` aus `charts/`
+   - eine leere Kategorie und ein Schlüssel für Werte beim Vergleichen
+     (Selection, Filter, Gruppen im Backend), getrennt von der Anzeige
+     über `NumberFormat` und `DateFormat`; behebt #32
+   - `chart/updateData` statt `chart/updateAggregation`,
+     `chart/updateCategoryOrder` und `chart/updateTimeGrain`, wie
+     `card/updateData`
+   - ein ausdrückliches Signal für eine kategorische X in der
+     Highlight-Query statt `sort !== null`
+   - `Group` nach der Regel „eine Komponente rendert nur ihre Ebene“
+     (heute baut `ChartFormatPanel` eine Gruppe inline, `CardFormatPanel`
+     über `renderFormatWidget`)
+   - die Objekte des Dashboards an einer Stelle durchlaufen statt an
+     vielen, als Vorbereitung für Layout-Container (nach dem Alpha)
+   - CSS-Trennung von Frame und Content (`chart-item*` am `ObjectFrame`,
+     `encoding-drop-slot*`), vorher als Vorbereitung des Table-Objekts
+     geplant
+7. Modelle:
+   - Backend: Zählwerte (`missing_count`, `unique_count`) in `statistics`,
+     `statistics` nie `null`; das Profil baut auf der Summary auf,
+     `row_count` und die Id gibt es nur einmal
+   - alle Typen, die gespeichert werden (`DashboardSpec`, Chart-, Card-
+     und Objekt-Appearance), gegen M2 prüfen und angleichen
+8. Doku: `ARCHITECTURE.md` (Struktur, Modelle), `DESIGN_SYSTEM.md`
+   (Basiskomponenten, Untergruppen), `DEVELOPMENT.md` (Stand der
+   Werkzeuge), fehlende JSDoc nachziehen
+
+### 3.15 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
 
-- Vorbereitung, weil der dritte Objekttyp sie sichtbar macht:
-  - Abhängigkeitsregel: gemeinsames Query-Vokabular (Aggregation,
-    Filter) in `queries/` statt Imports von `cards/` aus `charts/`
-    (siehe `ARCHITECTURE.md`)
-  - CSS-Trennung von Frame und Content (`chart-item*` am
-    `ObjectFrame`, `encoding-drop-slot*`)
+- die Vorbereitung (gemeinsames Query-Vokabular in `queries/`,
+  CSS-Trennung von Frame und Content) erledigt das Refactoring (3.14)
 - `TableInstance` in `DashboardObject`, Registry-Eintrag in
   `objectDefinitions`, Picker-Gruppe „Cards & Table“
 - Format über die Bausteine: Kopfzeile (`TextStyle`, `Fill`), Zellen
@@ -102,7 +168,7 @@ Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 - zu klären: welche Spalten die Table zeigt (alle, Auswahl per Drop),
   und ob sie wie die Card der Selection folgt
 
-### 3.15 Tooltip-Felder (geplant)
+### 3.16 Tooltip-Felder (geplant)
 
 Direkt nach dem Table-Objekt:
 
@@ -119,7 +185,7 @@ Direkt nach dem Table-Objekt:
 - dieselbe Feldwahl bestimmt auch den Inhalt der Datenlabels (heute fest
   Wert bzw. Anteil), z. B. Kategorie oder ein weiteres Feld
 
-### 3.16 Dashboard-Einstellungen (geplant)
+### 3.17 Dashboard-Einstellungen (geplant)
 
 Im Format-Panel ohne Auswahl (aus 3.9), undo-fähig; als Unterobjekte
 der `DashboardSpec` (wie `animation`), weil sich ihre Form vor der
@@ -158,12 +224,37 @@ Persistenz festlegen soll:
   Objekte filtert
 - später: Palette und Schrift als Teil der Dashboard-Styles (3.8)
 
-### 3.17 Ask Cevyn ausbauen (geplant)
+### 3.18 Build Panel neu ordnen und Ebenen-Baum (geplant)
+
+Das Build Panel mischt heute drei Aufgaben in einer langen Spalte:
+Hinzufügen (Charttypen, Card), Daten (Dataset, Felder) und den
+ausgewählten Chart (Chart data, ganz unten). Vor „Ask Cevyn ausbauen“
+(3.19), weil der Chat dort als Tab ins linke Panel kommt.
+
+- nach Aufgabe ordnen, wie in Power BI und Looker Studio:
+  - Hinzufügen in die Toolbar der Arbeitsfläche: „＋ Einfügen“ als
+    Popover mit Charttypen, Card, Table, später Text, mit Suche
+  - links die Daten: Dataset als Auswahl oben, Felder als schlanke
+    Zeilen mit Typ-Icon statt umrandeter Pillen; Ziehen bleibt
+  - „Chart data“ ins rechte Panel als Tab „Daten“ neben „Format“: die
+    Encodings als Felder, in die man ziehen kann, dazu Grain, Sort und
+    Show; das Limit von Top N als Eingabe statt nur als Vorlagen
+- Ebenen-Baum als Tab im linken Panel, eine reine Ansicht über das
+  bestehende Modell:
+  - Dashboard › Objekte › ihre Teile (z. B. Chart › Title, Marks, X
+    Axis, Y Axis, Legend)
+  - Charts verhalten sich wie Komponenten in Figma: Teile sichtbar und
+    formatierbar, die Struktur fest
+  - Klick wählt aus wie ein Klick auf die Region, das Auge blendet aus,
+    Doppelklick benennt um
+- linkes Panel mit Tabs: Daten, Ebenen, ab 3.19 Ask
+
+### 3.19 Ask Cevyn ausbauen (geplant)
 
 Ziel: Ask Cevyn erstellt eigenständig ganze Dashboards und formatiert
 sie. Die Architektur bleibt: Claude erzeugt nur Cevyn Actions, das
 Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
-3.14 und 3.16, weil die KI nur kann, was es als Action gibt.
+3.15 und 3.17, weil die KI nur kann, was es als Action gibt.
 
 - Action-Schema nur noch einmal beschreiben (#30): Frontend-Types bzw.
   Strukturprüfung per Codegen aus dem OpenAPI-Schema des Backends
@@ -185,13 +276,14 @@ Frontend prüft sie und wendet sie als ein Undo-Schritt an. Hängt an
 - Chat mit Verlauf: das Frontend schickt den Verlauf mit, das Backend
   bleibt zustandslos; Fehler des Validators gehen an Claude zurück, das
   sich korrigiert; der Verlauf wird nur angehängt, nie umgeschrieben
-- Chatfenster im Build Panel (z. B. per `SegmentedControl` neben den
-  bisherigen Inhalten); genaue Form zu Beginn des Slices klären
+- Chatfenster als Tab „Ask“ im linken Panel (aus 3.18); die Leiste
+  unten auf der Arbeitsfläche bleibt die schnelle Eingabe und öffnet
+  den Tab
 - kleines Testset typischer Anfragen mit einfachen Prüfungen, um
   Verschlechterungen bei Prompt-Änderungen zu erkennen; Effort je nach
   Anfrage (ganzes Dashboard höher, kleine Änderungen niedriger)
 
-### 3.18 Unabhängigkeit vom App-Namen (geplant)
+### 3.20 Unabhängigkeit vom App-Namen (geplant)
 
 Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 
@@ -204,7 +296,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
 - Doku, `AGENTS.md` und `README.md` anpassen
 - der neue Name selbst ist noch offen
 
-### 3.19 Persistenz (geplant)
+### 3.21 Persistenz (geplant)
 
 - `serializeProject()` / `deserializeProject()` über den Workspace State
 - `.cevyn`-Datei (JSON mit Format-Kennung und Version) speichern und
@@ -218,7 +310,7 @@ Vor der Persistenz, weil der Name in Dateiendung und Dateiformat eingeht:
   den Project State (#29), Scroll- und Fokusverhalten beim Laden (#27,
   #28)
 
-### 3.20 Alpha-Infrastruktur und Vollbild (geplant)
+### 3.22 Alpha-Infrastruktur und Vollbild (geplant)
 
 - Docker-Images für Frontend und Backend
 - CI mit GitHub Actions: `npm run format`, `npm run build`,
@@ -292,11 +384,20 @@ dashboard-weiter Filterbereich, Cross Filtering als Modus.
 
 ### Canvas und Dashboard-Objekte
 
+- Layout-Container wie Auto Layout in Figma, Container in Power Apps und
+  Tableau: ein Container-Objekt im Grid, das seine Kinder horizontal
+  oder vertikal anordnet (Gap, Padding, Ausrichtung, füllen oder an den
+  Inhalt anpassen); für KPI-Leisten, Filterleisten, später Slicer neben
+  einem Chart; der Ebenen-Baum aus 3.18 zeigt die Verschachtelung; das
+  Grid bleibt, später kann die Seite selbst zum Container werden;
+  vorbereitet im Refactoring (3.14: Objekte an einer Stelle durchlaufen)
+  und in der Persistenz (3.21: Version und Migration von der flachen
+  Liste zum Baum)
 - Text-, Bild- und Vergleichs-Objekte; Textfelder als frei verschiebbare
   Kästen mit eigener Größe (Kasten-Modell, `ARCHITECTURE.md`)
 - Kollisionsauflösung, Smart Guides, Gruppen, Mehrfachauswahl,
   Layers Panel, Z-Order
-- Zoom (braucht `pageSize`, siehe 3.16)
+- Zoom (braucht `pageSize`, siehe 3.17)
 
 ### Daten
 

@@ -1791,7 +1791,8 @@ Card
 - kein Feld für die Einheit (sie kommt aus dem Raster) und keine
   Uhrzeit (Tag ist das feinste Raster)
 - genutzt von der X-Achse im `AxisWidget` (`dateAxis` mit Raster und
-  Datumsfeld); die Table (3.14) kann ihn für Datumszellen übernehmen
+  Datumsfeld); die Table (`ROADMAP.md`, „Table-Objekt“) kann ihn für Datumszellen
+  übernehmen
 
 ## 9n. FillListControls
 
