@@ -187,6 +187,9 @@ Vor einer neuen CSS-Klasse prüfen:
 
 Keine Copy-Paste-Duplikate für minimale Varianten erzeugen.
 
+CSS liegt neben seiner Komponente; `styles/` hält nur Tokens, Themes und
+Basis (Abschnitt 21, S5).
+
 ## 12. Icons
 
 Primäres Icon-System:
@@ -607,3 +610,110 @@ Umgang:
 - ein Commit oder PR mit `Fixes #<nr>` schließt das Issue beim Merge
 - zum Ende eines Slices `is:open milestone:Alpha label:prio:high` und
   `is:open label:bug` durchsehen
+
+## 21. Struktur- und Code-Regeln
+
+Allgemeine Regeln für das ganze Repository. Wo Frontend und Backend
+technisch verschieden sind, steht eine kurze Übersetzung je Seite. Jede
+Regel hat eine Prüfung, per Werkzeug oder per Prüffrage; Regeln, die nur
+in der Doku stehen, driften wieder auseinander.
+
+Neuer Code folgt diesen Regeln ab sofort. Den Bestand stellt der Slice
+„Refactoring: Struktur und Modelle vor der Persistenz“ (`ROADMAP.md`)
+um.
+
+### Prinzipien
+
+| Nr. | Regel                                                                                                                                                                                                 | Prüfung                                                          |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| S1  | **Domäne zuerst:** Oben stehen Fachbereiche (`charts/`, `cards/`, `objects/`, `workspace/`, `datasets/`, `queries/`, `ai/`), keine Dateiarten.                                                        | Prüffrage im Review                                              |
+| S2  | **Besitz bestimmt den Ort:** Was nur ein Teil nutzt, liegt bei ihm; nutzt es ein zweiter, wandert es zum nächsten gemeinsamen Ordner. Höchstens drei Ebenen unter der Domäne.                         | Prüffrage im Review                                              |
+| S3  | **`shared` kennt keine Domäne** und enthält nur, was mindestens zwei Domänen nutzen.                                                                                                                  | ESLint-Grenzen, `import-linter`                                  |
+| S4  | **Abhängigkeiten in eine Richtung:** Domänen nutzen `shared`, nie umgekehrt; eine Domäne greift nicht in die Interna einer anderen; keine Ringabhängigkeiten.                                         | ESLint-Grenzen, `import-linter`, `madge --circular`              |
+| S5  | **Was sich zusammen ändert, liegt zusammen.** Frontend: Komponente, CSS und Test nebeneinander; `styles/` hält nur Tokens, Themes und Basis. Backend: `tests/` spiegelt die Struktur von `app/`.      | Prüffrage im Review                                              |
+| C1  | **Eine Quelle je Wissen:** Jede Regel, jeder Standard, jede Tatsache steht an genau einer Stelle (Typ, Konstante, Registry); andere lesen sie.                                                        | `jscpd`, Prüffrage im Review                                     |
+| C2  | **Ein Begriff pro Sache:** Dasselbe heißt überall gleich, in Frontend und Backend, in Typen, Funktionen und Texten (Glossar unten).                                                                   | Glossar, Prüffrage im Review                                     |
+| C3  | **Explizit statt implizit:** Eine Bedeutung wird ausdrücklich übergeben, nicht aus einer Nebenwirkung erschlossen.                                                                                    | Prüffrage: Stimmt das noch, wenn jemand anderes das Objekt baut? |
+| C4  | **Logik in Funktionen, Oberflächen dünn:** Komponenten und Router verdrahten; Berechnungen stecken in reinen Funktionen, die ohne UI und Server testbar sind.                                         | Tests (Vitest, pytest)                                           |
+| C5  | **Die Rolle steht im Namen** (Namensgrammatik unten).                                                                                                                                                 | Prüffrage im Review                                              |
+| C6  | **Bestehendes erweitern statt Sonderfall bauen** (`AGENTS.md`, „Reuse before creation“).                                                                                                              | Prüffrage im Review                                              |
+| C7  | **Zusammenführen nur bei gleichem Wissen:** Zwei Stellen, die gleich aussehen, aber aus verschiedenen Gründen geändert werden, bleiben getrennt; zusammengeführt wird ab dem zweiten echten Gebrauch. | Prüffrage im Review                                              |
+| C8  | **Defaults so früh wie möglich:** Ein Prop, der an jeder Aufrufstelle gleich wäre, setzt die Komponente selbst; Aufrufe übergeben nur, was sich unterscheidet.                                        | Prüffrage im Review                                              |
+| M1  | **Einordnen vs. beschreiben:** Was Verhalten steuert, gehört an die Entität (z. B. `Field` mit Typ, Rolle, `native_grain`); was nur angezeigt wird, in ein eigenes Unterobjekt (`statistics`).        | Prüffrage im Review                                              |
+| M2  | **Spec-Regeln für alles, was gespeichert wird:** Unterobjekte für Zusammengehöriges, `kind`-Unions, `null` heißt abgeleitet, `visible` statt Breite 0, gemeinsame Bausteine statt Kopien.             | Prüffrage im Review, Prüfung der Spec vor der Persistenz         |
+| P1  | **Jede Regel hat eine Prüfung;** was sich automatisch prüfen lässt, prüft die CI.                                                                                                                     | CI                                                               |
+
+### Namensgrammatik im Frontend
+
+Die Endung sagt, auf welcher Ebene eine Komponente steht; jede Ebene
+enthält nur die Ebene direkt darunter:
+
+```text
+Panel → Groups → Group → Rows → Row → Field
+```
+
+Für jede Endung gibt es eine Basiskomponente als einzige Quelle für das,
+was diese Ebene ausmacht. Konkrete Komponenten bauen darauf auf und
+setzen ihre festen Props selbst (C8).
+
+| Endung    | Basis    | Was die Basis festlegt                                                                                  | Beispiele                                 |
+| --------- | -------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `…Panel`  | `Panel`  | Rand, Kopf, Einklappen                                                                                  | `FormatPanel`, `BuildPanel`               |
+| `…Groups` | –        | kein eigenes Markup: welche Gruppen ein Element oder Baustein hat und in welcher Reihenfolge            | `LegendGroups`, `SurfaceGroups`           |
+| `…Group`  | `Group`  | Titel, Auge, ＋, Icon in der Icon-Spalte, ausgeblendet nur die Überschrift, Ziel für Fokus und Scrollen | `ZoomGroup`, `BorderGroup`                |
+| `…Rows`   | –        | kein eigenes Markup: welche Zeilen ein Baustein hat                                                     | `TextStyleRows`, `NumberFormatRows`       |
+| `…Row`    | `Row`    | Raster `1fr 1fr 24px`, Zeilentypen (Paar, Einzeln, Breit), Icon-Spalte                                  | `BoxFieldsRow`                            |
+| `…Field`  | `Field`  | bearbeitet einen Wert: Höhe, Icon links, Einheit rechts, Rahmen erst bei Hover und Fokus, `aria-label`  | `PaintField`, `ColorField`, `NumberField` |
+| `…Editor` | `Editor` | Inhalt eines Popovers: Kopf, Abstand, Schließen                                                         | `PaintEditor`                             |
+| `…Tile`   | `Tile`   | Kachel                                                                                                  | `StatTile`, `FieldProfileTile`            |
+
+- **Eine Komponente rendert nur ihre eigene Ebene:** Ein `…Group`
+  rendert seine `Group` selbst; ein Aufrufer legt nie eine `Group` um
+  eine Komponente herum, und ein `…Rows` rendert nie eine.
+- **Plural nur, wenn er entscheidet:** `…Groups` und `…Rows` gibt es
+  nur, wenn sie Auswahl oder Reihenfolge festlegen. Nur zu wiederholen
+  ist kein Grund für eine eigene Komponente; dann `Group` bzw. `Row`
+  mehrfach rendern.
+- **Eine `Group` in einer `Group` wird Untergruppe:** Sie erkennt das
+  über React-Context und zeigt statt des Titels in Großbuchstaben eine
+  kleine Überschrift; Auge, ＋ und Icon-Spalte bleiben gleich. So
+  rendern Container (oberste Ebene) und Tooltip (Untergruppen)
+  dieselben `SurfaceGroups`. Höchstens zwei Ebenen.
+- **Grundbausteine** ohne Endungsregel: `Button`, `IconButton`,
+  `SegmentedControl`, `Popover`, `ScrubbableNumber`.
+- **Funktionen:** `use…` (Hook), `create…` bzw. `build…` (erzeugt
+  Neues), `get…` (leitet ab), `is…` bzw. `has…` (Ja/Nein), `format…`
+  (Text für Menschen), `parse…` (liest Eingaben), `…Definition` bzw.
+  Registry (Konfiguration je Typ); im Backend dieselben Rollen in
+  `snake_case` (`build_…`, `get_…`, `validate_…`).
+
+### Glossar
+
+Erste Einträge; neue Begriffe kommen hinzu, sobald zwei Namen für
+dasselbe auffallen (C2).
+
+| Begriff         | Bedeutung                                                                         | nicht                                        |
+| --------------- | --------------------------------------------------------------------------------- | -------------------------------------------- |
+| Gruppe (Group)  | Abschnitt mit Titel im Format- oder Build-Panel                                   | Widget, Section                              |
+| Section         | aufklappbarer Bereich im Build Panel (`CollapsibleSection`)                       | Gruppe                                       |
+| Field (UI)      | Eingabe für einen Wert im Panel                                                   | Control                                      |
+| Field (Daten)   | Spalte eines Datasets (`Field`, im Frontend `DataField`)                          | Column                                       |
+| Tile            | Kachel, z. B. im Profil oder in der Auswahl der Charttypen                        | Widget, Card                                 |
+| Card            | Objekttyp mit einem aggregierten Wert                                             | Tile                                         |
+| grain           | Zeitraster (Tag, Woche, Monat, Quartal, Jahr)                                     | granularity                                  |
+| direction       | Sortierrichtung `asc` bzw. `desc`                                                 | order                                        |
+| leere Kategorie | ein Wert ohne Kategorie; ein Name an einer Stelle, wird im Refactoring festgelegt | `''`, `(empty)`, `No category` nebeneinander |
+
+### Werkzeuge
+
+| Werkzeug           | Prüft                   | Seite    |
+| ------------------ | ----------------------- | -------- |
+| ESLint-Grenzen     | S3, S4                  | Frontend |
+| `import-linter`    | S3, S4                  | Backend  |
+| `madge --circular` | Ringabhängigkeiten (S4) | Frontend |
+| `knip`             | Ungenutztes (C1)        | Frontend |
+| `jscpd`            | Kopien (C1, C7)         | beide    |
+| Vitest, pytest     | Logik (C4)              | beide    |
+
+Eingerichtet werden sie im Refactoring-Slice, in der CI laufen sie ab
+„Alpha-Infrastruktur und Vollbild“.
