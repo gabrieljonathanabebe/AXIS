@@ -1304,8 +1304,20 @@ ChartSpec ist die konkrete Konfiguration.
 
 Neue Charts starten mit leerem Encoding (`createDefaultChartSpec`
 kennt den Datensatz nicht); Cevyn rät keine Felder. Beim Typwechsel
-behält `carryOverEncoding` im Reducer die Encodings, die der neue Typ
-kennt; zwischen `points` und `aggregated` startet das Encoding leer.
+(`setChartType` im Reducer) bleibt `spec.data` erhalten; nur was der
+neue Typ anders liest, startet neu:
+
+- `carryOverEncoding` behält die Encodings, die der neue Typ kennt;
+  zwischen `points` und `aggregated` startet das Encoding leer.
+- Die Aggregation bleibt zwischen aggregierten Typen (z. B. Mean von
+  Bar zu Pie); zwischen `points` und `aggregated` kommt sie aus dem
+  Default des neuen Typs (Scatter `none`, sonst `sum`).
+- Zeitraster, Sort und Show bleiben gespeichert, auch über einen
+  Scatter hinweg (Bar → Scatter → Bar bringt sie zurück). Ob sie für
+  den aktuellen Typ gelten, leiten `getEffectiveTimeGrain` und
+  `getEffectiveCategoryOrder` ab, nach dem Muster „Spec speichert,
+  Helper entscheiden“.
+
 Wechselt dabei `coordinates` (kartesisch ↔ radial), übernimmt das Chart
 Label-Sichtbarkeit und Legend-Position aus dem Default des neuen Typs.
 
@@ -1648,8 +1660,8 @@ unknown (JSON)
   - `chart/create` (Charttyp, optional Encoding und Aggregation)
     → `object/add`;
   - `chart/setType` → `chart/setType`; wie im Build Panel bleiben
-    passende Encodings erhalten (`carryOverEncoding`), die Aggregation
-    kommt aus dem Default des neuen Typs;
+    `spec.data` und passende Encodings erhalten (`carryOverEncoding`),
+    die Aggregation nur zwischen aggregierten Typen (siehe „ChartSpec“);
   - `chart/updateEncoding` → `chart/updateEncoding`;
   - `chart/updateAggregation` (nur `aggregation`)
     → `chart/updateAggregation`;

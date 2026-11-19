@@ -72,6 +72,29 @@ Bestandteile:
 Die Canvas hat keine Glass-Fläche: Ihre Füllung ist `canvas.background`
 (siehe 4, „Canvas“).
 
+### Ebenen und Kontrast je Theme
+
+Controls (Field, Segmented Control, Inputs, Buttons) und Hover-Flächen
+heben sich vor allem über ihren Hintergrund vom Panel ab; der Rahmen
+bleibt dezent (`--color-border-subtle`). Die Richtung kehrt sich je
+Theme um, wie in Figma:
+
+| Theme | App-Hintergrund         | Panel (`glass-thin`)   | Control, Hover, Aktiv                          |
+| ----- | ----------------------- | ---------------------- | ---------------------------------------------- |
+| dark  | fast schwarz            | dunkel, durchscheinend | Weiß mit wenig Deckkraft: heller als das Panel |
+| light | kühles Grau (`#E6E9EE`) | fast weiß, nicht rein  | Ink mit wenig Deckkraft: dunkler als das Panel |
+
+- Getragen von `--color-surface-subtle`, `-default`, `-hover` und
+  `-active`; im Light Theme alle als Ink-Alpha (`rgba(47, 72, 103, …)`,
+  0.03 bis 0.12), damit sie auf jeder Fläche eine Stufe dunkler liegen.
+- Popover und Menüs (`glass-thick`, `-elevated`) sind in beiden Themes
+  die hellste Fläche, weil sie über allem liegen.
+- Weiß mit Deckkraft im Light Theme nur für Glanz und Kanten
+  (`--glass-highlight`, `--glass-border`), nie für Controls: Weiß auf
+  einem fast weißen Panel hat keinen Kontrast.
+- Die Seite des Dashboards folgt dem Editor-Theme nicht; ihre Farben
+  kommen aus dem Dashboard-Style.
+
 Regeln:
 
 - Blur nur auf Panels und Overlays, nicht auf verschachtelten Elementen.

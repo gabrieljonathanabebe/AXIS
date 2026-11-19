@@ -12,3 +12,9 @@
   color: var(--color-text-primary);
   font-size: var(--font-size-md);
 }
+
+.top-bar-actions {
+  display: flex;
+  grid-column: 3;
+  justify-content: flex-end;
+}

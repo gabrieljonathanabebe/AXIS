@@ -105,19 +105,19 @@
 [data-theme='light'] {
   color-scheme: light;
 
-  --color-background: #edf6ff;
-  --color-background-subtle: #cfe4f7;
+  --color-background: #e6e9ee;
+  --color-background-subtle: #d5dae2;
 
   --color-control-handle: #ffffff;
 
   --color-surface-glass: rgba(246, 251, 255, 0.5);
-  --color-surface-subtle: rgba(255, 255, 255, 0.28);
-  --color-surface-default: rgba(255, 255, 255, 0.52);
+  --color-surface-subtle: rgba(47, 72, 103, 0.03);
+  --color-surface-default: rgba(47, 72, 103, 0.06);
   --color-surface-strong: rgba(255, 255, 255, 0.74);
   --color-surface-overlay: rgba(250, 253, 255, 0.84);
 
-  --color-surface-hover: rgba(255, 255, 255, 0.68);
-  --color-surface-active: rgba(47, 72, 103, 0.1);
+  --color-surface-hover: rgba(47, 72, 103, 0.09);
+  --color-surface-active: rgba(47, 72, 103, 0.12);
 
   --color-text-primary: #101828;
   --color-text-secondary: #667085;
@@ -149,7 +149,7 @@
   --background-ambient:
     radial-gradient(
       ellipse 60% 50% at 12% 0%,
-      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.35),
       transparent 70%
     ),
     radial-gradient(
@@ -160,13 +160,13 @@
 
   --glass-fill-thin: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.62),
-    rgba(255, 255, 255, 0.42)
+    rgba(247, 248, 250, 0.72),
+    rgba(247, 248, 250, 0.6)
   );
   --glass-fill-regular: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(255, 255, 255, 0.5)
+    rgba(247, 248, 250, 0.8),
+    rgba(247, 248, 250, 0.64)
   );
   --glass-fill-thick: linear-gradient(
     180deg,

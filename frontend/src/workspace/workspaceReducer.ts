@@ -124,15 +124,26 @@ function carryOverEncoding(
   )
 }
 
+/**
+ * Switches the type of a chart. Its data spec stays, so time grain, sort
+ * and show come back after a detour; whether they apply to the new type,
+ * the effective helpers decide. Only what the new type reads differently
+ * starts from its defaults.
+ * @param chart Chart to switch.
+ * @param chartType New type.
+ * @param defaultSpec Spec of a new chart of that type.
+ * @returns The chart of the new type.
+ */
 function setChartType(
   chart: ChartInstance,
   chartType: ChartType,
   defaultSpec: ChartSpec,
 ): ChartInstance {
+  const from = getChartDefinition(chart.type)
+  const to = getChartDefinition(chartType)
   // Legend and labels sit differently in cartesian and radial charts.
-  const isCoordinatesChange =
-    getChartDefinition(chart.type).coordinates !==
-    getChartDefinition(chartType).coordinates
+  const isCoordinatesChange = from.coordinates !== to.coordinates
+  const isDataModeChange = from.dataMode !== to.dataMode
   const { appearance } = isCoordinatesChange ? defaultSpec : chart.spec
   return {
     ...chart,
@@ -155,7 +166,10 @@ function setChartType(
         },
       },
       data: {
-        ...defaultSpec.data,
+        ...chart.spec.data,
+        aggregation: isDataModeChange
+          ? defaultSpec.data.aggregation
+          : chart.spec.data.aggregation,
         encoding: carryOverEncoding(
           chart.spec.data.encoding,
           chart.type,

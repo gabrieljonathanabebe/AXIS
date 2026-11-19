@@ -43,7 +43,8 @@ Fläche, die Farbskala ist aufgebaut wie eine Achse, und jeder Rand hat
 ein Auge. Datumsachsen gruppieren nach einem wählbaren Zeitraster und
 schreiben Daten per Vorlage; ein Klick auf einen Zeitraum wählt ihn
 ganz. Kategorien lassen sich nach Wert oder Name sortieren und auf Top
-oder Bottom N begrenzen.
+oder Bottom N begrenzen. Ein provisorischer Schalter in der TopBar
+wechselt zwischen hellem und dunklem Editor-Theme.
 
 Nächstes Ziel ist ein Alpha-Release.
 
@@ -69,7 +70,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
     für Kästen (3.10b) – implementiert
 11. Zeitraster und DateFormat – implementiert
 12. Sortierung und Top N – implementiert
-13. Theme-Umschalter in der TopBar (provisorisch) – **nächster Slice**
+13. Theme-Umschalter in der TopBar (provisorisch) – implementiert
 14. Table-Objekt
 15. Tooltip-Felder
 16. Dashboard-Einstellungen
@@ -80,24 +81,6 @@ Slices; Abhängigkeiten stehen beim Punkt):
 
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
-
-### 3.13 Theme-Umschalter in der TopBar (geplant, provisorisch, nächster Slice)
-
-Entwicklungshilfe, um das helle Theme ohne JavaScript-Konsole zu
-prüfen; wird später wieder entfernt oder durch eine echte Einstellung
-ersetzt. Das Dashboard folgt dem Editor-Theme nicht: Seine Farben
-stehen seit den Dashboard-Styles (3.8) als echte Werte in der Spec.
-
-- `IconButton` rechts in der `TopBar` (Sonne/Mond), schaltet
-  `data-theme` am `<html>` zwischen `dark` und `light` um; Standard
-  bleibt `dark` aus `index.html`
-- die App folgt den CSS-Variablen von selbst; die Charts lesen aus dem
-  Editor-Theme nur noch den Format-Fokus (`readChartTheme`),
-  `useDocumentTheme` (`charts/`) beobachtet `data-theme` und zeichnet
-  sie dann neu
-- keine Persistenz, kein Platz in der `DashboardSpec`, kein Undo
-- schlicht halten; nicht in `DESIGN_SYSTEM.md` aufnehmen, weil
-  provisorisch
 
 ### 3.14 Table-Objekt (geplant)
 
@@ -562,8 +545,19 @@ Sortierung und Top N
 - die Highlight-Query übernimmt die Kategorien der Basis-Query
   (`categories`), statt ein eigenes Top N zu rechnen
 - Zeilen Sort und Show im Build Panel unter Category, undo-fähig
+- Charttyp-Wechsel behält `spec.data`: Zeitraster, Sort und Show auch
+  über einen Scatter hinweg, die Aggregation zwischen aggregierten Typen
 - Booleans durchgängig als „true“/„false“: Selection auf
   Boolean-Kategorien, Zellen der Table View und Farben im Scatter
+
+Theme-Umschalter (provisorisch)
+
+- `IconButton` (Sonne/Mond) rechts in der `TopBar` schaltet
+  `data-theme` am `<html>`; ohne Persistenz und Undo, Charts zeichnen
+  über `useDocumentTheme` neu
+- Light Theme in drei Stufen (kühles Grau, fast weiße Panels, Controls
+  als Ink-Alpha dunkler als das Panel); Prinzip in `DESIGN_SYSTEM.md`,
+  „Ebenen und Kontrast je Theme“
 
 Ask Cevyn V1
 
