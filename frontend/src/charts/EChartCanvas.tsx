@@ -112,7 +112,7 @@ function EChartCanvas({
   const isTooltipEnabled = chart.spec.interaction.tooltip.enabled
   const query = createChartQuery(chart, dataset.fields)
   const { result, isLoading, error } = useChartQuery(datasetId, query)
-  const highlightQuery = createHighlightQuery(query, selection)
+  const highlightQuery = createHighlightQuery(query, selection, result)
   const { result: highlightResult } = useChartQuery(datasetId, highlightQuery)
   const pointsQuery = usePointsQuery(
     datasetId,

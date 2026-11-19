@@ -13,8 +13,13 @@ type DataTableRowProps = {
 }
 
 // ===== HELPERS ===============================================================
-function formatCellValue(value: number | string): string {
-  return typeof value === 'number' ? formatNumber(value) : value
+/**
+ * Formats a cell for the table.
+ * @param value Value of the cell, not missing.
+ * @returns Numbers formatted, booleans as "true" or "false", text as is.
+ */
+function formatCellValue(value: boolean | number | string): string {
+  return typeof value === 'number' ? formatNumber(value) : String(value)
 }
 
 // ===== COMPONENT =============================================================

@@ -149,6 +149,8 @@ export type ChartDataSpec = {
   aggregation: Aggregation
   colorAggregation: GroupAggregation
   timeGrain: TimeGrain | null
+  sort: ChartSort
+  limit: ChartLimit | null
 }
 
 // Field names; roles and types are resolved from the dataset when read.
@@ -201,10 +203,22 @@ export type ChartInteractionSpec = {
   }
 }
 
+/** Keeps the categories with the largest or smallest total value. */
+export type ChartLimit = {
+  kind: 'top' | 'bottom'
+  count: number
+}
+
 export type ChartMarkKey = keyof Pick<
   ChartAppearanceSpec,
   'bar' | 'line' | 'pie' | 'scatter'
 >
+
+/** Order of the categories: by their total value or by their name. */
+export type ChartSort = {
+  by: 'value' | 'category'
+  order: 'asc' | 'desc'
+}
 
 export type ChartSpec = {
   data: ChartDataSpec

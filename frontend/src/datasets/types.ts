@@ -31,7 +31,8 @@ export type Dataset = {
 /** A single row as returned by table and points queries. */
 export type DataRow = Record<string, DataValue>
 
-export type DataValue = string | number | null
+/** A cell of a row; booleans arrive as true or false, not as text. */
+export type DataValue = string | number | boolean | null
 
 // ===== PROFILE ===============================================================
 export type DatasetProfile = {

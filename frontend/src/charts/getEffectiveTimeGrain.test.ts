@@ -42,6 +42,8 @@ function createData(
     aggregation: 'sum',
     colorAggregation: 'mean',
     timeGrain: null,
+    sort: { by: 'value', order: 'desc' },
+    limit: null,
     ...patch,
   }
 }

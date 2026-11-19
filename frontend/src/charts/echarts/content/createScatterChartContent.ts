@@ -24,13 +24,16 @@ import type { ChartAppearanceSpec, ScatterSizeRange } from '../../types'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================
+/** Value of a point dimension as ECharts takes it; booleans become text. */
+type ScatterValue = Exclude<DataValue, boolean>
+
 type ScatterData = Array<{
   itemStyle: { opacity: number; shadowColor: string } | undefined
-  value: DataValue[]
+  value: ScatterValue[]
 }>
 
 /** Size of a point in pixels: one for all, or one per point by its value. */
-type ScatterSymbolSize = number | ((value: DataValue[]) => number)
+type ScatterSymbolSize = number | ((value: ScatterValue[]) => number)
 
 type CreateScatterSeriesParams = {
   appearance: ChartAppearanceSpec
@@ -49,12 +52,18 @@ type CreateScatterSeriesParams = {
 const MAX_GLOW_POINTS = 500
 
 // ===== HELPER ================================================================
-/** Reads the value of one field from a point, or null without a field. */
-function getValue(row: DataRow, fieldName?: string): DataValue {
+/**
+ * Reads the value of one field from a point.
+ * @param row Row of the point.
+ * @param fieldName Field of the dimension, if the chart encodes one.
+ * @returns The value, booleans as "true" or "false"; null without a field.
+ */
+function getValue(row: DataRow, fieldName?: string): ScatterValue {
   if (!fieldName) {
     return null
   }
-  return row[fieldName]
+  const value = row[fieldName]
+  return typeof value === 'boolean' ? String(value) : value
 }
 
 /**
@@ -68,7 +77,7 @@ function getValue(row: DataRow, fieldName?: string): DataValue {
 function createAreaSymbolSize(
   maxValue: number,
   { max, min }: ScatterSizeRange,
-): (value: DataValue[]) => number {
+): (value: ScatterValue[]) => number {
   return (value) => {
     const size = value[2]
     if (typeof size !== 'number' || size <= 0 || maxValue <= 0) {

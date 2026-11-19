@@ -2,7 +2,7 @@ import { postJson } from '../shared/api/client'
 
 import type { DataRow } from '../datasets/types'
 import type { TimeGrain } from '../shared/format/valueFormats'
-import type { GroupAggregation } from './types'
+import type { ChartLimit, ChartSort, GroupAggregation } from './types'
 
 export type ChartFilter =
   | {
@@ -25,10 +25,13 @@ export type ChartFilter =
 
 export type ChartQueryRequest = {
   aggregation: GroupAggregation
+  categories: (string | null)[] | null
   color: string | null
   color_aggregation: GroupAggregation | null
   series: string | null
   filters: ChartFilter[]
+  limit: ChartLimit | null
+  sort: ChartSort | null
   time_grain: TimeGrain | null
   x: string
   y: string
