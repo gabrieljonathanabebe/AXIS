@@ -71,8 +71,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 11. Zeitraster und DateFormat – implementiert
 12. Sortierung und Top N – implementiert
 13. Theme-Umschalter in der TopBar (provisorisch) – implementiert
-14. Refactoring: Struktur und Modelle vor der Persistenz – **nächster
-    Slice**
+14. Refactoring: Struktur und Modelle vor der Persistenz – **in
+    Arbeit**
 15. Table-Objekt
 16. Tooltip-Felder
 17. Dashboard-Einstellungen
@@ -85,7 +85,7 @@ Slices; Abhängigkeiten stehen beim Punkt):
 Kleine Lückenfüller zwischen den Slices: einzelne offene Zeilen der
 Ist/Soll-Liste in `DESIGN_SYSTEM.md` („Style-Bausteine und Abdeckung“).
 
-### 3.14 Refactoring: Struktur und Modelle vor der Persistenz (geplant, nächster Slice)
+### 3.14 Refactoring: Struktur und Modelle vor der Persistenz (in Arbeit)
 
 Die Struktur ist seit dem letzten Refactoring wieder auseinandergelaufen,
 `shared/ui` liegt flach, CSS liegt zentral statt bei den Komponenten, und
@@ -97,72 +97,135 @@ in `DEVELOPMENT.md`, Abschnitt 21 „Struktur- und Code-Regeln“
 Regeln für den Slice:
 
 - ohne Verhaltensänderung: Die App sieht danach exakt aus wie vorher und
-  verhält sich so; Build, Lint, Tests und Smoke-Test belegen das
+  verhält sich so; Build, Lint, Tests und der Bildvergleich des
+  Smoke-Tests belegen das. Einzige Ausnahme ist der Fix in Teil 9
 - Verschieben (`git mv`) und Ändern nie im selben Commit
 - keine Feature-Arbeit parallel, auch keine PRs am Frontend von außen;
   das Refactoring berührt sehr viele Dateien
-- in Teilen, je mit Checkpoint
+- je Teil ein Chat und ein Checkpoint; die Teile 2, 3, 4 und 8 sind
+  mechanisch (kurz prüfen, eine niedrigere Reasoning-Stufe reicht), die
+  Teile 1, 5, 6, 7 und 9 enthalten Logik (genau prüfen)
 
-Vorgehen:
+Inventur (erledigt): Scan gegen Abschnitt 21 von `DEVELOPMENT.md`. Der
+Bericht liegt lokal als `refactoring-inventory.md` im Repo-Root (nicht
+versioniert) und ist Eingabe für jeden Teil. Wichtigste Funde:
 
-1. Inventur: Scan gegen die Regeln aus Abschnitt 21 (nur lesen, Bericht
-   mit Fund, Dateien, Vorschlag, Aufwand, Risiko); danach entscheidet
-   der Nutzer, was gemacht wird
-2. Sicherheitsnetz: Playwright-Smoke-Skript (`npm run smoke`: Demo-Daten,
-   jeder Charttyp, Legende, Styles, Screenshots), Vitest für riskante
-   reine Logik
-3. Werkzeuge: Pfad-Alias `@/`, ESLint-Grenzen, `import-linter`,
-   `madge`, `knip`, `jscpd` als Skripte
-4. Basiskomponenten `Panel`, `Group` (Untergruppe per Context), `Row`,
-   `Control`, `Input`, `Editor`, `Tile`; Umbenennungen nach der
-   Namensgrammatik (`FormatWidget` → `Group`, `…Widget` → `…Group`
-   bzw. `…Groups`, `…Controls` → `…Rows` bzw. `…Groups`, `…Field` →
-   `…Control`, `Widget` → `Tile`); `field.css` wird das CSS von
-   `Control` (`.field` → `.control`), damit `field` nur noch Daten
-   meint. Reihenfolge wegen gleicher Namen: zuerst teilt sich
-   `PaintControl` (heute die Zeile) in `PaintRow` und `PaintEditor`,
-   danach wird `PaintField` zu `PaintControl`. Prüfen, ob
-   `DropdownField` und `SelectControl` dasselbe leisten
-5. Verschieben: Domänen nach S1 bis S5, `shared/ui` nach Aufgabe
-   gruppiert (z. B. Controls, Farbe, Layout, Panels, Rückmeldung), CSS neben
-   die Komponenten (#12); rein mechanisch
-6. Zusammenführen:
+- das Aussehen hängt an der Importreihenfolge in `index.css`: Mehrere
+  gleich spezifische Regeln gewinnen nur, weil ihre Datei später kommt
+- `.control` ist die Klasse des `IconButton`
+- Undo fasst schnelle Änderungen nur bei der Aggregation zusammen, nicht
+  bei Sortierung und Zeitraster
+- die leere Kategorie wird je Charttyp anders angezeigt und beim
+  Vergleichen anders behandelt (#32)
+- 16 Ringe zwischen den `types.ts`-Dateien (nur Typimporte); `cards/`
+  und `table/` importieren das Query-Vokabular aus `charts/`
+- Weichen nach `kind` außerhalb des Objekt-Bauplans, u. a. in
+  `workspaceReducer`, `ChartGrid`, `applyDashboardStyle`,
+  `useWorkspaceDnd` und `App`
+- Request- und Response-Typen stehen doppelt, in Python und von Hand in
+  TypeScript
+
+Teile:
+
+1. Sicherheitsnetz: Playwright mit Bildvergleich (`npm run smoke`):
+   Demo-Daten, jeder Charttyp und eine Card, Legende, Farbskala,
+   Format-Panel mit Untergruppen, offene Popover, Drag-Überlagerung, Hell
+   und Dunkel; Referenzbilder vor dem ersten Umbau, danach pixelgenauer
+   Vergleich bei jedem Checkpoint. Dazu Tests, die das heutige Verhalten
+   festhalten: Vitest für Undo-Zusammenfassung, Sortierung, Zeitraster,
+   Typwechsel und leere Kategorie, pytest für Profil und Grenzwerte der
+   Queries
+2. Werkzeuge: Pfad-Alias `@/`, `madge`, `knip`, `jscpd`, ESLint-Grenzen
+   und `import-linter` als Skripte, die vorerst nur melden
+3. Verschieben: CSS neben die Komponenten (#12), `index.css` bleibt die
+   geordnete Importliste; Bausteine aus `shared/`, die nur ein Bereich
+   nutzt, in diesen Bereich; Backend-Tests nach `tests/datasets`,
+   `tests/queries` und `tests/integration`; rein mechanisch
+4. Namensgrammatik: Basiskomponenten `Panel`, `Group` (Untergruppe per
+   Context), `Row`, `Control`, `Input`, `Editor`, `Tile`; Umbenennungen
+   nach der Liste im Bericht (`FormatWidget` → `Group`, `…Widget` →
+   `…Group` bzw. `…Groups`, `…Controls` → `…Rows` bzw. `…Groups`,
+   `…Field` → `…Control`, `Widget` → `Tile`). Reihenfolge wegen gleicher
+   Namen: zuerst `.control` des `IconButton` → `.icon-button`, dann
+   `PaintControl` (heute die Zeile) → `PaintRow` und `PaintEditor`,
+   danach `PaintField` → `PaintControl`; `field.css` wird der Rahmen
+   `.control-frame`. `DropdownField` entfällt (ohne Aufrufer). Jede
+   Gruppe rendert ihre `Group` selbst (heute bauen `ChartFormatPanel`,
+   `CardFormatPanel` und `DashboardFormatPanel` Gruppen inline).
+   Danach `shared/ui` nach Aufgabe gruppiert (Controls, Farbe, Layout,
+   Panels, Tiles, Rückmeldung)
+5. Eine Sprache für Frontend und Backend:
+   - Request- und Response-Typen aus dem OpenAPI-Schema des Backends
+     erzeugen (`openapi-typescript`, Skript `npm run api:types`) statt
+     von Hand in `…Api.ts` und `types.ts`
    - gemeinsames Query-Vokabular in `queries/` (Aggregation, Filter,
-     `SortDirection` statt `direction` und `order`), statt Imports von
-     `cards/` aus `charts/`
-   - eine leere Kategorie und ein Schlüssel für Werte beim Vergleichen
-     (Selection, Filter, Gruppen im Backend), getrennt von der Anzeige
-     über `NumberFormat` und `DateFormat`; behebt #32
+     Sortierrichtung `direction` statt `order`, Selection-Filter in
+     `queries/selection/`); `cards/` und `table/` importieren nicht mehr
+     aus `charts/`
+   - kategorische X in der Highlight-Query ausdrücklich statt aus
+     `sort !== null`
+   - Typ-Ringe lösen: Basistypen (z. B. `DashboardObjectBase`,
+     `ObjectContainer`) getrennt von den Unions
+6. Objekte:
+   - Bauplan je Objektart: Was je Art verschieden ist (Anlegen, Inhalt im
+     Rahmen, Format-Panel, Abfrage, Titel, Style anwenden, Drop-Ziele),
+     steht in ihrem Eintrag in `objectDefinitions`; `workspace/`, `app/`
+     und `dashboardStyle/` fragen nicht mehr nach `kind`. Prüfstein: Ein
+     neuer Objekttyp braucht nur seinen Eintrag und seinen Ordner
+   - gemeinsamer Code statt Paaren: `ChartItem` und `CardItem` →
+     `ChartContent` und `CardContent`, Format-Panel, Titel und Abfrage
+     über gemeinsame Bausteine; Encodings, Marks und der Kartenwert
+     bleiben im Ordner ihrer Art
    - `chart/updateData` statt `chart/updateAggregation`,
      `chart/updateCategoryOrder` und `chart/updateTimeGrain`, wie
-     `card/updateData`
-   - ein ausdrückliches Signal für eine kategorische X in der
-     Highlight-Query statt `sort !== null`
-   - `Group` nach der Regel „eine Komponente rendert nur ihre Ebene“
-     (heute baut `ChartFormatPanel` eine Gruppe inline, `CardFormatPanel`
-     über `renderFormatWidget`)
-   - die Objekte des Dashboards an einer Stelle durchlaufen statt an
-     vielen, als Vorbereitung für Layout-Container (nach dem Alpha)
-   - CSS-Trennung von Frame und Content (`chart-item*` am `ObjectFrame`,
-     `encoding-drop-slot*`), vorher als Vorbereitung des Table-Objekts
-     geplant
+     `card/updateData`; Undo fasst wie heute nur Aggregationsänderungen
+     zusammen; die Actions von Ask Cevyn bleiben und werden übersetzt
+   - Objekte an einer Stelle nachschlagen: ein abgeleiteter Index aus der
+     flachen Liste (Reihenfolge, nach Id, gewähltes Objekt) als
+     Vorbereitung für Layout-Container (nach dem Alpha)
+   - CSS-Trennung von Frame und Content (`chart-item*`,
+     `encoding-drop-slot*`), mit Prüfung von Fokus und Drag
 7. Modelle:
-   - Backend: Zählwerte (`missing_count`, `unique_count`) in `statistics`,
-     `statistics` nie `null`; das Profil baut auf der Summary auf,
-     `row_count` und die Id gibt es nur einmal
-   - alle Typen, die gespeichert werden (`DashboardSpec`, Chart-, Card-
-     und Objekt-Appearance), gegen M2 prüfen und angleichen
-8. Doku: `ARCHITECTURE.md` (Struktur, Modelle), `DESIGN_SYSTEM.md`
-   (Basiskomponenten, Untergruppen), `DEVELOPMENT.md` (Stand der
-   Werkzeuge), fehlende JSDoc nachziehen
+   - Backend: ein Datensatz-Profil als einzige Quelle, die Summary wird
+     daraus abgeleitet (Id und `row_count` einmal); Zählwerte
+     (`missing_count`, `unique_count`) in `statistics`, `statistics` nie
+     `null`, auch für Identifier; das Frontend folgt über die erzeugten
+     Typen
+   - gespeicherte Specs nach M2: Titel `text: string | null` statt
+     `''`; Card-Quelle `{ kind: 'rows' } | { kind: 'field'; field;
+aggregation }`; Linienfläche als `area: { visible, fill }`; feste
+     Legendenhöhe als Konstante statt in der Spec; `limit: null` bleibt
+     („kein Limit“)
+8. Grenzen und Doku: ESLint-Grenzen, `import-linter` und Ringprüfung
+   scharf schalten; `ARCHITECTURE.md`, `DESIGN_SYSTEM.md` und
+   `DEVELOPMENT.md` nach dem tatsächlichen Stand; JSDoc an den
+   angefassten Funktionen
+9. Fix der leeren Kategorie (#32), einzige Verhaltensänderung, eigener
+   Commit: ein Schlüssel für fehlende Werte beim Vergleichen (Selection,
+   Filter, Gruppen im Backend), eine Anzeige über alle Charttypen
+
+Kleine Funde nur mitnehmen, wenn die Datei ohnehin angefasst wird:
+Funktionsnamen nach den Präfixen aus Abschnitt 21, Props, die an jeder
+Aufrufstelle gleich sind, als Default, eine gemeinsame Schwelle für
+Klick und Drag, überflüssige Exporte, Glossar-Einträge, der
+Health-Endpunkt als Ausnahme in `ARCHITECTURE.md`.
+
+Nicht in diesem Slice: das Öffnen des Fill-Editors ausdrücklich steuern;
+Rechenlogik aus `ChartColorScale` und `EncodingsWidget` ziehen; CSS
+direkt in den Komponenten laden statt über `index.css`; Mark-Profile;
+das Zahlenformat des Tooltips (→ Tooltip-Felder); Escape für
+`NumberInput`; JSDoc für alle Funktionen; `dashboardStyle/` aufteilen.
 
 ### 3.15 Table-Objekt (geplant)
 
 Dritter Objekttyp neben Chart und Card, auf Basis von `DataTable` und
 `table-query`:
 
-- die Vorbereitung (gemeinsames Query-Vokabular in `queries/`,
-  CSS-Trennung von Frame und Content) erledigt das Refactoring (3.14)
+- die Vorbereitung (gemeinsames Query-Vokabular in `queries/`, Bauplan
+  je Objektart, CSS-Trennung von Frame und Content) erledigt das
+  Refactoring (3.14)
+- Randwerte des Tabellenfilters (`StepRange`) als reiner Helper mit Test
+  (aus der Inventur des Refactorings)
 - `TableInstance` in `DashboardObject`, Registry-Eintrag in
   `objectDefinitions`, Picker-Gruppe „Cards & Table“
 - Format über die Bausteine: Kopfzeile (`TextStyle`, `Fill`), Zellen

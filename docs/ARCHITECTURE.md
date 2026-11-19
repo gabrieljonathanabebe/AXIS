@@ -196,6 +196,10 @@ actions/     Action Layer (Cevyn Actions)
   `<domäne>Api.ts` (z. B. `chartsApi.ts`) und laufen über
   `shared/api/client.ts` (`get`, `post` für FormData, `postJson` für
   JSON-Requests).
+- Beschlossen, Umsetzung im Refactoring (3.14): Request- und
+  Response-Typen werden aus dem OpenAPI-Schema des Backends erzeugt
+  (`openapi-typescript`), nicht von Hand geschrieben; die Pydantic-Modelle
+  sind die einzige Quelle.
 - Unterordner gibt es aktuell für abgegrenzte Gruppen innerhalb einer
   Domäne (z. B. `charts/echarts/content`, `charts/format`,
   `shared/ui`). Eine feste Regel für Unterordner ist noch nicht
@@ -221,6 +225,12 @@ nach unten, Objekt-Domänen importieren nie voneinander.
   Objekttypen (Union in `types.ts`, `objectDefinitions`,
   `createObject`, `getObjectLabel`, `resolveFormatElement`). Sie bleiben klein und erhalten pro
   neuem Typ einen Fall.
+- Beschlossen, Umsetzung im Refactoring (3.14): Was je Objektart
+  verschieden ist (Anlegen, Inhalt im Rahmen, Format-Panel, Abfrage,
+  Titel, Style anwenden, Drop-Ziele), steht in ihrem Eintrag in
+  `objectDefinitions`. Auch `workspace/`, `app/` und `dashboardStyle/`
+  fragen dann nicht mehr nach `kind`; ein neuer Objekttyp braucht nur
+  seinen Eintrag und seinen Ordner.
 - `queries/` spiegelt `backend/app/queries/`: gemeinsames Vokabular
   aller Queries (Aggregation, Filter), das Chart, Card, Table und Slicer
   teilen.
