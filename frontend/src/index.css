@@ -17,6 +17,7 @@
 @import './styles/ui/FormatPanel.css';
 @import './styles/ui/FormatWidget.css';
 @import './styles/ui/GradientControl.css';
+@import './styles/ui/GradientStopsControl.css';
 @import './styles/ui/IconBadge.css';
 @import './styles/ui/IconButton.css';
 @import './styles/ui/MiniHistogram.css';
