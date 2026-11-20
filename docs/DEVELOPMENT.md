@@ -230,9 +230,12 @@ uv run pytest
 ```
 
 Die Tests liegen in `backend/tests/` (pytest, Dev-Abhängigkeit über
-`uv add --dev`). Fixtures in `conftest.py`: ein kleines Sales-Dataset mit
-von Hand prüfbaren Summen und ein `TestClient`, der die App ohne Server
-startet und dabei das Demo-Dataset lädt.
+`uv add --dev`) und spiegeln `app/`: `datasets/`, `queries/` und
+`integration/` für Prüfungen über HTTP, die mehrere Domänen berühren.
+Fixtures in `tests/conftest.py`, gültig für alle Unterordner: ein
+kleines Sales-Dataset mit von Hand prüfbaren Summen und ein
+`TestClient`, der die App ohne Server startet und dabei das
+Demo-Dataset lädt.
 
 Nach Änderungen, die das Aussehen oder die Bedienung nicht verändern
 sollen (z. B. Refactorings), zusätzlich im Ordner `frontend/`:
@@ -445,7 +448,7 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   `[createAxesOptions.ts:97](frontend/src/charts/echarts/createAxesOptions.ts#L97)`;
   wird ein bestehender Bereich ersetzt oder gelöscht, markieren Linktext
   und Anker den ganzen Bereich, z. B.
-  `[PaletteControl.tsx:18-32](frontend/src/shared/ui/PaletteControl.tsx#L18-L32)`;
+  `[PaletteControl.tsx:18-32](frontend/src/charts/format/PaletteControl.tsx#L18-L32)`;
   bei mehrdeutigen Dateinamen (z. B. `types.ts`) den Ordner im Linktext
   mitnennen;
 - neue Dateien ohne Zeilenanker und mit dem vollständigen Pfad ab

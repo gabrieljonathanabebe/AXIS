@@ -204,7 +204,12 @@ actions/     Action Layer (Cevyn Actions)
   Domäne (z. B. `charts/echarts/content`, `charts/format`,
   `shared/ui`). Eine feste Regel für Unterordner ist noch nicht
   beschlossen.
-- Styles liegen aktuell noch zentral unter `src/styles/<bereich>/`.
+- Komponenten-CSS liegt neben seiner Komponente (z. B.
+  `charts/ChartLegend.css`); `src/styles/` hält Tokens, Themes und die
+  globale Basis. `src/index.css` lädt alle Dateien in fester
+  Reihenfolge, die Reihenfolge ist Teil der Kaskade. Bis Teil 6 des
+  Refactorings (3.14) liegen `ChartItem.css` und `EncodingDropSlots.css`
+  noch unter `styles/canvas/`, weil sie Frame und Content mischen.
 
 Abhängigkeitsrichtung im Frontend (beschlossen): Imports zeigen nur
 nach unten, Objekt-Domänen importieren nie voneinander.
@@ -663,7 +668,7 @@ type ColorScaleBar = Pick<Surface, 'border' | 'borderRadius'>
 
 Flächen in HTML (`SurfaceLayers` in `shared/ui/`, gemeinsam für
 `ObjectFrame` und die Vorschau der Style-Galerie;
-`styles/ui/Surface.css`), von unten nach oben:
+`shared/ui/Surface.css`), von unten nach oben:
 
 | Ebene           | Umsetzung                                                |
 | --------------- | -------------------------------------------------------- |

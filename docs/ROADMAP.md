@@ -105,6 +105,13 @@ Regeln für den Slice:
 - je Teil ein Chat und ein Checkpoint; die Teile 2, 3, 4 und 8 sind
   mechanisch (kurz prüfen, eine niedrigere Reasoning-Stufe reicht), die
   Teile 1, 5, 6, 7 und 9 enthalten Logik (genau prüfen)
+- Fundliste: Vor jedem Teil die Tabelle „Funde während des Slices“
+  unten lesen. Was beim Arbeiten auffällt und nicht in den laufenden
+  Teil gehört (doppelte Logik, unpassende Namen, Besitz), trägt der
+  Agent dort selbst ein, statt es nebenbei zu ändern oder ein Issue
+  anzulegen. Passt ein Fund klar zu einem späteren Teil, steht er
+  zusätzlich dort. Abgearbeitet wird die Liste zwischen den Teilen oder
+  in Teil 8
 
 Inventur (erledigt): Scan gegen Abschnitt 21 von `DEVELOPMENT.md`. Der
 Bericht liegt lokal als `refactoring-inventory.md` im Repo-Root (nicht
@@ -140,10 +147,18 @@ Teile:
    Stand beim Einrichten: 8 Ringe, 52 Grenzverstöße, 12 Kopien, 1
    ungenutzte Datei und 45 ungenutzte Exporte im Frontend, Backend-Vertrag
    erfüllt
-3. Verschieben: CSS neben die Komponenten (#12), `index.css` bleibt die
-   geordnete Importliste; Bausteine aus `shared/`, die nur ein Bereich
-   nutzt, in diesen Bereich; Backend-Tests nach `tests/datasets`,
-   `tests/queries` und `tests/integration`; rein mechanisch
+3. Verschieben (erledigt): CSS neben die Komponenten (#12), `index.css`
+   bleibt die geordnete Importliste; Bausteine aus `shared/`, die nur
+   ein Bereich nutzt, in diesen Bereich; Backend-Tests nach
+   `tests/datasets`, `tests/queries` und `tests/integration`; rein
+   mechanisch. Ergebnis: `CheckList` und `RangeSlider` liegen in
+   `table/`, `DateFormatSelect`, `EffectControls`, `GradientControl` und
+   `PaletteControl` in `charts/format/`, `StatWidget` in `datasets/`;
+   das Stop-Raster steht vorab in eigener `GradientStopsControl.css`.
+   In `shared` bleiben `WidgetButton` (Button-Form der Widget-Basis, geht
+   in Teil 4 in `Tile` auf) und `NumberInput` (wird das generische
+   Zahlen-Input). `ChartItem.css` und `EncodingDropSlots.css` bleiben bis
+   Teil 6 unter `styles/canvas/`, `field.css` bis Teil 4 unter `styles/`
 4. Namensgrammatik: Basiskomponenten `Panel`, `Group` (Untergruppe per
    Context), `Row`, `Control`, `Input`, `Editor`, `Tile`; Umbenennungen
    nach der Liste im Bericht (`FormatWidget` → `Group`, `…Widget` →
@@ -152,7 +167,9 @@ Teile:
    Namen: zuerst `.control` des `IconButton` → `.icon-button`, dann
    `PaintControl` (heute die Zeile) → `PaintRow` und `PaintEditor`,
    danach `PaintField` → `PaintControl`; `field.css` wird der Rahmen
-   `.control-frame`. `DropdownField` entfällt (ohne Aufrufer). Jede
+   `.control-frame`. `DropdownField` entfällt (ohne Aufrufer).
+   `ScrubbableNumber` nutzt `NumberInput` als Eingabeteil, statt Entwurf
+   und Begrenzen auf min/max zu kopieren. Jede
    Gruppe rendert ihre `Group` selbst (heute bauen `ChartFormatPanel`,
    `CardFormatPanel` und `DashboardFormatPanel` Gruppen inline).
    Danach `shared/ui` nach Aufgabe gruppiert (Controls, Farbe, Layout,
@@ -187,7 +204,9 @@ Teile:
      flachen Liste (Reihenfolge, nach Id, gewähltes Objekt) als
      Vorbereitung für Layout-Container (nach dem Alpha)
    - CSS-Trennung von Frame und Content (`chart-item*`,
-     `encoding-drop-slot*`), mit Prüfung von Fokus und Drag
+     `encoding-drop-slot*`), mit Prüfung von Fokus und Drag; danach
+     liegen die Teile neben Frame bzw. Content, `styles/canvas/` entfällt
+     und #12 ist erledigt
 7. Modelle:
    - Backend: ein Datensatz-Profil als einzige Quelle, die Summary wird
      daraus abgeleitet (Id und `row_count` einmal); Zählwerte
@@ -202,7 +221,10 @@ aggregation }`; Linienfläche als `area: { visible, fill }`; feste
 8. Grenzen und Doku: ESLint-Grenzen, `import-linter` und Ringprüfung
    scharf schalten; `ARCHITECTURE.md`, `DESIGN_SYSTEM.md` und
    `DEVELOPMENT.md` nach dem tatsächlichen Stand; JSDoc an den
-   angefassten Funktionen
+   angefassten Funktionen; offene Einträge der Fundliste abarbeiten und
+   die Kopien aus `npm run check:copies` einmal durchgehen: je Kopie
+   zusammenführen (gleiches Wissen), bewusst getrennt lassen (C7, mit
+   einem Satz Begründung) oder in die Fundliste
 9. Fix der leeren Kategorie (#32), einzige Verhaltensänderung, eigener
    Commit: ein Schlüssel für fehlende Werte beim Vergleichen (Selection,
    Filter, Gruppen im Backend), eine Anzeige über alle Charttypen
@@ -212,6 +234,12 @@ Funktionsnamen nach den Präfixen aus Abschnitt 21, Props, die an jeder
 Aufrufstelle gleich sind, als Default, eine gemeinsame Schwelle für
 Klick und Drag, überflüssige Exporte, Glossar-Einträge, der
 Health-Endpunkt als Ausnahme in `ARCHITECTURE.md`.
+
+Funde während des Slices (Regel oben, „Fundliste“):
+
+| Fund                                                                                              | Ort                                                 | Vorschlag                                                                | Teil | Stand |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------ | ---- | ----- |
+| `NumberInput` und `ScrubbableNumber` haben beide Entwurf bis Enter/Blur und Begrenzen auf min/max | `shared/ui/NumberInput.tsx`, `ScrubbableNumber.tsx` | `ScrubbableNumber` (Control) nutzt `NumberInput` (Input) als Eingabeteil | 4    | offen |
 
 Nicht in diesem Slice: das Öffnen des Fill-Editors ausdrücklich steuern;
 Rechenlogik aus `ChartColorScale` und `EncodingsWidget` ziehen; CSS
