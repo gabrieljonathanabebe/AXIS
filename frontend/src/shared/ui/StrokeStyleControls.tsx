@@ -6,8 +6,8 @@ import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
 import type { ReactNode } from 'react'
-import type { Paint, PaintType, SeriesPaint } from '../paint'
-import type { LineStyle, StrokeStyle } from '../strokeStyle'
+import type { Paint, PaintType, SeriesPaint } from '@/shared/paint'
+import type { LineStyle, StrokeStyle } from '@/shared/strokeStyle'
 
 // ===== TYPES =================================================================
 type StrokeStyleControlsProps<

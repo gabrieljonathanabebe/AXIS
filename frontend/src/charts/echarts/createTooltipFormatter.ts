@@ -1,21 +1,24 @@
 import {
+  hasAggregatedColor,
+  isPointsChartType,
+} from '@/charts/chartDefinitions'
+import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
+import {
   createNumberFormatter,
   formatNumber,
   resolveNumberFormat,
-} from '../../shared/format/formatNumber'
-import { formatSelectionLabel } from '../../workspace/dataSelection'
-import { hasAggregatedColor, isPointsChartType } from '../chartDefinitions'
-import { getEffectiveTimeGrain } from '../getEffectiveTimeGrain'
+} from '@/shared/format/formatNumber'
+import { formatSelectionLabel } from '@/workspace/dataSelection'
 import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
 import {
   createAxisDateFormatter,
   createAxisNumberFormatter,
 } from './createAxisLabelFormatter'
 
-import type { DataField } from '../../datasets/types'
-import type { NumberFormatter } from '../../shared/format/formatNumber'
-import type { DataSelection } from '../../workspace/types'
-import type { ChartSpec, ChartType } from '../types'
+import type { ChartSpec, ChartType } from '@/charts/types'
+import type { DataField } from '@/datasets/types'
+import type { NumberFormatter } from '@/shared/format/formatNumber'
+import type { DataSelection } from '@/workspace/types'
 
 type TooltipValue = string | number | null | undefined
 

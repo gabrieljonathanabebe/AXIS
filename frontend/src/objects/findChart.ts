@@ -1,4 +1,4 @@
-import type { ChartInstance } from '../charts/types'
+import type { ChartInstance } from '@/charts/types'
 import type { DashboardObject } from './types'
 
 /**

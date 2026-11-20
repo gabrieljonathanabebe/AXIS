@@ -1,7 +1,7 @@
-import { useQuery } from '../shared/useQuery'
+import { useQuery } from '@/shared/useQuery'
 import { fetchFieldValues } from './tableApi'
 
-import type { Query } from '../shared/useQuery'
+import type { Query } from '@/shared/useQuery'
 import type { FieldValues } from './tableApi'
 
 /** Loads the values of a field; keeps the old list while a search loads. */

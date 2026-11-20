@@ -1,23 +1,23 @@
 import {
   createDefaultContainer,
   createDefaultTitle,
-} from '../objects/objectDefaults'
-import { createColorValue } from '../shared/colorValue'
+} from '@/objects/objectDefaults'
+import { createColorValue } from '@/shared/colorValue'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_NUMBER_FORMAT,
-} from '../shared/format/valueFormats'
+} from '@/shared/format/valueFormats'
 import {
   getChartDefinition,
   isPointsChartType,
   isRadialChartType,
 } from './chartDefinitions'
 
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { ObjectLayout } from '../objects/types'
-import type { StrokeAppearance } from '../shared/strokeStyle'
-import type { Surface } from '../shared/surface'
-import type { TextStyle } from '../shared/textStyle'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { ObjectLayout } from '@/objects/types'
+import type { StrokeAppearance } from '@/shared/strokeStyle'
+import type { Surface } from '@/shared/surface'
+import type { TextStyle } from '@/shared/textStyle'
 import type { ChartInstance, ChartSpec, ChartType } from './types'
 
 /**

@@ -1,4 +1,4 @@
-import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
+import type { CardAppearanceSpec, CardDataSpec } from '@/cards/types'
 import type {
   ChartAggregationKey,
   ChartAppearanceSpec,
@@ -9,18 +9,18 @@ import type {
   ChartMarkKey,
   ChartSpec,
   ChartType,
-} from '../charts/types'
-import type { StyleRecipe } from '../dashboardStyle/types'
-import type { DataField, DataValue } from '../datasets/types'
-import type { ObjectPickerOption } from '../objects/objectDefinitions'
+} from '@/charts/types'
+import type { StyleRecipe } from '@/dashboardStyle/types'
+import type { DataField, DataValue } from '@/datasets/types'
+import type { ObjectPickerOption } from '@/objects/objectDefinitions'
 import type {
   DashboardObject,
   ObjectContainer,
   ObjectLayout,
-} from '../objects/types'
-import type { Fill } from '../shared/fill'
-import type { TimeGrain } from '../shared/format/valueFormats'
-import type { Layout } from '../shared/layout'
+} from '@/objects/types'
+import type { Fill } from '@/shared/fill'
+import type { TimeGrain } from '@/shared/format/valueFormats'
+import type { Layout } from '@/shared/layout'
 
 // ===== STATE =================================================================
 export type WorkspaceState = {

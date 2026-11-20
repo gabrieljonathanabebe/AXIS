@@ -1,9 +1,9 @@
 import { Ban } from 'lucide-react'
 
-import DropSlot from '../workspace/DropSlot'
+import DropSlot from '@/workspace/DropSlot'
 import { getSemanticCompatibility } from './chartDefinitions'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { ChartDefinition, EncodingDefinition } from './chartDefinitions'
 import type { ChartEncoding } from './types'
 

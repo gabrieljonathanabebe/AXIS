@@ -6,9 +6,9 @@ import {
   Rows3,
 } from 'lucide-react'
 
-import { formatNumber, formatPercent } from '../shared/format/formatNumber'
-import CollapsibleSection from '../shared/ui/CollapsibleSection'
-import StatWidget from '../shared/ui/StatWidget'
+import { formatNumber, formatPercent } from '@/shared/format/formatNumber'
+import CollapsibleSection from '@/shared/ui/CollapsibleSection'
+import StatWidget from '@/shared/ui/StatWidget'
 import { groupFieldProfiles } from './fieldGroups'
 import FieldProfileWidget from './FieldProfileWidget'
 import { getSemanticRole } from './semanticRoles'

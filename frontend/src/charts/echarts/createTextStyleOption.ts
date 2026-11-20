@@ -1,7 +1,7 @@
-import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
+import { FONT_WEIGHT_VALUES } from '@/shared/textStyle'
 import { resolveColor } from './resolveColor'
 
-import type { FontStyle, TextStyle } from '../../shared/textStyle'
+import type { FontStyle, TextStyle } from '@/shared/textStyle'
 
 // ===== TYPES =================================================================
 /** Text fields that axis names and labels, legend and series labels share. */

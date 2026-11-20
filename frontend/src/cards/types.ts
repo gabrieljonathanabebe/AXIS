@@ -1,11 +1,11 @@
-import type { GroupAggregation } from '../charts/types'
+import type { GroupAggregation } from '@/charts/types'
 import type {
   ContainerFormatElement,
   DashboardObjectBase,
   ObjectTitleAppearance,
-} from '../objects/types'
-import type { NumberFormat } from '../shared/format/valueFormats'
-import type { TextStyle } from '../shared/textStyle'
+} from '@/objects/types'
+import type { NumberFormat } from '@/shared/format/valueFormats'
+import type { TextStyle } from '@/shared/textStyle'
 
 // ===== OBJECT ================================================================
 export type CardInstance = DashboardObjectBase & {

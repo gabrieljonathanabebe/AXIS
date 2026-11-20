@@ -1,8 +1,8 @@
 import { ListFilter, Rows3, X } from 'lucide-react'
 
-import { formatNumber } from '../shared/format/formatNumber'
-import Button from '../shared/ui/Button'
-import Chip from '../shared/ui/Chip'
+import { formatNumber } from '@/shared/format/formatNumber'
+import Button from '@/shared/ui/Button'
+import Chip from '@/shared/ui/Chip'
 import { formatTableFilter } from './tableFilters'
 
 import type { TableFilter } from './tableApi'

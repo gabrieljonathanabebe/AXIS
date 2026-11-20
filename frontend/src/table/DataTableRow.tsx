@@ -1,7 +1,7 @@
-import { formatNumber } from '../shared/format/formatNumber'
+import { formatNumber } from '@/shared/format/formatNumber'
 
 import type { Ref } from 'react'
-import type { DataRow } from '../datasets/types'
+import type { DataRow } from '@/datasets/types'
 import type { DataTableColumn } from './types'
 
 // ===== TYPES =================================================================

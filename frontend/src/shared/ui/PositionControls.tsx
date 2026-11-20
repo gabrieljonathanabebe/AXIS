@@ -9,7 +9,7 @@ import {
   PanelTop,
 } from 'lucide-react'
 
-import { getPlacementLabel, isSide } from '../layout'
+import { getPlacementLabel, isSide } from '@/shared/layout'
 import BoxFieldsRow from './BoxFieldsRow'
 import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
@@ -17,7 +17,7 @@ import PositionGrid from './PositionGrid'
 import SegmentedControl from './SegmentedControl'
 
 import type { LucideIcon } from 'lucide-react'
-import type { PartialLayout, Side } from '../layout'
+import type { PartialLayout, Side } from '@/shared/layout'
 import type { LayoutBox } from './BoxFieldsRow'
 import type { OptionItem } from './OptionsMenu'
 

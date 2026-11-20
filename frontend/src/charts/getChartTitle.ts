@@ -2,7 +2,7 @@ import { hasAggregatedColor, isPointsChartType } from './chartDefinitions'
 import { getAggregatedLabel, getValueLabel } from './getEffectiveAggregation'
 import { getEffectiveTimeGrain } from './getEffectiveTimeGrain'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { ChartInstance } from './types'
 
 export function getDefaultChartTitle(

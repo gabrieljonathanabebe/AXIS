@@ -1,8 +1,8 @@
 import { resolveColor } from './resolveColor'
 
 import type { ContinuousVisualMapComponentOption } from 'echarts'
-import type { NumericDomain } from '../getNumericDomain'
-import type { ColorScaleAppearance } from '../types'
+import type { NumericDomain } from '@/charts/getNumericDomain'
+import type { ColorScaleAppearance } from '@/charts/types'
 
 type CreateContinuousColorVisualMapParams = {
   appearance: ColorScaleAppearance['continuous']

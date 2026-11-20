@@ -4,7 +4,7 @@ import { useState } from 'react'
 import IconButton from './IconButton'
 import PaintControl from './PaintControl'
 
-import type { Fill } from '../fill'
+import type { Fill } from '@/shared/fill'
 
 // ===== TYPES =================================================================
 type FillListControlsProps = {

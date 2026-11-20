@@ -1,7 +1,7 @@
-import { FONT_WEIGHT_VALUES } from '../textStyle'
+import { FONT_WEIGHT_VALUES } from '@/shared/textStyle'
 import SegmentedControl from './SegmentedControl'
 
-import type { FontWeight } from '../textStyle'
+import type { FontWeight } from '@/shared/textStyle'
 
 type FontWeightControlProps = {
   label: string

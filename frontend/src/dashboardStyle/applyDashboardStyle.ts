@@ -1,10 +1,10 @@
-import { createDefaultCardSpec } from '../cards/createCardInstance'
-import { createDefaultChartSpec } from '../charts/createChartInstance'
+import { createDefaultCardSpec } from '@/cards/createCardInstance'
+import { createDefaultChartSpec } from '@/charts/createChartInstance'
 import { createDashboardStyle } from './createDashboardStyle'
 import { takeStyleColors } from './takeStyleColors'
 
-import type { DashboardObject } from '../objects/types'
-import type { WorkspaceAction, WorkspaceState } from '../workspace/types'
+import type { DashboardObject } from '@/objects/types'
+import type { WorkspaceAction, WorkspaceState } from '@/workspace/types'
 import type { DashboardStyle, StyleRecipe } from './types'
 
 // ===== HELPERS ===============================================================

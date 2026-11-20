@@ -1,13 +1,13 @@
-import { getRectInFrame } from '../objects/elementRect'
-import { getColorCss } from '../shared/colorValue'
-import { getSideOrientation } from '../shared/layout'
-import { getSurfaceStyle } from '../shared/surface'
-import { getTextStyleCss } from '../shared/textStyle'
-import SurfaceLayers from '../shared/ui/SurfaceLayers'
+import { getRectInFrame } from '@/objects/elementRect'
+import { getColorCss } from '@/shared/colorValue'
+import { getSideOrientation } from '@/shared/layout'
+import { getSurfaceStyle } from '@/shared/surface'
+import { getTextStyleCss } from '@/shared/textStyle'
+import SurfaceLayers from '@/shared/ui/SurfaceLayers'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { ShowFormatHint } from '../objects/ObjectFrame'
-import type { HorizontalAlignment, Side } from '../shared/layout'
+import type { ShowFormatHint } from '@/objects/ObjectFrame'
+import type { HorizontalAlignment, Side } from '@/shared/layout'
 import type { ChartInstance, LegendEntry } from './types'
 
 // ===== TYPES =================================================================

@@ -1,10 +1,10 @@
 import { HexColorInput } from 'react-colorful'
 
-import { getColorValueKey, normalizeHex } from '../colorValue'
+import { getColorValueKey, normalizeHex } from '@/shared/colorValue'
 import ColorSwatch from './ColorSwatch'
 
 import type { ReactNode } from 'react'
-import type { ColorValue } from '../colorValue'
+import type { ColorValue } from '@/shared/colorValue'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================

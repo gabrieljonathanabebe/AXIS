@@ -1,14 +1,14 @@
 import { FileSpreadsheet, LoaderCircle, TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 
-import EmptyState from '../shared/ui/EmptyState'
-import Panel from '../shared/ui/Panel'
-import SegmentedControl from '../shared/ui/SegmentedControl'
-import DataTable from '../table/DataTable'
+import EmptyState from '@/shared/ui/EmptyState'
+import Panel from '@/shared/ui/Panel'
+import SegmentedControl from '@/shared/ui/SegmentedControl'
+import DataTable from '@/table/DataTable'
 import DatasetProfileView from './DatasetProfileView'
 
-import type { EmptyStateProps } from '../shared/ui/EmptyState'
-import type { OptionItem } from '../shared/ui/OptionsMenu'
+import type { EmptyStateProps } from '@/shared/ui/EmptyState'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 import type {
   Dataset,
   DatasetProfile,

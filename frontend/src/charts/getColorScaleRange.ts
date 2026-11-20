@@ -2,7 +2,7 @@ import { hasAggregatedColor } from './chartDefinitions'
 import { getColorEncodingMode } from './getColorEncodingMode'
 import { getNumericDomain } from './getNumericDomain'
 
-import type { DataRow, Dataset } from '../datasets/types'
+import type { DataRow, Dataset } from '@/datasets/types'
 import type { ChartQueryResult } from './chartsApi'
 import type { NumericDomain } from './getNumericDomain'
 import type { ChartSpec, ChartType } from './types'

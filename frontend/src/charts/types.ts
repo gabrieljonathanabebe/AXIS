@@ -1,5 +1,5 @@
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { DataField } from '../datasets/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { DataField } from '@/datasets/types'
 import type {
   ContainerFormatElement,
   DashboardObjectBase,
@@ -7,19 +7,19 @@ import type {
   ObjectLayout,
   ObjectTitleAppearance,
   SetContainer,
-} from '../objects/types'
-import type { ColorValue } from '../shared/colorValue'
-import type { Effect } from '../shared/effect'
-import type { SeriesFill } from '../shared/fill'
+} from '@/objects/types'
+import type { ColorValue } from '@/shared/colorValue'
+import type { Effect } from '@/shared/effect'
+import type { SeriesFill } from '@/shared/fill'
 import type {
   DateFormat,
   NumberFormat,
   TimeGrain,
-} from '../shared/format/valueFormats'
-import type { Layout } from '../shared/layout'
-import type { SeriesStrokeStyle, StrokeAppearance } from '../shared/strokeStyle'
-import type { Surface } from '../shared/surface'
-import type { TextStyle } from '../shared/textStyle'
+} from '@/shared/format/valueFormats'
+import type { Layout } from '@/shared/layout'
+import type { SeriesStrokeStyle, StrokeAppearance } from '@/shared/strokeStyle'
+import type { Surface } from '@/shared/surface'
+import type { TextStyle } from '@/shared/textStyle'
 
 // ===== ACTIONS ===============================================================
 export type SetAggregation = <TKey extends ChartAggregationKey>(

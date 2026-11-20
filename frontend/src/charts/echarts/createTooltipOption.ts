@@ -1,13 +1,13 @@
-import { getColorCss } from '../../shared/colorValue'
-import { getSurfaceCssText } from '../../shared/surface'
-import { FONT_WEIGHT_VALUES } from '../../shared/textStyle'
-import { isRadialChartType } from '../chartDefinitions'
+import { isRadialChartType } from '@/charts/chartDefinitions'
+import { getColorCss } from '@/shared/colorValue'
+import { getSurfaceCssText } from '@/shared/surface'
+import { FONT_WEIGHT_VALUES } from '@/shared/textStyle'
 import { createTooltipFormatter } from './createTooltipFormatter'
 
 import type { TooltipComponentOption } from 'echarts'
-import type { DataField } from '../../datasets/types'
-import type { DataSelection } from '../../workspace/types'
-import type { ChartSpec, ChartType } from '../types'
+import type { ChartSpec, ChartType } from '@/charts/types'
+import type { DataField } from '@/datasets/types'
+import type { DataSelection } from '@/workspace/types'
 
 // ===== TYPES =================================================================
 type CreateTooltipOptionsParams = {

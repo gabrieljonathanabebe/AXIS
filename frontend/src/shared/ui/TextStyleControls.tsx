@@ -7,8 +7,8 @@ import FontWeightControl from './FontWeightControl'
 import IconButton from './IconButton'
 import ScrubbableNumber from './ScrubbableNumber'
 
-import type { HorizontalAlignment } from '../layout'
-import type { TextStyle } from '../textStyle'
+import type { HorizontalAlignment } from '@/shared/layout'
+import type { TextStyle } from '@/shared/textStyle'
 
 // ===== TYPES =================================================================
 /** Alignment of the text an element offers, e.g. of a title. */

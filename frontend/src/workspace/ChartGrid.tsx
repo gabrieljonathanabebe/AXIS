@@ -1,12 +1,12 @@
 import { useDndContext, useDndMonitor, useDroppable } from '@dnd-kit/core'
 import { useState } from 'react'
 
-import CardItem from '../cards/CardItem'
-import ChartItem from '../charts/ChartItem'
-import { isChartFormatElement } from '../charts/getFormatElements'
-import { getObjectLabel } from '../objects/getObjectLabel'
-import { getObjectDefinition } from '../objects/objectDefinitions'
-import ObjectFrame from '../objects/ObjectFrame'
+import CardItem from '@/cards/CardItem'
+import ChartItem from '@/charts/ChartItem'
+import { isChartFormatElement } from '@/charts/getFormatElements'
+import { getObjectLabel } from '@/objects/getObjectLabel'
+import { getObjectDefinition } from '@/objects/objectDefinitions'
+import ObjectFrame from '@/objects/ObjectFrame'
 import {
   CHART_GRID,
   findFreeLayout,
@@ -16,16 +16,16 @@ import {
 
 import type { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
-import type { WorkspaceCommands } from '../app/types'
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { DataField, Dataset } from '../datasets/types'
-import type { ShowFormatFocus, ShowFormatHint } from '../objects/ObjectFrame'
+import type { WorkspaceCommands } from '@/app/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { DataField, Dataset } from '@/datasets/types'
+import type { ShowFormatFocus, ShowFormatHint } from '@/objects/ObjectFrame'
 import type {
   DashboardObject,
   FormatTarget,
   ObjectFormatElement,
   ObjectLayout,
-} from '../objects/types'
+} from '@/objects/types'
 import type { GridDelta } from './chartLayout'
 import type {
   CanvasActions,

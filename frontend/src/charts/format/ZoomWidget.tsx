@@ -1,10 +1,10 @@
 import { Mouse, PanelBottom } from 'lucide-react'
 
-import Button from '../../shared/ui/Button'
-import ControlRow from '../../shared/ui/ControlRow'
-import FormatWidget from '../../shared/ui/FormatWidget'
+import Button from '@/shared/ui/Button'
+import ControlRow from '@/shared/ui/ControlRow'
+import FormatWidget from '@/shared/ui/FormatWidget'
 
-import type { ChartInteractionSpec } from '../types'
+import type { ChartInteractionSpec } from '@/charts/types'
 
 type ZoomWidgetProps = {
   value: ChartInteractionSpec['zoom']

@@ -2,7 +2,7 @@ import { color } from 'echarts'
 
 import { resolveColor } from './resolveColor'
 
-import type { Effect } from '../../shared/effect'
+import type { Effect } from '@/shared/effect'
 
 // ===== TYPES =================================================================
 /** Shadow fields of ECharts, e.g. in a line style or the item style of bars. */

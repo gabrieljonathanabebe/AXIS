@@ -1,12 +1,12 @@
 import {
   createNumberFormatter,
   resolveNumberFormat,
-} from '../../shared/format/formatNumber'
+} from '@/shared/format/formatNumber'
 import { createTextStyleOption } from './createTextStyleOption'
 
 import type { LineSeriesOption } from 'echarts'
-import type { NumberFormatter } from '../../shared/format/formatNumber'
-import type { ChartAppearanceSpec, LabelsAppearance } from '../types'
+import type { ChartAppearanceSpec, LabelsAppearance } from '@/charts/types'
+import type { NumberFormatter } from '@/shared/format/formatNumber'
 
 // ===== TYPES =================================================================
 type SeriesLabelOption = NonNullable<LineSeriesOption['label']>

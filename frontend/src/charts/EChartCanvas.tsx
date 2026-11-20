@@ -2,10 +2,10 @@ import * as echarts from 'echarts'
 import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 
-import { getRectInFrame } from '../objects/elementRect'
-import EmptyState from '../shared/ui/EmptyState'
-import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
-import { isSameSelection } from '../workspace/dataSelection'
+import { getRectInFrame } from '@/objects/elementRect'
+import EmptyState from '@/shared/ui/EmptyState'
+import { useIsFormatKeyHeld } from '@/shared/useIsFormatKeyHeld'
+import { isSameSelection } from '@/workspace/dataSelection'
 import ChartColorScale from './ChartColorScale'
 import {
   getChartDefinition,
@@ -39,15 +39,15 @@ import { useDocumentTheme } from './useDocumentTheme'
 import { usePointsQuery } from './usePointsQuery'
 
 import type { ECElementEvent, ECharts, ElementEvent } from 'echarts'
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { DataRow, Dataset } from '../datasets/types'
-import type { ShowFormatFocus, ShowFormatHint } from '../objects/ObjectFrame'
-import type { ElementRect } from '../objects/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { DataRow, Dataset } from '@/datasets/types'
+import type { ShowFormatFocus, ShowFormatHint } from '@/objects/ObjectFrame'
+import type { ElementRect } from '@/objects/types'
 import type {
   CanvasActions,
   DashboardAnimation,
   DataSelection,
-} from '../workspace/types'
+} from '@/workspace/types'
 import type { AxisTitleEdit, ChartFormatElement, ChartInstance } from './types'
 
 // Stable empty list, so non-scatter charts do not re-render the option.

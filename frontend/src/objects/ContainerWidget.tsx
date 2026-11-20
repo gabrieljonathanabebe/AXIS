@@ -1,11 +1,11 @@
-import FormatWidget from '../shared/ui/FormatWidget'
-import LayoutControls from '../shared/ui/LayoutControls'
-import PositionControls from '../shared/ui/PositionControls'
-import SurfaceControls from '../shared/ui/SurfaceControls'
-import { getLayoutBounds } from '../workspace/chartLayout'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import LayoutControls from '@/shared/ui/LayoutControls'
+import PositionControls from '@/shared/ui/PositionControls'
+import SurfaceControls from '@/shared/ui/SurfaceControls'
+import { getLayoutBounds } from '@/workspace/chartLayout'
 
-import type { Surface } from '../shared/surface'
-import type { LayoutBox } from '../shared/ui/BoxFieldsRow'
+import type { Surface } from '@/shared/surface'
+import type { LayoutBox } from '@/shared/ui/BoxFieldsRow'
 import type {
   ObjectContainer,
   ObjectLayout,

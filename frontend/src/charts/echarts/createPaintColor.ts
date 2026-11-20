@@ -1,9 +1,6 @@
 import { color } from 'echarts'
 
-import {
-  DEFAULT_RADIAL_SHAPE,
-  getLinearGradientPoints,
-} from '../../shared/paint'
+import { DEFAULT_RADIAL_SHAPE, getLinearGradientPoints } from '@/shared/paint'
 import { resolveColor } from './resolveColor'
 
 import type { LinearGradientObject, RadialGradientObject } from 'echarts'
@@ -12,7 +9,7 @@ import type {
   Paint,
   RadialShape,
   SeriesPaint,
-} from '../../shared/paint'
+} from '@/shared/paint'
 
 // ===== TYPES =================================================================
 /** Color ECharts paints a shape with: one color or a gradient. */

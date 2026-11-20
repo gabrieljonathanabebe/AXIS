@@ -1,13 +1,16 @@
 import { Fragment } from 'react'
 
-import { TIME_GRAIN_OPTIONS } from '../../shared/format/valueFormats'
-import ControlRow from '../../shared/ui/ControlRow'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import SelectControl from '../../shared/ui/SelectControl'
-import { chartDefinitionList, getChartDefinition } from '../chartDefinitions'
-import { getCompatibleFields } from '../getCompatibleFields'
-import { getEffectiveCategoryOrder } from '../getEffectiveCategoryOrder'
-import { getEffectiveTimeGrain } from '../getEffectiveTimeGrain'
+import {
+  chartDefinitionList,
+  getChartDefinition,
+} from '@/charts/chartDefinitions'
+import { getCompatibleFields } from '@/charts/getCompatibleFields'
+import { getEffectiveCategoryOrder } from '@/charts/getEffectiveCategoryOrder'
+import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
+import { TIME_GRAIN_OPTIONS } from '@/shared/format/valueFormats'
+import ControlRow from '@/shared/ui/ControlRow'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import SelectControl from '@/shared/ui/SelectControl'
 import {
   fromLimitChoice,
   fromSortChoice,
@@ -17,9 +20,9 @@ import {
   toSortChoice,
 } from './categoryOrderOptions'
 
-import type { TimeGrain } from '../../shared/format/valueFormats'
-import type { OptionItem } from '../../shared/ui/OptionsMenu'
-import type { ChartFormatProps } from '../types'
+import type { ChartFormatProps } from '@/charts/types'
+import type { TimeGrain } from '@/shared/format/valueFormats'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 type EncodingsWidgetProps = Pick<
   ChartFormatProps,

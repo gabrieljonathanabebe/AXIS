@@ -1,8 +1,8 @@
-import { getColorCss, getColorValueKey } from '../colorValue'
+import { getColorCss, getColorValueKey } from '@/shared/colorValue'
 import SelectControl from './SelectControl'
 
 import type { ReactNode } from 'react'
-import type { ColorValue } from '../colorValue'
+import type { ColorValue } from '@/shared/colorValue'
 import type { OptionItem } from './OptionsMenu'
 
 export type PaletteOption = {

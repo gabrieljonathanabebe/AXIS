@@ -1,10 +1,10 @@
-import { getFillsCss } from '../shared/fill'
-import { getSurfaceStyle } from '../shared/surface'
-import SurfaceLayers from '../shared/ui/SurfaceLayers'
+import { getFillsCss } from '@/shared/fill'
+import { getSurfaceStyle } from '@/shared/surface'
+import SurfaceLayers from '@/shared/ui/SurfaceLayers'
 import { createDashboardStyle } from './createDashboardStyle'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { Surface } from '../shared/surface'
+import type { Surface } from '@/shared/surface'
 import type { StyleRecipe } from './types'
 
 // ===== TYPES =================================================================

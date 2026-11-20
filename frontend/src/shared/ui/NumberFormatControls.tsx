@@ -4,8 +4,8 @@ import {
   createNumberFormatter,
   formatCompactNumber,
   formatNumber,
-} from '../format/formatNumber'
-import { CURRENCY_OPTIONS } from '../format/valueFormats'
+} from '@/shared/format/formatNumber'
+import { CURRENCY_OPTIONS } from '@/shared/format/valueFormats'
 import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
 import ScrubbableNumber from './ScrubbableNumber'
@@ -17,7 +17,7 @@ import type {
   CurrencyCode,
   NumberFormat,
   ValueFormat,
-} from '../format/valueFormats'
+} from '@/shared/format/valueFormats'
 
 // ===== TYPES =================================================================
 /** Choice of the format select: a style, or currency with its code. */

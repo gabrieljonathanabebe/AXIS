@@ -1,28 +1,28 @@
 import { useEffect, useMemo, useReducer } from 'react'
 
-import { parseCevynActions } from '../actions/parseCevynActions'
-import { translateCevynActions } from '../actions/translateCevynActions'
-import { createApplyStyleActions } from '../dashboardStyle/applyDashboardStyle'
-import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
-import { STYLE_RECIPES } from '../dashboardStyle/styleRecipes'
-import { createObject } from '../objects/createObject'
-import { findChart } from '../objects/findChart'
+import { parseCevynActions } from '@/actions/parseCevynActions'
+import { translateCevynActions } from '@/actions/translateCevynActions'
+import { createApplyStyleActions } from '@/dashboardStyle/applyDashboardStyle'
+import { createDashboardStyle } from '@/dashboardStyle/createDashboardStyle'
+import { STYLE_RECIPES } from '@/dashboardStyle/styleRecipes'
+import { createObject } from '@/objects/createObject'
+import { findChart } from '@/objects/findChart'
 import { useWorkspaceDnd } from './useWorkspaceDnd'
 import {
   initialWorkspaceHistory,
   workspaceHistoryReducer,
 } from './workspaceHistory'
 
-import type { CevynActionResult } from '../actions/types'
-import type { CardAppearanceSpec, CardDataSpec } from '../cards/types'
-import type { ChartAppearanceSpec } from '../charts/types'
-import type { StyleRecipe } from '../dashboardStyle/types'
-import type { Dataset } from '../datasets/types'
+import type { CevynActionResult } from '@/actions/types'
+import type { CardAppearanceSpec, CardDataSpec } from '@/cards/types'
+import type { ChartAppearanceSpec } from '@/charts/types'
+import type { StyleRecipe } from '@/dashboardStyle/types'
+import type { Dataset } from '@/datasets/types'
 import type {
   ObjectContainer,
   ObjectLayout,
   ObjectTemplate,
-} from '../objects/types'
+} from '@/objects/types'
 import type {
   CanvasActions,
   DashboardLayout,

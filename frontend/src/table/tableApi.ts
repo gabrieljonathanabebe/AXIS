@@ -1,7 +1,7 @@
-import { get, postJson } from '../shared/api/client'
+import { get, postJson } from '@/shared/api/client'
 
-import type { ChartFilter } from '../charts/chartsApi'
-import type { DataRow, ValueCount } from '../datasets/types'
+import type { ChartFilter } from '@/charts/chartsApi'
+import type { DataRow, ValueCount } from '@/datasets/types'
 import type { SortDirection } from './types'
 
 // Table only; charts filter with ChartFilter. Dates are ISO strings.

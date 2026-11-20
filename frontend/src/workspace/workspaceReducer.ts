@@ -1,16 +1,16 @@
-import { getChartDefinition } from '../charts/chartDefinitions'
-import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
-import { GRAPHITE } from '../dashboardStyle/styleRecipes'
+import { getChartDefinition } from '@/charts/chartDefinitions'
+import { createDashboardStyle } from '@/dashboardStyle/createDashboardStyle'
+import { GRAPHITE } from '@/dashboardStyle/styleRecipes'
 import { findFreeLayout, findNeighborObjectId } from './chartLayout'
 
-import type { CardInstance } from '../cards/types'
+import type { CardInstance } from '@/cards/types'
 import type {
   ChartEncoding,
   ChartInstance,
   ChartSpec,
   ChartType,
-} from '../charts/types'
-import type { DashboardObject } from '../objects/types'
+} from '@/charts/types'
+import type { DashboardObject } from '@/objects/types'
 import type {
   DashboardAnimation,
   WorkspaceAction,

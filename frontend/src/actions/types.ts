@@ -1,5 +1,5 @@
-import type { Aggregation, ChartEncoding, ChartType } from '../charts/types'
-import type { WorkspaceAction } from '../workspace/types'
+import type { Aggregation, ChartEncoding, ChartType } from '@/charts/types'
+import type { WorkspaceAction } from '@/workspace/types'
 
 // ===== ACTIONS ===============================================================
 // External, intent-level actions (e.g. from AI). Fields are addressed by

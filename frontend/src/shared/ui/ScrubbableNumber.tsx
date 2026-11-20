@@ -1,7 +1,7 @@
 import { GripVertical } from 'lucide-react'
 import { useRef } from 'react'
 
-import { useDraftValue } from '../useDraftValue'
+import { useDraftValue } from '@/shared/useDraftValue'
 import Button from './Button'
 
 import type {

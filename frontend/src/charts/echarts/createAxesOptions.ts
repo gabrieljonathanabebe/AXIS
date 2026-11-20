@@ -3,15 +3,15 @@ import { createStrokeStyleOption } from './createStrokeStyleOption'
 import { createTextStyleOption } from './createTextStyleOption'
 
 import type { XAxisComponentOption, YAxisComponentOption } from 'echarts'
-import type { DataField } from '../../datasets/types'
-import type { TimeGrain } from '../../shared/format/valueFormats'
 import type {
   AxisAppearance,
   AxisTitleAppearance,
   ChartAppearanceSpec,
   ChartEncoding,
   ChartType,
-} from '../types'
+} from '@/charts/types'
+import type { DataField } from '@/datasets/types'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 
 // ===== TYPES =================================================================
 type CreateAxesOptionsParams = {

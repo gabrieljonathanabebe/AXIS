@@ -1,4 +1,4 @@
-import { useDraftValue } from '../useDraftValue'
+import { useDraftValue } from '@/shared/useDraftValue'
 
 // ===== TYPES =================================================================
 type NumberInputProps = {

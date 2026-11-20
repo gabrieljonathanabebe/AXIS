@@ -1,15 +1,15 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 
-import { createDistributionBars } from '../datasets/fieldDistribution'
-import { getFieldGroupDefinition } from '../datasets/fieldGroups'
-import { semanticRoleLabels } from '../datasets/semanticRoles'
-import IconBadge from '../shared/ui/IconBadge'
-import MiniHistogram from '../shared/ui/MiniHistogram'
+import { createDistributionBars } from '@/datasets/fieldDistribution'
+import { getFieldGroupDefinition } from '@/datasets/fieldGroups'
+import { semanticRoleLabels } from '@/datasets/semanticRoles'
+import IconBadge from '@/shared/ui/IconBadge'
+import MiniHistogram from '@/shared/ui/MiniHistogram'
 import DataTableFilterPopover from './DataTableFilterPopover'
 
 import type { LucideIcon } from 'lucide-react'
-import type { DataField, FieldProfile, SemanticRole } from '../datasets/types'
-import type { HistogramBar } from '../shared/ui/MiniHistogram'
+import type { DataField, FieldProfile, SemanticRole } from '@/datasets/types'
+import type { HistogramBar } from '@/shared/ui/MiniHistogram'
 import type { TableFilter } from './tableApi'
 import type { SortDirection } from './types'
 

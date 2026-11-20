@@ -1,9 +1,9 @@
-import { getFillsCss } from '../fill'
-import { getSurfaceEffects } from '../surface'
+import { getFillsCss } from '@/shared/fill'
+import { getSurfaceEffects } from '@/shared/surface'
 import SurfaceBorder from './SurfaceBorder'
 
 import type { ReactNode } from 'react'
-import type { Surface } from '../surface'
+import type { Surface } from '@/shared/surface'
 
 // ===== TYPES =================================================================
 type SurfaceLayersProps = {

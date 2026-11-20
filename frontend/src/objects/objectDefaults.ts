@@ -1,6 +1,6 @@
-import { createColorValue } from '../shared/colorValue'
+import { createColorValue } from '@/shared/colorValue'
 
-import type { DashboardStyle } from '../dashboardStyle/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
 import type { ObjectContainer, ObjectTitleAppearance } from './types'
 
 // ===== FUNCTIONS =============================================================

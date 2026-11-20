@@ -1,6 +1,6 @@
-import { isRadialChartType } from '../chartDefinitions'
-import { getColorEncodingMode } from '../getColorEncodingMode'
-import { getValueLabel } from '../getEffectiveAggregation'
+import { isRadialChartType } from '@/charts/chartDefinitions'
+import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
+import { getValueLabel } from '@/charts/getEffectiveAggregation'
 import { createChartContent } from './content/createChartContent'
 import { createBrushOption } from './createBrushOption'
 import { createDataZoomOption } from './createDataZoomOption'
@@ -10,8 +10,8 @@ import { createTooltipOption } from './createTooltipOption'
 import { resolveColor, resolvePalette } from './resolveColor'
 
 import type { EChartsOption } from 'echarts'
-import type { DashboardAnimation } from '../../workspace/types'
-import type { LegendEntry } from '../types'
+import type { LegendEntry } from '@/charts/types'
+import type { DashboardAnimation } from '@/workspace/types'
 import type { ChartContentContext } from './content/chartContentTypes'
 
 // ===== TYPES =================================================================

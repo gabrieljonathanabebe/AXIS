@@ -1,18 +1,21 @@
 import { Fragment } from 'react'
 
-import ContainerWidget from '../../objects/ContainerWidget'
-import { getObjectDefinition } from '../../objects/objectDefinitions'
-import ObjectTitleWidget from '../../objects/ObjectTitleWidget'
-import FormatPanel from '../../shared/ui/FormatPanel'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import StrokeWidget from '../../shared/ui/StrokeWidget'
 import {
   getDefaultAxisTitle,
   getDefaultChartTitle,
   getDefaultColorScaleTitle,
-} from '../getChartTitle'
-import { getEffectiveTimeGrain, isDateField } from '../getEffectiveTimeGrain'
-import { getFormatElements } from '../getFormatElements'
+} from '@/charts/getChartTitle'
+import {
+  getEffectiveTimeGrain,
+  isDateField,
+} from '@/charts/getEffectiveTimeGrain'
+import { getFormatElements } from '@/charts/getFormatElements'
+import ContainerWidget from '@/objects/ContainerWidget'
+import { getObjectDefinition } from '@/objects/objectDefinitions'
+import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
+import FormatPanel from '@/shared/ui/FormatPanel'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import StrokeWidget from '@/shared/ui/StrokeWidget'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
@@ -21,8 +24,8 @@ import { getMarkGroups, MARK_GROUP_ORDER } from './markGroups'
 import ZoomWidget from './ZoomWidget'
 
 import type { ReactNode } from 'react'
-import type { FormatVisibility } from '../../shared/ui/FormatWidget'
-import type { ChartFormatElement, ChartFormatProps } from '../types'
+import type { ChartFormatElement, ChartFormatProps } from '@/charts/types'
+import type { FormatVisibility } from '@/shared/ui/FormatWidget'
 
 // ===== TYPES =================================================================
 type ChartFormatPanelProps = ChartFormatProps & {

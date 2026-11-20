@@ -1,11 +1,11 @@
 import { useId } from 'react'
 
-import { getColorCss } from '../colorValue'
-import { getLinearGradientPoints, getSortedStops } from '../paint'
+import { getColorCss } from '@/shared/colorValue'
+import { getLinearGradientPoints, getSortedStops } from '@/shared/paint'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { Paint } from '../paint'
-import type { StrokeStyle } from '../strokeStyle'
+import type { Paint } from '@/shared/paint'
+import type { StrokeStyle } from '@/shared/strokeStyle'
 
 // ===== TYPES =================================================================
 type SurfaceBorderProps = {

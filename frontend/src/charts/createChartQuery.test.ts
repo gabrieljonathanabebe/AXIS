@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { createHighlightQuery } from './createChartQuery'
 
-import type { DataSelection } from '../workspace/types'
+import type { DataSelection } from '@/workspace/types'
 import type { ChartQueryRequest, ChartQueryResult } from './chartsApi'
 
 const selection: DataSelection = {

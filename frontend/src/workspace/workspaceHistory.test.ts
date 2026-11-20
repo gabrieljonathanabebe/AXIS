@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { createChartInstance } from '../charts/createChartInstance'
-import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
-import { GRAPHITE } from '../dashboardStyle/styleRecipes'
+import { createChartInstance } from '@/charts/createChartInstance'
+import { createDashboardStyle } from '@/dashboardStyle/createDashboardStyle'
+import { GRAPHITE } from '@/dashboardStyle/styleRecipes'
 import {
   initialWorkspaceHistory,
   workspaceHistoryReducer,

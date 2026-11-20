@@ -1,7 +1,7 @@
 import { createDefaultChartSpec } from './createChartInstance'
 
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { WorkspaceAction } from '../workspace/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { WorkspaceAction } from '@/workspace/types'
 import type { ChartActions } from './types'
 
 // ===== TYPES =================================================================

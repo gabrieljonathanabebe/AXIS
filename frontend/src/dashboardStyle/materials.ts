@@ -1,11 +1,11 @@
-import { createColorValue } from '../shared/colorValue'
-import { DEFAULT_INNER_SHADOW, DEFAULT_NOISE_SIZE } from '../shared/effect'
-import { createColorStops, DEFAULT_RADIAL_SHAPE } from '../shared/paint'
+import { createColorValue } from '@/shared/colorValue'
+import { DEFAULT_INNER_SHADOW, DEFAULT_NOISE_SIZE } from '@/shared/effect'
+import { createColorStops, DEFAULT_RADIAL_SHAPE } from '@/shared/paint'
 
-import type { ColorValue } from '../shared/colorValue'
-import type { SurfaceEffect } from '../shared/effect'
-import type { GradientStop, Paint } from '../shared/paint'
-import type { StrokeAppearance } from '../shared/strokeStyle'
+import type { ColorValue } from '@/shared/colorValue'
+import type { SurfaceEffect } from '@/shared/effect'
+import type { GradientStop, Paint } from '@/shared/paint'
+import type { StrokeAppearance } from '@/shared/strokeStyle'
 import type { DashboardStyle, StyleColors, StyleRecipe } from './types'
 
 // ===== TYPES =================================================================

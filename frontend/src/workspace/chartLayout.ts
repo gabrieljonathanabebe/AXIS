@@ -1,9 +1,5 @@
-import type {
-  DashboardObject,
-  ObjectLayout,
-  ObjectSize,
-} from '../objects/types'
-import type { NumberBounds } from '../shared/layout'
+import type { DashboardObject, ObjectLayout, ObjectSize } from '@/objects/types'
+import type { NumberBounds } from '@/shared/layout'
 
 // ===== TYPES =================================================================
 export type GridDelta = Pick<ObjectLayout, 'x' | 'y'>

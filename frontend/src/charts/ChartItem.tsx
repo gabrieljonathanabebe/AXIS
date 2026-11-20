@@ -1,23 +1,23 @@
 import { useState } from 'react'
 
-import { getRectInFrame } from '../objects/elementRect'
-import { getTextStyleCss } from '../shared/textStyle'
-import EditableText from '../shared/ui/EditableText'
-import InlineTextInput from '../shared/ui/InlineTextInput'
+import { getRectInFrame } from '@/objects/elementRect'
+import { getTextStyleCss } from '@/shared/textStyle'
+import EditableText from '@/shared/ui/EditableText'
+import InlineTextInput from '@/shared/ui/InlineTextInput'
 import { getChartDefinition } from './chartDefinitions'
 import EChartCanvas from './EChartCanvas'
 import EncodingDropSlots from './EncodingDropSlots'
 import { getDefaultAxisTitle, getDefaultChartTitle } from './getChartTitle'
 
 import type { CSSProperties } from 'react'
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { DataField, Dataset } from '../datasets/types'
-import type { ShowFormatFocus, ShowFormatHint } from '../objects/ObjectFrame'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { DataField, Dataset } from '@/datasets/types'
+import type { ShowFormatFocus, ShowFormatHint } from '@/objects/ObjectFrame'
 import type {
   CanvasActions,
   DashboardAnimation,
   DataSelection,
-} from '../workspace/types'
+} from '@/workspace/types'
 import type { AxisTitleEdit, ChartFormatElement, ChartInstance } from './types'
 
 type ChartItemProps = {

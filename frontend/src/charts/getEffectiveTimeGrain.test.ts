@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { getEffectiveTimeGrain } from './getEffectiveTimeGrain'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { ChartDataSpec } from './types'
 
 const fields: DataField[] = [

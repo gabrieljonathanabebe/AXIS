@@ -1,13 +1,13 @@
-import { getSideOrientation } from '../../shared/layout'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import LayoutControls from '../../shared/ui/LayoutControls'
-import PositionControls from '../../shared/ui/PositionControls'
-import StrokeWidget from '../../shared/ui/StrokeWidget'
-import SurfaceControls from '../../shared/ui/SurfaceControls'
+import { getSideOrientation } from '@/shared/layout'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import LayoutControls from '@/shared/ui/LayoutControls'
+import PositionControls from '@/shared/ui/PositionControls'
+import StrokeWidget from '@/shared/ui/StrokeWidget'
+import SurfaceControls from '@/shared/ui/SurfaceControls'
 import AxisWidget from './AxisWidget'
 
-import type { LayoutBox } from '../../shared/ui/BoxFieldsRow'
-import type { ColorScaleAppearance } from '../types'
+import type { ColorScaleAppearance } from '@/charts/types'
+import type { LayoutBox } from '@/shared/ui/BoxFieldsRow'
 
 type ContinuousColorScale = ColorScaleAppearance['continuous']
 

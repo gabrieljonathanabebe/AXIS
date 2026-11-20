@@ -1,8 +1,8 @@
 import { SquareRoundCorner } from 'lucide-react'
 
-import { createSurfaceEffect } from '../effect'
-import { addFill } from '../fill'
-import { SURFACE_CAPABILITIES } from '../surface'
+import { createSurfaceEffect } from '@/shared/effect'
+import { addFill } from '@/shared/fill'
+import { SURFACE_CAPABILITIES } from '@/shared/surface'
 import ControlRow from './ControlRow'
 import FillListControls from './FillListControls'
 import FormatWidget from './FormatWidget'
@@ -11,7 +11,7 @@ import StrokeWidget from './StrokeWidget'
 import SurfaceEffectsControls from './SurfaceEffectsControls'
 
 import type { ReactNode } from 'react'
-import type { Surface, SurfaceRenderer } from '../surface'
+import type { Surface, SurfaceRenderer } from '@/shared/surface'
 
 // ===== TYPES =================================================================
 type SurfaceControlsProps = {

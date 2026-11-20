@@ -1,11 +1,11 @@
-import { isCardFormatElement } from '../cards/isCardFormatElement'
+import { isCardFormatElement } from '@/cards/isCardFormatElement'
 import {
   getFormatElements,
   isChartFormatElement,
-} from '../charts/getFormatElements'
+} from '@/charts/getFormatElements'
 import { getPanelElement } from './formatPanelElement'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { DashboardObject, ObjectFormatElement } from './types'
 
 // ===== FUNCTION ==============================================================

@@ -1,7 +1,7 @@
-import { createColorValue } from '../shared/colorValue'
+import { createColorValue } from '@/shared/colorValue'
 
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { ColorValue } from '../shared/colorValue'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { ColorValue } from '@/shared/colorValue'
 
 export type CategoricalColorPalette = {
   label: string

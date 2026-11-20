@@ -9,7 +9,7 @@ import {
   SquareStack,
 } from 'lucide-react'
 
-import { createSurfaceEffect, isSurfaceEffectTaken } from '../effect'
+import { createSurfaceEffect, isSurfaceEffectTaken } from '@/shared/effect'
 import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
 import FormatWidget from './FormatWidget'
@@ -19,7 +19,7 @@ import SelectControl from './SelectControl'
 import ShadowControls from './ShadowControls'
 
 import type { ReactNode } from 'react'
-import type { SurfaceEffect } from '../effect'
+import type { SurfaceEffect } from '@/shared/effect'
 import type { OptionItem } from './OptionsMenu'
 
 // ===== TYPES =================================================================

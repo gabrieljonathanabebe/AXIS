@@ -1,10 +1,10 @@
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useState } from 'react'
 
-import { createCardData } from '../cards/createCardInstance'
+import { createCardData } from '@/cards/createCardInstance'
 
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import type { ObjectTemplate } from '../objects/types'
+import type { ObjectTemplate } from '@/objects/types'
 import type {
   ActiveDrag,
   DragPayload,

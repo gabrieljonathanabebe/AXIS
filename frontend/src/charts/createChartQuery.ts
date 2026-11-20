@@ -1,4 +1,4 @@
-import { getSelectionQueryFilters } from '../workspace/dataSelection'
+import { getSelectionQueryFilters } from '@/workspace/dataSelection'
 import { hasAggregatedColor, isPointsChartType } from './chartDefinitions'
 import {
   getEffectiveAggregation,
@@ -7,8 +7,8 @@ import {
 import { getEffectiveCategoryOrder } from './getEffectiveCategoryOrder'
 import { getEffectiveTimeGrain } from './getEffectiveTimeGrain'
 
-import type { DataField } from '../datasets/types'
-import type { DataSelection } from '../workspace/types'
+import type { DataField } from '@/datasets/types'
+import type { DataSelection } from '@/workspace/types'
 import type {
   ChartQueryRequest,
   ChartQueryResult,

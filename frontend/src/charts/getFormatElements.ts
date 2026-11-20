@@ -2,8 +2,8 @@ import { isRadialChartType } from './chartDefinitions'
 import { getColorEncodingMode } from './getColorEncodingMode'
 import { isLegendRelevant } from './isLegendRelevant'
 
-import type { DataField } from '../datasets/types'
-import type { ObjectFormatElement } from '../objects/types'
+import type { DataField } from '@/datasets/types'
+import type { ObjectFormatElement } from '@/objects/types'
 import type { ChartFormatElement, ChartInstance } from './types'
 
 const chartFormatElements: readonly ObjectFormatElement[] = [

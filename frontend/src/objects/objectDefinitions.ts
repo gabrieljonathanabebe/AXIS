@@ -1,6 +1,6 @@
 import { ChartColumn, LayoutPanelTop, RectangleHorizontal } from 'lucide-react'
 
-import { chartDefinitionList } from '../charts/chartDefinitions'
+import { chartDefinitionList } from '@/charts/chartDefinitions'
 
 import type { LucideIcon } from 'lucide-react'
 import type { DashboardObjectKind, ObjectSize, ObjectTemplate } from './types'

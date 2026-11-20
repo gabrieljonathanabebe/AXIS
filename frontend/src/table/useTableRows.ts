@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { fetchTableQuery } from './tableApi'
 
-import type { DataRow } from '../datasets/types'
+import type { DataRow } from '@/datasets/types'
 import type { TableFilter, TableQueryResult } from './tableApi'
 import type { TableSort } from './types'
 

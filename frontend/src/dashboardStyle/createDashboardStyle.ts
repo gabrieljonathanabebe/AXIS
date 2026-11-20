@@ -1,11 +1,11 @@
-import { createColorValue } from '../shared/colorValue'
-import { createColorStops, DEFAULT_GRADIENT_ANGLE } from '../shared/paint'
+import { createColorValue } from '@/shared/colorValue'
+import { createColorStops, DEFAULT_GRADIENT_ANGLE } from '@/shared/paint'
 import { createMaterialContainer } from './materials'
 
-import type { Shadow } from '../shared/effect'
-import type { Fill } from '../shared/fill'
-import type { Surface } from '../shared/surface'
-import type { DashboardCanvas } from '../workspace/types'
+import type { Shadow } from '@/shared/effect'
+import type { Fill } from '@/shared/fill'
+import type { Surface } from '@/shared/surface'
+import type { DashboardCanvas } from '@/workspace/types'
 import type {
   CanvasGlow,
   ColorScheme,

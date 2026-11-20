@@ -1,6 +1,6 @@
 import { DragOverlay } from '@dnd-kit/core'
 
-import { ObjectOptionContent } from '../objects/ObjectPicker'
+import { ObjectOptionContent } from '@/objects/ObjectPicker'
 
 import type { ActiveDrag } from './types'
 

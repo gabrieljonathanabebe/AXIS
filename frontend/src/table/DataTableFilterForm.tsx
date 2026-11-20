@@ -1,11 +1,11 @@
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 
-import { formatDate } from '../shared/format/formatDate'
-import { formatNumber } from '../shared/format/formatNumber'
-import CheckList from '../shared/ui/CheckList'
-import RangeSlider from '../shared/ui/RangeSlider'
-import TextInput from '../shared/ui/TextInput'
+import { formatDate } from '@/shared/format/formatDate'
+import { formatNumber } from '@/shared/format/formatNumber'
+import CheckList from '@/shared/ui/CheckList'
+import RangeSlider from '@/shared/ui/RangeSlider'
+import TextInput from '@/shared/ui/TextInput'
 import { createMeasureSteps } from './measureSteps'
 import { createTemporalSteps } from './temporalSteps'
 import { useFieldValues } from './useFieldValues'
@@ -14,8 +14,8 @@ import type {
   FieldProfile,
   FieldStatistics,
   SemanticRole,
-} from '../datasets/types'
-import type { CheckListOption } from '../shared/ui/CheckList'
+} from '@/datasets/types'
+import type { CheckListOption } from '@/shared/ui/CheckList'
 import type { TableFilter } from './tableApi'
 
 // ===== TYPES =================================================================

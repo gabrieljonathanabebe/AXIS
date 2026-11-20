@@ -6,7 +6,7 @@ import { getChoiceKey, getSwatchColor } from './colorPresets'
 import Popover from './Popover'
 
 import type { CSSProperties } from 'react'
-import type { ColorValue } from '../colorValue'
+import type { ColorValue } from '@/shared/colorValue'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================

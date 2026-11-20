@@ -6,7 +6,7 @@ import {
   changeSeriesPaintType,
   getPaintType,
   hasOwnColor,
-} from '../paint'
+} from '@/shared/paint'
 import ColorPicker from './ColorPicker'
 import ControlRow from './ControlRow'
 import DetailsPopover from './DetailsPopover'
@@ -18,8 +18,8 @@ import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
 import type { ReactNode } from 'react'
-import type { Fill } from '../fill'
-import type { Paint, PaintType, SeriesPaint } from '../paint'
+import type { Fill } from '@/shared/fill'
+import type { Paint, PaintType, SeriesPaint } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================

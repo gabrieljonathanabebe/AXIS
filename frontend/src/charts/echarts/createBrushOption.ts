@@ -1,10 +1,10 @@
 import { color } from 'echarts'
 
-import { isPointsChartType } from '../chartDefinitions'
+import { isPointsChartType } from '@/charts/chartDefinitions'
 
 import type { BrushComponentOption, ECharts } from 'echarts'
-import type { DataSelection } from '../../workspace/types'
-import type { ChartInstance, ChartType } from '../types'
+import type { ChartInstance, ChartType } from '@/charts/types'
+import type { DataSelection } from '@/workspace/types'
 import type { ChartTheme } from './chartTheme'
 
 // ===== HELPERS ===============================================================

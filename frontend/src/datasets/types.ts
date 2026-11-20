@@ -1,4 +1,4 @@
-import type { TimeGrain } from '../shared/format/valueFormats'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 
 // ===== FIELD =================================================================
 /** Storage type of a column, as detected by the backend. */

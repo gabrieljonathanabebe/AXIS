@@ -1,5 +1,5 @@
 import type { ElementEvent } from 'echarts'
-import type { ElementRect } from '../../objects/types'
+import type { ElementRect } from '@/objects/types'
 
 // ===== TYPES =================================================================
 /** Something ECharts draws on its canvas: a text, a shape or a group. */

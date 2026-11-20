@@ -1,4 +1,4 @@
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { ChartCategoryOrder, ChartDataSpec } from './types'
 
 /**

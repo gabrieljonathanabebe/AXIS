@@ -2,7 +2,7 @@ import { createAggregatedChartContent } from './createAggregatedChartContent'
 import { createPieChartContent } from './createPieChartContent'
 import { createScatterChartContent } from './createScatterChartContent'
 
-import type { ChartType } from '../../types'
+import type { ChartType } from '@/charts/types'
 import type {
   ChartContent,
   ChartContentBuilder,

@@ -1,7 +1,7 @@
-import type { ObjectContainer } from '../objects/types'
-import type { RadialShape } from '../shared/paint'
-import type { Surface } from '../shared/surface'
-import type { DashboardCanvas } from '../workspace/types'
+import type { ObjectContainer } from '@/objects/types'
+import type { RadialShape } from '@/shared/paint'
+import type { Surface } from '@/shared/surface'
+import type { DashboardCanvas } from '@/workspace/types'
 
 // ===== RECIPE ================================================================
 /** Light or dark; decides texts, axes, gridlines, borders and dimming. */

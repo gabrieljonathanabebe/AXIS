@@ -1,7 +1,7 @@
-import { hasOwnColor } from '../../shared/paint'
+import { hasOwnColor } from '@/shared/paint'
 import { createPaintColor, createSeriesPaintColor } from './createPaintColor'
 
-import type { Fill, SeriesFill } from '../../shared/fill'
+import type { Fill, SeriesFill } from '@/shared/fill'
 import type { PaintColor } from './createPaintColor'
 
 /** Fill fields of ECharts, e.g. an area style or the item style of points. */

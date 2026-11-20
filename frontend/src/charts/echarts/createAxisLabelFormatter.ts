@@ -1,12 +1,12 @@
-import { createDateFormatter } from '../../shared/format/formatDate'
-import { createNumberFormatter } from '../../shared/format/formatNumber'
-import { isDateField, showsDateLabels } from '../getEffectiveTimeGrain'
+import { isDateField, showsDateLabels } from '@/charts/getEffectiveTimeGrain'
+import { createDateFormatter } from '@/shared/format/formatDate'
+import { createNumberFormatter } from '@/shared/format/formatNumber'
 
-import type { DataField } from '../../datasets/types'
-import type { DateFormatter } from '../../shared/format/formatDate'
-import type { NumberFormatter } from '../../shared/format/formatNumber'
-import type { TimeGrain } from '../../shared/format/valueFormats'
-import type { AxisAppearance } from '../types'
+import type { AxisAppearance } from '@/charts/types'
+import type { DataField } from '@/datasets/types'
+import type { DateFormatter } from '@/shared/format/formatDate'
+import type { NumberFormatter } from '@/shared/format/formatNumber'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 
 type AxisLabelValue = string | number
 

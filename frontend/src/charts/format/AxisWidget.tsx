@@ -1,17 +1,17 @@
 import { Ruler } from 'lucide-react'
 
-import ControlRow from '../../shared/ui/ControlRow'
-import DateFormatSelect from '../../shared/ui/DateFormatSelect'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import NumberFormatControls from '../../shared/ui/NumberFormatControls'
-import RotationDial from '../../shared/ui/RotationDial'
-import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
-import TextInput from '../../shared/ui/TextInput'
-import TextStyleControls from '../../shared/ui/TextStyleControls'
-import { showsDateLabels } from '../getEffectiveTimeGrain'
+import { showsDateLabels } from '@/charts/getEffectiveTimeGrain'
+import ControlRow from '@/shared/ui/ControlRow'
+import DateFormatSelect from '@/shared/ui/DateFormatSelect'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import NumberFormatControls from '@/shared/ui/NumberFormatControls'
+import RotationDial from '@/shared/ui/RotationDial'
+import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
+import TextInput from '@/shared/ui/TextInput'
+import TextStyleControls from '@/shared/ui/TextStyleControls'
 
-import type { TimeGrain } from '../../shared/format/valueFormats'
-import type { AxisLabelsAppearance, AxisTitleAppearance } from '../types'
+import type { AxisLabelsAppearance, AxisTitleAppearance } from '@/charts/types'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 
 // ===== TYPES =================================================================
 /**

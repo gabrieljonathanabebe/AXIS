@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import { getPaintCss } from '../paint'
+import { getPaintCss } from '@/shared/paint'
 import Button from './Button'
 import ColorField from './ColorField'
 import DetailsPopover from './DetailsPopover'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { GradientType, Paint } from '../paint'
+import type { GradientType, Paint } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================

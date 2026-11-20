@@ -1,6 +1,6 @@
 import { Fullscreen, MoveHorizontal, MoveVertical, Space } from 'lucide-react'
 
-import { isSide } from '../layout'
+import { isSide } from '@/shared/layout'
 import AlignmentControl from './AlignmentControl'
 import BoxFieldsRow from './BoxFieldsRow'
 import ControlRow from './ControlRow'
@@ -8,7 +8,7 @@ import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
 import type { LucideIcon } from 'lucide-react'
-import type { Orientation, PartialLayout } from '../layout'
+import type { Orientation, PartialLayout } from '@/shared/layout'
 import type { LayoutBox } from './BoxFieldsRow'
 import type { OptionItem } from './OptionsMenu'
 

@@ -1,19 +1,19 @@
 import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
 
-import ControlRow from '../../shared/ui/ControlRow'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import LayoutControls from '../../shared/ui/LayoutControls'
-import NumberFormatControls from '../../shared/ui/NumberFormatControls'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
-import SurfaceControls from '../../shared/ui/SurfaceControls'
-import TextStyleControls from '../../shared/ui/TextStyleControls'
+import ControlRow from '@/shared/ui/ControlRow'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import LayoutControls from '@/shared/ui/LayoutControls'
+import NumberFormatControls from '@/shared/ui/NumberFormatControls'
+import SegmentedControl from '@/shared/ui/SegmentedControl'
+import SurfaceControls from '@/shared/ui/SurfaceControls'
+import TextStyleControls from '@/shared/ui/TextStyleControls'
 
-import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type {
   ChartInteractionSpec,
   TooltipAppearance,
   TooltipTrigger,
-} from '../types'
+} from '@/charts/types'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 type TooltipWidgetProps = {
   appearance: TooltipAppearance

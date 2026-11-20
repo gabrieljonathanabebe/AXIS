@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest'
 import {
   createChartInstance,
   createDefaultChartSpec,
-} from '../charts/createChartInstance'
-import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
-import { GRAPHITE } from '../dashboardStyle/styleRecipes'
+} from '@/charts/createChartInstance'
+import { createDashboardStyle } from '@/dashboardStyle/createDashboardStyle'
+import { GRAPHITE } from '@/dashboardStyle/styleRecipes'
 import { initialWorkspaceState, workspaceReducer } from './workspaceReducer'
 
-import type { ChartInstance, ChartType } from '../charts/types'
+import type { ChartInstance, ChartType } from '@/charts/types'
 import type { WorkspaceState } from './types'
 
 // ===== HELPERS ===============================================================

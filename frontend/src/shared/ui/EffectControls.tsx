@@ -1,6 +1,6 @@
 import { CircleDashed, Minus, SquareStack, Sun } from 'lucide-react'
 
-import { createEffect } from '../effect'
+import { createEffect } from '@/shared/effect'
 import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
 import FormatWidget from './FormatWidget'
@@ -10,7 +10,7 @@ import SelectControl from './SelectControl'
 import ShadowControls from './ShadowControls'
 
 import type { ReactNode } from 'react'
-import type { Effect } from '../effect'
+import type { Effect } from '@/shared/effect'
 import type { OptionItem } from './OptionsMenu'
 
 // ===== TYPES =================================================================

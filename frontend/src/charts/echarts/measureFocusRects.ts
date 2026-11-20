@@ -2,8 +2,8 @@ import { HIGHLIGHT_SERIES_PREFIX } from './content/selectionStyle'
 import { getElementRect } from './getElementRect'
 
 import type { ECharts } from 'echarts'
-import type { ElementRect } from '../../objects/types'
-import type { ChartFormatElement } from '../types'
+import type { ChartFormatElement } from '@/charts/types'
+import type { ElementRect } from '@/objects/types'
 
 // ===== TYPES =================================================================
 /** Something ECharts draws on its canvas: a text, a shape or a group. */

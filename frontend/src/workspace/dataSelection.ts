@@ -1,13 +1,10 @@
-import {
-  createDateFormatter,
-  parseDateValue,
-} from '../shared/format/formatDate'
-import { formatNumber } from '../shared/format/formatNumber'
-import { DEFAULT_DATE_FORMAT } from '../shared/format/valueFormats'
-import { toIsoDate } from '../shared/timeGrain'
+import { createDateFormatter, parseDateValue } from '@/shared/format/formatDate'
+import { formatNumber } from '@/shared/format/formatNumber'
+import { DEFAULT_DATE_FORMAT } from '@/shared/format/valueFormats'
+import { toIsoDate } from '@/shared/timeGrain'
 
-import type { ChartFilter } from '../charts/chartsApi'
-import type { DataRow, DataValue } from '../datasets/types'
+import type { ChartFilter } from '@/charts/chartsApi'
+import type { DataRow, DataValue } from '@/datasets/types'
 import type { DataSelection, SelectionFilter } from './types'
 
 // ===== HELPERS ===============================================================

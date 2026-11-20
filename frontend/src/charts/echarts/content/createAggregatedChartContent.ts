@@ -1,14 +1,18 @@
-import { hasAggregatedColor } from '../../chartDefinitions'
-import { getColorEncodingMode } from '../../getColorEncodingMode'
-import { getColorScaleRange } from '../../getColorScaleRange'
-import { getValueLabel } from '../../getEffectiveAggregation'
-import { getEffectiveTimeGrain } from '../../getEffectiveTimeGrain'
-import { createAxesOptions } from '../createAxesOptions'
-import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
-import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
+import { hasAggregatedColor } from '@/charts/chartDefinitions'
+import { createAxesOptions } from '@/charts/echarts/createAxesOptions'
+import { createContinuousColorVisualMap } from '@/charts/echarts/createContinuousColorVisualMap'
+import {
+  getPaletteColor,
+  resolveColor,
+  resolvePalette,
+} from '@/charts/echarts/resolveColor'
+import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
+import { getColorScaleRange } from '@/charts/getColorScaleRange'
+import { getValueLabel } from '@/charts/getEffectiveAggregation'
+import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
 import { createAggregatedSeriesOption } from './createAggregatedSeriesOption'
 
-import type { ChartQueryPoint } from '../../chartsApi'
+import type { ChartQueryPoint } from '@/charts/chartsApi'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 import type { AggregatedSeriesData } from './createAggregatedSeriesOption'
 

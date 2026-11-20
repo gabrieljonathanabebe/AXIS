@@ -1,7 +1,7 @@
-import { GROUP_AGGREGATIONS } from '../charts/aggregations'
+import { GROUP_AGGREGATIONS } from '@/charts/aggregations'
 
-import type { GroupAggregation } from '../charts/types'
-import type { DataField } from '../datasets/types'
+import type { GroupAggregation } from '@/charts/types'
+import type { DataField } from '@/datasets/types'
 
 /**
  * Lists the aggregations a card can apply to its field.

@@ -1,4 +1,4 @@
-import { LOCALE } from '../config'
+import { LOCALE } from '@/shared/config'
 
 import type { NumberFormat } from './valueFormats'
 

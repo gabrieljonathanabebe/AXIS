@@ -1,4 +1,4 @@
-import { hasOwnColor } from '../../shared/paint'
+import { hasOwnColor } from '@/shared/paint'
 import { createPaintColor, createSeriesPaintColor } from './createPaintColor'
 
 import type {
@@ -6,7 +6,7 @@ import type {
   SeriesStrokeStyle,
   StrokeAppearance,
   StrokeStyle,
-} from '../../shared/strokeStyle'
+} from '@/shared/strokeStyle'
 import type { PaintColor } from './createPaintColor'
 
 // ===== TYPES =================================================================

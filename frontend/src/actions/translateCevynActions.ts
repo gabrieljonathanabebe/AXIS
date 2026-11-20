@@ -1,16 +1,16 @@
 import {
   createChartInstance,
   createDefaultChartSpec,
-} from '../charts/createChartInstance'
-import { createDashboardStyle } from '../dashboardStyle/createDashboardStyle'
-import { findChart } from '../objects/findChart'
-import { objectDefinitions } from '../objects/objectDefinitions'
-import { findFreeLayout } from '../workspace/chartLayout'
-import { workspaceReducer } from '../workspace/workspaceReducer'
+} from '@/charts/createChartInstance'
+import { createDashboardStyle } from '@/dashboardStyle/createDashboardStyle'
+import { findChart } from '@/objects/findChart'
+import { objectDefinitions } from '@/objects/objectDefinitions'
+import { findFreeLayout } from '@/workspace/chartLayout'
+import { workspaceReducer } from '@/workspace/workspaceReducer'
 import { validateCevynAction } from './validateCevynAction'
 
-import type { Dataset } from '../datasets/types'
-import type { WorkspaceAction, WorkspaceState } from '../workspace/types'
+import type { Dataset } from '@/datasets/types'
+import type { WorkspaceAction, WorkspaceState } from '@/workspace/types'
 import type { CevynAction, CevynActionError, CevynActionResult } from './types'
 
 // ===== HELPERS ===============================================================

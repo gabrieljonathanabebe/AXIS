@@ -1,14 +1,20 @@
-import ControlRow from '../../shared/ui/ControlRow'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import SelectControl from '../../shared/ui/SelectControl'
-import { getAggregationOptions, GROUP_AGGREGATIONS } from '../aggregations'
-import { getChartDefinition, hasAggregatedColor } from '../chartDefinitions'
+import {
+  getAggregationOptions,
+  GROUP_AGGREGATIONS,
+} from '@/charts/aggregations'
+import {
+  getChartDefinition,
+  hasAggregatedColor,
+} from '@/charts/chartDefinitions'
 import {
   getEffectiveAggregation,
   isCountOnly,
-} from '../getEffectiveAggregation'
+} from '@/charts/getEffectiveAggregation'
+import ControlRow from '@/shared/ui/ControlRow'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import SelectControl from '@/shared/ui/SelectControl'
 
-import type { ChartFormatProps } from '../types'
+import type { ChartFormatProps } from '@/charts/types'
 
 // ===== PROPS =================================================================
 type AggregationWidgetProps = Pick<

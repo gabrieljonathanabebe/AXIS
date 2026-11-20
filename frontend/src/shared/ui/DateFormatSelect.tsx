@@ -1,9 +1,16 @@
-import { createDateFormatter, resolveDatePreset } from '../format/formatDate'
-import { DATE_PRESETS_BY_GRAIN } from '../format/valueFormats'
+import {
+  createDateFormatter,
+  resolveDatePreset,
+} from '@/shared/format/formatDate'
+import { DATE_PRESETS_BY_GRAIN } from '@/shared/format/valueFormats'
 import ControlRow from './ControlRow'
 import SelectControl from './SelectControl'
 
-import type { DateFormat, DatePreset, TimeGrain } from '../format/valueFormats'
+import type {
+  DateFormat,
+  DatePreset,
+  TimeGrain,
+} from '@/shared/format/valueFormats'
 import type { OptionItem } from './OptionsMenu'
 
 // ===== TYPES =================================================================

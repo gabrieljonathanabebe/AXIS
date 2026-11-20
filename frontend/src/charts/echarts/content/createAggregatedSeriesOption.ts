@@ -1,17 +1,17 @@
-import { createEffectOption } from '../createEffectOption'
-import { createFillOption } from '../createFillOption'
+import { createEffectOption } from '@/charts/echarts/createEffectOption'
+import { createFillOption } from '@/charts/echarts/createFillOption'
 import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
-} from '../createSeriesLabelOption'
+} from '@/charts/echarts/createSeriesLabelOption'
 import {
   createBorderOption,
   createStrokeStyleOption,
-} from '../createStrokeStyleOption'
+} from '@/charts/echarts/createStrokeStyleOption'
 import { HIGHLIGHT_SERIES_PREFIX } from './selectionStyle'
 
 import type { BarSeriesOption, LineSeriesOption } from 'echarts'
-import type { ChartAppearanceSpec, LinePoints } from '../../types'
+import type { ChartAppearanceSpec, LinePoints } from '@/charts/types'
 
 // ===== TYPES =================================================================
 export type AggregatedSeriesData = Array<

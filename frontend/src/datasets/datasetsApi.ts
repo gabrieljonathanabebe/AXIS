@@ -1,4 +1,4 @@
-import { get, post } from '../shared/api/client'
+import { get, post } from '@/shared/api/client'
 
 import type { DataField, DatasetProfile } from './types'
 

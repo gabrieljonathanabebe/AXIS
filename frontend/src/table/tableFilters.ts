@@ -1,5 +1,5 @@
-import { formatDate } from '../shared/format/formatDate'
-import { formatNumber } from '../shared/format/formatNumber'
+import { formatDate } from '@/shared/format/formatDate'
+import { formatNumber } from '@/shared/format/formatNumber'
 
 import type { TableFilter } from './tableApi'
 

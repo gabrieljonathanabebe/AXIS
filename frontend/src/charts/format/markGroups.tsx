@@ -15,36 +15,39 @@ import {
   UnfoldHorizontal,
 } from 'lucide-react'
 
-import { createEffect } from '../../shared/effect'
-import ColorField from '../../shared/ui/ColorField'
-import ControlRow from '../../shared/ui/ControlRow'
-import DetailsPopover from '../../shared/ui/DetailsPopover'
-import EffectControls from '../../shared/ui/EffectControls'
-import FormatWidget from '../../shared/ui/FormatWidget'
-import GradientControl from '../../shared/ui/GradientControl'
-import PaintControl from '../../shared/ui/PaintControl'
-import PaletteControl from '../../shared/ui/PaletteControl'
-import ScrubbableNumber from '../../shared/ui/ScrubbableNumber'
-import SegmentedControl from '../../shared/ui/SegmentedControl'
-import StrokeStyleControls from '../../shared/ui/StrokeStyleControls'
-import StrokeWidget from '../../shared/ui/StrokeWidget'
-import { getChartDefinition, isRadialChartType } from '../chartDefinitions'
-import { getCategoricalPalettes } from '../colorPalettes'
-import { getColorEncodingMode } from '../getColorEncodingMode'
+import {
+  getChartDefinition,
+  isRadialChartType,
+} from '@/charts/chartDefinitions'
+import { getCategoricalPalettes } from '@/charts/colorPalettes'
+import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
+import { createEffect } from '@/shared/effect'
+import ColorField from '@/shared/ui/ColorField'
+import ControlRow from '@/shared/ui/ControlRow'
+import DetailsPopover from '@/shared/ui/DetailsPopover'
+import EffectControls from '@/shared/ui/EffectControls'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import GradientControl from '@/shared/ui/GradientControl'
+import PaintControl from '@/shared/ui/PaintControl'
+import PaletteControl from '@/shared/ui/PaletteControl'
+import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
+import SegmentedControl from '@/shared/ui/SegmentedControl'
+import StrokeStyleControls from '@/shared/ui/StrokeStyleControls'
+import StrokeWidget from '@/shared/ui/StrokeWidget'
 import LabelsWidget from './LabelsWidget'
 import TooltipWidget from './TooltipWidget'
 
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import type { Effect } from '../../shared/effect'
-import type { PaintType } from '../../shared/paint'
-import type { OptionItem } from '../../shared/ui/OptionsMenu'
 import type {
   ChartFormatProps,
   ColorScaleAppearance,
   LinePoints,
   ScatterSymbol,
-} from '../types'
+} from '@/charts/types'
+import type { Effect } from '@/shared/effect'
+import type { PaintType } from '@/shared/paint'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
 /** One place of the marks element, e.g. its fill. */

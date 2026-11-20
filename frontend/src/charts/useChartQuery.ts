@@ -1,7 +1,7 @@
-import { useQuery } from '../shared/useQuery'
+import { useQuery } from '@/shared/useQuery'
 import { fetchChartQuery } from './chartsApi'
 
-import type { Query } from '../shared/useQuery'
+import type { Query } from '@/shared/useQuery'
 import type { ChartQueryRequest, ChartQueryResult } from './chartsApi'
 
 /** Loads the aggregated points of a chart; shows nothing while new load. */

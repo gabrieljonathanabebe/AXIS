@@ -1,5 +1,5 @@
-import type { OptionItem } from '../../shared/ui/OptionsMenu'
-import type { ChartLimit, ChartSort } from '../types'
+import type { ChartLimit, ChartSort } from '@/charts/types'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
 /** Choice in the sort row, e.g. "value-desc" for Value ↓. */

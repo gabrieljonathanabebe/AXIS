@@ -1,8 +1,8 @@
 import { ArrowUp, LoaderCircle, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 
-import IconButton from '../shared/ui/IconButton'
-import TextInput from '../shared/ui/TextInput'
+import IconButton from '@/shared/ui/IconButton'
+import TextInput from '@/shared/ui/TextInput'
 
 import type { AskCevynState } from './useAskCevyn'
 

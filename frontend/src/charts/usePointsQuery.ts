@@ -1,7 +1,7 @@
-import { useQuery } from '../shared/useQuery'
+import { useQuery } from '@/shared/useQuery'
 import { fetchPointsQuery } from './chartsApi'
 
-import type { Query } from '../shared/useQuery'
+import type { Query } from '@/shared/useQuery'
 import type { PointsQueryRequest, PointsQueryResult } from './chartsApi'
 
 /** Loads the rows of a scatter chart; keeps the old points while new load. */

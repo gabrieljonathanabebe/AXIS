@@ -1,7 +1,7 @@
 import { getElementRect } from './getElementRect'
 
 import type { ECElementEvent, ECharts } from 'echarts'
-import type { AxisTitleEdit } from '../types'
+import type { AxisTitleEdit } from '@/charts/types'
 
 // ===== CONSTANTS =============================================================
 const axisByComponentType: Partial<Record<string, AxisTitleEdit['axis']>> = {

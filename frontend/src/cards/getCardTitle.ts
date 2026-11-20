@@ -1,4 +1,4 @@
-import { getAggregatedLabel } from '../charts/getEffectiveAggregation'
+import { getAggregatedLabel } from '@/charts/getEffectiveAggregation'
 
 import type { CardDataSpec, CardInstance } from './types'
 

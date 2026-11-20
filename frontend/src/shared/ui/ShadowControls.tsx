@@ -5,7 +5,7 @@ import ControlRow from './ControlRow'
 import FormatWidget from './FormatWidget'
 import ScrubbableNumber from './ScrubbableNumber'
 
-import type { Shadow } from '../effect'
+import type { Shadow } from '@/shared/effect'
 
 // ===== TYPES =================================================================
 type ShadowControlsProps<TValue extends Shadow> = {

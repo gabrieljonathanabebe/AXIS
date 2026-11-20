@@ -1,8 +1,8 @@
 import FormatWidget from './FormatWidget'
 import StrokeStyleControls from './StrokeStyleControls'
 
-import type { PaintType } from '../paint'
-import type { StrokeAppearance } from '../strokeStyle'
+import type { PaintType } from '@/shared/paint'
+import type { StrokeAppearance } from '@/shared/strokeStyle'
 
 type StrokeWidgetProps = {
   label: string

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { createDashboardStyle } from '../../../dashboardStyle/createDashboardStyle'
-import { GRAPHITE } from '../../../dashboardStyle/styleRecipes'
-import { createDefaultChartSpec } from '../../createChartInstance'
+import { createDefaultChartSpec } from '@/charts/createChartInstance'
+import { createDashboardStyle } from '@/dashboardStyle/createDashboardStyle'
+import { GRAPHITE } from '@/dashboardStyle/styleRecipes'
 import { createChartContent } from './createChartContent'
 
-import type { DataField } from '../../../datasets/types'
-import type { ChartEncoding, ChartType } from '../../types'
+import type { ChartEncoding, ChartType } from '@/charts/types'
+import type { DataField } from '@/datasets/types'
 import type { ChartContentContext } from './chartContentTypes'
 
 // ===== HELPERS ===============================================================

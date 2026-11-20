@@ -1,6 +1,6 @@
 import { color } from 'echarts'
 
-import type { ColorValue } from '../../shared/colorValue'
+import type { ColorValue } from '@/shared/colorValue'
 
 // ===== CONSTANTS =============================================================
 /**

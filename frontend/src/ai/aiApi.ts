@@ -1,7 +1,7 @@
-import { postJson } from '../shared/api/client'
+import { postJson } from '@/shared/api/client'
 
-import type { Aggregation, ChartEncoding, ChartType } from '../charts/types'
-import type { DataField, SemanticRole } from '../datasets/types'
+import type { Aggregation, ChartEncoding, ChartType } from '@/charts/types'
+import type { DataField, SemanticRole } from '@/datasets/types'
 
 export type AiChartContext = {
   aggregation: Aggregation

@@ -1,4 +1,4 @@
-import { isColorValue } from '../shared/colorValue'
+import { isColorValue } from '@/shared/colorValue'
 
 // ===== HELPERS ===============================================================
 /** Tells a plain object of a spec from arrays and primitive values. */

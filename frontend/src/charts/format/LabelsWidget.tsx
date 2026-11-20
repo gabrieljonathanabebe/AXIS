@@ -1,10 +1,10 @@
-import FormatWidget from '../../shared/ui/FormatWidget'
-import NumberFormatControls from '../../shared/ui/NumberFormatControls'
-import PositionControls from '../../shared/ui/PositionControls'
-import TextStyleControls from '../../shared/ui/TextStyleControls'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import NumberFormatControls from '@/shared/ui/NumberFormatControls'
+import PositionControls from '@/shared/ui/PositionControls'
+import TextStyleControls from '@/shared/ui/TextStyleControls'
 
-import type { OptionItem } from '../../shared/ui/OptionsMenu'
-import type { LabelPosition, LabelsAppearance } from '../types'
+import type { LabelPosition, LabelsAppearance } from '@/charts/types'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
 type LabelsWidgetProps = {

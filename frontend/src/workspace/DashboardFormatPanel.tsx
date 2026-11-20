@@ -1,13 +1,13 @@
-import StyleGallery from '../dashboardStyle/StyleGallery'
-import { STYLE_RECIPES } from '../dashboardStyle/styleRecipes'
-import { addFill } from '../shared/fill'
-import FillListControls from '../shared/ui/FillListControls'
-import FormatPanel from '../shared/ui/FormatPanel'
-import FormatWidget from '../shared/ui/FormatWidget'
-import LayoutControls from '../shared/ui/LayoutControls'
+import StyleGallery from '@/dashboardStyle/StyleGallery'
+import { STYLE_RECIPES } from '@/dashboardStyle/styleRecipes'
+import { addFill } from '@/shared/fill'
+import FillListControls from '@/shared/ui/FillListControls'
+import FormatPanel from '@/shared/ui/FormatPanel'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import LayoutControls from '@/shared/ui/LayoutControls'
 import AnimationWidget from './AnimationWidget'
 
-import type { Fill } from '../shared/fill'
+import type { Fill } from '@/shared/fill'
 import type { CanvasActions, DashboardSpec } from './types'
 
 // ===== TYPES =================================================================

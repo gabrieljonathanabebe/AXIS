@@ -1,7 +1,7 @@
 import { Moon, Sun } from 'lucide-react'
 
-import { useDocumentTheme } from '../charts/useDocumentTheme'
-import IconButton from '../shared/ui/IconButton'
+import { useDocumentTheme } from '@/charts/useDocumentTheme'
+import IconButton from '@/shared/ui/IconButton'
 
 // ===== HELPERS ===============================================================
 /**

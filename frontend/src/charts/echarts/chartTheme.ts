@@ -1,4 +1,4 @@
-import type { DashboardStyle } from '../../dashboardStyle/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
 
 /**
  * What a chart draws with besides its spec: the dashboard style for brush,

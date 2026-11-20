@@ -1,4 +1,4 @@
-import type { ObjectFormatElement } from '../objects/types'
+import type { ObjectFormatElement } from '@/objects/types'
 import type { CardFormatElement } from './types'
 
 const cardFormatElements: readonly ObjectFormatElement[] = [

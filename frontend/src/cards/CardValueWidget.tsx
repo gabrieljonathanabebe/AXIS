@@ -1,11 +1,11 @@
-import { getAggregationOptions } from '../charts/aggregations'
-import ControlRow from '../shared/ui/ControlRow'
-import FormatWidget from '../shared/ui/FormatWidget'
-import NumberFormatControls from '../shared/ui/NumberFormatControls'
-import SelectControl from '../shared/ui/SelectControl'
-import TextStyleControls from '../shared/ui/TextStyleControls'
+import { getAggregationOptions } from '@/charts/aggregations'
+import ControlRow from '@/shared/ui/ControlRow'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import NumberFormatControls from '@/shared/ui/NumberFormatControls'
+import SelectControl from '@/shared/ui/SelectControl'
+import TextStyleControls from '@/shared/ui/TextStyleControls'
 
-import type { GroupAggregation } from '../charts/types'
+import type { GroupAggregation } from '@/charts/types'
 import type { CardValueAppearance } from './types'
 
 // ===== TYPES =================================================================

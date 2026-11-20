@@ -1,7 +1,7 @@
-import { postJson } from '../shared/api/client'
+import { postJson } from '@/shared/api/client'
 
-import type { DataRow } from '../datasets/types'
-import type { TimeGrain } from '../shared/format/valueFormats'
+import type { DataRow } from '@/datasets/types'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 import type { ChartLimit, ChartSort, GroupAggregation } from './types'
 
 export type ChartFilter =

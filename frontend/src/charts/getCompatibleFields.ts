@@ -3,7 +3,7 @@ import {
   getSemanticCompatibility,
 } from './chartDefinitions'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { EncodingKey } from './chartDefinitions'
 import type { ChartType } from './types'
 

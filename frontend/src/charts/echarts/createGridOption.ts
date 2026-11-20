@@ -1,8 +1,8 @@
-import { isRadialChartType } from '../chartDefinitions'
+import { isRadialChartType } from '@/charts/chartDefinitions'
 
 import type { GridComponentOption } from 'echarts'
-import type { Side } from '../../shared/layout'
-import type { ChartType } from '../types'
+import type { ChartType } from '@/charts/types'
+import type { Side } from '@/shared/layout'
 
 // ===== CONSTANTS =============================================================
 /** Room for axis labels and titles on each side of the plot. */

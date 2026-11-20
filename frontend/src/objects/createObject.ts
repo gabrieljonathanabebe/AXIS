@@ -1,9 +1,9 @@
-import { createCardInstance } from '../cards/createCardInstance'
-import { createChartInstance } from '../charts/createChartInstance'
-import { findFreeLayout } from '../workspace/chartLayout'
+import { createCardInstance } from '@/cards/createCardInstance'
+import { createChartInstance } from '@/charts/createChartInstance'
+import { findFreeLayout } from '@/workspace/chartLayout'
 import { getObjectDefinition } from './objectDefinitions'
 
-import type { DashboardStyle } from '../dashboardStyle/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
 import type { DashboardObject, ObjectTemplate } from './types'
 
 /**

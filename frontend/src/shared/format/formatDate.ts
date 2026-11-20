@@ -1,4 +1,4 @@
-import { LOCALE } from '../config'
+import { LOCALE } from '@/shared/config'
 import { DATE_PRESETS_BY_GRAIN } from './valueFormats'
 
 import type { DateFormat, DatePreset, TimeGrain } from './valueFormats'

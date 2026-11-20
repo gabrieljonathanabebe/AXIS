@@ -1,13 +1,13 @@
 import { Minus, Timer } from 'lucide-react'
 
-import ControlRow from '../shared/ui/ControlRow'
-import FormatWidget from '../shared/ui/FormatWidget'
-import IconButton from '../shared/ui/IconButton'
-import ScrubbableNumber from '../shared/ui/ScrubbableNumber'
-import SelectControl from '../shared/ui/SelectControl'
+import ControlRow from '@/shared/ui/ControlRow'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import IconButton from '@/shared/ui/IconButton'
+import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
+import SelectControl from '@/shared/ui/SelectControl'
 import { DASHBOARD_ANIMATION } from './workspaceReducer'
 
-import type { OptionItem } from '../shared/ui/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 import type { AnimationEasing, DashboardAnimation } from './types'
 
 type AnimationWidgetProps = {

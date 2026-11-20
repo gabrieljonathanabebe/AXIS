@@ -1,8 +1,8 @@
-import { useQuery } from '../shared/useQuery'
+import { useQuery } from '@/shared/useQuery'
 import { fetchCardQuery } from './cardsApi'
 
-import type { ChartFilter } from '../charts/chartsApi'
-import type { Query } from '../shared/useQuery'
+import type { ChartFilter } from '@/charts/chartsApi'
+import type { Query } from '@/shared/useQuery'
 import type { CardQueryResult } from './cardsApi'
 import type { CardDataSpec } from './types'
 

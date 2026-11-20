@@ -1,9 +1,9 @@
 import { ListFilter } from 'lucide-react'
 import { useState } from 'react'
 
-import Button from '../shared/ui/Button'
-import IconButton from '../shared/ui/IconButton'
-import Popover from '../shared/ui/Popover'
+import Button from '@/shared/ui/Button'
+import IconButton from '@/shared/ui/IconButton'
+import Popover from '@/shared/ui/Popover'
 import DataTableFilterForm from './DataTableFilterForm'
 
 import type { DataTableFilterFormProps } from './DataTableFilterForm'

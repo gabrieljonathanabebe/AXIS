@@ -1,10 +1,10 @@
-import FormatWidget from '../../shared/ui/FormatWidget'
-import LayoutControls from '../../shared/ui/LayoutControls'
-import PositionControls from '../../shared/ui/PositionControls'
-import SurfaceControls from '../../shared/ui/SurfaceControls'
-import TextStyleControls from '../../shared/ui/TextStyleControls'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import LayoutControls from '@/shared/ui/LayoutControls'
+import PositionControls from '@/shared/ui/PositionControls'
+import SurfaceControls from '@/shared/ui/SurfaceControls'
+import TextStyleControls from '@/shared/ui/TextStyleControls'
 
-import type { LegendAppearance } from '../types'
+import type { LegendAppearance } from '@/charts/types'
 
 type LegendWidgetProps = {
   value: LegendAppearance

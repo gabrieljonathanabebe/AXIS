@@ -1,7 +1,7 @@
-import { parseDateValue } from '../shared/format/formatDate'
-import { addTimeGrain, toIsoDate } from '../shared/timeGrain'
+import { parseDateValue } from '@/shared/format/formatDate'
+import { addTimeGrain, toIsoDate } from '@/shared/timeGrain'
 
-import type { TimeGrain } from '../shared/format/valueFormats'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 
 // ===== FUNCTIONS =============================================================
 /**

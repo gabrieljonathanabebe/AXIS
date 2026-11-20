@@ -1,4 +1,4 @@
-import type { EncodingKey } from '../charts/chartDefinitions'
+import type { EncodingKey } from '@/charts/chartDefinitions'
 import type {
   CevynAction,
   CevynActionError,

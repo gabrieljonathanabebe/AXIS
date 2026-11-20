@@ -1,7 +1,7 @@
-import IconButton from '../shared/ui/IconButton'
+import IconButton from '@/shared/ui/IconButton'
 import { formatShortcut } from './formatShortcut'
 
-import type { IconButtonSize, IconButtonVariant } from '../shared/ui/IconButton'
+import type { IconButtonSize, IconButtonVariant } from '@/shared/ui/IconButton'
 import type { WorkspaceCommand } from './types'
 
 type CommandButtonProps = {

@@ -1,4 +1,4 @@
-import type { DataField, FieldProfile, SemanticRole } from '../datasets/types'
+import type { DataField, FieldProfile, SemanticRole } from '@/datasets/types'
 
 export type SortDirection = 'asc' | 'desc'
 

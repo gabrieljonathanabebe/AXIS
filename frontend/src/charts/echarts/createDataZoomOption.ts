@@ -1,5 +1,5 @@
 import type { DataZoomComponentOption } from 'echarts'
-import type { ChartInteractionSpec } from '../types'
+import type { ChartInteractionSpec } from '@/charts/types'
 
 // ===== FUNCTION ==============================================================
 export function createDataZoomOption(

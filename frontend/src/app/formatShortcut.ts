@@ -1,4 +1,4 @@
-import { isMac } from '../shared/platform'
+import { isMac } from '@/shared/platform'
 
 import type { CommandShortcut } from './types'
 

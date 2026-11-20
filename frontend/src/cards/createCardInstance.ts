@@ -1,13 +1,13 @@
 import {
   createDefaultContainer,
   createDefaultTitle,
-} from '../objects/objectDefaults'
-import { createColorValue } from '../shared/colorValue'
-import { DEFAULT_NUMBER_FORMAT } from '../shared/format/valueFormats'
+} from '@/objects/objectDefaults'
+import { createColorValue } from '@/shared/colorValue'
+import { DEFAULT_NUMBER_FORMAT } from '@/shared/format/valueFormats'
 
-import type { DashboardStyle } from '../dashboardStyle/types'
-import type { DataField } from '../datasets/types'
-import type { ObjectLayout } from '../objects/types'
+import type { DashboardStyle } from '@/dashboardStyle/types'
+import type { DataField } from '@/datasets/types'
+import type { ObjectLayout } from '@/objects/types'
 import type { CardDataSpec, CardInstance, CardSpec } from './types'
 
 type CreateCardInstanceParams = {

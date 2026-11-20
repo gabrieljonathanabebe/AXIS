@@ -1,26 +1,27 @@
-import {
-  getRowSelection,
-  isRowInSelection,
-} from '../../../workspace/dataSelection'
-import { getColorEncodingMode } from '../../getColorEncodingMode'
-import { getColorScaleRange } from '../../getColorScaleRange'
-import { getValueLabel } from '../../getEffectiveAggregation'
-import { getEffectiveTimeGrain } from '../../getEffectiveTimeGrain'
-import { getNumericDomain } from '../../getNumericDomain'
-import { createAxesOptions } from '../createAxesOptions'
-import { createContinuousColorVisualMap } from '../createContinuousColorVisualMap'
-import { createEffectOption } from '../createEffectOption'
-import { createFillOption } from '../createFillOption'
+import { createAxesOptions } from '@/charts/echarts/createAxesOptions'
+import { createContinuousColorVisualMap } from '@/charts/echarts/createContinuousColorVisualMap'
+import { createEffectOption } from '@/charts/echarts/createEffectOption'
+import { createFillOption } from '@/charts/echarts/createFillOption'
 import {
   createLabelNumberFormatter,
   createSeriesLabelOption,
-} from '../createSeriesLabelOption'
-import { createBorderOption } from '../createStrokeStyleOption'
-import { getPaletteColor, resolveColor, resolvePalette } from '../resolveColor'
+} from '@/charts/echarts/createSeriesLabelOption'
+import { createBorderOption } from '@/charts/echarts/createStrokeStyleOption'
+import {
+  getPaletteColor,
+  resolveColor,
+  resolvePalette,
+} from '@/charts/echarts/resolveColor'
+import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
+import { getColorScaleRange } from '@/charts/getColorScaleRange'
+import { getValueLabel } from '@/charts/getEffectiveAggregation'
+import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
+import { getNumericDomain } from '@/charts/getNumericDomain'
+import { getRowSelection, isRowInSelection } from '@/workspace/dataSelection'
 
 import type { ScatterSeriesOption } from 'echarts'
-import type { DataRow, DataValue } from '../../../datasets/types'
-import type { ChartAppearanceSpec, ScatterSizeRange } from '../../types'
+import type { ChartAppearanceSpec, ScatterSizeRange } from '@/charts/types'
+import type { DataRow, DataValue } from '@/datasets/types'
 import type { ChartContent, ChartContentContext } from './chartContentTypes'
 
 // ===== TYPES =================================================================

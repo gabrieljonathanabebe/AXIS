@@ -1,4 +1,4 @@
-import { formatNumber } from '../format/formatNumber'
+import { formatNumber } from '@/shared/format/formatNumber'
 
 export type HistogramBar = {
   count: number

@@ -1,7 +1,7 @@
-import { getPlacementLabel } from '../layout'
+import { getPlacementLabel } from '@/shared/layout'
 import Button from './Button'
 
-import type { HorizontalAlignment, Side } from '../layout'
+import type { HorizontalAlignment, Side } from '@/shared/layout'
 
 // ===== TYPES =================================================================
 /** Side and place along it, e.g. a legend at the top, centered. */

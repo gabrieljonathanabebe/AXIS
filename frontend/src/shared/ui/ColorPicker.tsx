@@ -1,7 +1,7 @@
 import { use } from 'react'
 import { HexColorInput, HexColorPicker } from 'react-colorful'
 
-import { normalizeHex } from '../colorValue'
+import { normalizeHex } from '@/shared/colorValue'
 import Button from './Button'
 import {
   getChoiceKey,
@@ -11,7 +11,7 @@ import {
 } from './colorPresets'
 
 import type { CSSProperties } from 'react'
-import type { ColorValue } from '../colorValue'
+import type { ColorValue } from '@/shared/colorValue'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================

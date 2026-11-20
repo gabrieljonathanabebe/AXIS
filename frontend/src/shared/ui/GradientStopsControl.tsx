@@ -4,7 +4,7 @@ import ColorSwatch from './ColorSwatch'
 import IconButton from './IconButton'
 import ScrubbableNumber from './ScrubbableNumber'
 
-import type { GradientStop } from '../paint'
+import type { GradientStop } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================

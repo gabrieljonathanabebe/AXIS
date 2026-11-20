@@ -1,7 +1,7 @@
-import { getCardTitle } from '../cards/getCardTitle'
-import { getChartTitle } from '../charts/getChartTitle'
+import { getCardTitle } from '@/cards/getCardTitle'
+import { getChartTitle } from '@/charts/getChartTitle'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { DashboardObject } from './types'
 
 /**

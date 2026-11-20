@@ -1,12 +1,12 @@
-import { getPeriodEnd } from '../../shared/timeGrain'
-import { isPointsChartType } from '../chartDefinitions'
-import { getColorEncodingMode } from '../getColorEncodingMode'
-import { getEffectiveTimeGrain } from '../getEffectiveTimeGrain'
+import { isPointsChartType } from '@/charts/chartDefinitions'
+import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
+import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
+import { getPeriodEnd } from '@/shared/timeGrain'
 
 import type { ECElementEvent } from 'echarts'
-import type { DataField } from '../../datasets/types'
-import type { DataSelection, SelectionFilter } from '../../workspace/types'
-import type { ChartInstance } from '../types'
+import type { ChartInstance } from '@/charts/types'
+import type { DataField } from '@/datasets/types'
+import type { DataSelection, SelectionFilter } from '@/workspace/types'
 
 // ===== TYPES =================================================================
 type BrushEndEvent = {

@@ -1,5 +1,5 @@
-import type { DataField } from '../datasets/types'
-import type { TimeGrain } from '../shared/format/valueFormats'
+import type { DataField } from '@/datasets/types'
+import type { TimeGrain } from '@/shared/format/valueFormats'
 import type { AxisLabelsAppearance, ChartDataSpec } from './types'
 
 /**

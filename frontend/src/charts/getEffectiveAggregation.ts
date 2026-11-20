@@ -1,6 +1,6 @@
 import { AGGREGATION_LABELS } from './aggregations'
 
-import type { DataField } from '../datasets/types'
+import type { DataField } from '@/datasets/types'
 import type { Aggregation, ChartDataSpec } from './types'
 
 // An aggregated chart with only X set counts the rows per X value.

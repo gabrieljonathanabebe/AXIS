@@ -1,7 +1,7 @@
 import ControlRow from './ControlRow'
 import ScrubbableNumber from './ScrubbableNumber'
 
-import type { Box, NumberBounds } from '../layout'
+import type { Box, NumberBounds } from '@/shared/layout'
 
 // ===== TYPES =================================================================
 /**

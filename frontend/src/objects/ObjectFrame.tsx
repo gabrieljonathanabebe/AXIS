@@ -3,12 +3,12 @@ import { FloatingPortal } from '@floating-ui/react'
 import { GripHorizontal, Paintbrush } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import CommandButton from '../app/CommandButton'
-import { formatKeyLabel, isFormatClick } from '../shared/platform'
-import { getSurfaceStyle } from '../shared/surface'
-import SurfaceLayers from '../shared/ui/SurfaceLayers'
-import { useIsFormatKeyHeld } from '../shared/useIsFormatKeyHeld'
-import { moveLayout, resizeLayout } from '../workspace/chartLayout'
+import CommandButton from '@/app/CommandButton'
+import { formatKeyLabel, isFormatClick } from '@/shared/platform'
+import { getSurfaceStyle } from '@/shared/surface'
+import SurfaceLayers from '@/shared/ui/SurfaceLayers'
+import { useIsFormatKeyHeld } from '@/shared/useIsFormatKeyHeld'
+import { moveLayout, resizeLayout } from '@/workspace/chartLayout'
 import { getRectInFrame, getRectStyle } from './elementRect'
 import { getObjectDefinition } from './objectDefinitions'
 
@@ -19,15 +19,15 @@ import type {
   PointerEvent,
   ReactNode,
 } from 'react'
-import type { WorkspaceCommands } from '../app/types'
-import type { SurfaceStyle } from '../shared/surface'
-import type { GridDelta } from '../workspace/chartLayout'
+import type { WorkspaceCommands } from '@/app/types'
+import type { SurfaceStyle } from '@/shared/surface'
+import type { GridDelta } from '@/workspace/chartLayout'
 import type {
   CanvasActions,
   DataSelection,
   DragPayload,
   ObjectLayoutMode,
-} from '../workspace/types'
+} from '@/workspace/types'
 import type { DashboardObject, ElementRect, ObjectFormatElement } from './types'
 
 // ===== TYPES =================================================================

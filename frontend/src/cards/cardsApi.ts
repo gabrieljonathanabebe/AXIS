@@ -1,7 +1,7 @@
-import { postJson } from '../shared/api/client'
+import { postJson } from '@/shared/api/client'
 
-import type { ChartFilter } from '../charts/chartsApi'
-import type { GroupAggregation } from '../charts/types'
+import type { ChartFilter } from '@/charts/chartsApi'
+import type { GroupAggregation } from '@/charts/types'
 
 export type CardQueryRequest = {
   aggregation: GroupAggregation
