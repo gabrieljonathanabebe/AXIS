@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "check:boundaries": "eslint --config eslint.boundaries.config.js src",
+    "check:copies": "jscpd",
+    "check:cycles": "madge --circular --extensions ts,tsx --ts-config tsconfig.app.json src || true",
+    "check:unused": "knip --no-exit-code",
     "format": "prettier --write . ../docs ../AGENTS.md ../README.md",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -33,13 +37,23 @@
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
     "eslint": "^10.9.0",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-boundaries": "^7.4.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.4",
     "globals": "^17.11.0",
+    "jscpd": "^5.4.3",
+    "knip": "^6.47.0",
+    "madge": "^8.0.0",
     "prettier": "^3.9.7",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.67.0",
     "vite": "^8.2.2",
     "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "madge": {
+      "typescript": "$typescript"
+    }
   }
 }

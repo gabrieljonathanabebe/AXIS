@@ -258,6 +258,30 @@ für macOS (`darwin`), Linux für die CI kommt später als eigener Satz
 dazu. Bei einem roten Vergleich zeigt `npx playwright show-report`
 Referenz, neues Bild und Unterschied.
 
+Strukturberichte prüfen die Regeln aus Abschnitt 21 und melden vorerst
+nur, ohne den Lauf scheitern zu lassen; scharf werden sie im
+Refactoring-Slice (`ROADMAP.md`, 3.14, Teil 8). Im Ordner `frontend/`:
+
+```bash
+npm run check:boundaries  # Schichtgrenzen (ESLint-Grenzen)
+npm run check:copies      # Kopien, Frontend und Backend (jscpd)
+npm run check:cycles      # Ringabhängigkeiten (madge)
+npm run check:unused      # Ungenutztes (knip)
+```
+
+Im Ordner `backend/`:
+
+```bash
+uv run lint-imports       # Schichtgrenzen (import-linter)
+```
+
+Umgang mit den Berichten: am Ende eines Slices bzw. Teils ausführen und
+mit dem Stand davor vergleichen (bis Teil 8 die Zahlen in `ROADMAP.md`,
+3.14, Teil 2). Neue Befunde durch die eigene Änderung vor dem Abschluss
+beheben oder im Abschluss begründen; bestehende Befunde nicht nebenbei
+beheben, sondern nur im Slice, der dafür vorgesehen ist. Der Abschluss
+nennt die Zahlen vorher und nachher, wenn sie sich geändert haben.
+
 Bei der Arbeit in Vertical Slices werden diese Befehle einmalig
 am Ende des vollständigen Slices ausgeführt, nicht nach jedem einzelnen
 Implementierungsblock.
@@ -500,11 +524,15 @@ Datei oder Funktion bereits ohne sie unmittelbar erfassbar ist.
 Ziel der Dokumentation im Code: Mensch und KI erfassen eine Funktion,
 ohne ihren Rumpf lesen zu müssen.
 
+Importpfade im Frontend: über Ordnergrenzen mit dem Alias `@/` (zeigt
+auf `src/`, definiert nur in `tsconfig.app.json`), im selben Ordner
+relativ mit `./`; kein `../`.
+
 Import-Reihenfolge wird automatisch gesetzt, nicht von Hand:
 
 - Frontend: `@ianvs/prettier-plugin-sort-imports` über `npm run format`;
-  Gruppen: externe Pakete, eigene Module, `import type` zuletzt,
-  jeweils alphabetisch, getrennt durch eine Leerzeile
+  Gruppen: externe Pakete, eigene Module (`@/` vor `./`), `import type`
+  zuletzt, jeweils alphabetisch, getrennt durch eine Leerzeile
 - Backend: Ruff (`ruff check --fix`, Regel `I`); Gruppen:
   Standardbibliothek, externe Pakete, `app.…`
 
@@ -741,15 +769,15 @@ dasselbe auffallen (C2).
 
 ### Werkzeuge
 
-| Werkzeug             | Prüft                                                 | Seite    |
-| -------------------- | ----------------------------------------------------- | -------- |
-| ESLint-Grenzen       | S3, S4                                                | Frontend |
-| `import-linter`      | S3, S4                                                | Backend  |
-| `madge --circular`   | Ringabhängigkeiten (S4)                               | Frontend |
-| `knip`               | Ungenutztes (C1)                                      | Frontend |
-| `jscpd`              | Kopien (C1, C7)                                       | beide    |
-| `openapi-typescript` | API-Typen aus dem Backend erzeugt statt von Hand (C1) | beide    |
-| Vitest, pytest       | Logik (C4)                                            | beide    |
+| Werkzeug             | Prüft                                                 | Seite    | Aufruf                     |
+| -------------------- | ----------------------------------------------------- | -------- | -------------------------- |
+| ESLint-Grenzen       | S3, S4                                                | Frontend | `npm run check:boundaries` |
+| `import-linter`      | S3, S4                                                | Backend  | `uv run lint-imports`      |
+| `madge --circular`   | Ringabhängigkeiten (S4)                               | Frontend | `npm run check:cycles`     |
+| `knip`               | Ungenutztes (C1)                                      | Frontend | `npm run check:unused`     |
+| `jscpd`              | Kopien (C1, C7)                                       | beide    | `npm run check:copies`     |
+| `openapi-typescript` | API-Typen aus dem Backend erzeugt statt von Hand (C1) | beide    | Teil 5 des Refactorings    |
+| Vitest, pytest       | Logik (C4)                                            | beide    | `npm run test`, `pytest`   |
 
 Eingerichtet werden sie im Refactoring-Slice, in der CI laufen sie ab
 „Alpha-Infrastruktur und Vollbild“.

@@ -1,0 +1,6 @@
+{
+  "path": ["src", "../backend/app"],
+  "format": ["typescript", "tsx", "python", "css"],
+  "ignore": ["**/__pycache__/**"],
+  "reporters": ["console"]
+}

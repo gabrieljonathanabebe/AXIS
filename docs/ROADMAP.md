@@ -135,8 +135,11 @@ Teile:
    festhalten: Vitest für Undo-Zusammenfassung, Sortierung, Zeitraster,
    Typwechsel und leere Kategorie, pytest für Profil und Grenzwerte der
    Queries
-2. Werkzeuge: Pfad-Alias `@/`, `madge`, `knip`, `jscpd`, ESLint-Grenzen
-   und `import-linter` als Skripte, die vorerst nur melden
+2. Werkzeuge (erledigt): Pfad-Alias `@/`, `madge`, `knip`, `jscpd`,
+   ESLint-Grenzen und `import-linter` als Skripte, die vorerst nur melden;
+   Stand beim Einrichten: 8 Ringe, 52 Grenzverstöße, 12 Kopien, 1
+   ungenutzte Datei und 45 ungenutzte Exporte im Frontend, Backend-Vertrag
+   erfüllt
 3. Verschieben: CSS neben die Komponenten (#12), `index.css` bleibt die
    geordnete Importliste; Bausteine aus `shared/`, die nur ein Bereich
    nutzt, in diesen Bereich; Backend-Tests nach `tests/datasets`,
