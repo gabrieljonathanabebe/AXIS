@@ -3,15 +3,15 @@ import {
   resolveDatePreset,
 } from '@/shared/format/formatDate'
 import { DATE_PRESETS_BY_GRAIN } from '@/shared/format/valueFormats'
-import ControlRow from './ControlRow'
-import SelectControl from './SelectControl'
+import ControlRow from '@/shared/ui/ControlRow'
+import SelectControl from '@/shared/ui/SelectControl'
 
 import type {
   DateFormat,
   DatePreset,
   TimeGrain,
 } from '@/shared/format/valueFormats'
-import type { OptionItem } from './OptionsMenu'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
 type DateFormatSelectProps = {

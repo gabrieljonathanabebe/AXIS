@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
 
-import Button from './Button'
+import Button from '@/shared/ui/Button'
 
 // ===== TYPES =================================================================
 export type CheckListOption = {

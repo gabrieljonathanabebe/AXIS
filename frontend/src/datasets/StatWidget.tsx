@@ -1,5 +1,5 @@
-import IconBadge from './IconBadge'
-import Widget from './Widget'
+import IconBadge from '@/shared/ui/IconBadge'
+import Widget from '@/shared/ui/Widget'
 
 import type { ReactNode } from 'react'
 

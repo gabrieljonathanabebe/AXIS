@@ -1,10 +1,10 @@
 import { getGradientStopsCss, getSortedStops } from '@/shared/paint'
-import ColorSwatch from './ColorSwatch'
+import ColorSwatch from '@/shared/ui/ColorSwatch'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
 import type { GradientStop } from '@/shared/paint'
-import type { ColorPreset } from './colorPresets'
+import type { ColorPreset } from '@/shared/ui/colorPresets'
 
 // ===== TYPES =================================================================
 type GradientControlProps = {

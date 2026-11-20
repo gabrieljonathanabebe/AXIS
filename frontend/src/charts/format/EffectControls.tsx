@@ -1,17 +1,17 @@
 import { CircleDashed, Minus, SquareStack, Sun } from 'lucide-react'
 
 import { createEffect } from '@/shared/effect'
-import ControlRow from './ControlRow'
-import DetailsField from './DetailsField'
-import FormatWidget from './FormatWidget'
-import IconButton from './IconButton'
-import ScrubbableNumber from './ScrubbableNumber'
-import SelectControl from './SelectControl'
-import ShadowControls from './ShadowControls'
+import ControlRow from '@/shared/ui/ControlRow'
+import DetailsField from '@/shared/ui/DetailsField'
+import FormatWidget from '@/shared/ui/FormatWidget'
+import IconButton from '@/shared/ui/IconButton'
+import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
+import SelectControl from '@/shared/ui/SelectControl'
+import ShadowControls from '@/shared/ui/ShadowControls'
 
 import type { ReactNode } from 'react'
 import type { Effect } from '@/shared/effect'
-import type { OptionItem } from './OptionsMenu'
+import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
 type EffectControlsProps = {
