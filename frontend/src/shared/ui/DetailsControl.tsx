@@ -1,5 +1,6 @@
 import Button from './Button'
-import DetailsPopover from './DetailsPopover'
+import Editor from './Editor'
+import Popover from './Popover'
 
 import type { ReactNode } from 'react'
 
@@ -9,39 +10,32 @@ type DetailsControlProps = {
   fitsContent?: boolean
   icon: ReactNode
   label: string
-  open?: boolean
   text: string
-  onOpenChange?: (open: boolean) => void
 }
 
 // ===== COMPONENT =============================================================
 /**
  * Control whose icon opens details, built like the control of a gradient: the
  * icon in place of the swatch, a short text next to it, e.g. the kind of
- * an effect or a preview of a number format. `open` and `onOpenChange`
- * let a list open the details itself, e.g. after adding, like the field
- * of a paint. `fitsContent` gives the details the width of their rows.
- * @param props Name for screen readers, icon, text, details, their width
- *   and open state.
+ * an effect or a preview of a number format. `fitsContent` gives the
+ * details the width of their rows.
+ * @param props Name for screen readers, icon, text, details and their
+ *   width.
  */
 function DetailsControl({
   children,
-  fitsContent,
+  fitsContent = false,
   icon,
   label,
-  open,
   text,
-  onOpenChange,
 }: DetailsControlProps) {
   return (
     <div className="control-frame color-control">
       <div className="color-swatch">
-        <DetailsPopover
-          fitsContent={fitsContent}
-          hasHeader={false}
+        <Popover
+          className={fitsContent ? 'is-fit-content' : ''}
           label={label}
-          open={open}
-          onOpenChange={onOpenChange}
+          variant="editor"
           renderTrigger={(triggerProps) => (
             <Button
               {...triggerProps}
@@ -54,8 +48,8 @@ function DetailsControl({
             </Button>
           )}
         >
-          {children}
-        </DetailsPopover>
+          <Editor>{children}</Editor>
+        </Popover>
       </div>
       <span className="color-control-name">{text}</span>
     </div>

@@ -23,7 +23,6 @@ import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
 import { createEffect } from '@/shared/effect'
 import ColorControl from '@/shared/ui/ColorControl'
-import DetailsPopover from '@/shared/ui/DetailsPopover'
 import Group from '@/shared/ui/Group'
 import PaintRow from '@/shared/ui/PaintRow'
 import Row from '@/shared/ui/Row'
@@ -48,6 +47,7 @@ import type {
 import type { Effect } from '@/shared/effect'
 import type { PaintType } from '@/shared/paint'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
+import type { RowDetails } from '@/shared/ui/Row'
 
 // ===== TYPES =================================================================
 /** One place of the marks element, e.g. its fill. */
@@ -66,7 +66,7 @@ type MarkGroupProps = Pick<ChartFormatProps, 'actions' | 'chart'>
  * behind a gear and the paint types it allows.
  */
 type DataColorControls = {
-  details?: ReactNode
+  details?: RowDetails
   field: ReactNode
   paintTypes?: PaintType[]
 }
@@ -178,8 +178,9 @@ function getDataColorControls({
   }
 
   return {
-    details: (
-      <DetailsPopover label="Color range" size="xs">
+    details: {
+      label: 'Color range',
+      content: (
         <Row>
           <ScrubbableNumber
             icon={<ArrowDownToLine size={14} />}
@@ -198,8 +199,8 @@ function getDataColorControls({
             onValueChange={(max) => setContinuous({ max })}
           />
         </Row>
-      </DetailsPopover>
-    ),
+      ),
+    },
     field: (
       <GradientControl
         label="Chart"

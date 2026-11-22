@@ -3,7 +3,8 @@ import { useState } from 'react'
 import { getPaintCss, PAINT_TYPE_LABELS } from '@/shared/paint'
 import Button from './Button'
 import ColorControl from './ColorControl'
-import DetailsPopover from './DetailsPopover'
+import Editor from './Editor'
+import Popover from './Popover'
 
 import type { CSSProperties, ReactNode } from 'react'
 import type { Paint } from '@/shared/paint'
@@ -56,10 +57,10 @@ function PaintControl({
   }
   const swatch = (
     <div className="color-swatch">
-      <DetailsPopover
-        hasHeader={false}
+      <Popover
         label={label}
         open={isOpen}
+        variant="editor"
         onOpenChange={setIsOpen}
         renderTrigger={(triggerProps) => (
           <Button
@@ -72,8 +73,8 @@ function PaintControl({
           />
         )}
       >
-        {children}
-      </DetailsPopover>
+        <Editor>{children}</Editor>
+      </Popover>
     </div>
   )
   if (value.kind === 'solid') {

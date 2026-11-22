@@ -10,11 +10,6 @@
   border: none;
 }
 
-.options-menu-popover {
-  z-index: 100;
-  border-radius: var(--radius-md);
-}
-
 .options-menu-item {
   width: 100%;
   justify-content: space-between;

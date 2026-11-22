@@ -8,12 +8,13 @@ import SegmentedControl from './SegmentedControl'
 import type { ReactNode } from 'react'
 import type { Paint, PaintType, SeriesPaint } from '@/shared/paint'
 import type { LineStyle, StrokeStyle } from '@/shared/strokeStyle'
+import type { RowDetails } from './Row'
 
 // ===== TYPES =================================================================
 type StrokeStyleControlsProps<
   TStroke extends StrokeStyle<Paint | SeriesPaint>,
 > = {
-  details?: ReactNode
+  details?: RowDetails
   label: string
   maxWidth?: number
   minWidth?: number

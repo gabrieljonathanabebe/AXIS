@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import Button from './Button'
 import ColorPicker from './ColorPicker'
 import { getChoiceKey, getSwatchColor } from './colorPresets'
@@ -31,7 +29,6 @@ function ColorSwatch<TPreset extends string = never>({
   value,
   onChange,
 }: ColorSwatchProps<TPreset>) {
-  const [isOpen, setIsOpen] = useState(false)
   const valueKey = getChoiceKey(value)
   const selectedPreset = presets.find((preset) => {
     return getChoiceKey(preset.value) === valueKey
@@ -41,11 +38,6 @@ function ColorSwatch<TPreset extends string = never>({
     <div className="color-swatch">
       <Popover
         label={`${label} color`}
-        open={isOpen}
-        placement="left-start"
-        flipsAlignment={false}
-        className="color-swatch-popover glass glass-thick"
-        onOpenChange={setIsOpen}
         renderTrigger={(triggerProps) => (
           <Button
             {...triggerProps}
@@ -59,9 +51,9 @@ function ColorSwatch<TPreset extends string = never>({
                 '--swatch-fill': selectedPreset?.fill,
               } as CSSProperties
             }
-            onClick={() => setIsOpen((current) => !current)}
           />
         )}
+        variant="editor"
       >
         <ColorPicker
           label={label}

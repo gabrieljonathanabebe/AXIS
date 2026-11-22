@@ -18,7 +18,7 @@ function DataTableFilterPopover(props: DataTableFilterFormProps) {
     <Popover
       label={`Filter ${fieldName}`}
       open={isOpen}
-      className="data-filter-popover glass glass-thick stack"
+      className="data-filter-popover stack"
       placement="bottom-start"
       onOpenChange={setIsOpen}
       renderTrigger={(triggerProps) => (
@@ -29,9 +29,6 @@ function DataTableFilterPopover(props: DataTableFilterFormProps) {
           label={`Filter ${fieldName}`}
           size="xs"
           variant="ghost"
-          onClick={() => {
-            setIsOpen((current) => !current)
-          }}
         >
           <ListFilter size={12} />
         </IconButton>

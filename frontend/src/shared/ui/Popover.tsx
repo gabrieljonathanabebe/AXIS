@@ -15,72 +15,73 @@ import {
   useInteractions,
   useRole,
 } from '@floating-ui/react'
-import { X } from 'lucide-react'
-import { useLayoutEffect } from 'react'
+import { useState } from 'react'
 
-import IconButton from './IconButton'
+import { ClosePopover } from './popoverContext'
 
-import type { Placement, VirtualElement } from '@floating-ui/react'
+import type { Placement } from '@floating-ui/react'
 import type { ReactNode, RefCallback } from 'react'
 
 type PopoverRole = 'dialog' | 'listbox'
+
+/** Kind of popover: `editor` opens left of its trigger with editor width. */
+type PopoverVariant = 'default' | 'editor'
 
 export type PopoverTriggerProps = {
   ref: RefCallback<HTMLButtonElement>
   'aria-expanded': boolean
   'aria-haspopup': PopoverRole
+  onClick: () => void
 }
 
 type PopoverProps = {
-  actions?: ReactNode
-  anchor?: VirtualElement
   label: string
-  open: boolean
+  open?: boolean
   children: ReactNode
   className?: string
-  keepOpenOn?: string
   placement?: Placement
   role?: PopoverRole
   flipsAlignment?: boolean
   matchTriggerWidth?: boolean
-  onOpenChange: (open: boolean) => void
-  renderTrigger?: (props: PopoverTriggerProps) => ReactNode
-  title?: ReactNode
+  variant?: PopoverVariant
+  onOpenChange?: (open: boolean) => void
+  renderTrigger: (props: PopoverTriggerProps) => ReactNode
 }
 
-/** Floating surface of one popover, positioned at its trigger or anchor. */
+/** Floating surface of one popover, positioned at its trigger. */
 function PopoverNode({
-  actions,
-  anchor,
   label,
   open,
   children,
   className = '',
-  keepOpenOn,
-  placement = 'bottom-end',
+  placement,
   role = 'dialog',
-  title,
   matchTriggerWidth = false,
-  flipsAlignment = true,
+  flipsAlignment,
+  variant = 'default',
   onOpenChange,
   renderTrigger,
 }: PopoverProps) {
+  const isEditor = variant === 'editor'
+  const [ownOpen, setOwnOpen] = useState(false)
+  const isOpen = open ?? ownOpen
+  const setIsOpen = onOpenChange ?? setOwnOpen
   const nodeId = useFloatingNodeId()
   const {
     context,
     floatingStyles,
-    refs: { setFloating, setPositionReference, setReference },
+    refs: { setFloating, setReference },
   } = useFloating<HTMLButtonElement>({
     nodeId,
-    open,
-    placement,
+    open: isOpen,
+    placement: placement ?? (isEditor ? 'left-start' : 'bottom-end'),
     strategy: 'fixed',
-    onOpenChange,
+    onOpenChange: setIsOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(8),
       flip({
-        crossAxis: flipsAlignment,
+        crossAxis: flipsAlignment ?? !isEditor,
         padding: 12,
       }),
       shift({
@@ -101,23 +102,7 @@ function PopoverNode({
     ],
   })
 
-  // An anchor positions the popover without its own trigger, e.g. next
-  // to a chart.
-  useLayoutEffect(() => {
-    if (anchor) {
-      setPositionReference(anchor)
-    }
-  }, [anchor, setPositionReference])
-
-  /** Closes on presses outside, except on elements matching keepOpenOn. */
-  function isOutsidePress({ target }: MouseEvent): boolean {
-    if (!keepOpenOn || !(target instanceof Element)) {
-      return true
-    }
-    return target.closest(keepOpenOn) === null
-  }
-
-  const dismiss = useDismiss(context, { outsidePress: isOutsidePress })
+  const dismiss = useDismiss(context)
   const floatingRole = useRole(context, {
     role,
   })
@@ -126,39 +111,30 @@ function PopoverNode({
 
   return (
     <>
-      {renderTrigger?.({
+      {renderTrigger({
         ref: setReference,
-        'aria-expanded': open,
+        'aria-expanded': isOpen,
         'aria-haspopup': role,
+        onClick: () => setIsOpen(!isOpen),
       })}
 
       <FloatingNode id={nodeId}>
-        {open ? (
+        {isOpen ? (
           <FloatingPortal>
             <FloatingFocusManager context={context} modal={false}>
               <div
                 ref={setFloating}
-                className={className}
+                className={`popover glass glass-thick ${
+                  isEditor ? 'is-editor' : ''
+                } ${className}`}
                 style={floatingStyles}
                 {...getFloatingProps({
                   'aria-label': label,
                 })}
               >
-                {title ? (
-                  <header className="popover-header">
-                    <h2 className="popover-title">{title}</h2>
-                    {actions}
-                    <IconButton
-                      label={`Close ${label.toLowerCase()}`}
-                      size="xs"
-                      variant="ghost"
-                      onClick={() => onOpenChange(false)}
-                    >
-                      <X size={14} />
-                    </IconButton>
-                  </header>
-                ) : null}
-                {children}
+                <ClosePopover value={() => setIsOpen(false)}>
+                  {children}
+                </ClosePopover>
               </div>
             </FloatingFocusManager>
           </FloatingPortal>
@@ -169,13 +145,13 @@ function PopoverNode({
 }
 
 /**
- * Floating surface for dropdowns, color pickers and format settings. A
- * `title` adds a header with `actions` before the close button, e.g. an
- * eye; `keepOpenOn` is a selector of elements outside whose presses keep
- * it open. Nested popovers form a tree, so a click inside a child, e.g. a
- * color picker in a chart popover, does not dismiss its parent.
- * Without `flipsAlignment` it keeps its alignment to the trigger, e.g.
- * top-aligned beside a row, and only shifts as far as the window needs.
+ * Floating surface for dropdowns, color pickers and editors, opened and
+ * closed by its trigger; `open` and `onOpenChange` let a parent steer it,
+ * e.g. a select that closes after a choice. The `editor` variant opens
+ * left of its trigger, keeps its alignment to it and only shifts as far
+ * as the window needs, e.g. top-aligned beside a row. Nested popovers form
+ * a tree, so a click inside a child, e.g. a color picker in an editor,
+ * does not dismiss its parent.
  */
 function Popover(props: PopoverProps) {
   const parentId = useFloatingParentNodeId()

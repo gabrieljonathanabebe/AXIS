@@ -50,16 +50,6 @@
   border-color: var(--color-accent);
 }
 
-.color-swatch-popover {
-  z-index: 100;
-  width: min(250px, calc(100vw - 32px));
-  padding: var(--space-3);
-  max-height: calc(100dvh - 24px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  border-radius: var(--radius-md);
-}
-
 /* The swatch of the current color keeps a thin ring, so a color close to
    the surface, e.g. a graphite background, stays visible; preset fills
    get it as well. */

@@ -1,7 +1,6 @@
 import { Blend } from 'lucide-react'
 
 import { hasOwnColor, hasPaintEditor, PAINT_TYPES } from '@/shared/paint'
-import DetailsPopover from './DetailsPopover'
 import PaintControl from './PaintControl'
 import PaintEditor from './PaintEditor'
 import Row from './Row'
@@ -11,11 +10,11 @@ import type { ReactNode } from 'react'
 import type { Fill } from '@/shared/fill'
 import type { Paint, PaintType, SeriesPaint } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
-import type { RowRemove } from './Row'
+import type { RowDetails, RowRemove } from './Row'
 
 // ===== TYPES =================================================================
 type PaintRowProps<TValue extends Fill<Paint | SeriesPaint>> = {
-  details?: ReactNode
+  details?: RowDetails
   label: string
   open?: boolean
   paintTypes?: PaintType[]
@@ -97,24 +96,20 @@ function PaintRow<TValue extends Fill<Paint | SeriesPaint>>({
   }
 
   /**
-   * Gear for the icon column of the row: the given details, else the
+   * Details behind the gear of the row: the given details, else the
    * editor of a paint in the series color, whose control cannot open it.
-   * @returns The gear with its popover, or nothing for an own color.
+   * @returns The details, or none for an own color.
    */
-  function getDetails(): ReactNode {
+  function getDetails(): RowDetails | undefined {
     if (details || hasOwnColor(paint)) {
       return details
     }
-    return editor ? (
-      <DetailsPopover label="Color" size="xs">
-        {editor}
-      </DetailsPopover>
-    ) : null
+    return editor ? { content: editor, label: 'Color' } : undefined
   }
 
   // ===== JSX RETURN ==========================================================
   return (
-    <Row action={getDetails()} remove={remove}>
+    <Row details={getDetails()} remove={remove}>
       {getControl()}
       <ScrubbableNumber
         icon={<Blend size={14} />}

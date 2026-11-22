@@ -1,0 +1,28 @@
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.editor-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.editor-body {
+  --control-border-color: transparent;
+  --control-font-size: var(--font-size-xs);
+  --control-width: 100%;
+  --stack-gap: var(--space-1);
+}
+
+/* Sections of the editor, e.g. Offset and Color of a shadow, are format
+   groups and keep the spacing between them of the format panel. */
+.editor-body:has(> .group) {
+  --stack-gap: var(--space-3);
+}

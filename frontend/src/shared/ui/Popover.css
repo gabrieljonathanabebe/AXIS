@@ -1,15 +1,19 @@
-.popover-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+/* Surface of every popover; an editor also gets its width and padding and
+   scrolls within the window. */
+.popover {
+  z-index: 100;
+  border-radius: var(--radius-md);
 }
 
-.popover-title {
-  flex: 1;
-  min-width: 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
+.popover.is-editor {
+  width: min(250px, calc(100vw - 32px));
+  padding: var(--space-3);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* An editor as wide as its rows, e.g. a position grid. */
+.popover.is-editor.is-fit-content {
+  width: max-content;
 }

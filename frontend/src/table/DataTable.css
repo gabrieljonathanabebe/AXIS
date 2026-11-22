@@ -268,10 +268,8 @@
 .data-filter-popover {
   --stack-gap: var(--space-2);
 
-  z-index: 100;
   width: min(260px, calc(100vw - 32px));
   padding: var(--space-3);
-  border-radius: var(--radius-md);
 }
 
 .data-filter-title {

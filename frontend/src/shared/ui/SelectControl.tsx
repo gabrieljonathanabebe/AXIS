@@ -64,7 +64,7 @@ function SelectControl<TValue extends string>({
       <Popover
         label={`${label} options`}
         open={isOpen}
-        className="options-menu-popover glass glass-thick"
+        className="options-menu-popover"
         placement="bottom-start"
         role="listbox"
         matchTriggerWidth={variant === 'control'}
@@ -75,9 +75,6 @@ function SelectControl<TValue extends string>({
             className="select-control-button spread"
             aria-label={label}
             disabled={disabled}
-            onClick={() => {
-              setIsOpen((currentValue) => !currentValue)
-            }}
           >
             <span className="select-control-value">{renderValue()}</span>
             <ChevronDown size={16} />
