@@ -1,7 +1,6 @@
-import { Minus, Timer } from 'lucide-react'
+import { Timer } from 'lucide-react'
 
 import Group from '@/shared/ui/Group'
-import IconButton from '@/shared/ui/IconButton'
 import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SelectControl from '@/shared/ui/SelectControl'
@@ -36,16 +35,10 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   return (
     <Group title="Animation">
       <Row
-        action={
-          <IconButton
-            label="Remove animation"
-            size="xs"
-            variant="ghost"
-            onClick={() => onChange({ ...value, enabled: false })}
-          >
-            <Minus size={14} />
-          </IconButton>
-        }
+        remove={{
+          label: 'Remove animation',
+          onRemove: () => onChange({ ...value, enabled: false }),
+        }}
       >
         <SelectControl
           label="Animation easing"

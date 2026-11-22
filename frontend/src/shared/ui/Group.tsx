@@ -1,6 +1,7 @@
 import { Eye, EyeOff, Plus } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { use, useEffect, useRef } from 'react'
 
+import { InsideGroup } from './groupContext'
 import IconButton from './IconButton'
 
 import type { ReactNode } from 'react'
@@ -28,12 +29,14 @@ type GroupProps = {
  * e.g. an effect. These icons stand in the icon column of the rows below.
  * `group` names the part of the object the group formats when it differs
  * from the element of the panel, e.g. the data labels within the marks; a
- * group inside a group is a subgroup with a quieter heading. Without a
- * title the rows stand alone, e.g. in a section of the build panel.
+ * group inside a group is a subgroup with a quieter heading, at most two
+ * levels; an editor starts at the top level again. Without a title the
+ * rows stand alone, e.g. in a section of the build panel.
  * @param props Rows, optional title, part, visibility and add action.
  */
 function Group({ children, group, title, visibility, onAdd }: GroupProps) {
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
+  const isSubgroup = use(InsideGroup)
   const showsRows = visibility?.visible ?? true
   const groupRef = useRef<HTMLDivElement | null>(null)
   const revealsAdded = useRef(false)
@@ -57,7 +60,11 @@ function Group({ children, group, title, visibility, onAdd }: GroupProps) {
     onAdd?.()
   }
   return (
-    <div className="group stack" data-format-group={group} ref={groupRef}>
+    <div
+      className={`group stack ${isSubgroup ? 'is-subgroup' : ''}`}
+      data-format-group={group}
+      ref={groupRef}
+    >
       {title ? (
         <div className="group-header">
           <span className="group-title">{title}</span>
@@ -86,7 +93,9 @@ function Group({ children, group, title, visibility, onAdd }: GroupProps) {
         </div>
       ) : null}
       {showsRows && children ? (
-        <div className="group-content stack">{children}</div>
+        <div className="group-content stack">
+          <InsideGroup value={true}>{children}</InsideGroup>
+        </div>
       ) : null}
     </div>
   )

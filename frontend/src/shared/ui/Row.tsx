@@ -1,8 +1,18 @@
+import { Minus } from 'lucide-react'
+
+import IconButton from './IconButton'
+
 import type { ReactNode } from 'react'
 
 // ===== TYPES =================================================================
-/** Where the fields of a row sit on the grid of the format panel. */
+/** Where the controls of a row sit on the grid of the format panel. */
 export type RowLayout = 'pair' | 'single' | 'wide'
+
+/** Minus of a row that removes what it edits, e.g. one fill of a list. */
+export type RowRemove = {
+  label: string
+  onRemove: () => void
+}
 
 type RowProps = {
   action?: ReactNode
@@ -10,6 +20,7 @@ type RowProps = {
   isFull?: boolean
   label?: string
   layout?: RowLayout
+  remove?: RowRemove
 }
 
 // ===== COMPONENT =============================================================
@@ -31,14 +42,27 @@ function Row({
   isFull = false,
   label,
   layout = 'pair',
+  remove,
 }: RowProps) {
   if (!label) {
+    const icon = remove ? (
+      <IconButton
+        label={remove.label}
+        size="xs"
+        variant="ghost"
+        onClick={remove.onRemove}
+      >
+        <Minus size={14} />
+      </IconButton>
+    ) : (
+      action
+    )
     return (
       <div
         className={`row row-compact is-${layout} ${isFull ? 'is-full' : ''}`}
       >
         {children}
-        {action ? <div className="row-icon">{action}</div> : null}
+        {icon ? <div className="row-icon">{icon}</div> : null}
       </div>
     )
   }

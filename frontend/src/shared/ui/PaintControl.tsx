@@ -26,7 +26,7 @@ type PaintControlProps = {
  * a gradient included; next to it stands the hex value of a solid color
  * or the type of a gradient. Given `children`, the swatch opens them as
  * the editor of the paint, e.g. type, stops and center; without, the
- * paint is solid and the field a plain `ColorControl`. `open` and
+ * paint is solid and the control a plain `ColorControl`. `open` and
  * `onOpenChange` let a list open the editor itself, e.g. after adding;
  * otherwise the field keeps it open across a switch between solid and
  * gradient, which swaps the field around the swatch.

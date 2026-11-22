@@ -1,7 +1,5 @@
-import { Minus } from 'lucide-react'
 import { useState } from 'react'
 
-import IconButton from './IconButton'
 import PaintRow from './PaintRow'
 
 import type { Fill } from '@/shared/fill'
@@ -52,16 +50,10 @@ function FillListControls({ label, value, onChange }: FillListControlsProps) {
     <PaintRow
       // Fills carry no id; rows keep their place in the list.
       key={index}
-      action={
-        <IconButton
-          label={`Remove ${label.toLowerCase()} fill ${index + 1}`}
-          size="xs"
-          variant="ghost"
-          onClick={() => onChange(value.toSpliced(index, 1))}
-        >
-          <Minus size={14} />
-        </IconButton>
-      }
+      remove={{
+        label: `Remove ${label.toLowerCase()} fill ${index + 1}`,
+        onRemove: () => onChange(value.toSpliced(index, 1)),
+      }}
       label={`${label} fill ${index + 1}`}
       open={openIndex === index}
       value={fill}

@@ -1,9 +1,8 @@
-import { CircleDashed, Minus, SquareStack, Sun } from 'lucide-react'
+import { CircleDashed, SquareStack, Sun } from 'lucide-react'
 
 import { createEffect } from '@/shared/effect'
 import DetailsControl from '@/shared/ui/DetailsControl'
 import Group from '@/shared/ui/Group'
-import IconButton from '@/shared/ui/IconButton'
 import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SelectControl from '@/shared/ui/SelectControl'
@@ -75,16 +74,10 @@ function EffectControls({ label, value, onChange }: EffectControlsProps) {
 
   return (
     <Row
-      action={
-        <IconButton
-          label={`Remove ${label.toLowerCase()} effect`}
-          size="xs"
-          variant="ghost"
-          onClick={() => onChange({ kind: 'none' })}
-        >
-          <Minus size={14} />
-        </IconButton>
-      }
+      remove={{
+        label: `Remove ${label.toLowerCase()} effect`,
+        onRemove: () => onChange({ kind: 'none' }),
+      }}
       layout="wide"
     >
       <DetailsControl

@@ -3,7 +3,6 @@ import {
   CircleDashed,
   Droplet,
   Grip,
-  Minus,
   Scaling,
   SquareSquare,
   SquareStack,
@@ -12,7 +11,6 @@ import {
 import { createSurfaceEffect, isSurfaceEffectTaken } from '@/shared/effect'
 import DetailsControl from './DetailsControl'
 import Group from './Group'
-import IconButton from './IconButton'
 import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SelectControl from './SelectControl'
@@ -146,18 +144,10 @@ function SurfaceEffectsControls({
       <Row
         // Effects carry no id; the list only changes by its own rows.
         key={index}
-        action={
-          <IconButton
-            label={`Remove ${label.toLowerCase()} effect ${index + 1}`}
-            size="xs"
-            variant="ghost"
-            onClick={() => {
-              onChange(value.filter((other) => other !== effect))
-            }}
-          >
-            <Minus size={14} />
-          </IconButton>
-        }
+        remove={{
+          label: `Remove ${label.toLowerCase()} effect ${index + 1}`,
+          onRemove: () => onChange(value.filter((other) => other !== effect)),
+        }}
         layout="wide"
       >
         <DetailsControl

@@ -11,15 +11,16 @@ import type { ReactNode } from 'react'
 import type { Fill } from '@/shared/fill'
 import type { Paint, PaintType, SeriesPaint } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
+import type { RowRemove } from './Row'
 
 // ===== TYPES =================================================================
 type PaintRowProps<TValue extends Fill<Paint | SeriesPaint>> = {
-  action?: ReactNode
   details?: ReactNode
   label: string
   open?: boolean
   paintTypes?: PaintType[]
   presets?: ColorPreset[]
+  remove?: RowRemove
   seriesColor?: ReactNode
   value: TValue
   onChange: (value: TValue) => void
@@ -33,19 +34,19 @@ type PaintRowProps<TValue extends Fill<Paint | SeriesPaint>> = {
  * `PaintEditor`; a paint in the series color shows `seriesColor`, the
  * control of the data color, and its editor behind a gear in the icon
  * column of the row; given `details` take that gear. With only one of
- * `paintTypes` there is no type to pick. `action` takes the icon column
- * instead, e.g. a minus in a list; `open` and `onOpenChange` let a list
- * open the editor of an own color, e.g. right after adding the fill.
- * @param props Fill or stroke, swatches, types, series color, action,
+ * `paintTypes` there is no type to pick. `remove` puts a minus in the
+ * icon column instead, e.g. in a list; `open` and `onOpenChange` let a
+ * list open the editor of an own color, e.g. right after adding the fill.
+ * @param props Fill or stroke, swatches, types, series color, minus,
  *   open state and handlers.
  */
 function PaintRow<TValue extends Fill<Paint | SeriesPaint>>({
-  action,
   details,
   label,
   open,
   paintTypes = PAINT_TYPES,
   presets = [],
+  remove,
   seriesColor,
   value,
   onChange,
@@ -97,7 +98,7 @@ function PaintRow<TValue extends Fill<Paint | SeriesPaint>>({
 
   /**
    * Gear for the icon column of the row: the given details, else the
-   * editor of a paint in the series color, whose field cannot open it.
+   * editor of a paint in the series color, whose control cannot open it.
    * @returns The gear with its popover, or nothing for an own color.
    */
   function getDetails(): ReactNode {
@@ -113,7 +114,7 @@ function PaintRow<TValue extends Fill<Paint | SeriesPaint>>({
 
   // ===== JSX RETURN ==========================================================
   return (
-    <Row action={action ?? getDetails()}>
+    <Row action={getDetails()} remove={remove}>
       {getControl()}
       <ScrubbableNumber
         icon={<Blend size={14} />}

@@ -1,6 +1,7 @@
 import { Settings2 } from 'lucide-react'
 import { useState } from 'react'
 
+import { InsideGroup } from './groupContext'
 import IconButton from './IconButton'
 import Popover from './Popover'
 
@@ -91,7 +92,9 @@ function DetailsPopover({
         )
       }
     >
-      <div className="details-popover-body stack">{children}</div>
+      <InsideGroup value={false}>
+        <div className="details-popover-body stack">{children}</div>
+      </InsideGroup>
     </Popover>
   )
 }

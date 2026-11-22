@@ -4,29 +4,11 @@
   width: 36px;
   height: 36px;
   color: var(--color-text-secondary);
-  background: var(--color-surface-default);
-  border: var(--border-width-thin) solid;
-  border-color: var(--control-border-color, var(--color-border-subtle));
-  border-radius: var(--radius-pill);
   transition:
     background var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast),
     transform var(--transition-fast);
-}
-
-.icon-button:hover:not(:disabled) {
-  color: var(--color-text-primary);
-  background: var(--color-surface-hover);
-  border-color: var(--color-border-default);
-  cursor: pointer;
-}
-
-.icon-button.is-active,
-.icon-button.is-active:hover:not(:disabled) {
-  color: var(--color-text-primary);
-  background: var(--color-surface-active);
-  border-color: transparent;
 }
 
 .icon-button:disabled {

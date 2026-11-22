@@ -1,3 +1,13 @@
+/* Surface of every pill button, with text or only an icon: the background
+   of a control, a thin border, hover and the pressed look of a toggle. */
+.button,
+.icon-button {
+  background: var(--color-surface-default);
+  border: var(--border-width-thin) solid;
+  border-color: var(--control-border-color, var(--color-border-subtle));
+  border-radius: var(--radius-pill);
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -5,24 +15,23 @@
   gap: var(--space-2);
   padding: 0 var(--space-4);
   color: var(--color-text-primary);
-  background: var(--color-surface-default);
-  border: var(--border-width-thin) solid;
-  border-color: var(--control-border-color, var(--color-border-subtle));
-  border-radius: var(--radius-pill);
   transition:
     background var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast);
 }
 
-.button:hover {
+.button:hover,
+.icon-button:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: var(--color-surface-hover);
   border-color: var(--color-border-default);
   cursor: pointer;
 }
 
-.button.is-active {
+.button.is-active,
+.icon-button.is-active,
+.icon-button.is-active:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: var(--color-surface-active);
   border-color: transparent;
