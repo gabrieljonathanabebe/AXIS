@@ -68,7 +68,6 @@ function BuildPanel({
             key={group}
             title={title}
             icon={<Icon size={14} />}
-            variant="plain"
           >
             <ObjectPicker
               group={group}
@@ -78,11 +77,7 @@ function BuildPanel({
           </CollapsibleSection>
         ))}
 
-        <CollapsibleSection
-          title="Dataset"
-          icon={<FolderOpen size={14} />}
-          variant="plain"
-        >
+        <CollapsibleSection title="Dataset" icon={<FolderOpen size={14} />}>
           <div className="stack">
             <DatasetCard
               fieldCount={dataset.fields.length}
@@ -101,11 +96,7 @@ function BuildPanel({
           </div>
         </CollapsibleSection>
 
-        <CollapsibleSection
-          title="Fields"
-          icon={<Columns3 size={14} />}
-          variant="plain"
-        >
+        <CollapsibleSection title="Fields" icon={<Columns3 size={14} />}>
           <div className="stack">
             <FieldList
               fields={dataset.fields}
@@ -123,11 +114,7 @@ function BuildPanel({
           </div>
         </CollapsibleSection>
         {chart ? (
-          <CollapsibleSection
-            title="Chart data"
-            icon={<Waypoints size={14} />}
-            variant="plain"
-          >
+          <CollapsibleSection title="Chart data" icon={<Waypoints size={14} />}>
             <div className="stack">
               <EncodingsWidget
                 actions={chartActions}

@@ -78,7 +78,6 @@ function FieldList({
           meta={group.fields.length}
           defaultOpen={group.defaultOpen}
           forceOpen={isSearching}
-          variant="plain"
           key={group.key}
         >
           <div className="field-group stack">

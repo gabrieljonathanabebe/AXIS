@@ -71,6 +71,16 @@ export const DEFAULT_RADIAL_SHAPE: RadialShape = {
   radius: 0.5,
 }
 
+/** Every paint type, in the order the type buttons offer them. */
+export const PAINT_TYPES: PaintType[] = ['solid', 'linear', 'radial']
+
+/** Name of each paint type, e.g. on its type button or in its field. */
+export const PAINT_TYPE_LABELS = {
+  linear: 'Linear',
+  radial: 'Radial',
+  solid: 'Solid',
+} satisfies Record<PaintType, string>
+
 // ===== FUNCTIONS =============================================================
 /**
  * Tells a paint with its own color from a paint in the series color.
@@ -79,6 +89,21 @@ export const DEFAULT_RADIAL_SHAPE: RadialShape = {
  */
 export function hasOwnColor(paint: Paint | SeriesPaint): paint is Paint {
   return paint.kind === 'gradient' || 'color' in paint
+}
+
+/**
+ * Tells whether a paint has anything to edit behind its swatch or gear: a
+ * gradient or fade always, a solid paint only when its place offers more
+ * than one type.
+ * @param paint Paint of a fill or stroke.
+ * @param paintTypes Types its place offers.
+ * @returns True when the paint has an editor.
+ */
+export function hasPaintEditor(
+  paint: Paint | SeriesPaint,
+  paintTypes: PaintType[],
+): boolean {
+  return paint.kind !== 'solid' || paintTypes.length > 1
 }
 
 /**

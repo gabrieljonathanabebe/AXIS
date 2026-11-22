@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import { getPaintCss } from '@/shared/paint'
+import { getPaintCss, PAINT_TYPE_LABELS } from '@/shared/paint'
 import Button from './Button'
 import ColorField from './ColorField'
 import DetailsPopover from './DetailsPopover'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { GradientType, Paint } from '@/shared/paint'
+import type { Paint } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================
@@ -19,12 +19,6 @@ type PaintFieldProps = {
   onChange: (value: Paint) => void
   onOpenChange?: (open: boolean) => void
 }
-
-// ===== CONSTANTS =============================================================
-const GRADIENT_TYPE_LABELS = {
-  linear: 'Linear',
-  radial: 'Radial',
-} satisfies Record<GradientType, string>
 
 // ===== COMPONENT =============================================================
 /**
@@ -96,9 +90,7 @@ function PaintField({
   return (
     <div className="field color-field">
       {swatch}
-      <span className="color-field-name">
-        {GRADIENT_TYPE_LABELS[value.type]}
-      </span>
+      <span className="color-field-name">{PAINT_TYPE_LABELS[value.type]}</span>
     </div>
   )
 }

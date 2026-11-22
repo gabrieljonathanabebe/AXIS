@@ -80,11 +80,7 @@ function DatasetProfileView({
 
   return (
     <div className="data-profile stack">
-      <CollapsibleSection
-        title="Dataset"
-        icon={<FileSpreadsheet size={14} />}
-        variant="plain"
-      >
+      <CollapsibleSection title="Dataset" icon={<FileSpreadsheet size={14} />}>
         <div className="data-profile-grid auto-grid">
           {datasetStats.map(({ value, ...stat }) => (
             <StatWidget
@@ -100,7 +96,6 @@ function DatasetProfileView({
         title="Fields"
         icon={<Columns3 size={14} />}
         meta={profile.column_count}
-        variant="plain"
       >
         {fieldGroups.map(({ icon: Icon, ...group }) => (
           <CollapsibleSection
@@ -108,7 +103,6 @@ function DatasetProfileView({
             icon={<Icon size={14} />}
             meta={group.fields.length}
             defaultOpen={group.defaultOpen}
-            variant="plain"
             key={group.key}
           >
             <div className="data-profile-grid auto-grid">
