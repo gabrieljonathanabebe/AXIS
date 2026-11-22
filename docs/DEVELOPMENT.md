@@ -733,7 +733,8 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
 - **Nur nach unten:** Jede Ebene nutzt nur Ebenen darunter. Die Ordner
   unter `shared/ui/` folgen den Ebenen; die ESLint-Grenzen prüfen die
   Richtung. Fachliche Rows, Groups und Editoren liegen in ihrer Domäne
-  (z. B. `charts/format/`) und folgen derselben Richtung.
+  (z. B. `charts/format/`) und folgen derselben Richtung. Einzige
+  Ausnahme ist das Popover (übernächste Regel).
 - **Varianten sind dünn:** Eine Variante (`IconButton`, `TextInput`,
   `Menu`) setzt nur feste Props und ruft ihre Basis auf; Optik und
   Verhalten stehen einmal in der Basis.
@@ -746,8 +747,17 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   Basis-Komponente; ihr Rahmen ist die Klasse `.control-frame`, Swatch
   mit Text die Klasse `.swatch-control`.
 - **Auslöser, Aufklappen und Inhalt getrennt:** Zahnrad oder Swatch ist
-  ein Button, das Aufklappen ein `Popover`, der Inhalt ein `Editor`; das
-  Control setzt sie zusammen.
+  ein Button, das Aufklappen ein `Popover`, der Inhalt ein `Editor`; ein
+  Control setzt sie zusammen, das Zahnrad einer Zeile setzt die `Row`
+  über `details` selbst zusammen. Das Popover hält den Offen-Zustand
+  selbst (von außen steuerbar, z. B. für einen Editor, der nach dem
+  Hinzufügen offen sein soll) und gibt das Schließen per Context an den
+  Editor; Kopf und Schließen-X gehören zum Editor.
+- **Ein Popover beginnt eine neue Hierarchie:** Über ein Popover darf
+  jede Ebene einen Editor öffnen. Sie importiert dafür nur den leeren
+  Rahmen `Editor`; den fachlichen Inhalt (z. B. `PaintEditor`) reicht der
+  Aufrufer herein, er wird nie importiert. Sonst entstehen Ringe, z. B.
+  `PaintControl` → `PaintEditor` → Stopp-Zeile → `PaintControl`.
 - **Eine Komponente rendert nur ihre eigene Ebene:** Ein `…Group`
   rendert seine `Group` selbst; ein Aufrufer legt nie eine `Group` um
   eine Komponente herum, und ein `…Rows` rendert nie eine.
