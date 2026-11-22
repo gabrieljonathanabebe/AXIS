@@ -1,4 +1,4 @@
-.control {
+.icon-button {
   display: grid;
   place-items: center;
   width: 36px;
@@ -15,37 +15,37 @@
     transform var(--transition-fast);
 }
 
-.control:hover:not(:disabled) {
+.icon-button:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: var(--color-surface-hover);
   border-color: var(--color-border-default);
   cursor: pointer;
 }
 
-.control.is-active,
-.control.is-active:hover:not(:disabled) {
+.icon-button.is-active,
+.icon-button.is-active:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: var(--color-surface-active);
   border-color: transparent;
 }
 
-.control:disabled {
+.icon-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
 
-.control-sm {
+.icon-button-sm {
   width: var(--control-height-sm);
   height: var(--control-height-sm);
 }
 
-.control-xs {
+.icon-button-xs {
   width: var(--control-height-xs);
   height: var(--control-height-xs);
 }
 
-.control-ghost,
-.control-ghost:hover:not(:disabled) {
+.icon-button-ghost,
+.icon-button-ghost:hover:not(:disabled) {
   background: transparent;
   border-color: transparent;
 }

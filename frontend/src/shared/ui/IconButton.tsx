@@ -30,8 +30,8 @@ function IconButton({
 }: IconButtonProps) {
   return (
     <button
-      className={`control control-${size} ${
-        variant === 'ghost' ? 'control-ghost' : ''
+      className={`icon-button icon-button-${size} ${
+        variant === 'ghost' ? 'icon-button-ghost' : ''
       } ${isActive ? 'is-active' : ''} ${className}`}
       type={type}
       aria-label={label}
