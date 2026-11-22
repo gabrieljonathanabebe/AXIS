@@ -2,7 +2,7 @@ import { Minus } from 'lucide-react'
 import { useState } from 'react'
 
 import IconButton from './IconButton'
-import PaintControl from './PaintControl'
+import PaintRow from './PaintRow'
 
 import type { Fill } from '@/shared/fill'
 
@@ -31,7 +31,7 @@ function isFillAddedOnTop(previous: Fill[], next: Fill[]): boolean {
 // ===== COMPONENT =============================================================
 /**
  * Rows of the fills of an area, e.g. the canvas or a container, the top
- * layer first like in Figma: per fill its paint field, opacity and a
+ * layer first like in Figma: per fill its paint control, opacity and a
  * around it; since a new fill lands on top, the list opens the editor of
  * the first row when the plus adds one, and closes any editor when the
  * rows change otherwise, e.g. by a minus or an applied style.
@@ -49,7 +49,7 @@ function FillListControls({ label, value, onChange }: FillListControlsProps) {
   }
 
   return value.map((fill, index) => (
-    <PaintControl
+    <PaintRow
       // Fills carry no id; rows keep their place in the list.
       key={index}
       action={

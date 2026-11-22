@@ -43,7 +43,7 @@ function normalizeValue(value: number, step: number): number {
 }
 
 /**
- * Number field that changes its value by dragging the icon or grip
+ * Number control that changes its value by dragging the icon or grip
  * sideways, by typing or with the arrow keys. With `onAuto` the value may
  * be auto: an empty field shows "Auto", emptying it calls `onAuto`, and
  * dragging or stepping starts from the minimum.
@@ -170,7 +170,7 @@ function ScrubbableNumber({
   /**
    * Commits with Enter, discards the draft with Escape and steps with the
    * arrow keys, ten steps at a time with Shift.
-   * @param event Key press in the number field.
+   * @param event Key press in the number control.
    */
   function handleKeyDown(event: ReactKeyboardEvent<HTMLInputElement>): void {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
@@ -192,7 +192,9 @@ function ScrubbableNumber({
   }
 
   return (
-    <div className={`field scrubbable-number ${icon ? 'has-icon' : ''}`}>
+    <div
+      className={`control-frame scrubbable-number ${icon ? 'has-icon' : ''}`}
+    >
       <Button
         className="scrubbable-number-handle"
         aria-label={`Drag to change ${label}`}

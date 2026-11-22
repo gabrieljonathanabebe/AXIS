@@ -10,9 +10,9 @@
    rows keep, also when empty, so fields and icons of all rows line up
    with the icons of the group headings. */
 .row-compact {
-  --field-border-color: transparent;
-  --field-font-size: var(--font-size-xs);
-  --field-width: 100%;
+  --control-border-color: transparent;
+  --control-font-size: var(--font-size-xs);
+  --control-width: 100%;
 
   grid-template-columns:
     repeat(2, minmax(0, 1fr))

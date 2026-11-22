@@ -20,7 +20,7 @@ type GradientStyle = CSSProperties & {
 
 // ===== COMPONENT =============================================================
 /**
- * Field of a gradient: the colors of its first and last stop with the
+ * Control of a gradient: the colors of its first and last stop with the
  * gradient between them, e.g. of a continuous data color or a fill. Each
  * end opens the color picker; stops in between show in the preview.
  * @param props Name, swatches, stops and their handler.
@@ -55,7 +55,11 @@ function GradientControl({
 
   // ===== JSX RETURN ==========================================================
   return (
-    <div className="field gradient-control" aria-label={label} style={style}>
+    <div
+      className="control-frame gradient-control"
+      aria-label={label}
+      style={style}
+    >
       <ColorSwatch
         label={`${label} start color`}
         presets={presets}

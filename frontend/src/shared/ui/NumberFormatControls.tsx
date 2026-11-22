@@ -6,7 +6,7 @@ import {
   formatNumber,
 } from '@/shared/format/formatNumber'
 import { CURRENCY_OPTIONS } from '@/shared/format/valueFormats'
-import DetailsField from './DetailsField'
+import DetailsControl from './DetailsControl'
 import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
@@ -157,7 +157,7 @@ function NumberFormatControls({
             />
           </Row>
           <Row layout="wide">
-            <DetailsField
+            <DetailsControl
               icon={<TextCursorInput size={14} />}
               label={`${label} prefix and suffix`}
               text={getPreview(value)}
@@ -178,7 +178,7 @@ function NumberFormatControls({
                   onValueChange={(suffix) => onChange({ ...value, suffix })}
                 />
               </Row>
-            </DetailsField>
+            </DetailsControl>
           </Row>
         </>
       ) : null}

@@ -8,7 +8,7 @@ import type { ColorValue } from '@/shared/colorValue'
 import type { ColorPreset } from './colorPresets'
 
 // ===== TYPES =================================================================
-type ColorFieldProps<TPreset extends string = never> = {
+type ColorControlProps<TPreset extends string = never> = {
   label: string
   presets?: ColorPreset<TPreset>[]
   swatch?: ReactNode
@@ -38,21 +38,21 @@ function getSwatchLabel(
 
 // ===== COMPONENT =============================================================
 /**
- * Field of one color: swatch with the color picker, then the hex value of
+ * Control of one color: swatch with the color picker, then the hex value of
  * an own color or the swatch name of a theme color or named preset, e.g.
  * the glass background of a container. A given `swatch` takes the place
  * of the picker, e.g. the swatch of a paint that opens its editor.
  * @param props Name of the paint, swatches, color, swatch and handler.
  */
-function ColorField<TPreset extends string = never>({
+function ColorControl<TPreset extends string = never>({
   label,
   presets = [],
   swatch,
   value,
   onChange,
-}: ColorFieldProps<TPreset>) {
+}: ColorControlProps<TPreset>) {
   return (
-    <div className="field color-field">
+    <div className="control-frame color-control">
       {swatch ?? (
         <ColorSwatch
           label={`${label} color`}
@@ -63,7 +63,7 @@ function ColorField<TPreset extends string = never>({
       )}
       {typeof value !== 'string' && value.kind === 'custom' ? (
         <HexColorInput
-          className="color-field-hex"
+          className="color-control-hex"
           color={value.color}
           aria-label={`${label} hex value`}
           onChange={(hex) => {
@@ -71,7 +71,7 @@ function ColorField<TPreset extends string = never>({
           }}
         />
       ) : (
-        <span className="color-field-name">
+        <span className="color-control-name">
           {getSwatchLabel(value, presets)}
         </span>
       )}
@@ -79,4 +79,4 @@ function ColorField<TPreset extends string = never>({
   )
 }
 
-export default ColorField
+export default ColorControl

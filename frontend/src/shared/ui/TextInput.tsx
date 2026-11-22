@@ -36,7 +36,7 @@ function TextInput({
   }
 
   return (
-    <span className="text-input-field">
+    <span className="text-input-wrapper">
       <span className="text-input-icon" aria-hidden="true">
         {icon}
       </span>

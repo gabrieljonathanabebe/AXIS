@@ -22,10 +22,10 @@ import {
 import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
 import { createEffect } from '@/shared/effect'
-import ColorField from '@/shared/ui/ColorField'
+import ColorControl from '@/shared/ui/ColorControl'
 import DetailsPopover from '@/shared/ui/DetailsPopover'
 import Group from '@/shared/ui/Group'
-import PaintControl from '@/shared/ui/PaintControl'
+import PaintRow from '@/shared/ui/PaintRow'
 import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SegmentedControl from '@/shared/ui/SegmentedControl'
@@ -140,7 +140,7 @@ function getDataColorControls({
   if (colorEncodingMode === 'constant') {
     return {
       field: (
-        <ColorField
+        <ColorControl
           label="Chart"
           value={appearance.color}
           onChange={(color) => actions.setAppearance('color', color)}
@@ -259,7 +259,7 @@ function getFilledMarkGroups(
   return {
     dataColor: (
       <Group title="Fill">
-        <PaintControl
+        <PaintRow
           details={dataColor.details}
           label={`${label} fill`}
           paintTypes={dataColor.paintTypes}
@@ -394,7 +394,7 @@ function getChartTypeGroups(
               },
             }}
           >
-            <PaintControl
+            <PaintRow
               label="Area fill"
               value={line.area}
               onChange={(area) => {

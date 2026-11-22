@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 
 import { createSurfaceEffect, isSurfaceEffectTaken } from '@/shared/effect'
-import DetailsField from './DetailsField'
+import DetailsControl from './DetailsControl'
 import Group from './Group'
 import IconButton from './IconButton'
 import Row from './Row'
@@ -160,7 +160,7 @@ function SurfaceEffectsControls({
         }
         layout="wide"
       >
-        <DetailsField
+        <DetailsControl
           icon={kind ? <kind.icon size={14} /> : null}
           label={`${label} effect ${index + 1}`}
           text={kind?.label ?? ''}
@@ -184,7 +184,7 @@ function SurfaceEffectsControls({
             }}
           />
           {getValues(effect, index)}
-        </DetailsField>
+        </DetailsControl>
       </Row>
     )
   })

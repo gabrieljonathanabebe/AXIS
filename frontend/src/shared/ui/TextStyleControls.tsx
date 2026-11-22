@@ -1,7 +1,7 @@
 import { ALargeSmall, Italic } from 'lucide-react'
 
 import AlignmentControl from './AlignmentControl'
-import ColorField from './ColorField'
+import ColorControl from './ColorControl'
 import FontWeightControl from './FontWeightControl'
 import IconButton from './IconButton'
 import Row from './Row'
@@ -76,7 +76,7 @@ function TextStyleControls({
         />
       </Row>
       <Row>
-        <ColorField
+        <ColorControl
           label={label}
           value={value.color}
           onChange={(color) => onChange({ ...value, color })}

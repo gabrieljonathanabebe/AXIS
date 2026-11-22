@@ -8,7 +8,7 @@
   font-size: var(--font-size-xs);
   background: var(--color-surface-default);
   border: var(--border-width-thin) solid;
-  border-color: var(--field-border-color, var(--color-border-subtle));
+  border-color: var(--control-border-color, var(--color-border-subtle));
   border-radius: var(--radius-pill);
 }
 
@@ -31,7 +31,7 @@
   opacity: 0.45;
 }
 
-.text-input-field {
+.text-input-wrapper {
   position: relative;
   display: block;
   min-width: 0;
@@ -52,6 +52,6 @@
   padding-left: calc(var(--space-3) + 14px + var(--space-2));
 }
 
-.text-input-field:focus-within .text-input-icon {
+.text-input-wrapper:focus-within .text-input-icon {
   color: var(--color-accent);
 }

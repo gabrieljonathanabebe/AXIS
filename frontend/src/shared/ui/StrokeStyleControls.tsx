@@ -1,6 +1,6 @@
 import { Equal } from 'lucide-react'
 
-import PaintControl from './PaintControl'
+import PaintRow from './PaintRow'
 import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
@@ -33,7 +33,7 @@ const lineStyleOptions = [
 // ===== COMPONENT =============================================================
 /**
  * Rows of one stroke, e.g. a border: first the row of its paint
- * (`PaintControl`) with color and opacity, its type behind the swatch or
+ * (`PaintRow`) with color and opacity, its type behind the swatch or
  * the gear of `details`, then width and line style. Every group thus
  * starts with its color row. A stroke in the series color, e.g. a line
  * mark, shows `seriesColor` in its place.
@@ -50,7 +50,7 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
 }: StrokeStyleControlsProps<TStroke>) {
   return (
     <>
-      <PaintControl
+      <PaintRow
         details={details}
         label={label}
         paintTypes={paintTypes}

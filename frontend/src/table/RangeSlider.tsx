@@ -23,7 +23,7 @@ type RangeSliderStyle = CSSProperties & {
 // ===== COMPONENT =============================================================
 /**
  * Two native range inputs on one track; the thumbs cannot cross. Plain
- * numbers get a number field on each side, like `Slider`; with
+ * numbers get a number control on each side, like `Slider`; with
  * `formatValue`, e.g. dates of a filter, the formatted values sit below.
  */
 function RangeSlider({

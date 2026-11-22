@@ -14,9 +14,9 @@
 }
 
 .details-popover-body {
-  --field-border-color: transparent;
-  --field-font-size: var(--font-size-xs);
-  --field-width: 100%;
+  --control-border-color: transparent;
+  --control-font-size: var(--font-size-xs);
+  --control-width: 100%;
   --stack-gap: var(--space-1);
 }
 

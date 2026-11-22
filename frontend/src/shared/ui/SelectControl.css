@@ -9,7 +9,7 @@
   min-width: 0;
   height: var(--control-height-sm);
   padding-inline: var(--space-3);
-  font-size: var(--field-font-size, var(--font-size-sm));
+  font-size: var(--control-font-size, var(--font-size-sm));
 }
 
 /* In a compact row the text is small, so the value keeps more room: 8px

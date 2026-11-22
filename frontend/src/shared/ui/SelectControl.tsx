@@ -9,7 +9,7 @@ import Popover from './Popover'
 import type { ReactNode } from 'react'
 import type { OptionItem } from './OptionsMenu'
 
-type SelectControlVariant = 'field' | 'title'
+type SelectControlVariant = 'control' | 'title'
 
 type SelectControlProps<TValue extends string> = {
   disabled?: boolean
@@ -34,7 +34,7 @@ function SelectControl<TValue extends string>({
   value,
   placeholder,
   renderOption,
-  variant = 'field',
+  variant = 'control',
   onChange,
 }: SelectControlProps<TValue>) {
   const [isOpen, setIsOpen] = useState(false)
@@ -67,7 +67,7 @@ function SelectControl<TValue extends string>({
         className="options-menu-popover glass glass-thick"
         placement="bottom-start"
         role="listbox"
-        matchTriggerWidth={variant === 'field'}
+        matchTriggerWidth={variant === 'control'}
         onOpenChange={setIsOpen}
         renderTrigger={(triggerProps) => (
           <Button

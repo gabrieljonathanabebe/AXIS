@@ -1,18 +1,18 @@
-.field {
+.control-frame {
   background: var(--color-surface-default);
   border: var(--border-width-thin) solid;
-  border-color: var(--field-border-color, var(--color-border-subtle));
+  border-color: var(--control-border-color, var(--color-border-subtle));
   border-radius: var(--radius-pill);
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
-.field:hover {
+.control-frame:hover {
   border-color: var(--color-border-default);
 }
 
-.field:focus-within {
+.control-frame:focus-within {
   border-color: var(--color-accent);
   box-shadow: var(--shadow-accent);
 }

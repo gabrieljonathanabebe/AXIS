@@ -4,7 +4,7 @@ import DetailsPopover from './DetailsPopover'
 import type { ReactNode } from 'react'
 
 // ===== TYPES =================================================================
-type DetailsFieldProps = {
+type DetailsControlProps = {
   children: ReactNode
   fitsContent?: boolean
   icon: ReactNode
@@ -16,7 +16,7 @@ type DetailsFieldProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * Field whose icon opens details, built like the field of a gradient: the
+ * Control whose icon opens details, built like the control of a gradient: the
  * icon in place of the swatch, a short text next to it, e.g. the kind of
  * an effect or a preview of a number format. `open` and `onOpenChange`
  * let a list open the details itself, e.g. after adding, like the field
@@ -24,7 +24,7 @@ type DetailsFieldProps = {
  * @param props Name for screen readers, icon, text, details, their width
  *   and open state.
  */
-function DetailsField({
+function DetailsControl({
   children,
   fitsContent,
   icon,
@@ -32,9 +32,9 @@ function DetailsField({
   open,
   text,
   onOpenChange,
-}: DetailsFieldProps) {
+}: DetailsControlProps) {
   return (
-    <div className="field color-field">
+    <div className="control-frame color-control">
       <div className="color-swatch">
         <DetailsPopover
           fitsContent={fitsContent}
@@ -57,9 +57,9 @@ function DetailsField({
           {children}
         </DetailsPopover>
       </div>
-      <span className="color-field-name">{text}</span>
+      <span className="color-control-name">{text}</span>
     </div>
   )
 }
 
-export default DetailsField
+export default DetailsControl

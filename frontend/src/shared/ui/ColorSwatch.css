@@ -46,7 +46,7 @@
 /* A swatch whose picker or editor is open keeps a ring in the accent, so
    it shows which color the popover edits, e.g. one stop of several; in a
    field the field itself shows it. */
-.color-swatch-swatch[aria-expanded='true']:not(.color-field *) {
+.color-swatch-swatch[aria-expanded='true']:not(.color-control *) {
   border-color: var(--color-accent);
 }
 

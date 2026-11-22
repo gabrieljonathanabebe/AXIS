@@ -1,4 +1,4 @@
-.color-field {
+.color-control {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -8,8 +8,8 @@
   padding-inline: var(--space-1);
 }
 
-.color-field-hex,
-.color-field-name {
+.color-control-hex,
+.color-control-name {
   min-width: 0;
   overflow: hidden;
   color: var(--color-text-primary);
@@ -19,7 +19,7 @@
   white-space: nowrap;
 }
 
-.color-field-hex {
+.color-control-hex {
   width: 100%;
   padding: 0;
   text-transform: uppercase;
@@ -28,9 +28,9 @@
   outline: none;
 }
 
-/* While its picker or editor is open, the field keeps its focus look,
+/* While its picker or editor is open, the control keeps its focus look,
    since the focus moves into the popover outside of it. */
-.color-field:has(.color-swatch-swatch[aria-expanded='true']) {
+.color-control:has(.color-swatch-swatch[aria-expanded='true']) {
   border-color: var(--color-accent);
   box-shadow: var(--shadow-accent);
 }

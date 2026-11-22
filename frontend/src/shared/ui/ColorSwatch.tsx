@@ -21,7 +21,7 @@ type ColorSwatchProps<TPreset extends string = never> = {
 /**
  * Swatch of one color that opens the color picker with the presets of its
  * place, e.g. the end of a gradient or the color of a stop. Fields put
- * it next to their own value, e.g. `ColorField` next to the hex input. A
+ * it next to their own value, e.g. `ColorControl` next to the hex input. A
  * named preset that is no color shows its fill.
  * @param props Name, swatches, color and its handler.
  */

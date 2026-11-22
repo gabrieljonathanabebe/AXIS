@@ -1,7 +1,7 @@
 import { CircleDashed, Minus, SquareStack, Sun } from 'lucide-react'
 
 import { createEffect } from '@/shared/effect'
-import DetailsField from '@/shared/ui/DetailsField'
+import DetailsControl from '@/shared/ui/DetailsControl'
 import Group from '@/shared/ui/Group'
 import IconButton from '@/shared/ui/IconButton'
 import Row from '@/shared/ui/Row'
@@ -87,7 +87,7 @@ function EffectControls({ label, value, onChange }: EffectControlsProps) {
       }
       layout="wide"
     >
-      <DetailsField
+      <DetailsControl
         icon={kind ? <kind.icon size={14} /> : null}
         label={`${label} effect`}
         text={kind?.label ?? ''}
@@ -104,7 +104,7 @@ function EffectControls({ label, value, onChange }: EffectControlsProps) {
           }}
         />
         {getValues()}
-      </DetailsField>
+      </DetailsControl>
     </Row>
   )
 }

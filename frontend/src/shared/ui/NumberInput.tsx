@@ -12,7 +12,7 @@ type NumberInputProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * Small number field next to a slider. The typed text stays a draft until
+ * Small number control next to a slider. The typed text stays a draft until
  * Enter or blur; then it is clamped to min and max and committed.
  */
 function NumberInput({

@@ -1,6 +1,6 @@
 import { Blend, CircleDashed } from 'lucide-react'
 
-import ColorField from './ColorField'
+import ColorControl from './ColorControl'
 import Group from './Group'
 import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
@@ -72,7 +72,7 @@ function ShadowControls<TValue extends Shadow>({
       </Group>
       <Group title="Color">
         <Row>
-          <ColorField
+          <ColorControl
             label={label}
             value={value.color}
             onChange={(color) => onChange({ ...value, color })}

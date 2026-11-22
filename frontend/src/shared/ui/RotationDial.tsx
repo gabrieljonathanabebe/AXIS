@@ -17,7 +17,7 @@ const MAX_ANGLE = 90
 
 // ===== COMPONENT =============================================================
 /**
- * Angle field of a rotation or direction, e.g. of axis labels or a
+ * Angle control of a rotation or direction, e.g. of axis labels or a
  * gradient: its arrow points in the angle and scrubs it when dragged
  * sideways; typing and the arrow keys change it as well. Without `min` and
  * `max` it turns a quarter each way.

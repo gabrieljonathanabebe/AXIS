@@ -11,7 +11,7 @@ import {
 
 import { getPlacementLabel, isSide } from '@/shared/layout'
 import BoxFieldsRow from './BoxFieldsRow'
-import DetailsField from './DetailsField'
+import DetailsControl from './DetailsControl'
 import PositionGrid from './PositionGrid'
 import Row from './Row'
 import SegmentedControl from './SegmentedControl'
@@ -99,7 +99,7 @@ function PositionControls<TLayout extends PartialLayout>({
       ) : null}
       {showsPlacement && PlacementIcon ? (
         <Row layout="wide">
-          <DetailsField
+          <DetailsControl
             fitsContent
             icon={<PlacementIcon size={14} />}
             label={`${label} position`}
@@ -111,7 +111,7 @@ function PositionControls<TLayout extends PartialLayout>({
               variant={alignment === undefined ? 'cross' : 'grid'}
               onChange={(placement) => onChange({ ...value, ...placement })}
             />
-          </DetailsField>
+          </DetailsControl>
         </Row>
       ) : null}
       {showsIcons ? (

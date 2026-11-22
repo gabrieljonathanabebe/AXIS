@@ -8,7 +8,7 @@
 @import './shared/ui/CollapsibleSection.css';
 @import './shared/ui/ColorPicker.css';
 @import './shared/ui/ColorSwatch.css';
-@import './shared/ui/ColorField.css';
+@import './shared/ui/ColorControl.css';
 @import './shared/ui/Row.css';
 @import './shared/ui/DetailsPopover.css';
 @import './shared/ui/EditableText.css';
@@ -23,7 +23,7 @@
 @import './shared/ui/NumberInput.css';
 @import './shared/ui/OptionContent.css';
 @import './shared/ui/OptionsMenu.css';
-@import './shared/ui/PaintControl.css';
+@import './shared/ui/PaintEditor.css';
 @import './charts/format/PaletteControl.css';
 @import './shared/ui/Panel.css';
 @import './shared/ui/Popover.css';
@@ -38,7 +38,7 @@
 @import './shared/ui/TextInput.css';
 @import './shared/ui/Tile.css';
 
-@import './styles/field.css';
+@import './shared/ui/Control.css';
 @import './styles/glass.css';
 @import './styles/utilities.css';
 @import './app/App.css';
