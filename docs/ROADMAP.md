@@ -98,13 +98,13 @@ Regeln für den Slice:
 
 - ohne Verhaltensänderung: Die App sieht danach exakt aus wie vorher und
   verhält sich so; Build, Lint, Tests und der Bildvergleich des
-  Smoke-Tests belegen das. Einzige Ausnahme ist der Fix in Teil 9
+  Smoke-Tests belegen das. Ausnahmen sind Teil 9 und Teil 10
 - Verschieben (`git mv`) und Ändern nie im selben Commit
 - keine Feature-Arbeit parallel, auch keine PRs am Frontend von außen;
   das Refactoring berührt sehr viele Dateien
-- je Teil ein Chat und ein Checkpoint; die Teile 2, 3, 4 und 8 sind
+- je Teil ein Chat und ein Checkpoint; die Teile 2, 3, 4a und 8 sind
   mechanisch (kurz prüfen, eine niedrigere Reasoning-Stufe reicht), die
-  Teile 1, 5, 6, 7 und 9 enthalten Logik (genau prüfen)
+  Teile 1, 4b, 5, 6, 7, 9 und 10 enthalten Logik (genau prüfen)
 - Fundliste: Vor jedem Teil die Tabelle „Funde während des Slices“
   unten lesen. Was beim Arbeiten auffällt und nicht in den laufenden
   Teil gehört (doppelte Logik, unpassende Namen, Besitz), trägt der
@@ -159,21 +159,35 @@ Teile:
    in Teil 4 in `Tile` auf) und `NumberInput` (wird das generische
    Zahlen-Input). `ChartItem.css` und `EncodingDropSlots.css` bleiben bis
    Teil 6 unter `styles/canvas/`, `field.css` bis Teil 4 unter `styles/`
-4. Namensgrammatik: Basiskomponenten `Panel`, `Group` (Untergruppe per
-   Context), `Row`, `Control`, `Input`, `Editor`, `Tile`; Umbenennungen
-   nach der Liste im Bericht (`FormatWidget` → `Group`, `…Widget` →
-   `…Group` bzw. `…Groups`, `…Controls` → `…Rows` bzw. `…Groups`,
-   `…Field` → `…Control`, `Widget` → `Tile`). Reihenfolge wegen gleicher
-   Namen: zuerst `.control` des `IconButton` → `.icon-button`, dann
-   `PaintControl` (heute die Zeile) → `PaintRow` und `PaintEditor`,
-   danach `PaintField` → `PaintControl`; `field.css` wird der Rahmen
-   `.control-frame`. `DropdownField` entfällt (ohne Aufrufer).
-   `ScrubbableNumber` nutzt `NumberInput` als Eingabeteil, statt Entwurf
-   und Begrenzen auf min/max zu kopieren. Jede
-   Gruppe rendert ihre `Group` selbst (heute bauen `ChartFormatPanel`,
-   `CardFormatPanel` und `DashboardFormatPanel` Gruppen inline).
-   Danach `shared/ui` nach Aufgabe gruppiert (Controls, Farbe, Layout,
-   Panels, Tiles, Rückmeldung)
+4. Namensgrammatik und Ebenen, in zwei Teilen (Regeln in
+   `DEVELOPMENT.md` Abschnitt 21, „Ebenen und Namensgrammatik“):
+   - 4a Namen und Basen (in Arbeit): Basen `Panel`, `Group`
+     (Untergruppe per Context, einklappbar statt `CollapsibleSection`),
+     `Row` (mit Minus), `Editor` (nur der Inhalt eines Popovers), `Tile`;
+     der Control-Rahmen als Klasse `.control-frame`. Umbenennungen nach
+     der Liste im Bericht (`FormatWidget` → `Group`, `…Widget` → `…Group`
+     bzw. `…Groups`, `…Controls` → `…Rows` bzw. `…Groups`, `…Field` →
+     `…Control`, `Widget` → `Tile`). Reihenfolge wegen gleicher Namen:
+     zuerst `.control` des `IconButton` → `.icon-button`, dann
+     `PaintControl` (heute die Zeile) → `PaintRow` und `PaintEditor`,
+     danach `PaintField` → `PaintControl`. `DropdownField` entfällt.
+     Jede Gruppe rendert ihre `Group` selbst. `DetailsPopover` teilt sich
+     in Auslöser, `Popover` und `Editor`. Nicht umbenannt werden
+     `PositionGrid`, `RotationDial`, `AlignmentControl` und
+     `FontWeightControl`, sie gehen in 4b auf. Überflüssige Defaults
+     entfallen
+   - 4b Ebenen: Primitives mit den Basen `Button`, `Input` und `Popover`
+     und dünnen Varianten (`IconButton`, `SwatchButton`,
+     `DropdownButton`, `TextInput`, `NumberInput`, `Menu`); Controls nach
+     Verhalten zusammengeführt (Ausrichtung, Schriftgewicht, Position →
+     `SegmentedControl`; Winkel → `NumberControl`; Palette,
+     Datumsformat → `SelectControl`; `ScrubbableNumber` → `NumberControl`
+     aus Button und `NumberInput`, mit Prozentmodus); `shared/ui` nach
+     Ebene geordnet (`primitives/`, `controls/`, `rows/`, `groups/`,
+     `containers/`, `tiles/`, `feedback/`), Reihenfolge in `index.css`
+     unverändert; Import-Grenzen je Ebene melden (scharf in Teil 8).
+     Verhalten, das kein Screenshot sieht (Runden, Escape, Pfeiltasten,
+     Auto), sichern Vitest-Tests
 5. Eine Sprache für Frontend und Backend:
    - Request- und Response-Typen aus dem OpenAPI-Schema des Backends
      erzeugen (`openapi-typescript`, Skript `npm run api:types`) statt
@@ -225,9 +239,24 @@ aggregation }`; Linienfläche als `area: { visible, fill }`; feste
    die Kopien aus `npm run check:copies` einmal durchgehen: je Kopie
    zusammenführen (gleiches Wissen), bewusst getrennt lassen (C7, mit
    einem Satz Begründung) oder in die Fundliste
-9. Fix der leeren Kategorie (#32), einzige Verhaltensänderung, eigener
+9. Fix der leeren Kategorie (#32), Verhaltensänderung, eigener
    Commit: ein Schlüssel für fehlende Werte beim Vergleichen (Selection,
    Filter, Gruppen im Backend), eine Anzeige über alle Charttypen
+10. Paint vereinfachen, Verhaltensänderung mit neuen Referenzbildern;
+    vor der Persistenz, weil sich das gespeicherte Modell ändert:
+    - „Datenfarbe“ als Art einer Farbe (`ColorValue` mit
+      `{ kind: 'series' }`), im Color Picker als Swatch „Data“ dort, wo
+      es Daten gibt
+    - `SeriesPaint` und der Fade entfallen; ein Fade ist ein Verlauf mit
+      Stopps in Datenfarbe, z. B. „Data 100 %“ zu „Data 0 %“
+    - eigene Zeile „Data color“ (Farbe, Palette oder Farbskala); die
+      Fill-Zeile zeigt überall Paint-Feld und Deckkraft, der Editor
+      öffnet immer am Swatch
+    - ein `PaintEditor` (Typ, Winkel bzw. Form, Stopps); `ColorControl`
+      geht in `PaintControl` mit nur Solid auf
+    - der Ort legt erlaubte Typen und Farben fest: Marks und Linien nur
+      Datenfarbe, radiale Verläufe nur für Flächen
+    - Defaults, Style-Rezepte und Actions von Ask Cevyn anpassen
 
 Kleine Funde nur mitnehmen, wenn die Datei ohnehin angefasst wird:
 Funktionsnamen nach den Präfixen aus Abschnitt 21, Props, die an jeder

@@ -699,38 +699,62 @@ um.
 | M2  | **Spec-Regeln für alles, was gespeichert wird:** Unterobjekte für Zusammengehöriges, `kind`-Unions, `null` heißt abgeleitet (wo nichts abzuleiten ist, heißt es „nicht gesetzt“, nie beides an einem Feld), `visible` statt Breite 0, gemeinsame Bausteine statt Kopien. | Prüffrage im Review, Prüfung der Spec vor der Persistenz         |
 | P1  | **Jede Regel hat eine Prüfung;** was sich automatisch prüfen lässt, prüft die CI.                                                                                                                                                                                        | CI                                                               |
 
-### Namensgrammatik im Frontend
+### Ebenen und Namensgrammatik im Frontend
 
-Die Endung sagt, auf welcher Ebene eine Komponente steht; jede Ebene
-enthält nur die Ebene direkt darunter:
+Panels und Editoren bestehen aus Ebenen. Die Endung eines Namens sagt
+die Ebene; jede Ebene setzt nur Bausteine der Ebenen darunter zusammen:
 
 ```text
-Panel → Groups → Group → Rows → Row → Control → Input
+Container   Panel, Editor        enthalten Groups
+  Groups    fachliche Bündel von Gruppen
+  Group     Kopf (Titel, Auge, ＋, Einklappen) und Rows
+    Rows    fachliche Bündel von Zeilen
+    Row     Controls nebeneinander, dazu Label und Aktion
+      Control    verknüpft Primitives zu einem Wert
+        Primitive  Button, Input, Popover und ihre Varianten
 ```
 
-Für jede Endung gibt es eine Basiskomponente als einzige Quelle für das,
-was diese Ebene ausmacht. Konkrete Komponenten bauen darauf auf und
-setzen ihre festen Props selbst (C8).
+Eine Basis ist die einzige Quelle für das, was ihre Ebene ausmacht.
+Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
+(C8).
 
-| Endung     | Basis     | Was die Basis festlegt                                                                                                             | Beispiele                                          |
-| ---------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `…Panel`   | `Panel`   | Rand, Kopf, Einklappen                                                                                                             | `FormatPanel`, `BuildPanel`                        |
-| `…Groups`  | –         | kein eigenes Markup: welche Gruppen ein Element oder Baustein hat und in welcher Reihenfolge                                       | `LegendGroups`, `SurfaceGroups`                    |
-| `…Group`   | `Group`   | Titel, Auge, ＋, Icon in der Icon-Spalte, ausgeblendet nur die Überschrift, Ziel für Fokus und Scrollen                            | `ZoomGroup`, `BorderGroup`                         |
-| `…Rows`    | –         | kein eigenes Markup: welche Zeilen ein Baustein hat                                                                                | `TextStyleRows`, `NumberFormatRows`                |
-| `…Row`     | `Row`     | Raster `1fr 1fr 24px`, Zeilentypen (Paar, Einzeln, Breit), Icon-Spalte                                                             | `BoxFieldsRow`                                     |
-| `…Control` | `Control` | bearbeitet einen Wert in einer Zeile: Höhe, `aria-label`; als Feld mit Rahmen erst bei Hover und Fokus, Icon links, Einheit rechts | `PaintControl`, `ColorControl`, `SegmentedControl` |
-| `…Input`   | `Input`   | natives Eingabefeld für Text oder Zahl: Entwurf bis Enter oder Blur, Escape bricht ab                                              | `TextInput`, `NumberInput`                         |
-| `…Editor`  | `Editor`  | Inhalt eines Popovers: Kopf, Abstand, Schließen                                                                                    | `PaintEditor`                                      |
-| `…Tile`    | `Tile`    | Kachel                                                                                                                             | `StatTile`, `FieldProfileTile`                     |
+| Ebene     | Endung                         | Basis                                  | Was die Basis festlegt                                                                                                   | Beispiele                                                                          | Ordner in `shared/ui/` |
+| --------- | ------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ---------------------- |
+| Container | `…Panel`                       | `Panel`                                | Rand, Kopf, Einklappen                                                                                                   | `FormatPanel`, `BuildPanel`                                                        | `containers/`          |
+| Container | `…Editor`                      | `Editor`                               | Inhalt eines Popovers: Abstand, Kopf; setzt die Gruppenebene zurück, Gruppen darin beginnen oben                         | `PaintEditor`, `ColorEditor`                                                       | `containers/`          |
+| Groups    | `…Groups`                      | –                                      | kein Markup: welche Gruppen ein Element oder Baustein hat und in welcher Reihenfolge                                     | `LegendGroups`, `SurfaceGroups`                                                    | `groups/`              |
+| Group     | `…Group`                       | `Group`                                | Titel, Auge, ＋, Einklappen, Icon in der Icon-Spalte, ausgeblendet nur die Überschrift, Ziel für Fokus und Scrollen      | `ZoomGroup`, `StrokeGroup`                                                         | `groups/`              |
+| Rows      | `…Rows`                        | –                                      | kein Markup: welche Zeilen ein Baustein hat                                                                              | `TextStyleRows`, `NumberFormatRows`                                                | `rows/`                |
+| Row       | `…Row`                         | `Row`                                  | Raster `1fr 1fr 24px`, Zeilentypen (Paar, Einzeln, Breit), optional Label, Aktion bzw. Minus in der Icon-Spalte          | `PaintRow`, `BoxRow`                                                               | `rows/`                |
+| Control   | `…Control`                     | keine Komponente, nur `.control-frame` | verknüpft Primitives zu einem bearbeiteten Wert                                                                          | `PaintControl`, `SelectControl`, `SegmentedControl`, `NumberControl`               | `controls/`            |
+| Primitive | Basis oder `…Button`, `…Input` | `Button`, `Input`, `Popover`           | `Button`: Optik und Arten (Text, Icon, Kachel, Swatch); `Input`: natives Eingabefeld; `Popover`: Auslöser und Aufklappen | `IconButton`, `SwatchButton`, `DropdownButton`, `TextInput`, `NumberInput`, `Menu` | `primitives/`          |
+| außerhalb | `…Tile`                        | `Tile`                                 | Kachel außerhalb der Panels, z. B. im Profil                                                                             | `StatTile`, `DatasetTile`                                                          | `tiles/`               |
 
+- **Nur nach unten:** Jede Ebene nutzt nur Ebenen darunter. Die Ordner
+  unter `shared/ui/` folgen den Ebenen; die ESLint-Grenzen prüfen die
+  Richtung. Fachliche Rows, Groups und Editoren liegen in ihrer Domäne
+  (z. B. `charts/format/`) und folgen derselben Richtung.
+- **Varianten sind dünn:** Eine Variante (`IconButton`, `TextInput`,
+  `Menu`) setzt nur feste Props und ruft ihre Basis auf; Optik und
+  Verhalten stehen einmal in der Basis.
+- **Ein Control unterscheidet sich durch Verhalten, nicht durch Inhalt:**
+  Gleiches Verhalten mit anderen Optionen ist dasselbe Control mit
+  anderer Konfiguration. Ausrichtung, Schriftgewicht und Position sind
+  `SegmentedControl`, ein Winkel ist `NumberControl` mit Einheit °,
+  Palette und Datumsformat sind `SelectControl`.
+- **Optik als Klasse, Verhalten als Komponente:** Controls haben keine
+  Basis-Komponente; ihr Rahmen ist die Klasse `.control-frame`, Swatch
+  mit Text die Klasse `.swatch-control`.
+- **Auslöser, Aufklappen und Inhalt getrennt:** Zahnrad oder Swatch ist
+  ein Button, das Aufklappen ein `Popover`, der Inhalt ein `Editor`; das
+  Control setzt sie zusammen.
 - **Eine Komponente rendert nur ihre eigene Ebene:** Ein `…Group`
   rendert seine `Group` selbst; ein Aufrufer legt nie eine `Group` um
   eine Komponente herum, und ein `…Rows` rendert nie eine.
-- **Plural nur, wenn er entscheidet:** `…Groups` und `…Rows` gibt es
-  nur, wenn sie Auswahl oder Reihenfolge festlegen. Nur zu wiederholen
-  ist kein Grund für eine eigene Komponente; dann `Group` bzw. `Row`
-  mehrfach rendern.
+- **Plural nur, wenn er entscheidet oder kapselt:** `…Groups` und
+  `…Rows` gibt es, wenn sie Auswahl oder Reihenfolge festlegen oder ein
+  fachliches Bündel an mehreren Stellen kapseln. Nur zu wiederholen ist
+  kein Grund; dann `Group` bzw. `Row` mehrfach rendern.
 - **Eine `Group` in einer `Group` wird Untergruppe:** Sie erkennt das
   über React-Context und zeigt statt des Titels in Großbuchstaben eine
   kleine Überschrift; Auge, ＋ und Icon-Spalte bleiben gleich. So
@@ -738,14 +762,13 @@ setzen ihre festen Props selbst (C8).
   dieselben `SurfaceGroups`. Höchstens zwei Ebenen. Ein `Editor`
   beginnt wieder auf oberster Ebene, weil der Context auch durch das
   Portal eines Popovers reicht.
-- **In einer `Row` steht immer ein `Control`;** ein `Input` ist der
-  Teil, in den man tippt. Es steht in einem `Control` oder frei
-  außerhalb der Panels, z. B. in der Suche oder der Ask-Leiste.
 - **`Field` meint nur Datenfelder:** Ein Name mit `Field` bzw. `field`
   zeigt im Frontend ein Datenfeld (`FieldList`, `.field-chip`), nie ein
-  Control; der Rahmen eines Controls ist `.control-frame`.
-- **Grundbausteine** ohne Endungsregel: `Button`, `IconButton`,
-  `Popover`, `ScrubbableNumber`.
+  Control.
+- **Ausnahmen** stehen außerhalb der Ebenen und nur in dieser Liste:
+  Fachansichten (`DataTable`, Canvas, `ObjectFrame`, `EditableText`) und
+  die Farbfläche mit Hue-Regler im `ColorEditor`. Was sich sonst nicht
+  einordnen lässt, wird so umgebaut, dass es passt.
 - **Funktionen:** `use…` (Hook), `create…` bzw. `build…` (erzeugt
   Neues), `get…` (leitet ab), `is…` bzw. `has…` (Ja/Nein), `format…`
   (Text für Menschen), `parse…` (liest Eingaben), `…Definition` bzw.
@@ -759,10 +782,10 @@ dasselbe auffallen (C2).
 
 | Begriff         | Bedeutung                                                                         | nicht                                        |
 | --------------- | --------------------------------------------------------------------------------- | -------------------------------------------- |
-| Gruppe (Group)  | Abschnitt mit Titel im Format- oder Build-Panel                                   | Widget, Section                              |
-| Section         | aufklappbarer Bereich im Build Panel (`CollapsibleSection`)                       | Gruppe                                       |
-| Control         | bearbeitet einen Wert in einer Zeile des Panels                                   | Field, Input                                 |
-| Input           | natives Eingabefeld für Text oder Zahl, Teil eines Controls oder frei             | Field, Control                               |
+| Gruppe (Group)  | Abschnitt mit Titel im Format- oder Build-Panel, auch einklappbar                 | Widget, Section                              |
+| Control         | verknüpft Primitives zu einem bearbeiteten Wert in einer Zeile                    | Field, Input                                 |
+| Input           | natives Eingabefeld für Text oder Zahl (Primitive)                                | Field, Control                               |
+| Primitive       | `Button`, `Input` oder `Popover` und ihre Varianten; kleinste Ebene               | Element, Atom                                |
 | Field           | Spalte eines Datasets (`Field`, im Frontend `DataField`); nur in dieser Bedeutung | Column, Control                              |
 | Tile            | Kachel, z. B. im Profil oder in der Auswahl der Charttypen                        | Widget, Card                                 |
 | Card            | Objekttyp mit einem aggregierten Wert                                             | Tile                                         |
@@ -774,7 +797,7 @@ dasselbe auffallen (C2).
 
 | Werkzeug             | Prüft                                                 | Seite    | Aufruf                     |
 | -------------------- | ----------------------------------------------------- | -------- | -------------------------- |
-| ESLint-Grenzen       | S3, S4                                                | Frontend | `npm run check:boundaries` |
+| ESLint-Grenzen       | S3, S4, Ebenen in `shared/ui`                         | Frontend | `npm run check:boundaries` |
 | `import-linter`      | S3, S4                                                | Backend  | `uv run lint-imports`      |
 | `madge --circular`   | Ringabhängigkeiten (S4)                               | Frontend | `npm run check:cycles`     |
 | `knip`               | Ungenutztes (C1)                                      | Frontend | `npm run check:unused`     |
