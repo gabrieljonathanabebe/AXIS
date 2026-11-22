@@ -3,7 +3,7 @@ import {
   resolveDatePreset,
 } from '@/shared/format/formatDate'
 import { DATE_PRESETS_BY_GRAIN } from '@/shared/format/valueFormats'
-import ControlRow from '@/shared/ui/ControlRow'
+import Row from '@/shared/ui/Row'
 import SelectControl from '@/shared/ui/SelectControl'
 
 import type {
@@ -70,7 +70,7 @@ function DateFormatSelect({
       : 'auto'
 
   return (
-    <ControlRow layout="wide">
+    <Row layout="wide">
       <SelectControl
         label={`${label} date format`}
         options={options}
@@ -83,7 +83,7 @@ function DateFormatSelect({
           )
         }}
       />
-    </ControlRow>
+    </Row>
   )
 }
 

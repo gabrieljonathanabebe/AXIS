@@ -9,12 +9,12 @@
 @import './shared/ui/ColorPicker.css';
 @import './shared/ui/ColorSwatch.css';
 @import './shared/ui/ColorField.css';
-@import './shared/ui/ControlRow.css';
+@import './shared/ui/Row.css';
 @import './shared/ui/DetailsPopover.css';
 @import './shared/ui/EditableText.css';
 @import './shared/ui/EmptyState.css';
 @import './shared/ui/FormatPanel.css';
-@import './shared/ui/FormatWidget.css';
+@import './shared/ui/Group.css';
 @import './charts/format/GradientControl.css';
 @import './shared/ui/GradientStopsControl.css';
 @import './shared/ui/IconBadge.css';
@@ -36,7 +36,7 @@
 @import './shared/ui/StrokeStyleControls.css';
 @import './shared/ui/Surface.css';
 @import './shared/ui/TextInput.css';
-@import './shared/ui/Widget.css';
+@import './shared/ui/Tile.css';
 
 @import './styles/field.css';
 @import './styles/glass.css';

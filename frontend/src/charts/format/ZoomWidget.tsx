@@ -1,8 +1,8 @@
 import { Mouse, PanelBottom } from 'lucide-react'
 
 import Button from '@/shared/ui/Button'
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
+import Row from '@/shared/ui/Row'
 
 import type { ChartInteractionSpec } from '@/charts/types'
 
@@ -32,8 +32,8 @@ function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
     })
   }
   return (
-    <FormatWidget title="Zoom">
-      <ControlRow>
+    <Group title="Zoom">
+      <Row>
         <Button
           aria-pressed={inside}
           isActive={inside}
@@ -54,8 +54,8 @@ function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
           <PanelBottom size={14} />
           Slider
         </Button>
-      </ControlRow>
-    </FormatWidget>
+      </Row>
+    </Group>
   )
 }
 

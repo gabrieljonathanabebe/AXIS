@@ -1,7 +1,7 @@
 import { getAggregationOptions } from '@/charts/aggregations'
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import NumberFormatControls from '@/shared/ui/NumberFormatControls'
+import Row from '@/shared/ui/Row'
 import SelectControl from '@/shared/ui/SelectControl'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
 
@@ -31,8 +31,8 @@ function CardValueWidget({
 }: CardValueWidgetProps) {
   return (
     <>
-      <FormatWidget title="Function">
-        <ControlRow layout="wide">
+      <Group title="Function">
+        <Row layout="wide">
           <SelectControl
             disabled={aggregations.length < 2}
             label="Value aggregation"
@@ -40,9 +40,9 @@ function CardValueWidget({
             value={aggregation}
             onChange={onAggregationChange}
           />
-        </ControlRow>
-      </FormatWidget>
-      <FormatWidget title="Text">
+        </Row>
+      </Group>
+      <Group title="Text">
         <TextStyleControls
           label="Value"
           maxFontSize={96}
@@ -50,14 +50,14 @@ function CardValueWidget({
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}
         />
-      </FormatWidget>
-      <FormatWidget title="Format">
+      </Group>
+      <Group title="Format">
         <NumberFormatControls
           label="Value"
           value={value.numberFormat}
           onChange={(numberFormat) => onChange({ ...value, numberFormat })}
         />
-      </FormatWidget>
+      </Group>
     </>
   )
 }

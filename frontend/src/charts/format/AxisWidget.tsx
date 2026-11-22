@@ -1,10 +1,10 @@
 import { Ruler } from 'lucide-react'
 
 import { showsDateLabels } from '@/charts/getEffectiveTimeGrain'
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import NumberFormatControls from '@/shared/ui/NumberFormatControls'
 import RotationDial from '@/shared/ui/RotationDial'
+import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import TextInput from '@/shared/ui/TextInput'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
@@ -69,7 +69,7 @@ function AxisWidget<TValue extends AxisParts>({
     )
   if (part === 'title') {
     return (
-      <FormatWidget
+      <Group
         group={titleGroup}
         title="Title"
         visibility={{
@@ -79,7 +79,7 @@ function AxisWidget<TValue extends AxisParts>({
           },
         }}
       >
-        <ControlRow layout="wide">
+        <Row layout="wide">
           <TextInput
             label={`${label} title`}
             value={value.title.text}
@@ -88,7 +88,7 @@ function AxisWidget<TValue extends AxisParts>({
               onChange({ ...value, title: { ...value.title, text } })
             }}
           />
-        </ControlRow>
+        </Row>
         <TextStyleControls
           label={`${label} title`}
           value={value.title.textStyle}
@@ -96,13 +96,13 @@ function AxisWidget<TValue extends AxisParts>({
             onChange({ ...value, title: { ...value.title, textStyle } })
           }
         />
-      </FormatWidget>
+      </Group>
     )
   }
   return (
     <>
-      <FormatWidget title="Layout">
-        <ControlRow>
+      <Group title="Layout">
+        <Row>
           <ScrubbableNumber
             icon={<Ruler size={14} />}
             label={`${label} tick count`}
@@ -126,9 +126,9 @@ function AxisWidget<TValue extends AxisParts>({
               }}
             />
           )}
-        </ControlRow>
-      </FormatWidget>
-      <FormatWidget title="Text">
+        </Row>
+      </Group>
+      <Group title="Text">
         <TextStyleControls
           label={`${label} label`}
           value={labels.textStyle}
@@ -136,8 +136,8 @@ function AxisWidget<TValue extends AxisParts>({
             onChange({ ...value, labels: { ...labels, textStyle } })
           }
         />
-      </FormatWidget>
-      <FormatWidget title="Format">
+      </Group>
+      <Group title="Format">
         <NumberFormatControls
           isDate={isDate}
           label={label}
@@ -172,7 +172,7 @@ function AxisWidget<TValue extends AxisParts>({
             }}
           />
         )}
-      </FormatWidget>
+      </Group>
     </>
   )
 }

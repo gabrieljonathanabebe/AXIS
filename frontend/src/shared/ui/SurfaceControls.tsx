@@ -3,9 +3,9 @@ import { SquareRoundCorner } from 'lucide-react'
 import { createSurfaceEffect } from '@/shared/effect'
 import { addFill } from '@/shared/fill'
 import { SURFACE_CAPABILITIES } from '@/shared/surface'
-import ControlRow from './ControlRow'
 import FillListControls from './FillListControls'
-import FormatWidget from './FormatWidget'
+import Group from './Group'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import StrokeWidget from './StrokeWidget'
 import SurfaceEffectsControls from './SurfaceEffectsControls'
@@ -52,8 +52,8 @@ function SurfaceControls({
   return (
     <>
       {borderRadius === undefined ? null : (
-        <FormatWidget title="Shape">
-          <ControlRow>
+        <Group title="Shape">
+          <Row>
             <ScrubbableNumber
               icon={<SquareRoundCorner size={14} />}
               label={`${label} radius`}
@@ -66,12 +66,12 @@ function SurfaceControls({
                 onChange('borderRadius', nextRadius)
               }}
             />
-          </ControlRow>
-        </FormatWidget>
+          </Row>
+        </Group>
       )}
       {children}
       {background === undefined ? null : (
-        <FormatWidget
+        <Group
           title="Background"
           onAdd={() => onChange('background', addFill(background))}
         >
@@ -80,7 +80,7 @@ function SurfaceControls({
             value={background}
             onChange={(nextFills) => onChange('background', nextFills)}
           />
-        </FormatWidget>
+        </Group>
       )}
       {border === undefined ? null : (
         <StrokeWidget
@@ -92,7 +92,7 @@ function SurfaceControls({
         />
       )}
       {effects === undefined ? null : (
-        <FormatWidget
+        <Group
           title="Effects"
           onAdd={() => {
             onChange('effects', [...effects, createSurfaceEffect('shadow')])
@@ -106,7 +106,7 @@ function SurfaceControls({
               onChange={(nextEffects) => onChange('effects', nextEffects)}
             />
           ) : null}
-        </FormatWidget>
+        </Group>
       )}
     </>
   )

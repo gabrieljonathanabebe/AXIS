@@ -1,9 +1,9 @@
 import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
 
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
 import NumberFormatControls from '@/shared/ui/NumberFormatControls'
+import Row from '@/shared/ui/Row'
 import SegmentedControl from '@/shared/ui/SegmentedControl'
 import SurfaceControls from '@/shared/ui/SurfaceControls'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
@@ -45,14 +45,14 @@ function TooltipWidget({
 }: TooltipWidgetProps) {
   return (
     <>
-      <FormatWidget title="Layout">
+      <Group title="Layout">
         <LayoutControls
           label="Tooltip"
           maxGap={24}
           value={appearance.layout}
           onChange={(layout) => onAppearanceChange({ ...appearance, layout })}
         />
-      </FormatWidget>
+      </Group>
       <SurfaceControls
         label="Tooltip"
         renderer="css"
@@ -64,7 +64,7 @@ function TooltipWidget({
           })
         }}
       >
-        <FormatWidget title="Text">
+        <Group title="Text">
           <TextStyleControls
             label="Tooltip text"
             value={appearance.textStyle}
@@ -72,26 +72,26 @@ function TooltipWidget({
               onAppearanceChange({ ...appearance, textStyle })
             }}
           />
-        </FormatWidget>
+        </Group>
       </SurfaceControls>
-      <FormatWidget title="Format">
+      <Group title="Format">
         <NumberFormatControls
           label="Tooltip"
           value={value.numberFormat}
           onChange={(numberFormat) => onChange({ ...value, numberFormat })}
         />
-      </FormatWidget>
+      </Group>
       {showTrigger ? (
-        <FormatWidget title="Behavior">
-          <ControlRow layout="wide">
+        <Group title="Behavior">
+          <Row layout="wide">
             <SegmentedControl
               label="Tooltip trigger"
               options={triggerOptions}
               value={value.trigger}
               onValueChange={(trigger) => onChange({ ...value, trigger })}
             />
-          </ControlRow>
-        </FormatWidget>
+          </Row>
+        </Group>
       ) : null}
     </>
   )

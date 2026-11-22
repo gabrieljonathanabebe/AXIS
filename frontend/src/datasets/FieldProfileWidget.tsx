@@ -4,7 +4,7 @@ import { formatNumber } from '@/shared/format/formatNumber'
 import IconButton from '@/shared/ui/IconButton'
 import MiniHistogram from '@/shared/ui/MiniHistogram'
 import SelectControl from '@/shared/ui/SelectControl'
-import Widget from '@/shared/ui/Widget'
+import Tile from '@/shared/ui/Tile'
 import { createDistributionBars } from './fieldDistribution'
 import { getAllowedSemanticRoles, semanticRoleLabels } from './semanticRoles'
 
@@ -54,7 +54,7 @@ function FieldProfileWidget({
   const detectedLabel = semanticRoleLabels[field.semantic_role]
 
   return (
-    <Widget className="stat-widget field-profile">
+    <Tile className="stat-widget field-profile">
       <div className="field-profile-text stack">
         <strong className="field-profile-name" title={field.name}>
           {field.name}
@@ -87,7 +87,7 @@ function FieldProfileWidget({
       {bars.length > 0 ? (
         <MiniHistogram bars={bars} label={`Distribution of ${field.name}`} />
       ) : null}
-    </Widget>
+    </Tile>
   )
 }
 

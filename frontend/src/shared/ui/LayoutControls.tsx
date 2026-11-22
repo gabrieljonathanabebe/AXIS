@@ -3,7 +3,7 @@ import { Fullscreen, MoveHorizontal, MoveVertical, Space } from 'lucide-react'
 import { isSide } from '@/shared/layout'
 import AlignmentControl from './AlignmentControl'
 import BoxFieldsRow from './BoxFieldsRow'
-import ControlRow from './ControlRow'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
@@ -113,8 +113,8 @@ function LayoutControls<TLayout extends PartialLayout>({
       {box ? (
         <BoxFieldsRow box={box} fields={['width', 'height']} label={label} />
       ) : null}
-      {arrangement.length > 0 ? <ControlRow>{arrangement}</ControlRow> : null}
-      {spacing.length > 0 ? <ControlRow>{spacing}</ControlRow> : null}
+      {arrangement.length > 0 ? <Row>{arrangement}</Row> : null}
+      {spacing.length > 0 ? <Row>{spacing}</Row> : null}
     </>
   )
 }

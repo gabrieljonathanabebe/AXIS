@@ -11,9 +11,9 @@ import {
 
 import { getPlacementLabel, isSide } from '@/shared/layout'
 import BoxFieldsRow from './BoxFieldsRow'
-import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
 import PositionGrid from './PositionGrid'
+import Row from './Row'
 import SegmentedControl from './SegmentedControl'
 
 import type { LucideIcon } from 'lucide-react'
@@ -98,7 +98,7 @@ function PositionControls<TLayout extends PartialLayout>({
         <BoxFieldsRow box={box} fields={['x', 'y']} label={label} />
       ) : null}
       {showsPlacement && PlacementIcon ? (
-        <ControlRow layout="wide">
+        <Row layout="wide">
           <DetailsField
             fitsContent
             icon={<PlacementIcon size={14} />}
@@ -112,10 +112,10 @@ function PositionControls<TLayout extends PartialLayout>({
               onChange={(placement) => onChange({ ...value, ...placement })}
             />
           </DetailsField>
-        </ControlRow>
+        </Row>
       ) : null}
       {showsIcons ? (
-        <ControlRow layout={isWide ? 'wide' : 'single'}>
+        <Row layout={isWide ? 'wide' : 'single'}>
           <SegmentedControl
             className="layout-position-control"
             label={`${label} position`}
@@ -132,7 +132,7 @@ function PositionControls<TLayout extends PartialLayout>({
               onChange({ ...value, position: nextPosition })
             }}
           />
-        </ControlRow>
+        </Row>
       ) : null}
     </>
   )

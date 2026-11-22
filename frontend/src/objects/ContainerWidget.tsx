@@ -1,4 +1,4 @@
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
 import PositionControls from '@/shared/ui/PositionControls'
 import SurfaceControls from '@/shared/ui/SurfaceControls'
@@ -54,22 +54,22 @@ function ContainerWidget({
   }
   return (
     <>
-      <FormatWidget title="Position">
+      <Group title="Position">
         <PositionControls
           box={box}
           label="Container"
           value={value.layout}
           onChange={(layout) => onChange('layout', layout)}
         />
-      </FormatWidget>
-      <FormatWidget title="Layout">
+      </Group>
+      <Group title="Layout">
         <LayoutControls
           box={box}
           label="Container"
           value={value.layout}
           onChange={(layout) => onChange('layout', layout)}
         />
-      </FormatWidget>
+      </Group>
       <SurfaceControls label="Container" value={value} onChange={setSurface} />
     </>
   )

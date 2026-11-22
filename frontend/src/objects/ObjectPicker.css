@@ -31,7 +31,7 @@
 }
 
 .chart-type-more:disabled:hover {
-  --widget-surface: var(--color-surface-subtle);
+  --tile-surface: var(--color-surface-subtle);
 
   color: var(--color-text-secondary);
   border-color: var(--color-border-subtle);

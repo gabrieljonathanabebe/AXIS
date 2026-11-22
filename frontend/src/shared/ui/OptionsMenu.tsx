@@ -2,7 +2,7 @@ import { Check } from 'lucide-react'
 
 import Button from './Button'
 import OptionContent from './OptionContent'
-import Widget from './Widget'
+import Tile from './Tile'
 
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -37,7 +37,7 @@ function OptionsMenu<TValue extends string>({
   onChange,
 }: OptionsMenuProps<TValue>) {
   return (
-    <Widget className="options-menu stack">
+    <Tile className="options-menu stack">
       {options.map((option) => {
         const isSelected = option.value === value
         return (
@@ -57,7 +57,7 @@ function OptionsMenu<TValue extends string>({
           </Button>
         )
       })}
-    </Widget>
+    </Tile>
   )
 }
 

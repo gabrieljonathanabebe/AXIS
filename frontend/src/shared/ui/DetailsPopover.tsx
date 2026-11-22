@@ -35,7 +35,7 @@ type DetailsPopoverProps = {
  * without `hasHeader` it starts with its rows and closes on a click
  * outside, e.g. as the editor of a paint, whose rows say what it edits.
  * `size` fits the gear to its place, e.g. `xs` in the header of a format
- * widget. `open` and `onOpenChange` let a parent open it, e.g. right
+ * group. `open` and `onOpenChange` let a parent open it, e.g. right
  * after adding a row. Inside the format popover it nests, so a click in
  * the details keeps both open.
  * `fitsContent` gives it the width of its rows, e.g. a position grid.

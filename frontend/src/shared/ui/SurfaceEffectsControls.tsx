@@ -10,10 +10,10 @@ import {
 } from 'lucide-react'
 
 import { createSurfaceEffect, isSurfaceEffectTaken } from '@/shared/effect'
-import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
-import FormatWidget from './FormatWidget'
+import Group from './Group'
 import IconButton from './IconButton'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SelectControl from './SelectControl'
 import ShadowControls from './ShadowControls'
@@ -92,8 +92,8 @@ function SurfaceEffectsControls({
     }
     if (effect.kind === 'backgroundBlur') {
       return (
-        <FormatWidget title="Blur">
-          <ControlRow>
+        <Group title="Blur">
+          <Row>
             <ScrubbableNumber
               icon={<CircleDashed size={14} />}
               label={`${label} effect ${index + 1} blur`}
@@ -103,13 +103,13 @@ function SurfaceEffectsControls({
               value={effect.blur}
               onValueChange={(blur) => setEffect(index, { ...effect, blur })}
             />
-          </ControlRow>
-        </FormatWidget>
+          </Row>
+        </Group>
       )
     }
     return (
-      <FormatWidget title="Grain">
-        <ControlRow>
+      <Group title="Grain">
+        <Row>
           <ScrubbableNumber
             icon={<Blend size={14} />}
             label={`${label} effect ${index + 1} intensity`}
@@ -132,8 +132,8 @@ function SurfaceEffectsControls({
             value={effect.size}
             onValueChange={(size) => setEffect(index, { ...effect, size })}
           />
-        </ControlRow>
-      </FormatWidget>
+        </Row>
+      </Group>
     )
   }
 
@@ -143,7 +143,7 @@ function SurfaceEffectsControls({
       (option) => option.value === effect.kind,
     )
     return (
-      <ControlRow
+      <Row
         // Effects carry no id; the list only changes by its own rows.
         key={index}
         action={
@@ -185,7 +185,7 @@ function SurfaceEffectsControls({
           />
           {getValues(effect, index)}
         </DetailsField>
-      </ControlRow>
+      </Row>
     )
   })
 }

@@ -1,4 +1,4 @@
-import ControlRow from './ControlRow'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 
 import type { Box, NumberBounds } from '@/shared/layout'
@@ -65,7 +65,7 @@ function BoxFieldsRow({ box, fields, label }: BoxFieldsRowProps) {
   if (controls.length === 0) {
     return null
   }
-  return <ControlRow>{controls}</ControlRow>
+  return <Row>{controls}</Row>
 }
 
 export default BoxFieldsRow

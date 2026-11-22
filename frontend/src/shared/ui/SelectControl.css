@@ -16,7 +16,7 @@
    at the start like the other compact fields, and the chevron moves closer
    to the value and to the edge, whose own blank space keeps it from
    touching the border, e.g. "Inner shadow" next to its blur. */
-.control-row-compact .select-control-button {
+.row-compact .select-control-button {
   --spread-gap: var(--space-1);
 
   padding-inline: var(--space-2) var(--space-1);

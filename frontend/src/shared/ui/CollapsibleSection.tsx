@@ -3,9 +3,9 @@ import { useId, useState } from 'react'
 
 import Button from './Button'
 import IconBadge from './IconBadge'
-import Widget from './Widget'
+import Tile from './Tile'
 
-type CollapsibleSectionVariant = 'plain' | 'widget'
+type CollapsibleSectionVariant = 'plain' | 'tile'
 
 type CollapsibleSectionProps = {
   title: string
@@ -25,7 +25,7 @@ function CollapsibleSection({
   actions,
   defaultOpen = true,
   forceOpen = false,
-  variant = 'widget',
+  variant = 'tile',
   children,
 }: CollapsibleSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
@@ -85,7 +85,7 @@ function CollapsibleSection({
     return <section className="collapsible-section is-plain">{content}</section>
   }
 
-  return <Widget className="collapsible-section glass">{content}</Widget>
+  return <Tile className="collapsible-section glass">{content}</Tile>
 }
 
 export default CollapsibleSection

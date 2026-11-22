@@ -5,7 +5,7 @@ type WidgetProps = {
   isInteractive?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
-function Widget({
+function Tile({
   children,
   className = '',
   isInteractive = false,
@@ -13,7 +13,7 @@ function Widget({
 }: WidgetProps) {
   return (
     <div
-      className={`widget ${isInteractive ? 'is-interactive' : ''} ${className}`}
+      className={`tile ${isInteractive ? 'is-interactive' : ''} ${className}`}
       {...divProps}
     >
       {children}
@@ -21,4 +21,4 @@ function Widget({
   )
 }
 
-export default Widget
+export default Tile

@@ -23,10 +23,10 @@ import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
 import { createEffect } from '@/shared/effect'
 import ColorField from '@/shared/ui/ColorField'
-import ControlRow from '@/shared/ui/ControlRow'
 import DetailsPopover from '@/shared/ui/DetailsPopover'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import PaintControl from '@/shared/ui/PaintControl'
+import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SegmentedControl from '@/shared/ui/SegmentedControl'
 import StrokeStyleControls from '@/shared/ui/StrokeStyleControls'
@@ -180,7 +180,7 @@ function getDataColorControls({
   return {
     details: (
       <DetailsPopover label="Color range" size="xs">
-        <ControlRow>
+        <Row>
           <ScrubbableNumber
             icon={<ArrowDownToLine size={14} />}
             label="Color scale minimum"
@@ -197,7 +197,7 @@ function getDataColorControls({
             onAuto={() => setContinuous({ max: null })}
             onValueChange={(max) => setContinuous({ max })}
           />
-        </ControlRow>
+        </Row>
       </DetailsPopover>
     ),
     field: (
@@ -230,17 +230,12 @@ function getEffectGroup(
   onChange: (effect: Effect) => void,
 ): ReactNode {
   if (effect.kind === 'none') {
-    return (
-      <FormatWidget
-        title="Effect"
-        onAdd={() => onChange(createEffect('glow'))}
-      />
-    )
+    return <Group title="Effect" onAdd={() => onChange(createEffect('glow'))} />
   }
   return (
-    <FormatWidget title="Effect">
+    <Group title="Effect">
       <EffectControls label={label} value={effect} onChange={onChange} />
-    </FormatWidget>
+    </Group>
   )
 }
 
@@ -263,7 +258,7 @@ function getFilledMarkGroups(
   const { border, effect, fill } = chart.spec.appearance[mark]
   return {
     dataColor: (
-      <FormatWidget title="Fill">
+      <Group title="Fill">
         <PaintControl
           details={dataColor.details}
           label={`${label} fill`}
@@ -272,7 +267,7 @@ function getFilledMarkGroups(
           value={fill}
           onChange={(value) => actions.setChartAppearance(mark, 'fill', value)}
         />
-      </FormatWidget>
+      </Group>
     ),
     effect: getEffectGroup(label, effect, (value) => {
       actions.setChartAppearance(mark, 'effect', value)
@@ -307,8 +302,8 @@ function getChartTypeGroups(
       return {
         ...getFilledMarkGroups(props, 'bar', 'Bar', dataColor),
         shape: (
-          <FormatWidget title="Shape">
-            <ControlRow>
+          <Group title="Shape">
+            <Row>
               <ScrubbableNumber
                 icon={<UnfoldHorizontal size={14} />}
                 label="Bar width"
@@ -337,8 +332,8 @@ function getChartTypeGroups(
                   )
                 }}
               />
-            </ControlRow>
-          </FormatWidget>
+            </Row>
+          </Group>
         ),
       }
     case 'donut':
@@ -347,8 +342,8 @@ function getChartTypeGroups(
         ...getFilledMarkGroups(props, 'pie', 'Segment', dataColor),
         shape:
           chart.type === 'donut' ? (
-            <FormatWidget title="Shape">
-              <ControlRow>
+            <Group title="Shape">
+              <Row>
                 <ScrubbableNumber
                   icon={<Donut size={14} />}
                   label="Donut inner radius"
@@ -365,14 +360,14 @@ function getChartTypeGroups(
                     )
                   }}
                 />
-              </ControlRow>
-            </FormatWidget>
+              </Row>
+            </Group>
           ) : null,
       }
     case 'line':
       return {
         dataColor: (
-          <FormatWidget title="Line">
+          <Group title="Line">
             <StrokeStyleControls
               details={dataColor.details}
               label="Line"
@@ -384,13 +379,13 @@ function getChartTypeGroups(
                 actions.setChartAppearance('line', 'stroke', stroke)
               }}
             />
-          </FormatWidget>
+          </Group>
         ),
         effect: getEffectGroup('Line', line.effect, (effect) => {
           actions.setChartAppearance('line', 'effect', effect)
         }),
         fill: (
-          <FormatWidget
+          <Group
             title="Area"
             visibility={{
               visible: line.areaFill,
@@ -406,10 +401,10 @@ function getChartTypeGroups(
                 actions.setChartAppearance('line', 'area', area)
               }}
             />
-          </FormatWidget>
+          </Group>
         ),
         points: (
-          <FormatWidget
+          <Group
             title="Points"
             visibility={{
               visible: line.points !== 'off',
@@ -422,7 +417,7 @@ function getChartTypeGroups(
               },
             }}
           >
-            <ControlRow layout="wide">
+            <Row layout="wide">
               <SegmentedControl
                 label="Line points"
                 options={linePointsOptions}
@@ -431,12 +426,12 @@ function getChartTypeGroups(
                   actions.setChartAppearance('line', 'points', points)
                 }}
               />
-            </ControlRow>
-          </FormatWidget>
+            </Row>
+          </Group>
         ),
         shape: (
-          <FormatWidget title="Shape">
-            <ControlRow layout="wide">
+          <Group title="Shape">
+            <Row layout="wide">
               <SegmentedControl
                 label="Line curve"
                 options={lineCurveOptions}
@@ -449,16 +444,16 @@ function getChartTypeGroups(
                   )
                 }}
               />
-            </ControlRow>
-          </FormatWidget>
+            </Row>
+          </Group>
         ),
       }
     case 'scatter':
       return {
         ...getFilledMarkGroups(props, 'scatter', 'Point', dataColor),
         shape: (
-          <FormatWidget title="Shape">
-            <ControlRow isFull>
+          <Group title="Shape">
+            <Row isFull>
               <SegmentedControl
                 label="Scatter symbol"
                 options={scatterSymbolOptions}
@@ -489,9 +484,9 @@ function getChartTypeGroups(
                   }}
                 />
               )}
-            </ControlRow>
+            </Row>
             {sizeField ? (
-              <ControlRow isFull>
+              <Row isFull>
                 <ScrubbableNumber
                   icon={<ArrowDownToLine size={14} />}
                   label="Smallest point size"
@@ -522,9 +517,9 @@ function getChartTypeGroups(
                     })
                   }}
                 />
-              </ControlRow>
+              </Row>
             ) : null}
-          </FormatWidget>
+          </Group>
         ),
       }
   }
@@ -549,7 +544,7 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
   return {
     ...getChartTypeGroups(formatProps, dataColor),
     labels: (
-      <FormatWidget
+      <Group
         group="labels"
         title="Labels"
         visibility={{
@@ -565,10 +560,10 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
           value={labels}
           onChange={(value) => actions.setAppearance('labels', value)}
         />
-      </FormatWidget>
+      </Group>
     ),
     tooltip: (
-      <FormatWidget
+      <Group
         group="tooltip"
         title="Tooltip"
         visibility={{
@@ -587,7 +582,7 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
           }
           onChange={(value) => actions.setInteraction('tooltip', value)}
         />
-      </FormatWidget>
+      </Group>
     ),
   }
 }

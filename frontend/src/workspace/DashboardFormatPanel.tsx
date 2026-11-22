@@ -3,7 +3,7 @@ import { STYLE_RECIPES } from '@/dashboardStyle/styleRecipes'
 import { addFill } from '@/shared/fill'
 import FillListControls from '@/shared/ui/FillListControls'
 import FormatPanel from '@/shared/ui/FormatPanel'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
 import AnimationWidget from './AnimationWidget'
 
@@ -42,21 +42,21 @@ function DashboardFormatPanel({
       label="Dashboard"
       onToggleCollapse={onToggleCollapse}
     >
-      <FormatWidget title="Style">
+      <Group title="Style">
         <StyleGallery
           recipes={STYLE_RECIPES}
           value={dashboard.style}
           onApply={actions.applyStyle}
         />
-      </FormatWidget>
-      <FormatWidget title="Layout">
+      </Group>
+      <Group title="Layout">
         <LayoutControls
           label="Dashboard"
           value={dashboard.layout}
           onChange={actions.updateDashboardLayout}
         />
-      </FormatWidget>
-      <FormatWidget
+      </Group>
+      <Group
         title="Background"
         onAdd={() => updateBackground(addFill(dashboard.canvas.background))}
       >
@@ -65,7 +65,7 @@ function DashboardFormatPanel({
           value={dashboard.canvas.background}
           onChange={updateBackground}
         />
-      </FormatWidget>
+      </Group>
       <AnimationWidget
         value={dashboard.animation}
         onChange={(animation) => actions.updateDashboard({ animation })}

@@ -10,8 +10,8 @@ import {
   getEffectiveAggregation,
   isCountOnly,
 } from '@/charts/getEffectiveAggregation'
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
+import Row from '@/shared/ui/Row'
 import SelectControl from '@/shared/ui/SelectControl'
 
 import type { ChartFormatProps } from '@/charts/types'
@@ -47,8 +47,8 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
   )
   // ===== RETURN ======
   return (
-    <FormatWidget>
-      <ControlRow label="Value function">
+    <Group>
+      <Row label="Value function">
         <SelectControl
           disabled={isCountForced}
           label="Value aggregation"
@@ -58,9 +58,9 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
             actions.setAggregation('aggregation', aggregation)
           }}
         />
-      </ControlRow>
+      </Row>
       {showColorAggregation && (
-        <ControlRow label="Color function">
+        <Row label="Color function">
           <SelectControl
             label="Color aggregation"
             options={activeColorOptions}
@@ -69,9 +69,9 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
               actions.setAggregation('colorAggregation', aggregation)
             }}
           />
-        </ControlRow>
+        </Row>
       )}
-    </FormatWidget>
+    </Group>
   )
 }
 

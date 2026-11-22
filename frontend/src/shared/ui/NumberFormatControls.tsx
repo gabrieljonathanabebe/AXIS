@@ -6,8 +6,8 @@ import {
   formatNumber,
 } from '@/shared/format/formatNumber'
 import { CURRENCY_OPTIONS } from '@/shared/format/valueFormats'
-import ControlRow from './ControlRow'
 import DetailsField from './DetailsField'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 import SelectControl from './SelectControl'
@@ -120,7 +120,7 @@ function NumberFormatControls({
   const hasDetails = !isDate && value.style !== 'auto'
   return (
     <>
-      <ControlRow layout="wide">
+      <Row layout="wide">
         <SelectControl
           label={`${label} format`}
           options={onDate ? formatOrDateOptions : formatChoiceOptions}
@@ -133,10 +133,10 @@ function NumberFormatControls({
             onChange(applyFormatChoice(value, choice))
           }}
         />
-      </ControlRow>
+      </Row>
       {hasDetails ? (
         <>
-          <ControlRow isFull>
+          <Row isFull>
             <ScrubbableNumber
               icon={<DecimalsArrowRight size={14} />}
               label={`${label} decimal places`}
@@ -155,31 +155,31 @@ function NumberFormatControls({
                 onChange({ ...value, compact: notation === 'compact' })
               }}
             />
-          </ControlRow>
-          <ControlRow layout="wide">
+          </Row>
+          <Row layout="wide">
             <DetailsField
               icon={<TextCursorInput size={14} />}
               label={`${label} prefix and suffix`}
               text={getPreview(value)}
             >
-              <ControlRow label="Prefix">
+              <Row label="Prefix">
                 <TextInput
                   label={`${label} prefix`}
                   placeholder="None"
                   value={value.prefix}
                   onValueChange={(prefix) => onChange({ ...value, prefix })}
                 />
-              </ControlRow>
-              <ControlRow label="Suffix">
+              </Row>
+              <Row label="Suffix">
                 <TextInput
                   label={`${label} suffix`}
                   placeholder="None"
                   value={value.suffix}
                   onValueChange={(suffix) => onChange({ ...value, suffix })}
                 />
-              </ControlRow>
+              </Row>
             </DetailsField>
-          </ControlRow>
+          </Row>
         </>
       ) : null}
     </>

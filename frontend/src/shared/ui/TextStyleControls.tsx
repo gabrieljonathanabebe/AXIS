@@ -2,9 +2,9 @@ import { ALargeSmall, Italic } from 'lucide-react'
 
 import AlignmentControl from './AlignmentControl'
 import ColorField from './ColorField'
-import ControlRow from './ControlRow'
 import FontWeightControl from './FontWeightControl'
 import IconButton from './IconButton'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 
 import type { HorizontalAlignment } from '@/shared/layout'
@@ -44,7 +44,7 @@ function TextStyleControls({
   const isItalic = value.fontStyle === 'italic'
   return (
     <>
-      <ControlRow
+      <Row
         action={
           <IconButton
             aria-pressed={isItalic}
@@ -74,8 +74,8 @@ function TextStyleControls({
           value={value.fontWeight}
           onValueChange={(fontWeight) => onChange({ ...value, fontWeight })}
         />
-      </ControlRow>
-      <ControlRow>
+      </Row>
+      <Row>
         <ColorField
           label={label}
           value={value.color}
@@ -88,7 +88,7 @@ function TextStyleControls({
             onValueChange={alignment.onChange}
           />
         ) : null}
-      </ControlRow>
+      </Row>
     </>
   )
 }

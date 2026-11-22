@@ -1,8 +1,8 @@
 import { Minus, Timer } from 'lucide-react'
 
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import IconButton from '@/shared/ui/IconButton'
+import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SelectControl from '@/shared/ui/SelectControl'
 import { DASHBOARD_ANIMATION } from './workspaceReducer'
@@ -30,15 +30,12 @@ const easingOptions = [
 function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   if (!value.enabled) {
     return (
-      <FormatWidget
-        title="Animation"
-        onAdd={() => onChange(DASHBOARD_ANIMATION)}
-      />
+      <Group title="Animation" onAdd={() => onChange(DASHBOARD_ANIMATION)} />
     )
   }
   return (
-    <FormatWidget title="Animation">
-      <ControlRow
+    <Group title="Animation">
+      <Row
         action={
           <IconButton
             label="Remove animation"
@@ -66,8 +63,8 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
           value={value.duration}
           onValueChange={(duration) => onChange({ ...value, duration })}
         />
-      </ControlRow>
-    </FormatWidget>
+      </Row>
+    </Group>
   )
 }
 

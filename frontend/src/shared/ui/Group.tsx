@@ -12,7 +12,7 @@ export type FormatVisibility = {
   onChange: (visible: boolean) => void
 }
 
-type FormatWidgetProps = {
+type GroupProps = {
   children?: ReactNode
   group?: string
   title?: string
@@ -32,22 +32,16 @@ type FormatWidgetProps = {
  * title the rows stand alone, e.g. in a section of the build panel.
  * @param props Rows, optional title, part, visibility and add action.
  */
-function FormatWidget({
-  children,
-  group,
-  title,
-  visibility,
-  onAdd,
-}: FormatWidgetProps) {
+function Group({ children, group, title, visibility, onAdd }: GroupProps) {
   const visibilityAction = visibility?.visible ? 'Hide' : 'Show'
   const showsRows = visibility?.visible ?? true
-  const widgetRef = useRef<HTMLDivElement | null>(null)
+  const groupRef = useRef<HTMLDivElement | null>(null)
   const revealsAdded = useRef(false)
 
   useEffect(() => {
     if (revealsAdded.current) {
       revealsAdded.current = false
-      widgetRef.current?.scrollIntoView({
+      groupRef.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
       })
@@ -63,14 +57,10 @@ function FormatWidget({
     onAdd?.()
   }
   return (
-    <div
-      className="format-widget stack"
-      data-format-group={group}
-      ref={widgetRef}
-    >
+    <div className="group stack" data-format-group={group} ref={groupRef}>
       {title ? (
-        <div className="format-widget-header">
-          <span className="format-widget-title">{title}</span>
+        <div className="group-header">
+          <span className="group-title">{title}</span>
           <span className="cluster">
             {visibility ? (
               <IconButton
@@ -96,10 +86,10 @@ function FormatWidget({
         </div>
       ) : null}
       {showsRows && children ? (
-        <div className="format-widget-content stack">{children}</div>
+        <div className="group-content stack">{children}</div>
       ) : null}
     </div>
   )
 }
 
-export default FormatWidget
+export default Group

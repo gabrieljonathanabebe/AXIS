@@ -1,4 +1,4 @@
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import NumberFormatControls from '@/shared/ui/NumberFormatControls'
 import PositionControls from '@/shared/ui/PositionControls'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
@@ -30,29 +30,29 @@ function LabelsWidget({
 }: LabelsWidgetProps) {
   return (
     <>
-      <FormatWidget title="Position">
+      <Group title="Position">
         <PositionControls
           label="Label"
           positions={positions}
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
-      </FormatWidget>
-      <FormatWidget title="Text">
+      </Group>
+      <Group title="Text">
         <TextStyleControls
           label="Label"
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}
         />
-      </FormatWidget>
+      </Group>
       {!isRadial ? (
-        <FormatWidget title="Format">
+        <Group title="Format">
           <NumberFormatControls
             label="Label"
             value={value.numberFormat}
             onChange={(numberFormat) => onChange({ ...value, numberFormat })}
           />
-        </FormatWidget>
+        </Group>
       ) : null}
     </>
   )

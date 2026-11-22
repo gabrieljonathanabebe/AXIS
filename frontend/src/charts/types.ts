@@ -67,7 +67,7 @@ export type ChartActions = {
   setTimeGrain: (timeGrain: TimeGrain | null) => void
 }
 
-/** What a chart format widget needs: the chart, its fields and actions. */
+/** What a chart format group needs: the chart, its fields and actions. */
 export type ChartFormatProps = {
   actions: ChartActions
   chart: ChartInstance

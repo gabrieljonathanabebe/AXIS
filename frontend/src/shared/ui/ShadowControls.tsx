@@ -1,8 +1,8 @@
 import { Blend, CircleDashed } from 'lucide-react'
 
 import ColorField from './ColorField'
-import ControlRow from './ControlRow'
-import FormatWidget from './FormatWidget'
+import Group from './Group'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 
 import type { Shadow } from '@/shared/effect'
@@ -35,8 +35,8 @@ function ShadowControls<TValue extends Shadow>({
 }: ShadowControlsProps<TValue>) {
   return (
     <>
-      <FormatWidget title="Offset">
-        <ControlRow>
+      <Group title="Offset">
+        <Row>
           <ScrubbableNumber
             icon="X"
             label={`${label} x offset`}
@@ -55,10 +55,10 @@ function ShadowControls<TValue extends Shadow>({
             value={value.offsetY}
             onValueChange={(offsetY) => onChange({ ...value, offsetY })}
           />
-        </ControlRow>
-      </FormatWidget>
-      <FormatWidget title="Blur">
-        <ControlRow>
+        </Row>
+      </Group>
+      <Group title="Blur">
+        <Row>
           <ScrubbableNumber
             icon={<CircleDashed size={14} />}
             label={`${label} blur`}
@@ -68,10 +68,10 @@ function ShadowControls<TValue extends Shadow>({
             value={value.blur}
             onValueChange={(blur) => onChange({ ...value, blur })}
           />
-        </ControlRow>
-      </FormatWidget>
-      <FormatWidget title="Color">
-        <ControlRow>
+        </Row>
+      </Group>
+      <Group title="Color">
+        <Row>
           <ColorField
             label={label}
             value={value.color}
@@ -89,8 +89,8 @@ function ShadowControls<TValue extends Shadow>({
               onChange({ ...value, opacity: percent / 100 })
             }}
           />
-        </ControlRow>
-      </FormatWidget>
+        </Row>
+      </Group>
     </>
   )
 }

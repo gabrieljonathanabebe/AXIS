@@ -1,5 +1,5 @@
 import IconBadge from '@/shared/ui/IconBadge'
-import Widget from '@/shared/ui/Widget'
+import Tile from '@/shared/ui/Tile'
 
 import type { ReactNode } from 'react'
 
@@ -13,7 +13,7 @@ type StatWidgetProps = {
 
 function StatWidget({ hint, icon, label, share, value }: StatWidgetProps) {
   return (
-    <Widget className="stat-widget stack">
+    <Tile className="stat-widget stack">
       <IconBadge className="stat-widget-label" label={label}>
         {icon}
       </IconBadge>
@@ -31,7 +31,7 @@ function StatWidget({ hint, icon, label, share, value }: StatWidgetProps) {
           {hint}
         </span>
       ) : null}
-    </Widget>
+    </Tile>
   )
 }
 

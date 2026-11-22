@@ -8,8 +8,8 @@ import { getCompatibleFields } from '@/charts/getCompatibleFields'
 import { getEffectiveCategoryOrder } from '@/charts/getEffectiveCategoryOrder'
 import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
 import { TIME_GRAIN_OPTIONS } from '@/shared/format/valueFormats'
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
+import Row from '@/shared/ui/Row'
 import SelectControl from '@/shared/ui/SelectControl'
 import {
   fromLimitChoice,
@@ -56,15 +56,15 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
   ]
   const categoryOrder = getEffectiveCategoryOrder(chart.spec.data, fields)
   return (
-    <FormatWidget>
-      <ControlRow label="Chart">
+    <Group>
+      <Row label="Chart">
         <SelectControl
           label="Chart type"
           options={chartTypeOptions}
           value={chart.type}
           onChange={actions.setChartType}
         />
-      </ControlRow>
+      </Row>
       {definition.encodings.map((encoding) => {
         const compatibleFields = getCompatibleFields(
           definition.type,
@@ -87,7 +87,7 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
         ]
         return (
           <Fragment key={encoding.key}>
-            <ControlRow label={encoding.label}>
+            <Row label={encoding.label}>
               <SelectControl
                 label={`${encoding.label} field`}
                 options={options}
@@ -97,9 +97,9 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
                   actions.setEncodingField(encoding.key, fieldName)
                 }}
               />
-            </ControlRow>
+            </Row>
             {encoding.key === 'x' && autoGrain && (
-              <ControlRow label="Grain">
+              <Row label="Grain">
                 <SelectControl
                   label="Time grain"
                   options={grainOptions}
@@ -108,11 +108,11 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
                     actions.setTimeGrain(choice === 'auto' ? null : choice)
                   }}
                 />
-              </ControlRow>
+              </Row>
             )}
             {encoding.key === 'x' && categoryOrder && (
               <>
-                <ControlRow label="Sort">
+                <Row label="Sort">
                   <SelectControl
                     label="Sort categories"
                     options={SORT_OPTIONS}
@@ -121,8 +121,8 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
                       actions.setCategoryOrder({ sort: fromSortChoice(choice) })
                     }}
                   />
-                </ControlRow>
-                <ControlRow label="Show">
+                </Row>
+                <Row label="Show">
                   <SelectControl
                     label="Show categories"
                     options={getLimitOptions(categoryOrder.limit)}
@@ -133,13 +133,13 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
                       })
                     }}
                   />
-                </ControlRow>
+                </Row>
               </>
             )}
           </Fragment>
         )
       })}
-    </FormatWidget>
+    </Group>
   )
 }
 

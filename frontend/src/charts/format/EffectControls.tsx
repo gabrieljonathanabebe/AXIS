@@ -1,10 +1,10 @@
 import { CircleDashed, Minus, SquareStack, Sun } from 'lucide-react'
 
 import { createEffect } from '@/shared/effect'
-import ControlRow from '@/shared/ui/ControlRow'
 import DetailsField from '@/shared/ui/DetailsField'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import IconButton from '@/shared/ui/IconButton'
+import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SelectControl from '@/shared/ui/SelectControl'
 import ShadowControls from '@/shared/ui/ShadowControls'
@@ -57,8 +57,8 @@ function EffectControls({ label, value, onChange }: EffectControlsProps) {
       )
     }
     return (
-      <FormatWidget title="Intensity">
-        <ControlRow>
+      <Group title="Intensity">
+        <Row>
           <ScrubbableNumber
             icon={<CircleDashed size={14} />}
             label={`${label} glow intensity`}
@@ -68,13 +68,13 @@ function EffectControls({ label, value, onChange }: EffectControlsProps) {
             value={value.blur}
             onValueChange={(blur) => onChange({ ...value, blur })}
           />
-        </ControlRow>
-      </FormatWidget>
+        </Row>
+      </Group>
     )
   }
 
   return (
-    <ControlRow
+    <Row
       action={
         <IconButton
           label={`Remove ${label.toLowerCase()} effect`}
@@ -105,7 +105,7 @@ function EffectControls({ label, value, onChange }: EffectControlsProps) {
         />
         {getValues()}
       </DetailsField>
-    </ControlRow>
+    </Row>
   )
 }
 

@@ -1,5 +1,5 @@
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
+import Row from '@/shared/ui/Row'
 import TextInput from '@/shared/ui/TextInput'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
 
@@ -22,17 +22,17 @@ function ObjectTitleWidget({
 }: ObjectTitleWidgetProps) {
   return (
     <>
-      <FormatWidget title="Content">
-        <ControlRow layout="wide">
+      <Group title="Content">
+        <Row layout="wide">
           <TextInput
             label="Title"
             value={value.text}
             placeholder={defaultTitle || 'Automatic'}
             onValueChange={(text) => onChange({ ...value, text })}
           />
-        </ControlRow>
-      </FormatWidget>
-      <FormatWidget title="Text">
+        </Row>
+      </Group>
+      <Group title="Text">
         <TextStyleControls
           alignment={{
             value: value.layout.alignment,
@@ -46,7 +46,7 @@ function ObjectTitleWidget({
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}
         />
-      </FormatWidget>
+      </Group>
     </>
   )
 }

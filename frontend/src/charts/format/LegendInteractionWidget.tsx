@@ -1,7 +1,7 @@
 import { ListChecks, MousePointerBan, SquareCheck } from 'lucide-react'
 
-import ControlRow from '@/shared/ui/ControlRow'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
+import Row from '@/shared/ui/Row'
 import SegmentedControl from '@/shared/ui/SegmentedControl'
 
 import type { ChartInteractionSpec, LegendSelectionMode } from '@/charts/types'
@@ -34,8 +34,8 @@ function LegendInteractionWidget({
   onChange,
 }: LegendInteractionWidgetProps) {
   return (
-    <FormatWidget title="Interaction">
-      <ControlRow layout="wide">
+    <Group title="Interaction">
+      <Row layout="wide">
         <SegmentedControl
           label="Legend click selection"
           options={selectionChoiceOptions}
@@ -48,8 +48,8 @@ function LegendInteractionWidget({
             )
           }}
         />
-      </ControlRow>
-    </FormatWidget>
+      </Row>
+    </Group>
   )
 }
 

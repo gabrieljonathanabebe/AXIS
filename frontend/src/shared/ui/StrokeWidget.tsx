@@ -1,4 +1,4 @@
-import FormatWidget from './FormatWidget'
+import Group from './Group'
 import StrokeStyleControls from './StrokeStyleControls'
 
 import type { PaintType } from '@/shared/paint'
@@ -29,7 +29,7 @@ function StrokeWidget({
   onChange,
 }: StrokeWidgetProps) {
   return (
-    <FormatWidget
+    <Group
       title={title}
       visibility={{
         visible: value.visible,
@@ -46,7 +46,7 @@ function StrokeWidget({
         value={value.stroke}
         onChange={(stroke) => onChange({ ...value, stroke })}
       />
-    </FormatWidget>
+    </Group>
   )
 }
 

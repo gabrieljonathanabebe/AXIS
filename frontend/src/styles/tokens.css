@@ -12,8 +12,8 @@
 
   --control-height-xs: 22px;
   --control-height-sm: 28px;
-  --control-row-gap: var(--space-1);
-  --control-row-icon-width: 24px;
+  --row-gap: var(--space-1);
+  --row-icon-width: 24px;
 
   --transition-fast: 160ms ease;
 

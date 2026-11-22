@@ -1,4 +1,4 @@
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
 import PositionControls from '@/shared/ui/PositionControls'
 import SurfaceControls from '@/shared/ui/SurfaceControls'
@@ -19,21 +19,21 @@ type LegendWidgetProps = {
 function LegendWidget({ value, onChange }: LegendWidgetProps) {
   return (
     <>
-      <FormatWidget title="Position">
+      <Group title="Position">
         <PositionControls
           label="Legend"
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
-      </FormatWidget>
-      <FormatWidget title="Layout">
+      </Group>
+      <Group title="Layout">
         <LayoutControls
           label="Legend"
           maxGap={40}
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
-      </FormatWidget>
+      </Group>
       <SurfaceControls
         label="Legend"
         value={value.surface}
@@ -41,13 +41,13 @@ function LegendWidget({ value, onChange }: LegendWidgetProps) {
           onChange({ ...value, surface: { ...value.surface, [key]: property } })
         }}
       >
-        <FormatWidget title="Text">
+        <Group title="Text">
           <TextStyleControls
             label="Legend text"
             value={value.textStyle}
             onChange={(textStyle) => onChange({ ...value, textStyle })}
           />
-        </FormatWidget>
+        </Group>
       </SurfaceControls>
     </>
   )

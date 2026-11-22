@@ -1,7 +1,7 @@
 import { Equal } from 'lucide-react'
 
-import ControlRow from './ControlRow'
 import PaintControl from './PaintControl'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
@@ -58,7 +58,7 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
         value={value}
         onChange={onChange}
       />
-      <ControlRow>
+      <Row>
         <ScrubbableNumber
           icon={<Equal size={14} />}
           label={`${label} width`}
@@ -82,7 +82,7 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
           value={value.lineStyle}
           onValueChange={(lineStyle) => onChange({ ...value, lineStyle })}
         />
-      </ControlRow>
+      </Row>
     </>
   )
 }

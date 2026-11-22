@@ -1,4 +1,4 @@
-.control-row {
+.row {
   display: grid;
   grid-template-columns: minmax(72px, 0.8fr) minmax(0, 1.2fr);
   align-items: center;
@@ -9,52 +9,52 @@
 /* Grid of the format panel: two field columns and an icon column that
    rows keep, also when empty, so fields and icons of all rows line up
    with the icons of the group headings. */
-.control-row-compact {
+.row-compact {
   --field-border-color: transparent;
   --field-font-size: var(--font-size-xs);
   --field-width: 100%;
 
   grid-template-columns:
     repeat(2, minmax(0, 1fr))
-    var(--control-row-icon-width);
-  gap: var(--control-row-gap);
+    var(--row-icon-width);
+  gap: var(--row-gap);
   min-height: var(--control-height-sm);
 }
 
 /* One field across both field columns, e.g. a text input, a segmented
    control or a select with a long name. */
-.control-row-compact.is-wide > :first-child {
+.row-compact.is-wide > :first-child {
   grid-column: span 2;
 }
 
 /* Without an icon a wide row also takes the icon column, e.g. the
    function of a card; pairs keep it, so their fields stay aligned. */
-.control-row-compact.is-wide:not(:has(> .control-row-icon)) > :first-child {
+.row-compact.is-wide:not(:has(> .row-icon)) > :first-child {
   grid-column: 1 / -1;
 }
 
 /* A pair that asks for it takes the whole width, e.g. the decimal places
    and notation of a number format, whose rows have no icons. */
-.control-row-compact.is-full {
+.row-compact.is-full {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* The one icon of a row, e.g. a minus or the italic toggle; always in the
    icon column, also after a single field. */
-.control-row-icon {
+.row-icon {
   display: flex;
   grid-column: -2;
   justify-content: center;
 }
 
-.control-row-label {
+.row-label {
   min-width: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
   line-height: 1.3;
 }
 
-.control-row-control {
+.row-control {
   display: flex;
   align-items: center;
   justify-content: flex-end;

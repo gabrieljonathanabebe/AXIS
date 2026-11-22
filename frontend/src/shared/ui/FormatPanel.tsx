@@ -6,7 +6,7 @@ import Panel from './Panel'
 import SelectControl from './SelectControl'
 
 import type { ReactNode } from 'react'
-import type { FormatVisibility } from './FormatWidget'
+import type { FormatVisibility } from './Group'
 
 // ===== TYPES =================================================================
 export type FormatElementOption<TElement extends string> = {

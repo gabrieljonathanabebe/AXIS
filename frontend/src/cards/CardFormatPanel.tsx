@@ -2,7 +2,7 @@ import ContainerWidget from '@/objects/ContainerWidget'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
 import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
 import FormatPanel from '@/shared/ui/FormatPanel'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
 import CardValueWidget from './CardValueWidget'
 import { getCardAggregations } from './getCardAggregations'
@@ -11,7 +11,7 @@ import { getDefaultCardTitle } from './getCardTitle'
 import type { ReactNode } from 'react'
 import type { DataField } from '@/datasets/types'
 import type { FormatElementOption } from '@/shared/ui/FormatPanel'
-import type { FormatVisibility } from '@/shared/ui/FormatWidget'
+import type { FormatVisibility } from '@/shared/ui/Group'
 import type { CanvasActions } from '@/workspace/types'
 import type { CardFormatElement, CardInstance } from './types'
 
@@ -87,7 +87,7 @@ function renderFormatWidget(
               actions.updateCardAppearance(card.id, 'value', value)
             }
           />
-          <FormatWidget
+          <Group
             group="selectionLabel"
             title="Selection"
             visibility={{
@@ -109,7 +109,7 @@ function renderFormatWidget(
                 })
               }
             />
-          </FormatWidget>
+          </Group>
         </>
       )
   }
@@ -141,7 +141,7 @@ function getElementVisibility(
 
 // ===== COMPONENT =============================================================
 /**
- * Shows the format widget of one card element in the format panel.
+ * Shows the format group of one card element in the format panel.
  * The element select switches between title and value.
  */
 function CardFormatPanel(props: CardFormatPanelProps) {

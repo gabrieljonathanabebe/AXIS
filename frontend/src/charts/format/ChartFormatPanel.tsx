@@ -14,7 +14,7 @@ import ContainerWidget from '@/objects/ContainerWidget'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
 import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
 import FormatPanel from '@/shared/ui/FormatPanel'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
 import AxisWidget from './AxisWidget'
 import ColorScaleWidget from './ColorScaleWidget'
@@ -25,7 +25,7 @@ import ZoomWidget from './ZoomWidget'
 
 import type { ReactNode } from 'react'
 import type { ChartFormatElement, ChartFormatProps } from '@/charts/types'
-import type { FormatVisibility } from '@/shared/ui/FormatWidget'
+import type { FormatVisibility } from '@/shared/ui/Group'
 
 // ===== TYPES =================================================================
 type ChartFormatPanelProps = ChartFormatProps & {
@@ -138,7 +138,7 @@ function getFormatGroups(
             value={axisAppearance}
             onChange={setAxis}
           />
-          <FormatWidget group={`${axis}AxisLabels`} title="Labels">
+          <Group group={`${axis}AxisLabels`} title="Labels">
             <AxisWidget
               dateAxis={
                 axis === 'x'
@@ -157,7 +157,7 @@ function getFormatGroups(
               value={axisAppearance}
               onChange={setAxis}
             />
-          </FormatWidget>
+          </Group>
           <StrokeWidget
             label="Axis line"
             maxWidth={4}

@@ -1,7 +1,7 @@
-.widget {
-  --widget-surface: var(--color-surface-subtle);
+.tile {
+  --tile-surface: var(--color-surface-subtle);
   color: var(--color-text-primary);
-  background: var(--widget-surface);
+  background: var(--tile-surface);
   border: var(--border-width-thin) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   transition:
@@ -11,16 +11,16 @@
     transform var(--transition-fast);
 }
 
-.widget.is-interactive:hover {
-  --widget-surface: var(--color-surface-hover);
+.tile.is-interactive:hover {
+  --tile-surface: var(--color-surface-hover);
 
   color: var(--color-text-primary);
   border-color: var(--color-border-default);
   cursor: pointer;
 }
 
-.widget.is-interactive.is-active {
-  --widget-surface: var(--color-surface-active);
+.tile.is-interactive.is-active {
+  --tile-surface: var(--color-surface-active);
 
   color: var(--color-text-primary);
   border-color: transparent;

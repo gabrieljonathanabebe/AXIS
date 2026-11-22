@@ -3,7 +3,7 @@ import { useRef } from 'react'
 
 import { formatCompactNumber } from '@/shared/format/formatNumber'
 import IconButton from '@/shared/ui/IconButton'
-import Widget from '@/shared/ui/Widget'
+import Tile from '@/shared/ui/Tile'
 
 import type { ChangeEvent, DragEvent } from 'react'
 
@@ -52,7 +52,7 @@ function DatasetCard({
   }
 
   return (
-    <Widget
+    <Tile
       className="dataset-card cluster"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
@@ -89,7 +89,7 @@ function DatasetCard({
         type="file"
         onChange={handleInputChange}
       />
-    </Widget>
+    </Tile>
   )
 }
 

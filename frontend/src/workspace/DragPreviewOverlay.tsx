@@ -16,7 +16,7 @@ function DragPreviewOverlay({ activeDrag }: DragPreviewOverlayProps) {
           <span className="field-chip-label">{activeDrag.field.name}</span>
         </div>
       ) : activeDrag?.kind === 'object-option' ? (
-        <div className="widget chart-type-option stack center chart-type-drag-overlay">
+        <div className="tile chart-type-option stack center chart-type-drag-overlay">
           <ObjectOptionContent option={activeDrag.option} />
         </div>
       ) : null}

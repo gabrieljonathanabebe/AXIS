@@ -1,5 +1,5 @@
 import { getSideOrientation } from '@/shared/layout'
-import FormatWidget from '@/shared/ui/FormatWidget'
+import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
 import PositionControls from '@/shared/ui/PositionControls'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
@@ -81,22 +81,22 @@ function ColorScaleWidget({
 }: ColorScaleWidgetProps) {
   return (
     <>
-      <FormatWidget title="Position">
+      <Group title="Position">
         <PositionControls
           label="Color scale"
           positions={positionOptions}
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
-      </FormatWidget>
-      <FormatWidget title="Layout">
+      </Group>
+      <Group title="Layout">
         <LayoutControls
           box={createSizeBox(value, onChange)}
           label="Color scale"
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
-      </FormatWidget>
+      </Group>
       <SurfaceControls
         label="Color scale"
         value={value.bar}
@@ -112,7 +112,7 @@ function ColorScaleWidget({
         value={value}
         onChange={onChange}
       />
-      <FormatWidget
+      <Group
         group="colorScaleLabels"
         title="Labels"
         visibility={{
@@ -128,7 +128,7 @@ function ColorScaleWidget({
           value={value}
           onChange={onChange}
         />
-      </FormatWidget>
+      </Group>
       <StrokeWidget
         label="Color scale ticks"
         maxWidth={4}

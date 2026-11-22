@@ -8,12 +8,12 @@ import {
   hasOwnColor,
 } from '@/shared/paint'
 import ColorPicker from './ColorPicker'
-import ControlRow from './ControlRow'
 import DetailsPopover from './DetailsPopover'
-import FormatWidget from './FormatWidget'
 import GradientStopsControl from './GradientStopsControl'
+import Group from './Group'
 import PaintField from './PaintField'
 import RotationDial from './RotationDial'
+import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import SegmentedControl from './SegmentedControl'
 
@@ -120,7 +120,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
       return null
     }
     return (
-      <ControlRow layout="wide">
+      <Row layout="wide">
         <SegmentedControl
           label={`${label} paint type`}
           options={typeOptions}
@@ -136,7 +136,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
           value={getPaintType(paint)}
           onValueChange={setPaintType}
         />
-      </ControlRow>
+      </Row>
     )
   }
 
@@ -157,14 +157,14 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
       return (
         <>
           {typeRow}
-          <FormatWidget title="Color">
+          <Group title="Color">
             <ColorPicker
               label={label}
               presets={presets}
               value={paint.color}
               onChange={(color) => setPaint({ ...paint, color })}
             />
-          </FormatWidget>
+          </Group>
         </>
       )
     }
@@ -172,7 +172,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
       return (
         <>
           {typeRow}
-          <ControlRow>
+          <Row>
             <ScrubbableNumber
               icon={<ArrowLeftToLine size={14} />}
               label={`${label} start opacity`}
@@ -197,7 +197,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
                 setPaint({ ...paint, endOpacity: percent / 100 })
               }}
             />
-          </ControlRow>
+          </Row>
         </>
       )
     }
@@ -205,8 +205,8 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
       <>
         {typeRow}
         {paint.type === 'linear' ? (
-          <FormatWidget title="Angle">
-            <ControlRow>
+          <Group title="Angle">
+            <Row>
               <RotationDial
                 label={`${label} angle`}
                 max={MAX_GRADIENT_ANGLE}
@@ -214,11 +214,11 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
                 value={paint.angle}
                 onValueChange={(angle) => setPaint({ ...paint, angle })}
               />
-            </ControlRow>
-          </FormatWidget>
+            </Row>
+          </Group>
         ) : (
-          <FormatWidget title="Shape">
-            <ControlRow>
+          <Group title="Shape">
+            <Row>
               <ScrubbableNumber
                 icon="X"
                 label={`${label} center x`}
@@ -243,8 +243,8 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
                   setPaint({ ...paint, centerY: percent / 100 })
                 }}
               />
-            </ControlRow>
-            <ControlRow>
+            </Row>
+            <Row>
               <ScrubbableNumber
                 icon={<Radius size={14} />}
                 label={`${label} radius`}
@@ -257,10 +257,10 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
                   setPaint({ ...paint, radius: percent / 100 })
                 }}
               />
-            </ControlRow>
-          </FormatWidget>
+            </Row>
+          </Group>
         )}
-        <FormatWidget
+        <Group
           title="Stops"
           onAdd={() => {
             setPaint({ ...paint, stops: addGradientStop(paint.stops) })
@@ -272,7 +272,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
             stops={paint.stops}
             onChange={(stops) => setPaint({ ...paint, stops })}
           />
-        </FormatWidget>
+        </Group>
       </>
     )
   }
@@ -319,7 +319,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
 
   // ===== JSX RETURN ==========================================================
   return (
-    <ControlRow action={action ?? getDetails()}>
+    <Row action={action ?? getDetails()}>
       {getField()}
       <ScrubbableNumber
         icon={<Blend size={14} />}
@@ -333,7 +333,7 @@ function PaintControl<TValue extends Fill<Paint | SeriesPaint>>({
           onChange({ ...value, opacity: percent / 100 })
         }}
       />
-    </ControlRow>
+    </Row>
   )
 }
 
