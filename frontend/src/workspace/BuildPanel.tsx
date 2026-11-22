@@ -8,7 +8,7 @@ import FieldList from '@/datasets/FieldList'
 import { objectGroups } from '@/objects/objectDefinitions'
 import ObjectPicker from '@/objects/ObjectPicker'
 import Button from '@/shared/ui/Button'
-import CollapsibleSection from '@/shared/ui/CollapsibleSection'
+import Group from '@/shared/ui/Group'
 import Panel from '@/shared/ui/Panel'
 
 import type { ChartActions, ChartInstance } from '@/charts/types'
@@ -64,7 +64,8 @@ function BuildPanel({
     >
       <div className="build-panel-content">
         {objectGroups.map(({ group, icon: Icon, title }) => (
-          <CollapsibleSection
+          <Group
+            collapsible
             key={group}
             title={title}
             icon={<Icon size={14} />}
@@ -74,10 +75,10 @@ function BuildPanel({
               showMore={group === 'charts'}
               onAddObject={onAddObject}
             />
-          </CollapsibleSection>
+          </Group>
         ))}
 
-        <CollapsibleSection title="Dataset" icon={<FolderOpen size={14} />}>
+        <Group collapsible title="Dataset" icon={<FolderOpen size={14} />}>
           <div className="stack">
             <DatasetCard
               fieldCount={dataset.fields.length}
@@ -94,9 +95,9 @@ function BuildPanel({
               <span className="panel-error">{datasetError}</span>
             ) : null}
           </div>
-        </CollapsibleSection>
+        </Group>
 
-        <CollapsibleSection title="Fields" icon={<Columns3 size={14} />}>
+        <Group collapsible title="Fields" icon={<Columns3 size={14} />}>
           <div className="stack">
             <FieldList
               fields={dataset.fields}
@@ -112,9 +113,9 @@ function BuildPanel({
               Calculated field
             </Button>
           </div>
-        </CollapsibleSection>
+        </Group>
         {chart ? (
-          <CollapsibleSection title="Chart data" icon={<Waypoints size={14} />}>
+          <Group collapsible title="Chart data" icon={<Waypoints size={14} />}>
             <div className="stack">
               <EncodingsWidget
                 actions={chartActions}
@@ -127,7 +128,7 @@ function BuildPanel({
                 fields={dataset.fields}
               />
             </div>
-          </CollapsibleSection>
+          </Group>
         ) : null}
       </div>
     </Panel>

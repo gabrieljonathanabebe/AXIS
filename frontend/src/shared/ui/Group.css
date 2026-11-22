@@ -29,11 +29,46 @@
 }
 
 .group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-2xs);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* Count after the title, e.g. the fields of one type. */
+.group-meta {
+  color: var(--color-text-disabled);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* The title of a collapsible group opens and closes its rows, like the
+   chevron in the icon column. */
+.group-toggle {
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
+  text-align: start;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.group-toggle:hover {
+  color: var(--color-text-primary);
+}
+
+.group-chevron {
+  transition: transform var(--transition-fast);
+}
+
+.group-chevron.is-open {
+  transform: rotate(180deg);
 }
 
 .group-content {

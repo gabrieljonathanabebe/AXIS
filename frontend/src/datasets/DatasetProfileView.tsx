@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 
 import { formatNumber, formatPercent } from '@/shared/format/formatNumber'
-import CollapsibleSection from '@/shared/ui/CollapsibleSection'
+import Group from '@/shared/ui/Group'
 import { groupFieldProfiles } from './fieldGroups'
 import FieldProfileWidget from './FieldProfileWidget'
 import { getSemanticRole } from './semanticRoles'
@@ -80,7 +80,7 @@ function DatasetProfileView({
 
   return (
     <div className="data-profile stack">
-      <CollapsibleSection title="Dataset" icon={<FileSpreadsheet size={14} />}>
+      <Group collapsible title="Dataset" icon={<FileSpreadsheet size={14} />}>
         <div className="data-profile-grid auto-grid">
           {datasetStats.map(({ value, ...stat }) => (
             <StatWidget
@@ -90,15 +90,17 @@ function DatasetProfileView({
             />
           ))}
         </div>
-      </CollapsibleSection>
+      </Group>
 
-      <CollapsibleSection
+      <Group
+        collapsible
         title="Fields"
         icon={<Columns3 size={14} />}
         meta={profile.column_count}
       >
         {fieldGroups.map(({ icon: Icon, ...group }) => (
-          <CollapsibleSection
+          <Group
+            collapsible
             title={group.label}
             icon={<Icon size={14} />}
             meta={group.fields.length}
@@ -116,9 +118,9 @@ function DatasetProfileView({
                 />
               ))}
             </div>
-          </CollapsibleSection>
+          </Group>
         ))}
-      </CollapsibleSection>
+      </Group>
     </div>
   )
 }

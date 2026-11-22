@@ -3,7 +3,7 @@ import { Search } from 'lucide-react'
 import { useState } from 'react'
 
 import Chip from '@/shared/ui/Chip'
-import CollapsibleSection from '@/shared/ui/CollapsibleSection'
+import Group from '@/shared/ui/Group'
 import TextInput from '@/shared/ui/TextInput'
 import { groupFields } from './fieldGroups'
 
@@ -72,7 +72,8 @@ function FieldList({
       />
 
       {fieldGroups.map(({ icon: Icon, ...group }) => (
-        <CollapsibleSection
+        <Group
+          collapsible
           title={group.label}
           icon={<Icon size={14} />}
           meta={group.fields.length}
@@ -85,7 +86,7 @@ function FieldList({
               <DraggableFieldChip field={field} key={field.name} />
             ))}
           </div>
-        </CollapsibleSection>
+        </Group>
       ))}
 
       {isSearching && fieldGroups.length === 0 ? (
