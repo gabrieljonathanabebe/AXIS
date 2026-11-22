@@ -1,3 +1,4 @@
+import { getVisibility } from './getVisibility'
 import Group from './Group'
 import StrokeStyleControls from './StrokeStyleControls'
 
@@ -29,15 +30,7 @@ function StrokeWidget({
   onChange,
 }: StrokeWidgetProps) {
   return (
-    <Group
-      title={title}
-      visibility={{
-        visible: value.visible,
-        onChange: (visible) => {
-          onChange({ ...value, visible })
-        },
-      }}
-    >
+    <Group title={title} visibility={getVisibility(value, onChange)}>
       <StrokeStyleControls
         label={label}
         maxWidth={maxWidth}

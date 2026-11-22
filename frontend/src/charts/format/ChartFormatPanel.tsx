@@ -14,9 +14,10 @@ import ContainerWidget from '@/objects/ContainerWidget'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
 import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
 import FormatPanel from '@/shared/ui/FormatPanel'
-import Group from '@/shared/ui/Group'
+import { getVisibility } from '@/shared/ui/getVisibility'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
-import AxisWidget from './AxisWidget'
+import AxisLabelsGroup from './AxisLabelsGroup'
+import AxisTitleGroup from './AxisTitleGroup'
 import ColorScaleWidget from './ColorScaleWidget'
 import LegendInteractionWidget from './LegendInteractionWidget'
 import LegendWidget from './LegendWidget'
@@ -131,33 +132,30 @@ function getFormatGroups(
 
       return (
         <>
-          <AxisWidget
+          <AxisTitleGroup
             defaultTitle={getDefaultAxisTitle(chart, fields, axis)}
             label={elementTitles[element]}
-            part="title"
-            value={axisAppearance}
-            onChange={setAxis}
+            value={axisAppearance.title}
+            onChange={(title) => setAxis({ ...axisAppearance, title })}
           />
-          <Group group={`${axis}AxisLabels`} title="Labels">
-            <AxisWidget
-              dateAxis={
-                axis === 'x'
-                  ? {
-                      grain: getEffectiveTimeGrain(chart.spec.data, fields),
-                      hasDateField: fields.some(
-                        (field) =>
-                          field.name === chart.spec.data.encoding.x &&
-                          isDateField(field),
-                      ),
-                    }
-                  : undefined
-              }
-              label={elementTitles[element]}
-              part="labels"
-              value={axisAppearance}
-              onChange={setAxis}
-            />
-          </Group>
+          <AxisLabelsGroup
+            dateAxis={
+              axis === 'x'
+                ? {
+                    grain: getEffectiveTimeGrain(chart.spec.data, fields),
+                    hasDateField: fields.some(
+                      (field) =>
+                        field.name === chart.spec.data.encoding.x &&
+                        isDateField(field),
+                    ),
+                  }
+                : undefined
+            }
+            group={`${axis}AxisLabels`}
+            label={elementTitles[element]}
+            value={axisAppearance.labels}
+            onChange={(labels) => setAxis({ ...axisAppearance, labels })}
+          />
           <StrokeWidget
             label="Axis line"
             maxWidth={4}
@@ -198,35 +196,22 @@ function getElementVisibility(
   const { colorScale, legend, title } = chart.spec.appearance
   switch (element) {
     case 'colorScale':
-      return {
-        visible: colorScale.continuous.visible,
-        onChange: (visible) =>
-          actions.setAppearance('colorScale', {
-            ...colorScale,
-            continuous: { ...colorScale.continuous, visible },
-          }),
-      }
+      return getVisibility(colorScale.continuous, (continuous) =>
+        actions.setAppearance('colorScale', { ...colorScale, continuous }),
+      )
     case 'legend':
-      return {
-        visible: legend.visible,
-        onChange: (visible) =>
-          actions.setAppearance('legend', { ...legend, visible }),
-      }
+      return getVisibility(legend, (value) =>
+        actions.setAppearance('legend', value),
+      )
     case 'title':
-      return {
-        visible: title.visible,
-        onChange: (visible) =>
-          actions.setAppearance('title', { ...title, visible }),
-      }
+      return getVisibility(title, (value) =>
+        actions.setAppearance('title', value),
+      )
     case 'xAxis':
-    case 'yAxis': {
-      const axis = chart.spec.appearance[element]
-      return {
-        visible: axis.visible,
-        onChange: (visible) =>
-          actions.setAppearance(element, { ...axis, visible }),
-      }
-    }
+    case 'yAxis':
+      return getVisibility(chart.spec.appearance[element], (value) =>
+        actions.setAppearance(element, value),
+      )
     default:
       return undefined
   }

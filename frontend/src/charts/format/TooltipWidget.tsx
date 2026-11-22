@@ -29,12 +29,12 @@ const triggerOptions = [
 ] satisfies OptionItem<TooltipTrigger>[]
 
 /**
- * Subgroups of the data tooltip in the fixed order: its padding and the
- * gap between its rows, its surface as CSS (no gradient in the border, no
- * grain) with its text after Shape, the number format of its values, then
- * what triggers it, the hovered mark or all marks at one position of the
- * axis. Whether it shows is the eye of its group in the marks; radial
- * charts have no trigger.
+ * Group of the data tooltip in the marks with its subgroups in the fixed
+ * order: its padding and the gap between its rows, its surface as CSS (no
+ * gradient in the border, no grain) with its text after Shape, the number
+ * format of its values, then what triggers it, the hovered mark or all
+ * marks at one position of the axis. Its eye turns the tooltip on or off;
+ * radial charts have no trigger.
  */
 function TooltipWidget({
   appearance,
@@ -44,7 +44,14 @@ function TooltipWidget({
   value,
 }: TooltipWidgetProps) {
   return (
-    <>
+    <Group
+      group="tooltip"
+      title="Tooltip"
+      visibility={{
+        visible: value.enabled,
+        onChange: (enabled) => onChange({ ...value, enabled }),
+      }}
+    >
       <Group title="Layout">
         <LayoutControls
           label="Tooltip"
@@ -93,7 +100,7 @@ function TooltipWidget({
           </Row>
         </Group>
       ) : null}
-    </>
+    </Group>
   )
 }
 

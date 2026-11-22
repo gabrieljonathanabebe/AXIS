@@ -544,45 +544,21 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
   return {
     ...getChartTypeGroups(formatProps, dataColor),
     labels: (
-      <Group
-        group="labels"
-        title="Labels"
-        visibility={{
-          visible: labels.visible,
-          onChange: (visible) => {
-            actions.setAppearance('labels', { ...labels, visible })
-          },
-        }}
-      >
-        <LabelsWidget
-          isRadial={isRadial}
-          positions={getChartDefinition(chart.type).labelPositions}
-          value={labels}
-          onChange={(value) => actions.setAppearance('labels', value)}
-        />
-      </Group>
+      <LabelsWidget
+        isRadial={isRadial}
+        positions={getChartDefinition(chart.type).labelPositions}
+        value={labels}
+        onChange={(value) => actions.setAppearance('labels', value)}
+      />
     ),
     tooltip: (
-      <Group
-        group="tooltip"
-        title="Tooltip"
-        visibility={{
-          visible: tooltip.enabled,
-          onChange: (enabled) => {
-            actions.setInteraction('tooltip', { ...tooltip, enabled })
-          },
-        }}
-      >
-        <TooltipWidget
-          appearance={chart.spec.appearance.tooltip}
-          showTrigger={!isRadial}
-          value={tooltip}
-          onAppearanceChange={(value) =>
-            actions.setAppearance('tooltip', value)
-          }
-          onChange={(value) => actions.setInteraction('tooltip', value)}
-        />
-      </Group>
+      <TooltipWidget
+        appearance={chart.spec.appearance.tooltip}
+        showTrigger={!isRadial}
+        value={tooltip}
+        onAppearanceChange={(value) => actions.setAppearance('tooltip', value)}
+        onChange={(value) => actions.setInteraction('tooltip', value)}
+      />
     ),
   }
 }

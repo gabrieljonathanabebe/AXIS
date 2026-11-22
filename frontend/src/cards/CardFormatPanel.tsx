@@ -2,8 +2,8 @@ import ContainerWidget from '@/objects/ContainerWidget'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
 import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
 import FormatPanel from '@/shared/ui/FormatPanel'
-import Group from '@/shared/ui/Group'
-import TextStyleControls from '@/shared/ui/TextStyleControls'
+import { getVisibility } from '@/shared/ui/getVisibility'
+import CardSelectionGroup from './CardSelectionGroup'
 import CardValueWidget from './CardValueWidget'
 import { getCardAggregations } from './getCardAggregations'
 import { getDefaultCardTitle } from './getCardTitle'
@@ -36,12 +36,12 @@ const elementOptions: FormatElementOption<CardFormatElement>[] = [
 
 // ===== HELPERS ===============================================================
 /**
- * Picks the widget of one card element.
+ * Lists the format groups of one card element, one below the other.
  * @param element Element shown in the panel.
  * @param props Card, its fields and the actions that change it.
- * @returns The widget of the element.
+ * @returns The groups of the element, each wired to its card action.
  */
-function renderFormatWidget(
+function getFormatGroups(
   element: CardFormatElement,
   { actions, card, fields }: CardFormatPanelProps,
 ): ReactNode {
@@ -87,29 +87,12 @@ function renderFormatWidget(
               actions.updateCardAppearance(card.id, 'value', value)
             }
           />
-          <Group
-            group="selectionLabel"
-            title="Selection"
-            visibility={{
-              visible: appearance.selectionLabel.visible,
-              onChange: (visible) =>
-                actions.updateCardAppearance(card.id, 'selectionLabel', {
-                  ...appearance.selectionLabel,
-                  visible,
-                }),
-            }}
-          >
-            <TextStyleControls
-              label="Selection"
-              value={appearance.selectionLabel.textStyle}
-              onChange={(textStyle) =>
-                actions.updateCardAppearance(card.id, 'selectionLabel', {
-                  ...appearance.selectionLabel,
-                  textStyle,
-                })
-              }
-            />
-          </Group>
+          <CardSelectionGroup
+            value={appearance.selectionLabel}
+            onChange={(value) =>
+              actions.updateCardAppearance(card.id, 'selectionLabel', value)
+            }
+          />
         </>
       )
   }
@@ -129,11 +112,9 @@ function getElementVisibility(
   const { title } = card.spec.appearance
   switch (element) {
     case 'title':
-      return {
-        visible: title.visible,
-        onChange: (visible) =>
-          actions.updateCardAppearance(card.id, 'title', { ...title, visible }),
-      }
+      return getVisibility(title, (value) =>
+        actions.updateCardAppearance(card.id, 'title', value),
+      )
     default:
       return undefined
   }
@@ -165,7 +146,7 @@ function CardFormatPanel(props: CardFormatPanelProps) {
       visibility={getElementVisibility(element, props)}
       onToggleCollapse={onToggleCollapse}
     >
-      {renderFormatWidget(element, props)}
+      {getFormatGroups(element, props)}
     </FormatPanel>
   )
 }

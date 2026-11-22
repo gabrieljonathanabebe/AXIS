@@ -1,3 +1,4 @@
+import { getVisibility } from '@/shared/ui/getVisibility'
 import Group from '@/shared/ui/Group'
 import NumberFormatControls from '@/shared/ui/NumberFormatControls'
 import PositionControls from '@/shared/ui/PositionControls'
@@ -16,11 +17,11 @@ type LabelsWidgetProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * Groups of the data labels element: where they sit, how their text looks
- * and their number format. The chart type offers its `positions`, e.g.
- * outside and inside for pie segments; radial charts label percentages, so
- * they have no number format. Whether the labels show is the eye of their
- * group in the marks.
+ * Group of the data labels in the marks with its subgroups: where they
+ * sit, how their text looks and their number format. Its eye shows or
+ * hides the labels. The chart type offers its `positions`, e.g. outside
+ * and inside for pie segments; radial charts label percentages, so they
+ * have no number format.
  */
 function LabelsWidget({
   isRadial = false,
@@ -29,7 +30,11 @@ function LabelsWidget({
   value,
 }: LabelsWidgetProps) {
   return (
-    <>
+    <Group
+      group="labels"
+      title="Labels"
+      visibility={getVisibility(value, onChange)}
+    >
       <Group title="Position">
         <PositionControls
           label="Label"
@@ -54,7 +59,7 @@ function LabelsWidget({
           />
         </Group>
       ) : null}
-    </>
+    </Group>
   )
 }
 

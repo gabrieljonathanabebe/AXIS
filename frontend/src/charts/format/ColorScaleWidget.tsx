@@ -1,10 +1,12 @@
 import { getSideOrientation } from '@/shared/layout'
+import { getVisibility } from '@/shared/ui/getVisibility'
 import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
 import PositionControls from '@/shared/ui/PositionControls'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
 import SurfaceControls from '@/shared/ui/SurfaceControls'
-import AxisWidget from './AxisWidget'
+import AxisLabelsGroup from './AxisLabelsGroup'
+import AxisTitleGroup from './AxisTitleGroup'
 
 import type { ColorScaleAppearance } from '@/charts/types'
 import type { LayoutBox } from '@/shared/ui/BoxFieldsRow'
@@ -79,6 +81,10 @@ function ColorScaleWidget({
   value,
   onChange,
 }: ColorScaleWidgetProps) {
+  /** Saves the changed labels of the scale, e.g. their visibility. */
+  function setLabels(labels: ContinuousColorScale['labels']): void {
+    onChange({ ...value, labels })
+  }
   return (
     <>
       <Group title="Position">
@@ -104,31 +110,20 @@ function ColorScaleWidget({
           onChange({ ...value, bar: { ...value.bar, [key]: property } })
         }}
       />
-      <AxisWidget
+      <AxisTitleGroup
         defaultTitle={defaultTitle}
+        group="colorScaleTitle"
         label="Color scale"
-        part="title"
-        titleGroup="colorScaleTitle"
-        value={value}
-        onChange={onChange}
+        value={value.title}
+        onChange={(title) => onChange({ ...value, title })}
       />
-      <Group
+      <AxisLabelsGroup
         group="colorScaleLabels"
-        title="Labels"
-        visibility={{
-          visible: value.labels.visible,
-          onChange: (visible) => {
-            onChange({ ...value, labels: { ...value.labels, visible } })
-          },
-        }}
-      >
-        <AxisWidget
-          label="Color scale"
-          part="labels"
-          value={value}
-          onChange={onChange}
-        />
-      </Group>
+        label="Color scale"
+        value={value.labels}
+        visibility={getVisibility(value.labels, setLabels)}
+        onChange={setLabels}
+      />
       <StrokeWidget
         label="Color scale ticks"
         maxWidth={4}
