@@ -1,7 +1,6 @@
 import StyleGallery from '@/dashboardStyle/StyleGallery'
 import { STYLE_RECIPES } from '@/dashboardStyle/styleRecipes'
-import { addFill } from '@/shared/fill'
-import FillListControls from '@/shared/ui/FillListControls'
+import BackgroundGroup from '@/shared/ui/BackgroundGroup'
 import FormatPanel from '@/shared/ui/FormatPanel'
 import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
@@ -56,16 +55,11 @@ function DashboardFormatPanel({
           onChange={actions.updateDashboardLayout}
         />
       </Group>
-      <Group
-        title="Background"
-        onAdd={() => updateBackground(addFill(dashboard.canvas.background))}
-      >
-        <FillListControls
-          label="Canvas"
-          value={dashboard.canvas.background}
-          onChange={updateBackground}
-        />
-      </Group>
+      <BackgroundGroup
+        label="Canvas"
+        value={dashboard.canvas.background}
+        onChange={updateBackground}
+      />
       <AnimationWidget
         value={dashboard.animation}
         onChange={(animation) => actions.updateDashboard({ animation })}

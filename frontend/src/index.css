@@ -15,7 +15,7 @@
 @import './shared/ui/FormatPanel.css';
 @import './shared/ui/Group.css';
 @import './charts/format/GradientControl.css';
-@import './shared/ui/GradientStopsControl.css';
+@import './shared/ui/GradientStopRow.css';
 @import './shared/ui/IconBadge.css';
 @import './shared/ui/IconButton.css';
 @import './shared/ui/MiniHistogram.css';

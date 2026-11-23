@@ -1,11 +1,13 @@
 import { useState } from 'react'
 
+import { addFill } from '@/shared/fill'
+import Group from './Group'
 import PaintRow from './PaintRow'
 
 import type { Fill } from '@/shared/fill'
 
 // ===== TYPES =================================================================
-type FillListControlsProps = {
+type BackgroundGroupProps = {
   label: string
   value: Fill[]
   onChange: (value: Fill[]) => void
@@ -28,15 +30,14 @@ function isFillAddedOnTop(previous: Fill[], next: Fill[]): boolean {
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of the fills of an area, e.g. the canvas or a container, the top
- * layer first like in Figma: per fill its paint control, opacity and a
- * around it; since a new fill lands on top, the list opens the editor of
- * the first row when the plus adds one, and closes any editor when the
- * rows change otherwise, e.g. by a minus or an applied style.
- * the rows below move up.
+ * Background group of an area, e.g. the canvas or a container: one row per
+ * fill, the top layer first like in Figma, with its paint control, opacity
+ * and a minus. The plus adds a fill on top and opens its editor; any other
+ * change of the rows, e.g. a minus or an applied style, closes an open
+ * editor.
  * @param props Name of the area, its fills and handler.
  */
-function FillListControls({ label, value, onChange }: FillListControlsProps) {
+function BackgroundGroup({ label, value, onChange }: BackgroundGroupProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const [knownFills, setKnownFills] = useState(value)
   if (value !== knownFills) {
@@ -46,21 +47,25 @@ function FillListControls({ label, value, onChange }: FillListControlsProps) {
     }
   }
 
-  return value.map((fill, index) => (
-    <PaintRow
-      // Fills carry no id; rows keep their place in the list.
-      key={index}
-      remove={{
-        label: `Remove ${label.toLowerCase()} fill ${index + 1}`,
-        onRemove: () => onChange(value.toSpliced(index, 1)),
-      }}
-      label={`${label} fill ${index + 1}`}
-      open={openIndex === index}
-      value={fill}
-      onChange={(nextFill) => onChange(value.with(index, nextFill))}
-      onOpenChange={(open) => setOpenIndex(open ? index : null)}
-    />
-  ))
+  return (
+    <Group title="Background" onAdd={() => onChange(addFill(value))}>
+      {value.map((fill, index) => (
+        <PaintRow
+          // Fills carry no id; rows keep their place in the list.
+          key={index}
+          remove={{
+            label: `Remove ${label.toLowerCase()} fill ${index + 1}`,
+            onRemove: () => onChange(value.toSpliced(index, 1)),
+          }}
+          label={`${label} fill ${index + 1}`}
+          open={openIndex === index}
+          value={fill}
+          onChange={(nextFill) => onChange(value.with(index, nextFill))}
+          onOpenChange={(open) => setOpenIndex(open ? index : null)}
+        />
+      ))}
+    </Group>
+  )
 }
 
-export default FillListControls
+export default BackgroundGroup

@@ -1,10 +1,9 @@
 import { SquareRoundCorner } from 'lucide-react'
 
 import { isSurfaceEffect } from '@/shared/effect'
-import { addFill } from '@/shared/fill'
 import { SURFACE_CAPABILITIES } from '@/shared/surface'
+import BackgroundGroup from './BackgroundGroup'
 import EffectsGroup from './EffectsGroup'
-import FillListControls from './FillListControls'
 import Group from './Group'
 import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
@@ -75,16 +74,11 @@ function SurfaceControls({
       )}
       {children}
       {background === undefined ? null : (
-        <Group
-          title="Background"
-          onAdd={() => onChange('background', addFill(background))}
-        >
-          <FillListControls
-            label={label}
-            value={background}
-            onChange={(nextFills) => onChange('background', nextFills)}
-          />
-        </Group>
+        <BackgroundGroup
+          label={label}
+          value={background}
+          onChange={(nextFills) => onChange('background', nextFills)}
+        />
       )}
       {border === undefined ? null : (
         <StrokeWidget

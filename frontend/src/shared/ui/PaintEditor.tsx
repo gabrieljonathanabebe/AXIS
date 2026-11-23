@@ -9,7 +9,7 @@ import {
   PAINT_TYPE_LABELS,
 } from '@/shared/paint'
 import ColorPicker from './ColorPicker'
-import GradientStopsControl from './GradientStopsControl'
+import GradientStopRow from './GradientStopRow'
 import Group from './Group'
 import RotationDial from './RotationDial'
 import Row from './Row'
@@ -38,6 +38,9 @@ const RADIAL_CENTER_RANGE = { max: 150, min: -50 }
 
 /** Largest radius of a radial gradient in percent of its area. */
 const MAX_RADIAL_RADIUS = 200
+
+/** Fewest stops a gradient keeps: its start and its end. */
+const MIN_GRADIENT_STOPS = 2
 
 // ===== COMPONENT =============================================================
 /**
@@ -222,12 +225,23 @@ function PaintEditor({
           setPaint({ ...paint, stops: addGradientStop(paint.stops) })
         }}
       >
-        <GradientStopsControl
-          label={label}
-          presets={presets}
-          stops={paint.stops}
-          onChange={(stops) => setPaint({ ...paint, stops })}
-        />
+        {paint.stops.map((stop, index) => (
+          <GradientStopRow
+            // Stops carry no id; rows keep the order the stops were added
+            // in, so a row does not jump while its position is scrubbed.
+            key={index}
+            isRemovable={paint.stops.length > MIN_GRADIENT_STOPS}
+            label={`${label} stop ${index + 1}`}
+            presets={presets}
+            value={stop}
+            onChange={(nextStop) => {
+              setPaint({ ...paint, stops: paint.stops.with(index, nextStop) })
+            }}
+            onRemove={() => {
+              setPaint({ ...paint, stops: paint.stops.toSpliced(index, 1) })
+            }}
+          />
+        ))}
       </Group>
     </>
   )

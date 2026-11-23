@@ -1,0 +1,7 @@
+/* One stop of a gradient: swatch | position | opacity | −. */
+.gradient-stop {
+  display: grid;
+  grid-template-columns: 20px repeat(2, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: var(--space-1);
+}
