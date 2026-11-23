@@ -136,7 +136,7 @@ function NumberFormatControls({
       </Row>
       {hasDetails ? (
         <>
-          <Row isFull>
+          <Row>
             <ScrubbableNumber
               icon={<DecimalsArrowRight size={14} />}
               label={`${label} decimal places`}

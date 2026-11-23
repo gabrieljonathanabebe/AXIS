@@ -29,7 +29,6 @@ type RowProps = {
   action?: ReactNode
   children: ReactNode
   details?: RowDetails
-  isFull?: boolean
   label?: string
   layout?: RowLayout
   remove?: RowRemove
@@ -39,21 +38,19 @@ type RowProps = {
 /**
  * One row of controls. With a label, the label stands left of the
  * controls. Without one, the row sits on the grid of the format panel:
- * two field columns and an icon column, so fields and icons line up
- * across rows and with the icons of the group headings. `pair` puts two
- * fields side by side, `single` one field into the first column, `wide`
- * one field across both; a wide row without icon also takes the icon
- * column. `isFull` lets a pair without icon take it, too, e.g. in a group
- * whose rows have no icons. The icon column holds one icon: the minus of
- * `remove`, else the gear of `details`, else `action`, e.g. the italic
- * toggle.
- * @param props Controls, optional label, layout, width and icon.
+ * two field columns and an icon column, so fields and icons of a group
+ * line up with the icons of its heading; in a group whose rows have no
+ * icon, the fields share the whole width. `pair` puts two fields side by
+ * side, `single` one field into the first column, `wide` one field
+ * across both; a wide row without icon also takes the icon column. The
+ * icon column holds one icon: the minus of `remove`, else the gear of
+ * `details`, else `action`, e.g. the italic toggle.
+ * @param props Controls, optional label, layout and icon.
  */
 function Row({
   action,
   children,
   details,
-  isFull = false,
   label,
   layout = 'pair',
   remove,
@@ -102,9 +99,7 @@ function Row({
   if (!label) {
     const icon = getIcon()
     return (
-      <div
-        className={`row row-compact is-${layout} ${isFull ? 'is-full' : ''}`}
-      >
+      <div className={`row row-compact is-${layout}`}>
         {children}
         {icon ? <div className="row-icon">{icon}</div> : null}
       </div>

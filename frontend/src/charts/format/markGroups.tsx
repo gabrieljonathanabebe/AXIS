@@ -466,7 +466,7 @@ function getChartTypeGroups(
         ...getFilledMarkGroups(props, 'scatter', 'Point', dataColor),
         shape: (
           <Group title="Shape">
-            <Row isFull>
+            <Row>
               <SegmentedControl
                 label="Scatter symbol"
                 options={scatterSymbolOptions}
@@ -499,7 +499,7 @@ function getChartTypeGroups(
               )}
             </Row>
             {sizeField ? (
-              <Row isFull>
+              <Row>
                 <ScrubbableNumber
                   icon={<ArrowDownToLine size={14} />}
                   label="Smallest point size"

@@ -7,8 +7,8 @@
 }
 
 /* Grid of the format panel: two field columns and an icon column that
-   rows keep, also when empty, so fields and icons of all rows line up
-   with the icons of the group headings. */
+   rows keep, also when empty, so fields and icons of all rows of a group
+   line up with the icons of its heading. */
 .row-compact {
   --control-border-color: transparent;
   --control-font-size: var(--font-size-xs);
@@ -33,9 +33,12 @@
   grid-column: 1 / -1;
 }
 
-/* A pair that asks for it takes the whole width, e.g. the decimal places
-   and notation of a number format, whose rows have no icons. */
-.row-compact.is-full {
+/* In a group or editor whose rows have no icon, the rows drop the icon
+   column and their fields share the whole width, e.g. X and Y of a
+   position. Once one row has an icon, all keep the column, so the fields
+   of the group still line up. */
+:is(.group-content, .editor-body):not(:has(> .row-compact > .row-icon))
+  > .row-compact {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
