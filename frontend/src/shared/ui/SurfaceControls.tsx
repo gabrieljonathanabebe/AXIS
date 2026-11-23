@@ -1,14 +1,14 @@
 import { SquareRoundCorner } from 'lucide-react'
 
-import { createSurfaceEffect } from '@/shared/effect'
+import { isSurfaceEffect } from '@/shared/effect'
 import { addFill } from '@/shared/fill'
 import { SURFACE_CAPABILITIES } from '@/shared/surface'
+import EffectsGroup from './EffectsGroup'
 import FillListControls from './FillListControls'
 import Group from './Group'
 import Row from './Row'
 import ScrubbableNumber from './ScrubbableNumber'
 import StrokeWidget from './StrokeWidget'
-import SurfaceEffectsControls from './SurfaceEffectsControls'
 
 import type { ReactNode } from 'react'
 import type { Surface, SurfaceRenderer } from '@/shared/surface'
@@ -26,6 +26,10 @@ type SurfaceControlsProps = {
     value: Surface[TKey],
   ) => void
 }
+
+// ===== CONSTANTS =============================================================
+/** Widest blur of a surface effect; deep shadows need more than marks. */
+const MAX_SURFACE_BLUR = 64
 
 // ===== COMPONENT =============================================================
 /**
@@ -92,21 +96,16 @@ function SurfaceControls({
         />
       )}
       {effects === undefined ? null : (
-        <Group
+        <EffectsGroup
+          kinds={effectKinds}
+          label={label}
+          maxBlur={MAX_SURFACE_BLUR}
           title="Effects"
-          onAdd={() => {
-            onChange('effects', [...effects, createSurfaceEffect('shadow')])
+          value={effects}
+          onChange={(nextEffects) => {
+            onChange('effects', nextEffects.filter(isSurfaceEffect))
           }}
-        >
-          {effects.length > 0 ? (
-            <SurfaceEffectsControls
-              kinds={effectKinds}
-              label={label}
-              value={effects}
-              onChange={(nextEffects) => onChange('effects', nextEffects)}
-            />
-          ) : null}
-        </Group>
+        />
       )}
     </>
   )

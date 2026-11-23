@@ -21,8 +21,9 @@ import {
 } from '@/charts/chartDefinitions'
 import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
-import { createEffect } from '@/shared/effect'
+import { isMarkEffect } from '@/shared/effect'
 import ColorControl from '@/shared/ui/ColorControl'
+import EffectsGroup from '@/shared/ui/EffectsGroup'
 import Group from '@/shared/ui/Group'
 import PaintRow from '@/shared/ui/PaintRow'
 import Row from '@/shared/ui/Row'
@@ -30,7 +31,6 @@ import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import SegmentedControl from '@/shared/ui/SegmentedControl'
 import StrokeStyleControls from '@/shared/ui/StrokeStyleControls'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
-import EffectControls from './EffectControls'
 import GradientControl from './GradientControl'
 import LabelsWidget from './LabelsWidget'
 import PaletteControl from './PaletteControl'
@@ -44,7 +44,7 @@ import type {
   LinePoints,
   ScatterSymbol,
 } from '@/charts/types'
-import type { Effect } from '@/shared/effect'
+import type { Effect, MarkEffect } from '@/shared/effect'
 import type { PaintType } from '@/shared/paint'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 import type { RowDetails } from '@/shared/ui/Row'
@@ -91,6 +91,12 @@ export const MARK_GROUP_ORDER = [
   'labels',
   'tooltip',
 ] as const
+
+/** Effect kinds of a mark: ECharts draws one blurred shadow per mark. */
+const MARK_EFFECT_KINDS: MarkEffect['kind'][] = ['glow', 'shadow']
+
+/** Strongest blur of a mark effect; wider blurs wash out and cost time. */
+const MAX_MARK_EFFECT_BLUR = 40
 
 const lineCurveOptions = [
   { icon: ChartLine, label: 'Straight', value: 'straight' },
@@ -219,7 +225,8 @@ function getDataColorControls({
 
 /**
  * Effect group of one mark: without an effect only the plus in its
- * heading, which adds a glow, else the row of the effect.
+ * heading, which adds a glow, else the row of the effect. A mark has one
+ * effect, so the group sees it as a list of none or one.
  * @param label Name of the mark for screen readers, e.g. "Bar".
  * @param effect Effect of the mark.
  * @param onChange Saves the changed effect.
@@ -230,13 +237,18 @@ function getEffectGroup(
   effect: Effect,
   onChange: (effect: Effect) => void,
 ): ReactNode {
-  if (effect.kind === 'none') {
-    return <Group title="Effect" onAdd={() => onChange(createEffect('glow'))} />
-  }
   return (
-    <Group title="Effect">
-      <EffectControls label={label} value={effect} onChange={onChange} />
-    </Group>
+    <EffectsGroup
+      kinds={MARK_EFFECT_KINDS}
+      label={label}
+      max={1}
+      maxBlur={MAX_MARK_EFFECT_BLUR}
+      title="Effect"
+      value={effect.kind === 'none' ? [] : [effect]}
+      onChange={(effects) => {
+        onChange(effects.find(isMarkEffect) ?? { kind: 'none' })
+      }}
+    />
   )
 }
 

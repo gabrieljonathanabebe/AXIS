@@ -25,6 +25,9 @@ export type Effect =
   | { blur: number; kind: 'glow' }
   | ({ kind: 'shadow' } & Shadow)
 
+/** Effect a mark has; `none` only marks that it has none. */
+export type MarkEffect = Exclude<Effect, { kind: 'none' }>
+
 /**
  * One effect of a surface. A surface keeps a list; the kind fixes the
  * layer it is drawn on, so the order of the list does not matter.
@@ -35,11 +38,14 @@ export type SurfaceEffect =
   | { blur: number; kind: 'backgroundBlur' }
   | { kind: 'noise'; opacity: number; size: number }
 
-/** Kinds a surface takes at most once; shadows may stack. */
-const SINGLE_SURFACE_EFFECTS: SurfaceEffect['kind'][] = [
-  'backgroundBlur',
-  'noise',
-]
+/**
+ * Effect of a mark or a surface, e.g. in the effect rows they share; the
+ * place decides which kinds it offers.
+ */
+export type AnyEffect = MarkEffect | SurfaceEffect
+
+/** Kinds a list takes at most once; shadows may stack. */
+const SINGLE_EFFECTS: AnyEffect['kind'][] = ['backgroundBlur', 'noise']
 
 // ===== CONSTANTS =============================================================
 /** Blur a glow starts with when the effect is switched on. */
@@ -74,32 +80,17 @@ export const DEFAULT_NOISE_SIZE = 100
 
 // ===== FUNCTIONS =============================================================
 /**
- * Creates the effect of one kind with its default values.
- * @param kind Kind to create, e.g. from the select of the effect row.
- * @returns No effect, a glow or a shadow with the default values.
- */
-export function createEffect(kind: Effect['kind']): Effect {
-  switch (kind) {
-    case 'glow':
-      return { blur: DEFAULT_GLOW_BLUR, kind }
-    case 'none':
-      return { kind }
-    case 'shadow':
-      return { ...DEFAULT_SHADOW, kind }
-  }
-}
-
-/**
- * Creates a surface effect of one kind with its default values.
- * @param kind Kind to create, e.g. a shadow by the plus of the group.
+ * Creates an effect of one kind with its default values.
+ * @param kind Kind to create, e.g. a glow by the plus of a mark or a new
+ *   kind from the select of an effect.
  * @returns The effect with the default values of its kind.
  */
-export function createSurfaceEffect(
-  kind: SurfaceEffect['kind'],
-): SurfaceEffect {
+export function createEffect(kind: AnyEffect['kind']): AnyEffect {
   switch (kind) {
     case 'backgroundBlur':
       return { blur: DEFAULT_BACKGROUND_BLUR, kind }
+    case 'glow':
+      return { blur: DEFAULT_GLOW_BLUR, kind }
     case 'innerShadow':
       return { ...DEFAULT_INNER_SHADOW, kind }
     case 'noise':
@@ -129,18 +120,38 @@ export function getShadowsCss(shadows: Shadow[], inset = false): string {
 }
 
 /**
- * Tells whether a surface already has an effect it takes only once,
- * e.g. a background blur, so the kind select offers it disabled.
- * @param effects Effects of a surface.
+ * Tells whether a list already has an effect it takes only once, e.g. a
+ * background blur, so the kind select offers it disabled.
+ * @param effects Effects of a mark or a surface.
  * @param kind Kind to check.
  * @returns True when the kind is single and already in the list.
  */
-export function isSurfaceEffectTaken(
-  effects: SurfaceEffect[],
-  kind: SurfaceEffect['kind'],
+export function isEffectTaken(
+  effects: AnyEffect[],
+  kind: AnyEffect['kind'],
 ): boolean {
   return (
-    SINGLE_SURFACE_EFFECTS.includes(kind) &&
+    SINGLE_EFFECTS.includes(kind) &&
     effects.some((effect) => effect.kind === kind)
   )
+}
+
+/**
+ * Tells whether an effect fits a mark, e.g. when the effect list of a mark
+ * is saved back as its one effect.
+ * @param effect Effect from a shared effect list.
+ * @returns True for a glow or a shadow.
+ */
+export function isMarkEffect(effect: AnyEffect): effect is MarkEffect {
+  return effect.kind === 'glow' || effect.kind === 'shadow'
+}
+
+/**
+ * Tells whether an effect fits a surface, e.g. when the effect list of a
+ * surface is saved; a glow belongs to marks only.
+ * @param effect Effect from a shared effect list.
+ * @returns True for every kind but a glow.
+ */
+export function isSurfaceEffect(effect: AnyEffect): effect is SurfaceEffect {
+  return effect.kind !== 'glow'
 }
