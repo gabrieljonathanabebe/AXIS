@@ -99,7 +99,8 @@ Regeln für den Slice:
 
 - ohne Verhaltensänderung: Die App sieht danach exakt aus wie vorher und
   verhält sich so; Build, Lint, Tests und der Bildvergleich des
-  Smoke-Tests belegen das. Ausnahmen sind Teil 6 und Teil 11
+  Smoke-Tests belegen das. Ausnahmen sind Teil 6, Teil 11 und in Teil 5
+  Escape im Modus „übernehmen“ von `Input` (neu für `NumberInput`)
 - Verschieben (`git mv`) und Ändern nie im selben Commit
 - keine Feature-Arbeit parallel, auch keine PRs am Frontend von außen;
   das Refactoring berührt sehr viele Dateien
@@ -194,25 +195,39 @@ Teile:
    → Group, festes Raster der Row (O6), Hinweis ohne Einrückung (O3).
    Strukturberichte danach: 8 Ringe, 52 Grenzverstöße, 13 Kopien, keine
    ungenutzte Datei, 43 ungenutzte Exporte und Typen
-5. Ebenen: Primitives mit den Basen `Button`, `Input` und `Popover` und
-   dünnen Varianten (`IconButton`, `SwatchButton`, `DropdownButton`,
-   `TextInput`, `NumberInput`, `Menu`); Controls nach Verhalten
-   zusammengeführt (Ausrichtung, Schriftgewicht, Position →
-   `SegmentedControl`; Winkel → `NumberControl`; Palette, Datumsformat →
+5. Ebenen (in Arbeit; Smoke nach jedem Schritt, nicht nur nach
+   mechanischen): Primitives mit den Basen `Button`, `Input` und
+   `Popover` und dünnen Varianten. `Button` bekommt Arten (Text, Icon,
+   Kachel, Swatch, Chip), die Fläche `ghost` statt der Überschreib-Regeln
+   und `pressed`; Varianten `IconButton`, `SwatchButton` (statt
+   `ColorSwatch`), `DropdownButton` und `Chip` (ohne `forwardRef`),
+   `WidgetButton` entfällt, `CommandButton` bleibt Hülle in `app/`.
+   `Input` arbeitet live oder übernehmend (Enter oder Verlassen übernimmt,
+   Escape bricht ab), Varianten `TextInput`, `NumberInput` und
+   `InlineTextInput`; `Menu` ist Variante von `Popover`. Anzeige
+   (`EmptyState`, `MiniHistogram`, `SurfaceLayers`, `SurfaceBorder`,
+   `IconBadge`, `OptionContent`) zieht nach `shared/ui/display/`.
+   Controls nach Verhalten zusammengeführt (Ausrichtung, Position →
+   `SegmentedControl`; Winkel → `NumberControl`; Palette →
    `SelectControl`; `ScrubbableNumber` → `NumberControl` aus Button und
-   `NumberInput`, mit Prozentmodus); die Bündel werden ganze Groups
-   (`TextStyleControls` → `TextGroup`, `NumberFormatControls` →
-   `NumberFormatGroup`, `LayoutControls` → `LayoutGroup`,
-   `PositionControls` → `PositionGroup`, `StrokeStyleControls` geht in
-   `StrokeGroup` auf, `SurfaceControls` entfällt, weil jedes Element seine
-   Groups listet, `ShadowControls` geht in `EffectEditor` auf); wo
-   Untergruppen im Weg sind (Labels, Tooltip), erst im Design-Slice.
+   `NumberInput`, mit den Einheiten `px`, `ms`, `percent` und `degree`;
+   `StepRange` → Option `steps` von `RangeControl`). Die Bündel werden
+   ganze Groups (`TextStyleControls` → `TextGroup`,
+   `NumberFormatControls` → `NumberFormatGroup`, `LayoutControls` →
+   `LayoutGroup`, `PositionControls` → `PositionGroup`,
+   `StrokeStyleControls` geht in `StrokeGroup` auf, `SurfaceControls`
+   entfällt, weil jedes Element seine Groups listet (neue `ShapeGroup`,
+   Border und Effects lesen den Renderer), `ShadowControls` geht in
+   `EffectEditor` auf); die Filterformulare werden `RangeFilterGroup` und
+   `ValuesFilterGroup`. Labels und Tooltip nutzen die Groups schon jetzt
+   als Untergruppen; eigene Elemente werden sie im Design-Slice.
    Import-Grenzen je Ebene melden (scharf in Teil 10). Verhalten, das
    kein Screenshot sieht (Runden, Escape, Pfeiltasten, Auto), sichern
-   Vitest-Tests. Als eigener Optik-Commit: `FontWeightControl` und der
-   Kursiv-Schalter gehen in zwei Auswahlfeldern „Schrift“ und „Schnitt“
-   auf (z. B. „Bold Italic“, kursive Inter aus
-   `@fontsource-variable/inter`); das Modell bleibt
+   Vitest-Tests über reine Funktionen. Als eigener Optik-Commit:
+   `FontWeightControl` und der Kursiv-Schalter gehen in zwei
+   Auswahlfeldern „Schrift“ und „Schnitt“ auf (z. B. „Bold Italic“,
+   kursive Inter aus `@fontsource-variable/inter`, Zeilen nach O7); das
+   Modell bleibt
 6. Paint vereinfachen, Verhaltensänderung mit neuen Referenzbildern;
    vor der Persistenz, weil sich das gespeicherte Modell ändert:
    - „Datenfarbe“ als Art einer Farbe (`ColorValue` mit
@@ -273,7 +288,8 @@ aggregation }`; Linienfläche als `area: { visible, fill }`; feste
      Legendenhöhe als Konstante statt in der Spec; `limit: null` bleibt
      („kein Limit“)
 10. Grenzen, Doku und Abschluss-Inventur: ESLint-Grenzen,
-    `import-linter` und Ringprüfung scharf schalten; `ARCHITECTURE.md`,
+    `import-linter` und Ringprüfung scharf schalten; `DataPanel` zieht
+    von `datasets/` nach `app/`; `ARCHITECTURE.md`,
     `DESIGN_SYSTEM.md` und `DEVELOPMENT.md` nach dem tatsächlichen Stand;
     JSDoc an den angefassten Funktionen; offene Einträge der Fundliste
     abarbeiten und die Kopien aus `npm run check:copies` einmal
@@ -307,8 +323,8 @@ Funde während des Slices (Regel oben, „Fundliste“):
 Nicht in diesem Slice: das Öffnen des Fill-Editors ausdrücklich steuern;
 Rechenlogik aus `ChartColorScale` und `EncodingsWidget` ziehen; CSS
 direkt in den Komponenten laden statt über `index.css`; Mark-Profile;
-das Zahlenformat des Tooltips (→ Tooltip-Felder); Escape für
-`NumberInput`; JSDoc für alle Funktionen; `dashboardStyle/` aufteilen.
+das Zahlenformat des Tooltips (→ Tooltip-Felder); JSDoc für alle
+Funktionen; `dashboardStyle/` aufteilen.
 
 ### Design-Richtlinien und Optik-Audit (geplant, direkt nach 3.14)
 
