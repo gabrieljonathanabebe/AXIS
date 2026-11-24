@@ -6,7 +6,7 @@ import TextStyleControls from '@/shared/ui/TextStyleControls'
 
 import type { LegendAppearance } from '@/charts/types'
 
-type LegendWidgetProps = {
+type LegendElementProps = {
   value: LegendAppearance
   onChange: (value: LegendAppearance) => void
 }
@@ -16,7 +16,7 @@ type LegendWidgetProps = {
  * its surface and how its text looks. Whether it shows is the eye in the
  * popover header.
  */
-function LegendWidget({ value, onChange }: LegendWidgetProps) {
+function LegendElement({ value, onChange }: LegendElementProps) {
   return (
     <>
       <Group title="Position">
@@ -53,4 +53,4 @@ function LegendWidget({ value, onChange }: LegendWidgetProps) {
   )
 }
 
-export default LegendWidget
+export default LegendElement

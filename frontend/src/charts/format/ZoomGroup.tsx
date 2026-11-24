@@ -6,7 +6,7 @@ import Row from '@/shared/ui/Row'
 
 import type { ChartInteractionSpec } from '@/charts/types'
 
-type ZoomWidgetProps = {
+type ZoomGroupProps = {
   value: ChartInteractionSpec['zoom']
   onChange: (value: ChartInteractionSpec['zoom']) => void
 }
@@ -16,7 +16,7 @@ type ZoomWidgetProps = {
  * slider below it, as toggles with icon and word, since both are behavior
  * and no visible part. With both off, the chart has no zoom.
  */
-function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
+function ZoomGroup({ value, onChange }: ZoomGroupProps) {
   const inside = value.enabled && value.inside
   const slider = value.enabled && value.slider
   /**
@@ -59,4 +59,4 @@ function ZoomWidget({ value, onChange }: ZoomWidgetProps) {
   )
 }
 
-export default ZoomWidget
+export default ZoomGroup

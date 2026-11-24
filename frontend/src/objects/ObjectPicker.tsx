@@ -18,7 +18,7 @@ type ObjectOptionContentProps = {
   option: ObjectPickerOption
 }
 
-type DraggableObjectOptionProps = {
+type ObjectOptionTileProps = {
   option: ObjectPickerOption
   onAddObject: (template: ObjectTemplate) => void
 }
@@ -35,10 +35,7 @@ export function ObjectOptionContent({ option }: ObjectOptionContentProps) {
 }
 
 /** Adds its object on click or when dropped on the canvas. */
-function DraggableObjectOption({
-  option,
-  onAddObject,
-}: DraggableObjectOptionProps) {
+function ObjectOptionTile({ option, onAddObject }: ObjectOptionTileProps) {
   const payload: DragPayload = { kind: 'object-option', option }
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     data: { payload },
@@ -69,7 +66,7 @@ function ObjectPicker({
   return (
     <div className="chart-type-picker auto-grid">
       {getGroupPickerOptions(group).map((option) => (
-        <DraggableObjectOption
+        <ObjectOptionTile
           key={option.label}
           option={option}
           onAddObject={onAddObject}

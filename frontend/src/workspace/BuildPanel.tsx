@@ -1,9 +1,9 @@
 import { Blocks, Columns3, FolderOpen, Plus, Waypoints } from 'lucide-react'
 
-import AggregationWidget from '@/charts/data/AggregationWidget'
-import EncodingsWidget from '@/charts/data/EncodingsWidget'
-import DatasetCard from '@/datasets/DatasetCard'
+import AggregationGroup from '@/charts/data/AggregationGroup'
+import EncodingsGroup from '@/charts/data/EncodingsGroup'
 import { DEMO_DATASET_ID } from '@/datasets/datasetsApi'
+import DatasetTile from '@/datasets/DatasetTile'
 import FieldList from '@/datasets/FieldList'
 import { objectGroups } from '@/objects/objectDefinitions'
 import ObjectPicker from '@/objects/ObjectPicker'
@@ -80,7 +80,7 @@ function BuildPanel({
 
         <Group collapsible title="Dataset" icon={<FolderOpen size={14} />}>
           <div className="stack">
-            <DatasetCard
+            <DatasetTile
               fieldCount={dataset.fields.length}
               isDemo={
                 !activeDatasetSummary ||
@@ -117,12 +117,12 @@ function BuildPanel({
         {chart ? (
           <Group collapsible title="Chart data" icon={<Waypoints size={14} />}>
             <div className="stack">
-              <EncodingsWidget
+              <EncodingsGroup
                 actions={chartActions}
                 chart={chart}
                 fields={dataset.fields}
               />
-              <AggregationWidget
+              <AggregationGroup
                 actions={chartActions}
                 chart={chart}
                 fields={dataset.fields}

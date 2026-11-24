@@ -9,7 +9,7 @@ import { DASHBOARD_ANIMATION } from './workspaceReducer'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 import type { AnimationEasing, DashboardAnimation } from './types'
 
-type AnimationWidgetProps = {
+type AnimationGroupProps = {
   value: DashboardAnimation
   onChange: (value: DashboardAnimation) => void
 }
@@ -26,7 +26,7 @@ const easingOptions = [
  * heading, which adds the default animation, else one row with the speed
  * curve, the duration of all chart animations and a minus that removes it.
  */
-function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
+function AnimationGroup({ value, onChange }: AnimationGroupProps) {
   if (!value.enabled) {
     return (
       <Group title="Animation" onAdd={() => onChange(DASHBOARD_ANIMATION)} />
@@ -61,4 +61,4 @@ function AnimationWidget({ value, onChange }: AnimationWidgetProps) {
   )
 }
 
-export default AnimationWidget
+export default AnimationGroup

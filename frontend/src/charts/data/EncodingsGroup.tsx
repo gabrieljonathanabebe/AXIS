@@ -24,7 +24,7 @@ import type { ChartFormatProps } from '@/charts/types'
 import type { TimeGrain } from '@/shared/format/valueFormats'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
-type EncodingsWidgetProps = Pick<
+type EncodingsGroupProps = Pick<
   ChartFormatProps,
   'actions' | 'chart' | 'fields'
 >
@@ -36,7 +36,7 @@ type GrainChoice = TimeGrain | 'auto'
  * Chart type and encoded fields of a chart; a date field on X gets a grain
  * row right below it, categories on X get sort and show rows.
  */
-function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
+function EncodingsGroup({ actions, chart, fields }: EncodingsGroupProps) {
   const definition = getChartDefinition(chart.type)
   const { encoding: activeEncoding, timeGrain } = chart.spec.data
   const chartTypeOptions = chartDefinitionList.map(({ label, type }) => ({
@@ -143,4 +143,4 @@ function EncodingsWidget({ actions, chart, fields }: EncodingsWidgetProps) {
   )
 }
 
-export default EncodingsWidget
+export default EncodingsGroup

@@ -9,9 +9,9 @@ import {
 import { formatNumber, formatPercent } from '@/shared/format/formatNumber'
 import Group from '@/shared/ui/Group'
 import { groupFieldProfiles } from './fieldGroups'
-import FieldProfileWidget from './FieldProfileWidget'
+import FieldProfileTile from './FieldProfileTile'
 import { getSemanticRole } from './semanticRoles'
-import StatWidget from './StatWidget'
+import StatTile from './StatTile'
 
 import type { ReactNode } from 'react'
 import type {
@@ -83,11 +83,7 @@ function DatasetProfileView({
       <Group collapsible title="Dataset" icon={<FileSpreadsheet size={14} />}>
         <div className="data-profile-grid auto-grid">
           {datasetStats.map(({ value, ...stat }) => (
-            <StatWidget
-              {...stat}
-              value={formatNumber(value)}
-              key={stat.label}
-            />
+            <StatTile {...stat} value={formatNumber(value)} key={stat.label} />
           ))}
         </div>
       </Group>
@@ -109,7 +105,7 @@ function DatasetProfileView({
           >
             <div className="data-profile-grid auto-grid">
               {group.fields.map((field) => (
-                <FieldProfileWidget
+                <FieldProfileTile
                   field={field}
                   rowCount={profile.row_count}
                   semanticRole={getSemanticRole(field, semanticRoleOverrides)}

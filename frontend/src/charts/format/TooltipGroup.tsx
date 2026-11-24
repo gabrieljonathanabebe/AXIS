@@ -15,7 +15,7 @@ import type {
 } from '@/charts/types'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
-type TooltipWidgetProps = {
+type TooltipGroupProps = {
   appearance: TooltipAppearance
   onAppearanceChange: (value: TooltipAppearance) => void
   onChange: (value: ChartInteractionSpec['tooltip']) => void
@@ -36,13 +36,13 @@ const triggerOptions = [
  * marks at one position of the axis. Its eye turns the tooltip on or off;
  * radial charts have no trigger.
  */
-function TooltipWidget({
+function TooltipGroup({
   appearance,
   onAppearanceChange,
   onChange,
   showTrigger = true,
   value,
-}: TooltipWidgetProps) {
+}: TooltipGroupProps) {
   return (
     <Group
       group="tooltip"
@@ -104,4 +104,4 @@ function TooltipWidget({
   )
 }
 
-export default TooltipWidget
+export default TooltipGroup

@@ -32,9 +32,9 @@ import SegmentedControl from '@/shared/ui/SegmentedControl'
 import StrokeStyleControls from '@/shared/ui/StrokeStyleControls'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
 import GradientControl from './GradientControl'
-import LabelsWidget from './LabelsWidget'
+import LabelsGroup from './LabelsGroup'
 import PaletteControl from './PaletteControl'
-import TooltipWidget from './TooltipWidget'
+import TooltipGroup from './TooltipGroup'
 
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -557,7 +557,7 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
   return {
     ...getChartTypeGroups(formatProps, dataColor),
     labels: (
-      <LabelsWidget
+      <LabelsGroup
         isRadial={isRadial}
         positions={getChartDefinition(chart.type).labelPositions}
         value={labels}
@@ -565,7 +565,7 @@ export function getMarkGroups(formatProps: ChartFormatProps): MarkGroups {
       />
     ),
     tooltip: (
-      <TooltipWidget
+      <TooltipGroup
         appearance={chart.spec.appearance.tooltip}
         showTrigger={!isRadial}
         value={tooltip}

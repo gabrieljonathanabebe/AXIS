@@ -7,7 +7,7 @@ import Tile from '@/shared/ui/Tile'
 
 import type { ChangeEvent, DragEvent } from 'react'
 
-type DatasetCardProps = {
+type DatasetTileProps = {
   fieldCount: number
   isDemo: boolean
   isLoading: boolean
@@ -16,14 +16,14 @@ type DatasetCardProps = {
   onUploadFile: (file: File) => Promise<void>
 }
 
-function DatasetCard({
+function DatasetTile({
   fieldCount,
   isDemo,
   isLoading,
   name,
   rowCount,
   onUploadFile,
-}: DatasetCardProps) {
+}: DatasetTileProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const uploadLabel = isDemo ? 'Upload CSV' : 'Replace dataset'
 
@@ -93,4 +93,4 @@ function DatasetCard({
   )
 }
 
-export default DatasetCard
+export default DatasetTile

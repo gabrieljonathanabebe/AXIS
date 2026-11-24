@@ -9,7 +9,7 @@ import type { GroupAggregation } from '@/charts/types'
 import type { CardValueAppearance } from './types'
 
 // ===== TYPES =================================================================
-type CardValueWidgetProps = {
+type CardValueElementProps = {
   aggregation: GroupAggregation
   aggregations: GroupAggregation[]
   value: CardValueAppearance
@@ -22,13 +22,13 @@ type CardValueWidgetProps = {
  * Groups of a card's value: how it is aggregated, how it looks and its
  * number format. Only one aggregation means the field can only be counted.
  */
-function CardValueWidget({
+function CardValueElement({
   aggregation,
   aggregations,
   value,
   onAggregationChange,
   onChange,
-}: CardValueWidgetProps) {
+}: CardValueElementProps) {
   return (
     <>
       <Group title="Function">
@@ -62,4 +62,4 @@ function CardValueWidget({
   )
 }
 
-export default CardValueWidget
+export default CardValueElement

@@ -13,7 +13,7 @@ import type { LayoutBox } from '@/shared/ui/BoxFieldsRow'
 
 type ContinuousColorScale = ColorScaleAppearance['continuous']
 
-type ColorScaleWidgetProps = {
+type ColorScaleElementProps = {
   defaultTitle: string
   value: ContinuousColorScale
   onChange: (value: ContinuousColorScale) => void
@@ -76,11 +76,11 @@ function createSizeBox(
  * colors and range are part of the data color of the marks. Whether it
  * shows is the eye in the popover header.
  */
-function ColorScaleWidget({
+function ColorScaleElement({
   defaultTitle,
   value,
   onChange,
-}: ColorScaleWidgetProps) {
+}: ColorScaleElementProps) {
   /** Saves the changed labels of the scale, e.g. their visibility. */
   function setLabels(labels: ContinuousColorScale['labels']): void {
     onChange({ ...value, labels })
@@ -135,4 +135,4 @@ function ColorScaleWidget({
   )
 }
 
-export default ColorScaleWidget
+export default ColorScaleElement

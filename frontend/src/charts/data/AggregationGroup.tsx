@@ -17,7 +17,7 @@ import SelectControl from '@/shared/ui/SelectControl'
 import type { ChartFormatProps } from '@/charts/types'
 
 // ===== PROPS =================================================================
-type AggregationWidgetProps = Pick<
+type AggregationGroupProps = Pick<
   ChartFormatProps,
   'actions' | 'chart' | 'fields'
 >
@@ -31,7 +31,7 @@ const aggregationOptions = getAggregationOptions([
 ])
 
 // ===== COMPONENT =============================================================
-function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
+function AggregationGroup({ actions, chart, fields }: AggregationGroupProps) {
   // ===== LOCAL CONSTANTS ======
   const definition = getChartDefinition(chart.type)
   const activeOptions = aggregationOptions.filter((option) => {
@@ -75,4 +75,4 @@ function AggregationWidget({ actions, chart, fields }: AggregationWidgetProps) {
   )
 }
 
-export default AggregationWidget
+export default AggregationGroup

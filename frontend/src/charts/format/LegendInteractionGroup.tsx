@@ -8,7 +8,7 @@ import type { ChartInteractionSpec, LegendSelectionMode } from '@/charts/types'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
-type LegendInteractionWidgetProps = {
+type LegendInteractionGroupProps = {
   value: ChartInteractionSpec['legend']
   onChange: (value: ChartInteractionSpec['legend']) => void
 }
@@ -29,10 +29,10 @@ const selectionChoiceOptions = [
  * nothing or select one or several series, the three click modes of
  * ECharts. Off keeps the stored selection mode.
  */
-function LegendInteractionWidget({
+function LegendInteractionGroup({
   value,
   onChange,
-}: LegendInteractionWidgetProps) {
+}: LegendInteractionGroupProps) {
   return (
     <Group title="Interaction">
       <Row layout="wide">
@@ -53,4 +53,4 @@ function LegendInteractionWidget({
   )
 }
 
-export default LegendInteractionWidget
+export default LegendInteractionGroup

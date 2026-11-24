@@ -7,7 +7,7 @@ import RotationDial from '@/shared/ui/RotationDial'
 import Row from '@/shared/ui/Row'
 import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
 import TextStyleControls from '@/shared/ui/TextStyleControls'
-import DateFormatSelect from './DateFormatSelect'
+import DateFormatRow from './DateFormatRow'
 
 import type { AxisLabelsAppearance } from '@/charts/types'
 import type { TimeGrain } from '@/shared/format/valueFormats'
@@ -104,7 +104,7 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
           }
         />
         {isDate && value.dateFormat && (
-          <DateFormatSelect
+          <DateFormatRow
             grain={dateAxis?.grain ?? null}
             label={label}
             value={value.dateFormat}

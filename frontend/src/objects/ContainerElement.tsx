@@ -13,7 +13,7 @@ import type {
   SetContainer,
 } from './types'
 
-type ContainerWidgetProps = {
+type ContainerElementProps = {
   layout: ObjectLayout
   minSize: ObjectSize
   value: ObjectContainer
@@ -27,13 +27,13 @@ type ContainerWidgetProps = {
  * Fill → Stroke → Effects. Position and size are grid cells, limited
  * like dragging.
  */
-function ContainerWidget({
+function ContainerElement({
   layout,
   minSize,
   value,
   onChange,
   onLayoutChange,
-}: ContainerWidgetProps) {
+}: ContainerElementProps) {
   const box: LayoutBox = {
     bounds: getLayoutBounds(layout, minSize),
     unitName: 'grid cells',
@@ -75,4 +75,4 @@ function ContainerWidget({
   )
 }
 
-export default ContainerWidget
+export default ContainerElement

@@ -4,7 +4,7 @@ import BackgroundGroup from '@/shared/ui/BackgroundGroup'
 import FormatPanel from '@/shared/ui/FormatPanel'
 import Group from '@/shared/ui/Group'
 import LayoutControls from '@/shared/ui/LayoutControls'
-import AnimationWidget from './AnimationWidget'
+import AnimationGroup from './AnimationGroup'
 
 import type { Fill } from '@/shared/fill'
 import type { CanvasActions, DashboardSpec } from './types'
@@ -60,7 +60,7 @@ function DashboardFormatPanel({
         value={dashboard.canvas.background}
         onChange={updateBackground}
       />
-      <AnimationWidget
+      <AnimationGroup
         value={dashboard.animation}
         onChange={(animation) => actions.updateDashboard({ animation })}
       />

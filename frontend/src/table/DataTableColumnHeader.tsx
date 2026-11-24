@@ -5,7 +5,7 @@ import { getFieldGroupDefinition } from '@/datasets/fieldGroups'
 import { semanticRoleLabels } from '@/datasets/semanticRoles'
 import IconBadge from '@/shared/ui/IconBadge'
 import MiniHistogram from '@/shared/ui/MiniHistogram'
-import DataTableFilterPopover from './DataTableFilterPopover'
+import DataTableFilterControl from './DataTableFilterControl'
 
 import type { LucideIcon } from 'lucide-react'
 import type { DataField, FieldProfile, SemanticRole } from '@/datasets/types'
@@ -89,7 +89,7 @@ function DataTableColumnHeader({
             </IconBadge>
             <SortIcon className="data-column-sort-icon" size={12} />
           </button>
-          <DataTableFilterPopover
+          <DataTableFilterControl
             datasetId={datasetId}
             fieldName={field.name}
             filter={filter}

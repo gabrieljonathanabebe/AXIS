@@ -8,7 +8,7 @@ import type { LabelPosition, LabelsAppearance } from '@/charts/types'
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
-type LabelsWidgetProps = {
+type LabelsGroupProps = {
   isRadial?: boolean
   onChange: (value: LabelsAppearance) => void
   positions: OptionItem<LabelPosition>[]
@@ -23,12 +23,12 @@ type LabelsWidgetProps = {
  * and inside for pie segments; radial charts label percentages, so they
  * have no number format.
  */
-function LabelsWidget({
+function LabelsGroup({
   isRadial = false,
   onChange,
   positions,
   value,
-}: LabelsWidgetProps) {
+}: LabelsGroupProps) {
   return (
     <Group
       group="labels"
@@ -63,4 +63,4 @@ function LabelsWidget({
   )
 }
 
-export default LabelsWidget
+export default LabelsGroup

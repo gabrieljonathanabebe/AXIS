@@ -12,7 +12,7 @@ import type { OptionItem } from '@/shared/ui/OptionsMenu'
 import type { FieldProfile, SemanticRole } from './types'
 
 // ===== TYPES =================================================================
-type FieldProfileWidgetProps = {
+type FieldProfileTileProps = {
   field: FieldProfile
   rowCount: number
   semanticRole: SemanticRole
@@ -42,12 +42,12 @@ function createSemanticRoleOptions(
 }
 
 // ===== COMPONENT =============================================================
-function FieldProfileWidget({
+function FieldProfileTile({
   field,
   rowCount,
   semanticRole,
   onSemanticRoleChange,
-}: FieldProfileWidgetProps) {
+}: FieldProfileTileProps) {
   const bars = createDistributionBars(field, rowCount)
   const roleOptions = createSemanticRoleOptions(field)
   const isOverridden = semanticRole !== field.semantic_role
@@ -91,4 +91,4 @@ function FieldProfileWidget({
   )
 }
 
-export default FieldProfileWidget
+export default FieldProfileTile

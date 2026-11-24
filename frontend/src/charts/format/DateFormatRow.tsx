@@ -14,7 +14,7 @@ import type {
 import type { OptionItem } from '@/shared/ui/OptionsMenu'
 
 // ===== TYPES =================================================================
-type DateFormatSelectProps = {
+type DateFormatRowProps = {
   /** Time grain of the dates; only its presets are offered. */
   grain: TimeGrain | null
   /** Name of the element in the control labels, e.g. "X Axis". */
@@ -39,12 +39,7 @@ const EXAMPLE_WEEK_START = '2025-03-10'
  * of the grain, each as an example; a stored preset that does not fit the
  * grain shows as Auto, like the chart draws it.
  */
-function DateFormatSelect({
-  grain,
-  label,
-  value,
-  onChange,
-}: DateFormatSelectProps) {
+function DateFormatRow({ grain, label, value, onChange }: DateFormatRowProps) {
   const activeGrain = grain ?? 'day'
   const example = activeGrain === 'week' ? EXAMPLE_WEEK_START : EXAMPLE_DATE
   const presets = DATE_PRESETS_BY_GRAIN[activeGrain]
@@ -87,4 +82,4 @@ function DateFormatSelect({
   )
 }
 
-export default DateFormatSelect
+export default DateFormatRow

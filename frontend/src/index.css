@@ -27,11 +27,11 @@
 @import './shared/ui/Panel.css';
 @import './shared/ui/Popover.css';
 @import './shared/ui/PositionGrid.css';
-@import './table/RangeSlider.css';
+@import './table/RangeControl.css';
 @import './shared/ui/ScrubbableNumber.css';
 @import './shared/ui/SelectControl.css';
 @import './shared/ui/SegmentedControl.css';
-@import './datasets/StatWidget.css';
+@import './datasets/StatTile.css';
 @import './shared/ui/StrokeStyleControls.css';
 @import './shared/ui/Surface.css';
 @import './shared/ui/TextInput.css';
@@ -46,7 +46,7 @@
 
 @import './workspace/BuildPanel.css';
 @import './objects/ObjectPicker.css';
-@import './datasets/DatasetCard.css';
+@import './datasets/DatasetTile.css';
 @import './datasets/FieldList.css';
 
 @import './ai/AskCevynBar.css';

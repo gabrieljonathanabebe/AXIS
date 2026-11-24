@@ -3,7 +3,7 @@ import Tile from '@/shared/ui/Tile'
 
 import type { ReactNode } from 'react'
 
-type StatWidgetProps = {
+type StatTileProps = {
   hint?: string
   icon: ReactNode
   label: string
@@ -11,7 +11,7 @@ type StatWidgetProps = {
   value: string
 }
 
-function StatWidget({ hint, icon, label, share, value }: StatWidgetProps) {
+function StatTile({ hint, icon, label, share, value }: StatTileProps) {
   return (
     <Tile className="stat-widget stack">
       <IconBadge className="stat-widget-label" label={label}>
@@ -35,4 +35,4 @@ function StatWidget({ hint, icon, label, share, value }: StatWidgetProps) {
   )
 }
 
-export default StatWidget
+export default StatTile

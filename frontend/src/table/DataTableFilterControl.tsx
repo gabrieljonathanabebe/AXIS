@@ -4,13 +4,13 @@ import { useState } from 'react'
 import Button from '@/shared/ui/Button'
 import IconButton from '@/shared/ui/IconButton'
 import Popover from '@/shared/ui/Popover'
-import DataTableFilterForm from './DataTableFilterForm'
+import DataTableFilterEditor from './DataTableFilterEditor'
 
-import type { DataTableFilterFormProps } from './DataTableFilterForm'
+import type { DataTableFilterEditorProps } from './DataTableFilterEditor'
 
 // ===== COMPONENT =============================================================
 /** Filter button of a column header that opens the column's filter form. */
-function DataTableFilterPopover(props: DataTableFilterFormProps) {
+function DataTableFilterControl(props: DataTableFilterEditorProps) {
   const { fieldName, filter, onFilterChange } = props
   const [isOpen, setIsOpen] = useState(false)
 
@@ -35,7 +35,7 @@ function DataTableFilterPopover(props: DataTableFilterFormProps) {
       )}
     >
       <span className="data-filter-title">{fieldName}</span>
-      <DataTableFilterForm {...props} />
+      <DataTableFilterEditor {...props} />
       {filter ? (
         <Button
           className="data-filter-clear"
@@ -51,4 +51,4 @@ function DataTableFilterPopover(props: DataTableFilterFormProps) {
   )
 }
 
-export default DataTableFilterPopover
+export default DataTableFilterControl

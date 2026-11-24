@@ -1,10 +1,10 @@
-import ContainerWidget from '@/objects/ContainerWidget'
+import ContainerElement from '@/objects/ContainerElement'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
-import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
+import TitleElement from '@/objects/TitleElement'
 import FormatPanel from '@/shared/ui/FormatPanel'
 import { getVisibility } from '@/shared/ui/getVisibility'
 import CardSelectionGroup from './CardSelectionGroup'
-import CardValueWidget from './CardValueWidget'
+import CardValueElement from './CardValueElement'
 import { getCardAggregations } from './getCardAggregations'
 import { getDefaultCardTitle } from './getCardTitle'
 
@@ -49,7 +49,7 @@ function getFormatGroups(
   switch (element) {
     case 'container':
       return (
-        <ContainerWidget
+        <ContainerElement
           layout={card.layout}
           minSize={getObjectDefinition(card.kind).minSize}
           value={card.container}
@@ -63,7 +63,7 @@ function getFormatGroups(
       )
     case 'title':
       return (
-        <ObjectTitleWidget
+        <TitleElement
           defaultTitle={getDefaultCardTitle(data)}
           value={appearance.title}
           onChange={(value) =>
@@ -74,7 +74,7 @@ function getFormatGroups(
     case 'value':
       return (
         <>
-          <CardValueWidget
+          <CardValueElement
             aggregation={data.aggregation}
             aggregations={getCardAggregations(
               fields.find((field) => field.name === data.field),

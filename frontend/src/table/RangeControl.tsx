@@ -5,7 +5,7 @@ import type { CSSProperties } from 'react'
 // ===== TYPES =================================================================
 export type RangeValue = [number, number]
 
-type RangeSliderProps = {
+type RangeControlProps = {
   label: string
   max: number
   min: number
@@ -15,7 +15,7 @@ type RangeSliderProps = {
   onValueChange: (value: RangeValue) => void
 }
 
-type RangeSliderStyle = CSSProperties & {
+type RangeControlStyle = CSSProperties & {
   '--range-end': string
   '--range-start': string
 }
@@ -26,7 +26,7 @@ type RangeSliderStyle = CSSProperties & {
  * numbers get a number control on each side, like `Slider`; with
  * `formatValue`, e.g. dates of a filter, the formatted values sit below.
  */
-function RangeSlider({
+function RangeControl({
   label,
   max,
   min,
@@ -34,10 +34,10 @@ function RangeSlider({
   value,
   formatValue,
   onValueChange,
-}: RangeSliderProps) {
+}: RangeControlProps) {
   const [start, end] = value
   const span = max - min || 1
-  const style: RangeSliderStyle = {
+  const style: RangeControlStyle = {
     '--range-end': `${((end - min) / span) * 100}%`,
     '--range-start': `${((start - min) / span) * 100}%`,
   }
@@ -110,4 +110,4 @@ function RangeSlider({
   )
 }
 
-export default RangeSlider
+export default RangeControl

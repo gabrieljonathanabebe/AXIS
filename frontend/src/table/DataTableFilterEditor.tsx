@@ -6,7 +6,7 @@ import { formatNumber } from '@/shared/format/formatNumber'
 import TextInput from '@/shared/ui/TextInput'
 import CheckList from './CheckList'
 import { createMeasureSteps } from './measureSteps'
-import RangeSlider from './RangeSlider'
+import RangeControl from './RangeControl'
 import { createTemporalSteps } from './temporalSteps'
 import { useFieldValues } from './useFieldValues'
 
@@ -19,7 +19,7 @@ import type { CheckListOption } from './CheckList'
 import type { TableFilter } from './tableApi'
 
 // ===== TYPES =================================================================
-export type DataTableFilterFormProps = {
+export type DataTableFilterEditorProps = {
   datasetId: string | null
   fieldName: string
   filter: TableFilter | null
@@ -28,7 +28,7 @@ export type DataTableFilterFormProps = {
   onFilterChange: (filter: TableFilter | null) => void
 }
 
-type FilterFormProps = Omit<DataTableFilterFormProps, 'semanticRole'>
+type FilterFormProps = Omit<DataTableFilterEditorProps, 'semanticRole'>
 
 type StepRangeProps<TStep extends number | string> = {
   end: TStep | null
@@ -82,7 +82,7 @@ function StepRange<TStep extends number | string>({
     return <span className="data-filter-note">All rows share one value.</span>
   }
   return (
-    <RangeSlider
+    <RangeControl
       label={label}
       max={lastIndex}
       min={0}
@@ -221,10 +221,10 @@ function ValuesFilterForm({
 
 // ===== COMPONENT =============================================================
 /** One control per role; ranges need profile statistics, else values. */
-function DataTableFilterForm({
+function DataTableFilterEditor({
   semanticRole,
   ...formProps
-}: DataTableFilterFormProps) {
+}: DataTableFilterEditorProps) {
   const { profileField } = formProps
   if (semanticRole === 'measure' && getStatistics(profileField, 'measure')) {
     return <MeasureRangeFilterForm {...formProps} />
@@ -235,4 +235,4 @@ function DataTableFilterForm({
   return <ValuesFilterForm {...formProps} />
 }
 
-export default DataTableFilterForm
+export default DataTableFilterEditor

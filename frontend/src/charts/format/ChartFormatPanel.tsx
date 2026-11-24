@@ -10,19 +10,19 @@ import {
   isDateField,
 } from '@/charts/getEffectiveTimeGrain'
 import { getFormatElements } from '@/charts/getFormatElements'
-import ContainerWidget from '@/objects/ContainerWidget'
+import ContainerElement from '@/objects/ContainerElement'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
-import ObjectTitleWidget from '@/objects/ObjectTitleWidget'
+import TitleElement from '@/objects/TitleElement'
 import FormatPanel from '@/shared/ui/FormatPanel'
 import { getVisibility } from '@/shared/ui/getVisibility'
 import StrokeWidget from '@/shared/ui/StrokeWidget'
 import AxisLabelsGroup from './AxisLabelsGroup'
 import AxisTitleGroup from './AxisTitleGroup'
-import ColorScaleWidget from './ColorScaleWidget'
-import LegendInteractionWidget from './LegendInteractionWidget'
-import LegendWidget from './LegendWidget'
+import ColorScaleElement from './ColorScaleElement'
+import LegendElement from './LegendElement'
+import LegendInteractionGroup from './LegendInteractionGroup'
 import { getMarkGroups, MARK_GROUP_ORDER } from './markGroups'
-import ZoomWidget from './ZoomWidget'
+import ZoomGroup from './ZoomGroup'
 
 import type { ReactNode } from 'react'
 import type { ChartFormatElement, ChartFormatProps } from '@/charts/types'
@@ -71,7 +71,7 @@ function getFormatGroups(
   switch (element) {
     case 'colorScale':
       return (
-        <ColorScaleWidget
+        <ColorScaleElement
           defaultTitle={getDefaultColorScaleTitle(chart)}
           value={appearance.colorScale.continuous}
           onChange={(continuous) =>
@@ -84,7 +84,7 @@ function getFormatGroups(
       )
     case 'container':
       return (
-        <ContainerWidget
+        <ContainerElement
           layout={chart.layout}
           minSize={getObjectDefinition(chart.kind).minSize}
           value={chart.container}
@@ -95,11 +95,11 @@ function getFormatGroups(
     case 'legend':
       return (
         <>
-          <LegendWidget
+          <LegendElement
             value={appearance.legend}
             onChange={(value) => actions.setAppearance('legend', value)}
           />
-          <LegendInteractionWidget
+          <LegendInteractionGroup
             value={interaction.legend}
             onChange={(value) => actions.setInteraction('legend', value)}
           />
@@ -113,7 +113,7 @@ function getFormatGroups(
     }
     case 'title':
       return (
-        <ObjectTitleWidget
+        <TitleElement
           defaultTitle={getDefaultChartTitle(chart, fields)}
           value={appearance.title}
           onChange={(value) => actions.setAppearance('title', value)}
@@ -171,7 +171,7 @@ function getFormatGroups(
             onChange={(gridLines) => setAxis({ ...axisAppearance, gridLines })}
           />
           {axis === 'x' ? (
-            <ZoomWidget
+            <ZoomGroup
               value={interaction.zoom}
               onChange={(value) => actions.setInteraction('zoom', value)}
             />
