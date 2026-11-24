@@ -73,6 +73,7 @@ function SelectControl<TValue extends string>({
           <Button
             {...triggerProps}
             className="select-control-button spread"
+            variant={variant === 'title' ? 'ghost' : 'secondary'}
             aria-label={label}
             disabled={disabled}
           >

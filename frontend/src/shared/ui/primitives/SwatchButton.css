@@ -1,16 +1,9 @@
-.color-swatch {
-  position: relative;
-  min-width: 0;
-}
-
-.color-swatch-swatch {
+.swatch-button {
   width: 20px;
   min-width: 20px;
   height: 20px;
   min-height: 20px;
   padding: var(--space-1);
-  background: transparent;
-  border-color: transparent;
   border-radius: var(--radius-pill);
   box-shadow: none;
   transition:
@@ -20,7 +13,7 @@
     box-shadow var(--transition-fast);
 }
 
-.color-swatch-swatch::before {
+.swatch-button::before {
   content: '';
   display: block;
   width: 100%;
@@ -29,13 +22,13 @@
   border-radius: var(--radius-pill);
 }
 
-.color-swatch-swatch:hover {
+.swatch-button:hover {
   background: var(--color-surface-hover);
   border-color: var(--color-border-default);
   transform: scale(1.08);
 }
 
-.color-swatch-swatch[aria-checked='true'] {
+.swatch-button[aria-checked='true'] {
   background: color-mix(in srgb, var(--swatch-color) 16%, transparent);
   border-color: var(--swatch-color);
   box-shadow:
@@ -46,27 +39,27 @@
 /* A swatch whose picker or editor is open keeps a ring in the accent, so
    it shows which color the popover edits, e.g. one stop of several; in a
    field the field itself shows it. */
-.color-swatch-swatch[aria-expanded='true']:not(.swatch-control *) {
+.swatch-button[aria-expanded='true']:not(.swatch-control *) {
   border-color: var(--color-accent);
 }
 
 /* The swatch of the current color keeps a thin ring, so a color close to
    the surface, e.g. a graphite background, stays visible; preset fills
    get it as well. */
-.color-swatch > .color-swatch-swatch::before,
-.color-swatch-swatch.has-fill::before {
+.swatch-button[aria-haspopup]::before,
+.swatch-button.has-fill::before {
   box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-border-default);
 }
 
 /* A swatch that shows an icon instead of a fill, e.g. the kind of an
    effect. */
-.color-swatch-swatch.has-icon {
+.swatch-button.has-icon {
   display: grid;
   place-items: center;
   padding: 0;
   color: var(--color-text-secondary);
 }
 
-.color-swatch-swatch.has-icon::before {
+.swatch-button.has-icon::before {
   content: none;
 }

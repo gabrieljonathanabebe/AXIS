@@ -1,7 +1,7 @@
 import { useDraggable } from '@dnd-kit/core'
 import { Ellipsis } from 'lucide-react'
 
-import WidgetButton from '@/shared/ui/primitives/WidgetButton'
+import Button from '@/shared/ui/primitives/Button'
 import { getGroupPickerOptions } from './objectDefinitions'
 
 import type { DragPayload } from '@/workspace/types'
@@ -43,7 +43,8 @@ function ObjectOptionTile({ option, onAddObject }: ObjectOptionTileProps) {
   })
 
   return (
-    <WidgetButton
+    <Button
+      kind="tile"
       ref={setNodeRef}
       aria-label={option.addLabel}
       title={option.addLabel}
@@ -53,7 +54,7 @@ function ObjectOptionTile({ option, onAddObject }: ObjectOptionTileProps) {
       {...attributes}
     >
       <ObjectOptionContent option={option} />
-    </WidgetButton>
+    </Button>
   )
 }
 
@@ -73,7 +74,8 @@ function ObjectPicker({
         />
       ))}
       {showMore ? (
-        <WidgetButton
+        <Button
+          kind="tile"
           aria-label="More visuals"
           title="More visuals coming soon"
           className="chart-type-option chart-type-more stack center"
@@ -81,7 +83,7 @@ function ObjectPicker({
         >
           <Ellipsis size={20} />
           <span className="chart-type-option-label">More</span>
-        </WidgetButton>
+        </Button>
       ) : null}
     </div>
   )

@@ -195,6 +195,7 @@ function NumberControl({
     <div className={`control-frame number-control ${icon ? 'has-icon' : ''}`}>
       <Button
         className="number-control-handle"
+        variant="ghost"
         aria-label={`Drag to change ${label}`}
         title={icon ? label : 'Drag horizontally to adjust'}
         onPointerDown={handlePointerDown}

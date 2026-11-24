@@ -42,6 +42,21 @@ export function getSwatchColor(value: ColorValue | string): string {
 }
 
 /**
+ * Finds the fill of the preset a value names, e.g. the glass of a
+ * container; a plain color has none.
+ * @param value Color or preset name.
+ * @param presets Swatches of the place.
+ * @returns CSS background of the matching preset, if it has one.
+ */
+export function getPresetFill(
+  value: ColorValue | string,
+  presets: ColorPreset<string>[],
+): string | undefined {
+  const valueKey = getChoiceKey(value)
+  return presets.find((preset) => getChoiceKey(preset.value) === valueKey)?.fill
+}
+
+/**
  * Joins the shared swatches and those of a place, the shared ones first;
  * a color that is already there drops out, so no swatch shows twice.
  * @param shared Swatches of every picker, e.g. the style colors.

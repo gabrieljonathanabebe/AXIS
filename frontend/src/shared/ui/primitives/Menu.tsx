@@ -43,6 +43,7 @@ function Menu<TValue extends string>({
         return (
           <Button
             className="menu-item spread"
+            variant="ghost"
             role="option"
             aria-selected={isSelected}
             isActive={isSelected}

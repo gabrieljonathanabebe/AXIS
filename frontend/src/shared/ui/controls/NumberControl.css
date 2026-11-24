@@ -13,7 +13,6 @@
   height: 100%;
   padding: 0;
   color: var(--color-text-secondary);
-  background: transparent;
   border: 0;
   border-right: var(--border-width-hairline) solid var(--color-border-subtle);
   border-radius: 0;
@@ -28,7 +27,6 @@
 .number-control-handle.button:hover {
   color: var(--color-text-primary);
   background: var(--color-surface-hover);
-  border-color: var(--color-border-subtle);
   cursor: ew-resize;
 }
 

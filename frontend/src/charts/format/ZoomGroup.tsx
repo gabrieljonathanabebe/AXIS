@@ -35,8 +35,7 @@ function ZoomGroup({ value, onChange }: ZoomGroupProps) {
     <Group title="Zoom">
       <Row>
         <Button
-          aria-pressed={inside}
-          isActive={inside}
+          pressed={inside}
           size="sm"
           title="Zoom with mouse wheel or trackpad, drag to pan"
           onClick={() => changeZoom(!inside, slider)}
@@ -45,8 +44,7 @@ function ZoomGroup({ value, onChange }: ZoomGroupProps) {
           Scroll
         </Button>
         <Button
-          aria-pressed={slider}
-          isActive={slider}
+          pressed={inside}
           size="sm"
           title="Show a zoom slider below the chart"
           onClick={() => changeZoom(inside, !slider)}

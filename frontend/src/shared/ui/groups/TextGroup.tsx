@@ -47,8 +47,7 @@ function TextGroup({
       <Row
         action={
           <IconButton
-            aria-pressed={isItalic}
-            isActive={isItalic}
+            pressed={isItalic}
             label={`${label} italic`}
             size="xs"
             onClick={() => {

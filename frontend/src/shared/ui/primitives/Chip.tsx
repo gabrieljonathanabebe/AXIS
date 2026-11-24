@@ -1,32 +1,19 @@
-import { forwardRef } from 'react'
+import Button from './Button'
 
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
 type ChipProps = {
   children: ReactNode
   isActive?: boolean
-} & ButtonHTMLAttributes<HTMLButtonElement>
+} & ComponentProps<'button'>
 
-const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
-  {
-    children,
-    className = '',
-    isActive = false,
-    type = 'button',
-    ...buttonProps
-  },
-  ref,
-) {
-  return (
-    <button
-      ref={ref}
-      className={`chip ${isActive ? 'is-active' : ''} ${className}`}
-      type={type}
-      {...buttonProps}
-    >
-      {children}
-    </button>
-  )
-})
+/**
+ * Pill as a button, e.g. a data field or an active filter; `isActive`
+ * marks it in the accent.
+ * @param props Content, state and native props, including `ref`.
+ */
+function Chip(props: ChipProps) {
+  return <Button {...props} kind="chip" />
+}
 
 export default Chip

@@ -32,6 +32,7 @@ function CheckList({ label, options, values, onValuesChange }: CheckListProps) {
         return (
           <Button
             className="check-list-item cluster"
+            variant="ghost"
             role="checkbox"
             aria-checked={isChecked}
             isActive={isChecked}

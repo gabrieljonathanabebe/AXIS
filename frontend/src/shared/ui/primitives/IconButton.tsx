@@ -1,45 +1,32 @@
+import Button from './Button'
+
 import type { ComponentProps, ReactNode } from 'react'
-
-export type IconButtonSize = 'xs' | 'sm' | 'md'
-
-export type IconButtonVariant = 'default' | 'ghost'
+import type { ButtonOptions } from './Button'
 
 type IconButtonProps = {
   children: ReactNode
-  isActive?: boolean
   label: string
-  size?: IconButtonSize
-  variant?: IconButtonVariant
-} & Omit<ComponentProps<'button'>, 'aria-label'>
+} & Omit<ButtonOptions, 'kind'> &
+  Omit<ComponentProps<'button'>, 'aria-label' | 'children'>
 
 /**
  * Square button with only an icon, named by `label` for screen readers and
- * as tooltip; `isActive` marks a pressed toggle. A `ref` reaches the
- * button, e.g. as the trigger of a popover.
+ * as tooltip. A `ref` reaches the button, e.g. as the trigger of a popover.
  */
 function IconButton({
-  children,
-  className = '',
-  isActive = false,
   label,
   size = 'md',
   title,
-  type = 'button',
-  variant = 'default',
   ...buttonProps
 }: IconButtonProps) {
   return (
-    <button
-      className={`icon-button icon-button-${size} ${
-        variant === 'ghost' ? 'icon-button-ghost' : ''
-      } ${isActive ? 'is-active' : ''} ${className}`}
-      type={type}
-      aria-label={label}
-      title={title ?? label}
+    <Button
       {...buttonProps}
-    >
-      {children}
-    </button>
+      aria-label={label}
+      kind="icon"
+      size={size}
+      title={title ?? label}
+    />
   )
 }
 

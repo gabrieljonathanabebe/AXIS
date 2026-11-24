@@ -1,16 +1,13 @@
 import IconButton from '@/shared/ui/primitives/IconButton'
 import { formatShortcut } from './formatShortcut'
 
-import type {
-  IconButtonSize,
-  IconButtonVariant,
-} from '@/shared/ui/primitives/IconButton'
+import type { ButtonSize, ButtonVariant } from '@/shared/ui/primitives/Button'
 import type { WorkspaceCommand } from './types'
 
 type CommandButtonProps = {
   command: WorkspaceCommand
-  size?: IconButtonSize
-  variant?: IconButtonVariant
+  size?: ButtonSize
+  variant?: ButtonVariant
 }
 
 /**
@@ -20,7 +17,7 @@ type CommandButtonProps = {
 function CommandButton({
   command,
   size = 'md',
-  variant = 'default',
+  variant = 'secondary',
 }: CommandButtonProps) {
   const Icon = command.icon
   const [shortcut] = command.shortcuts
@@ -29,9 +26,8 @@ function CommandButton({
     : command.label
   return (
     <IconButton
-      aria-pressed={command.isActive}
       disabled={!command.isEnabled}
-      isActive={command.isActive}
+      pressed={command.isActive}
       label={command.label}
       size={size}
       title={title}

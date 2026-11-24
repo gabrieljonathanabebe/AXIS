@@ -8,9 +8,8 @@ import {
   joinColorPresets,
   SharedColorPresets,
 } from '../controls/colorPresets'
-import Button from '../primitives/Button'
+import SwatchButton from '../primitives/SwatchButton'
 
-import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
 import type { ColorPreset } from '../controls/colorPresets'
 
@@ -66,19 +65,13 @@ function ColorEditor<TPreset extends string = never>({
           {allPresets.map((preset) => {
             const presetKey = getChoiceKey(preset.value)
             return (
-              <Button
+              <SwatchButton
                 key={presetKey}
-                className={`color-swatch-swatch ${preset.fill ? 'has-fill' : ''}`}
                 role="radio"
-                aria-label={preset.label}
                 aria-checked={presetKey === valueKey}
-                title={preset.label}
-                style={
-                  {
-                    '--swatch-color': getSwatchColor(preset.value),
-                    '--swatch-fill': preset.fill,
-                  } as CSSProperties
-                }
+                color={getSwatchColor(preset.value)}
+                fill={preset.fill}
+                label={preset.label}
                 onClick={() => onChange(preset.value)}
               />
             )

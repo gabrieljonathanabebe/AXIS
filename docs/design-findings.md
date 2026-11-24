@@ -240,3 +240,52 @@ Vorschlag: Format, Nachkommastellen, Notation und Vorschau als Ganzes
 neu ordnen, sodass jede Zeile ein Paar ist und die Vorschau nicht eine
 eigene Zeile braucht. · Aufwand: M · Wo lösen: `NumberFormatControls` ·
 Stand: verschoben (Design-Slice)
+
+### O10 Gewählte Option im Menü verliert beim Hover ihre Fläche
+
+Ort: Menü jeder Auswahl (`Menu`, `.menu-item`), z. B. Format oder
+Aggregation
+
+Vorher:
+
+```text
+[ Number     ✓ ]   ← gewählt: aktive Fläche
+[ Percent      ]
+  Maus auf „Number“:
+[ Number     ✓ ]   ← Fläche wechselt auf den Hover-Ton
+```
+
+Nachher:
+
+```text
+  Maus auf „Number“:
+[ Number     ✓ ]   ← bleibt aktiv, wie ein gewähltes Segment
+```
+
+Vorschlag: Der Hover-Ton gilt nur für nicht gewählte Optionen
+(`.menu-item:hover:not(:disabled, .is-active)`), wie beim
+`SegmentedControl`. · Aufwand: S · Wo lösen: `Menu.css` · Stand: offen
+(Optik-Runde Teil 5)
+
+### O11 Swatch sitzt im Control über der Mitte
+
+Ort: jeder Swatch in einem Control (`ColorControl`, `PaintControl`,
+`DetailsControl`, `GradientControl`, Stopp-Zeile)
+
+Vorher:
+
+```text
+[ ● EEF4FF ]   ← Swatch 1–2 px über der Mitte
+```
+
+Nachher:
+
+```text
+[ ● EEF4FF ]   ← Swatch genau mittig
+```
+
+Vorschlag: Die Hülle `.color-swatch` entfällt; sie ist ein Block,
+dessen Zeilenhöhe Platz für Unterlängen lässt, sodass der Swatch auf der
+Grundlinie sitzt. Ohne Hülle zentriert das Raster des Controls den
+Swatch. · Aufwand: S · Wo lösen: Controls mit Swatch, `SwatchButton.css`
+· Stand: erledigt (Teil 5, Schritt 4)

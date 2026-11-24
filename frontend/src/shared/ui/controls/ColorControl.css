@@ -30,7 +30,7 @@
 
 /* While its picker or editor is open, the control keeps its focus look,
    since the focus moves into the popover outside of it. */
-.swatch-control:has(.color-swatch-swatch[aria-expanded='true']) {
+.swatch-control:has(.swatch-button[aria-expanded='true']) {
   border-color: var(--color-accent);
   box-shadow: var(--shadow-accent);
 }

@@ -17,21 +17,17 @@
   font: inherit;
   font-size: var(--font-size-xs);
   text-align: left;
-  background: transparent;
-  border-color: transparent;
   border-radius: var(--radius-sm);
 }
 
 .check-list-item:hover {
   color: var(--color-text-primary);
   background: var(--color-surface-hover);
-  border-color: transparent;
 }
 
 .check-list-item.is-active {
   color: var(--color-text-primary);
   background: transparent;
-  border-color: transparent;
   box-shadow: none;
 }
 

@@ -2,11 +2,11 @@ import { useState } from 'react'
 
 import { getPaintCss, PAINT_TYPE_LABELS } from '@/shared/paint'
 import Editor from '../containers/Editor'
-import Button from '../primitives/Button'
 import Popover from '../primitives/Popover'
+import SwatchButton from '../primitives/SwatchButton'
 import ColorControl from './ColorControl'
 
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { Paint } from '@/shared/paint'
 import type { ColorPreset } from './colorPresets'
 
@@ -56,25 +56,22 @@ function PaintControl({
     )
   }
   const swatch = (
-    <div className="color-swatch">
-      <Popover
-        label={label}
-        open={isOpen}
-        variant="editor"
-        onOpenChange={setIsOpen}
-        renderTrigger={(triggerProps) => (
-          <Button
-            {...triggerProps}
-            className="color-swatch-swatch has-fill"
-            aria-label={`Edit ${label.toLowerCase()}`}
-            title={label}
-            style={{ '--swatch-fill': getPaintCss(value) } as CSSProperties}
-          />
-        )}
-      >
-        <Editor>{children}</Editor>
-      </Popover>
-    </div>
+    <Popover
+      label={label}
+      open={isOpen}
+      variant="editor"
+      onOpenChange={setIsOpen}
+      renderTrigger={(triggerProps) => (
+        <SwatchButton
+          {...triggerProps}
+          fill={getPaintCss(value)}
+          label={`Edit ${label.toLowerCase()}`}
+          title={label}
+        />
+      )}
+    >
+      <Editor>{children}</Editor>
+    </Popover>
   )
   if (value.kind === 'solid') {
     return (

@@ -1,7 +1,13 @@
 import { getGradientStopsCss, getSortedStops } from '@/shared/paint'
+import ColorEditor from '@/shared/ui/containers/ColorEditor'
+import {
+  getPresetFill,
+  getSwatchColor,
+} from '@/shared/ui/controls/colorPresets'
+import Popover from '@/shared/ui/primitives/Popover'
 import SwatchButton from '@/shared/ui/primitives/SwatchButton'
 
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
 import type { GradientStop } from '@/shared/paint'
 import type { ColorPreset } from '@/shared/ui/controls/colorPresets'
@@ -53,6 +59,37 @@ function GradientControl({
     )
   }
 
+  /**
+   * Swatch of one end; it opens the color picker for its stop.
+   * @param stop First or last stop of the gradient.
+   * @param end Name of the end in the labels, e.g. "start".
+   * @returns Popover with the swatch as trigger.
+   */
+  function renderSwatch(stop: GradientStop, end: string): ReactNode {
+    const swatchLabel = `${label} ${end} color`
+    return (
+      <Popover
+        label={`${swatchLabel} color`}
+        renderTrigger={(triggerProps) => (
+          <SwatchButton
+            {...triggerProps}
+            color={getSwatchColor(stop.color)}
+            fill={getPresetFill(stop.color, presets)}
+            label={swatchLabel}
+          />
+        )}
+        variant="editor"
+      >
+        <ColorEditor
+          label={swatchLabel}
+          presets={presets}
+          value={stop.color}
+          onChange={(color) => setStopColor(stop, color)}
+        />
+      </Popover>
+    )
+  }
+
   // ===== JSX RETURN ==========================================================
   return (
     <div
@@ -60,19 +97,9 @@ function GradientControl({
       aria-label={label}
       style={style}
     >
-      <SwatchButton
-        label={`${label} start color`}
-        presets={presets}
-        value={firstStop.color}
-        onChange={(color) => setStopColor(firstStop, color)}
-      />
+      {renderSwatch(firstStop, 'start')}
       <div className="gradient-control-preview" aria-hidden="true" />
-      <SwatchButton
-        label={`${label} end color`}
-        presets={presets}
-        value={lastStop.color}
-        onChange={(color) => setStopColor(lastStop, color)}
-      />
+      {renderSwatch(lastStop, 'end')}
     </div>
   )
 }

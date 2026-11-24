@@ -1,7 +1,10 @@
 import { HexColorInput } from 'react-colorful'
 
 import { getColorValueKey, normalizeHex } from '@/shared/colorValue'
+import ColorEditor from '../containers/ColorEditor'
+import Popover from '../primitives/Popover'
 import SwatchButton from '../primitives/SwatchButton'
+import { getPresetFill, getSwatchColor } from './colorPresets'
 
 import type { ReactNode } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
@@ -12,6 +15,8 @@ type ColorControlProps<TPreset extends string = never> = {
   label: string
   presets?: ColorPreset<TPreset>[]
   swatch?: ReactNode
+  /** Only the swatch, without frame and value, e.g. in a gradient stop. */
+  swatchOnly?: boolean
   value: ColorValue | NoInfer<TPreset>
   onChange: (value: ColorValue | NoInfer<TPreset>) => void
 }
@@ -41,26 +46,46 @@ function getSwatchLabel(
  * Control of one color: swatch with the color picker, then the hex value of
  * an own color or the swatch name of a theme color or named preset, e.g.
  * the glass background of a container. A given `swatch` takes the place
- * of the picker, e.g. the swatch of a paint that opens its editor.
- * @param props Name of the paint, swatches, color, swatch and handler.
+ * of the picker, e.g. the swatch of a paint that opens its editor;
+ * `swatchOnly` leaves out frame and value, e.g. in a gradient stop.
+ * @param props Name, swatches, color, swatch, form and handler.
  */
 function ColorControl<TPreset extends string = never>({
   label,
   presets = [],
   swatch,
+  swatchOnly = false,
   value,
   onChange,
 }: ColorControlProps<TPreset>) {
-  return (
-    <div className="control-frame swatch-control">
-      {swatch ?? (
+  const swatchLabel = `${label} color`
+  const picker = swatch ?? (
+    <Popover
+      label={`${swatchLabel} color`}
+      renderTrigger={(triggerProps) => (
         <SwatchButton
-          label={`${label} color`}
-          presets={presets}
-          value={value}
-          onChange={onChange}
+          {...triggerProps}
+          color={getSwatchColor(value)}
+          fill={getPresetFill(value, presets)}
+          label={swatchLabel}
         />
       )}
+      variant="editor"
+    >
+      <ColorEditor
+        label={swatchLabel}
+        presets={presets}
+        value={value}
+        onChange={onChange}
+      />
+    </Popover>
+  )
+  if (swatchOnly) {
+    return picker
+  }
+  return (
+    <div className="control-frame swatch-control">
+      {picker}
       {typeof value !== 'string' && value.kind === 'custom' ? (
         <HexColorInput
           className="swatch-control-hex"

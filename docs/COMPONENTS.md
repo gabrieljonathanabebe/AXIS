@@ -103,7 +103,6 @@ alphabetisch. Pfade relativ zu `frontend/src/`.
 | SegmentedControl       | `shared/ui/controls/SegmentedControl.tsx`  | Control | eine Auswahl aus Segmenten                                  | SegmentedControl          | bleibt                       | 5    | nimmt Ausrichtung und Position auf           |
 | SelectControl          | `shared/ui/controls/SelectControl.tsx`     | Control | eine Auswahl aus einem Menü                                 | SelectControl             | bleibt                       | 5    | nimmt Palette, Datumsformat und Schnitt auf  |
 | StepRange              | `table/DataTableFilterEditor.tsx`          | Control | Bereich über feste Schritte oder Hinweis bei nur einem Wert | RangeControl              | geht auf in RangeControl     | 5    | gleiches Verhalten, Option `steps`           |
-| SwatchButton           | `shared/ui/primitives/SwatchButton.tsx`    | Control | Swatch, der den Farbwähler öffnet                           | SwatchButton              | bleibt                       | 5    | wird in Schritt 4 Primitive                  |
 
 ## Primitive
 
@@ -118,6 +117,7 @@ alphabetisch. Pfade relativ zu `frontend/src/`.
 | NumberInput        | `shared/ui/primitives/NumberInput.tsx`     | Primitive | natives Zahlenfeld mit Entwurf bis Enter oder Blur und Begrenzung | NumberInput         | bleibt             | 5    | Variante von `Input` (übernehmen), in `NumberControl` |
 | Popover            | `shared/ui/primitives/Popover.tsx`         | Primitive | Basis: Auslöser, Aufklappen und Fläche, Variante `editor`         | Popover             | bleibt             | –    | Basis                                                 |
 | PopoverNode        | `shared/ui/primitives/Popover.tsx`         | Primitive | interner Knoten eines Popovers im Popover-Baum                    | PopoverNode         | bleibt             | –    | interner Teil von `Popover`                           |
+| SwatchButton       | `shared/ui/primitives/SwatchButton.tsx`    | Primitive | runder Swatch als Button: Farbe, Fläche oder Icon                 | SwatchButton        | bleibt             | 5    | dünne Variante von `Button` (Art Swatch)              |
 | TextInput          | `shared/ui/primitives/TextInput.tsx`       | Primitive | natives Textfeld, optional mit Icon                               | TextInput           | bleibt             | 5    | Variante von `Input` (live)                           |
 | WidgetButton       | `shared/ui/primitives/WidgetButton.tsx`    | Primitive | Kachel als Button, z. B. ein Charttyp im Picker                   | Button (Kachel-Art) | geht auf in Button | 5    | Kachel-Optik als Art von `Button`                     |
 

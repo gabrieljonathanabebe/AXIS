@@ -22,18 +22,14 @@
   font-size: var(--font-size-xs);
   text-overflow: ellipsis;
   white-space: nowrap;
-  background: transparent;
-  border-color: transparent;
   box-shadow: none;
 }
 
 .segmented-control-option:hover {
   background: var(--color-surface-hover);
-  border-color: transparent;
 }
 
 .segmented-control-option.is-active {
   color: var(--color-text-primary);
   background: var(--color-surface-active);
-  border-color: transparent;
 }

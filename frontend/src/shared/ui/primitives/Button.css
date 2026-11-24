@@ -21,12 +21,25 @@
     color var(--transition-fast);
 }
 
-.button:hover,
+.button:hover:where(:not(:disabled)),
 .icon-button:hover:not(:disabled) {
   color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+/* The hover surface; `:where` keeps the specificity of the rule above. */
+.button:hover:where(:not(.button-ghost, :disabled)),
+.icon-button:hover:not(:disabled):where(:not(.button-ghost)) {
   background: var(--color-surface-hover);
   border-color: var(--color-border-default);
-  cursor: pointer;
+}
+
+/* Ghost: no surface of its own, e.g. a menu option, a segment or a quiet
+   icon; a class that tints it on hover sets only its background. Pressed
+   and active still show the active surface. */
+.button-ghost {
+  background: transparent;
+  border-color: transparent;
 }
 
 .button.is-active,

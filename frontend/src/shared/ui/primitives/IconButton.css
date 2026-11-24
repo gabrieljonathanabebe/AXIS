@@ -25,9 +25,3 @@
   width: var(--control-height-xs);
   height: var(--control-height-xs);
 }
-
-.icon-button-ghost,
-.icon-button-ghost:hover:not(:disabled) {
-  background: transparent;
-  border-color: transparent;
-}

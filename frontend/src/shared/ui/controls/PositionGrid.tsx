@@ -106,12 +106,12 @@ function PositionGrid({
         const isActive = isCellActive(cell, value, isCross)
         return (
           <Button
+            variant="ghost"
             aria-label={cellLabel}
-            aria-pressed={isActive}
             className={`position-grid-cell ${
               isVerticalSide(cell.position) ? 'is-vertical' : ''
             }`}
-            isActive={isActive}
+            pressed={isActive}
             key={index}
             title={cellLabel}
             onClick={() => {

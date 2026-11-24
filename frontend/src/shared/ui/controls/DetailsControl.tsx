@@ -1,6 +1,6 @@
 import Editor from '../containers/Editor'
-import Button from '../primitives/Button'
 import Popover from '../primitives/Popover'
+import SwatchButton from '../primitives/SwatchButton'
 
 import type { ReactNode } from 'react'
 
@@ -31,25 +31,21 @@ function DetailsControl({
 }: DetailsControlProps) {
   return (
     <div className="control-frame swatch-control">
-      <div className="color-swatch">
-        <Popover
-          className={fitsContent ? 'is-fit-content' : ''}
-          label={label}
-          variant="editor"
-          renderTrigger={(triggerProps) => (
-            <Button
-              {...triggerProps}
-              className="color-swatch-swatch has-icon"
-              aria-label={`Edit ${label.toLowerCase()}`}
-              title={label}
-            >
-              {icon}
-            </Button>
-          )}
-        >
-          <Editor>{children}</Editor>
-        </Popover>
-      </div>
+      <Popover
+        className={fitsContent ? 'is-fit-content' : ''}
+        label={label}
+        variant="editor"
+        renderTrigger={(triggerProps) => (
+          <SwatchButton
+            {...triggerProps}
+            icon={icon}
+            label={`Edit ${label.toLowerCase()}`}
+            title={label}
+          />
+        )}
+      >
+        <Editor>{children}</Editor>
+      </Popover>
       <span className="swatch-control-name">{text}</span>
     </div>
   )

@@ -1,8 +1,8 @@
 import { Blend, Minus, MoveHorizontal } from 'lucide-react'
 
+import ColorControl from '../controls/ColorControl'
 import NumberControl from '../controls/NumberControl'
 import IconButton from '../primitives/IconButton'
-import SwatchButton from '../primitives/SwatchButton'
 
 import type { GradientStop } from '@/shared/paint'
 import type { ColorPreset } from '../controls/colorPresets'
@@ -35,9 +35,10 @@ function GradientStopRow({
 }: GradientStopRowProps) {
   return (
     <div className="gradient-stop">
-      <SwatchButton
-        label={`${label} color`}
+      <ColorControl
+        label={label}
         presets={presets}
+        swatchOnly
         value={value.color}
         onChange={(color) => onChange({ ...value, color })}
       />

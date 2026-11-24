@@ -13,8 +13,6 @@
 .position-grid-cell.button {
   padding: 0;
   color: var(--color-text-secondary);
-  background: transparent;
-  border-color: transparent;
 }
 
 .position-grid-cell.button::before {
@@ -27,13 +25,11 @@
 
 .position-grid-cell.button:hover {
   background: var(--color-surface-hover);
-  border-color: transparent;
 }
 
 .position-grid-cell.button.is-active {
   color: var(--color-text-primary);
   background: var(--color-surface-active);
-  border-color: transparent;
 }
 
 .position-grid-cell.button.is-active::before {

@@ -1,67 +1,55 @@
-import ColorEditor from '../containers/ColorEditor'
-import { getChoiceKey, getSwatchColor } from '../controls/colorPresets'
 import Button from './Button'
-import Popover from './Popover'
 
-import type { CSSProperties } from 'react'
-import type { ColorValue } from '@/shared/colorValue'
-import type { ColorPreset } from '../controls/colorPresets'
+import type { ComponentProps, CSSProperties, ReactNode } from 'react'
 
 // ===== TYPES =================================================================
-type SwatchButtonProps<TPreset extends string = never> = {
+type SwatchButtonProps = {
+  /** CSS color of the swatch, e.g. of a preset. */
+  color?: string
+  /** CSS background in place of the color, e.g. a gradient or glass. */
+  fill?: string
+  /** Icon in place of a color, e.g. the kind of an effect. */
+  icon?: ReactNode
   label: string
-  presets: ColorPreset<TPreset>[]
-  value: ColorValue | NoInfer<TPreset>
-  onChange: (value: ColorValue | NoInfer<TPreset>) => void
-}
+} & Omit<ComponentProps<'button'>, 'aria-label' | 'children' | 'color'>
 
 // ===== COMPONENT =============================================================
 /**
- * Swatch of one color that opens the color picker with the presets of its
- * place, e.g. the end of a gradient or the color of a stop. Fields put
- * it next to their own value, e.g. `ColorControl` next to the hex input. A
- * named preset that is no color shows its fill.
- * @param props Name, swatches, color and its handler.
+ * Round swatch as a button: a color, a fill or an icon, e.g. the trigger
+ * of a color picker or a preset inside it. A `ref` reaches the button, e.g.
+ * as the trigger of a popover.
+ * @param props Color, fill or icon, name and native props.
  */
-function SwatchButton<TPreset extends string = never>({
+function SwatchButton({
+  className = '',
+  color,
+  fill,
+  icon,
   label,
-  presets,
-  value,
-  onChange,
-}: SwatchButtonProps<TPreset>) {
-  const valueKey = getChoiceKey(value)
-  const selectedPreset = presets.find((preset) => {
-    return getChoiceKey(preset.value) === valueKey
-  })
-
+  style,
+  title,
+  ...buttonProps
+}: SwatchButtonProps) {
   return (
-    <div className="color-swatch">
-      <Popover
-        label={`${label} color`}
-        renderTrigger={(triggerProps) => (
-          <Button
-            {...triggerProps}
-            className={`color-swatch-swatch ${selectedPreset?.fill ? 'has-fill' : ''}`}
-            aria-label={label}
-            title={label}
-            style={
-              {
-                '--swatch-color': getSwatchColor(value),
-                '--swatch-fill': selectedPreset?.fill,
-              } as CSSProperties
-            }
-          />
-        )}
-        variant="editor"
-      >
-        <ColorEditor
-          label={label}
-          presets={presets}
-          value={value}
-          onChange={onChange}
-        />
-      </Popover>
-    </div>
+    <Button
+      {...buttonProps}
+      aria-label={label}
+      className={[fill ? 'has-fill' : '', icon ? 'has-icon' : '', className]
+        .filter(Boolean)
+        .join(' ')}
+      kind="swatch"
+      style={
+        {
+          ...style,
+          '--swatch-color': color,
+          '--swatch-fill': fill,
+        } as CSSProperties
+      }
+      title={title ?? label}
+      variant="ghost"
+    >
+      {icon}
+    </Button>
   )
 }
 
