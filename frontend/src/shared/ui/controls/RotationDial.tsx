@@ -37,7 +37,6 @@ function RotationDial({
       label={label}
       max={max}
       min={min}
-      step={1}
       unit="°"
       value={value}
       onValueChange={onValueChange}

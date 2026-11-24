@@ -40,7 +40,6 @@ function DetailsControl({
             <Button
               {...triggerProps}
               className="color-swatch-swatch has-icon"
-              type="button"
               aria-label={`Edit ${label.toLowerCase()}`}
               title={label}
             >

@@ -142,7 +142,6 @@ function NumberFormatControls({
               label={`${label} decimal places`}
               max={6}
               min={0}
-              step={1}
               value={value.decimals}
               onAuto={() => onChange({ ...value, decimals: null })}
               onValueChange={(decimals) => onChange({ ...value, decimals })}

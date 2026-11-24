@@ -64,7 +64,6 @@ function TextStyleControls({
           label={`${label} font size`}
           max={maxFontSize}
           min={minFontSize}
-          step={1}
           unit="px"
           value={value.fontSize}
           onValueChange={(fontSize) => onChange({ ...value, fontSize })}

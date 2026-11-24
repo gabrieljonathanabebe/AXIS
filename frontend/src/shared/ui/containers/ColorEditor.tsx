@@ -69,7 +69,6 @@ function ColorEditor<TPreset extends string = never>({
               <Button
                 key={presetKey}
                 className={`color-swatch-swatch ${preset.fill ? 'has-fill' : ''}`}
-                type="button"
                 role="radio"
                 aria-label={preset.label}
                 aria-checked={presetKey === valueKey}

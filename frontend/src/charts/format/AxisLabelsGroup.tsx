@@ -67,7 +67,6 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
             label={`${label} tick count`}
             max={20}
             min={2}
-            step={1}
             value={value.tickCount}
             onAuto={() => onChange({ ...value, tickCount: null })}
             onValueChange={(tickCount) => onChange({ ...value, tickCount })}

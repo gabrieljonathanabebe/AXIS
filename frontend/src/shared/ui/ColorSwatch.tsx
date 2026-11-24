@@ -42,7 +42,6 @@ function ColorSwatch<TPreset extends string = never>({
           <Button
             {...triggerProps}
             className={`color-swatch-swatch ${selectedPreset?.fill ? 'has-fill' : ''}`}
-            type="button"
             aria-label={label}
             title={label}
             style={

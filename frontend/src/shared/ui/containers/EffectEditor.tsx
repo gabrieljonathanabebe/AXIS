@@ -57,7 +57,6 @@ function EffectEditor({
                 label={`${label} intensity`}
                 max={maxBlur}
                 min={1}
-                step={1}
                 value={value.blur}
                 onValueChange={(blur) => onChange({ ...value, blur })}
               />
@@ -73,7 +72,6 @@ function EffectEditor({
                 label={`${label} blur`}
                 max={maxBlur}
                 min={0}
-                step={1}
                 value={value.blur}
                 onValueChange={(blur) => onChange({ ...value, blur })}
               />
@@ -89,7 +87,6 @@ function EffectEditor({
                 label={`${label} intensity`}
                 max={100}
                 min={1}
-                step={1}
                 unit="%"
                 value={Math.round(value.opacity * 100)}
                 onValueChange={(percent) => {

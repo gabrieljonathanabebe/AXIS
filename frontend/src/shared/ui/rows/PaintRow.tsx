@@ -116,7 +116,6 @@ function PaintRow<TValue extends Fill<Paint | SeriesPaint>>({
         label={`${label} opacity`}
         max={100}
         min={5}
-        step={1}
         unit="%"
         value={Math.round(value.opacity * 100)}
         onValueChange={(percent) => {

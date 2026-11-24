@@ -65,7 +65,6 @@ function StrokeStyleControls<TStroke extends StrokeStyle<Paint | SeriesPaint>>({
           label={`${label} width`}
           max={maxWidth}
           min={minWidth}
-          step={1}
           unit="px"
           value={value.width}
           onValueChange={(width) => onChange({ ...value, width })}

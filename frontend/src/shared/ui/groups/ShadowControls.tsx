@@ -42,7 +42,6 @@ function ShadowControls<TValue extends Shadow>({
             label={`${label} x offset`}
             max={MAX_SHADOW_OFFSET}
             min={-MAX_SHADOW_OFFSET}
-            step={1}
             value={value.offsetX}
             onValueChange={(offsetX) => onChange({ ...value, offsetX })}
           />
@@ -51,7 +50,6 @@ function ShadowControls<TValue extends Shadow>({
             label={`${label} y offset`}
             max={MAX_SHADOW_OFFSET}
             min={-MAX_SHADOW_OFFSET}
-            step={1}
             value={value.offsetY}
             onValueChange={(offsetY) => onChange({ ...value, offsetY })}
           />
@@ -64,7 +62,6 @@ function ShadowControls<TValue extends Shadow>({
             label={`${label} blur`}
             max={maxBlur}
             min={0}
-            step={1}
             value={value.blur}
             onValueChange={(blur) => onChange({ ...value, blur })}
           />
@@ -82,7 +79,6 @@ function ShadowControls<TValue extends Shadow>({
             label={`${label} opacity`}
             max={100}
             min={0}
-            step={1}
             unit="%"
             value={Math.round(value.opacity * 100)}
             onValueChange={(percent) => {

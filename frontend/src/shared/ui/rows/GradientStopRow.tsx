@@ -46,7 +46,6 @@ function GradientStopRow({
         label={`${label} position`}
         max={100}
         min={0}
-        step={1}
         unit="%"
         value={Math.round(value.position * 100)}
         onValueChange={(percent) => {
@@ -58,7 +57,6 @@ function GradientStopRow({
         label={`${label} opacity`}
         max={100}
         min={0}
-        step={1}
         unit="%"
         value={Math.round(value.opacity * 100)}
         onValueChange={(percent) => {

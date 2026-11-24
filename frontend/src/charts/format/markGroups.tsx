@@ -191,7 +191,6 @@ function getDataColorControls({
           <ScrubbableNumber
             icon={<ArrowDownToLine size={14} />}
             label="Color scale minimum"
-            step={1}
             value={continuous.min}
             onAuto={() => setContinuous({ min: null })}
             onValueChange={(min) => setContinuous({ min })}
@@ -199,7 +198,6 @@ function getDataColorControls({
           <ScrubbableNumber
             icon={<ArrowUpToLine size={14} />}
             label="Color scale maximum"
-            step={1}
             value={continuous.max}
             onAuto={() => setContinuous({ max: null })}
             onValueChange={(max) => setContinuous({ max })}
@@ -334,7 +332,6 @@ function getChartTypeGroups(
                 label="Corner radius"
                 max={24}
                 min={0}
-                step={1}
                 unit="px"
                 value={bar.borderRadius}
                 onValueChange={(borderRadius) => {
@@ -485,7 +482,6 @@ function getChartTypeGroups(
                   label="Point size"
                   max={28}
                   min={4}
-                  step={1}
                   unit="px"
                   value={scatter.pointSize}
                   onValueChange={(pointSize) => {
@@ -505,7 +501,6 @@ function getChartTypeGroups(
                   label="Smallest point size"
                   max={scatter.sizeRange.max}
                   min={2}
-                  step={1}
                   unit="px"
                   value={scatter.sizeRange.min}
                   onValueChange={(min) => {
@@ -520,7 +515,6 @@ function getChartTypeGroups(
                   label="Largest point size"
                   max={60}
                   min={scatter.sizeRange.min}
-                  step={1}
                   unit="px"
                   value={scatter.sizeRange.max}
                   onValueChange={(max) => {

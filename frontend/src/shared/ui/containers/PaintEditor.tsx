@@ -137,7 +137,6 @@ function PaintEditor({
             label={`${label} start opacity`}
             max={100}
             min={0}
-            step={1}
             unit="%"
             value={Math.round(paint.startOpacity * 100)}
             onValueChange={(percent) => {
@@ -149,7 +148,6 @@ function PaintEditor({
             label={`${label} end opacity`}
             max={100}
             min={0}
-            step={1}
             unit="%"
             value={Math.round(paint.endOpacity * 100)}
             onValueChange={(percent) => {
@@ -183,7 +181,6 @@ function PaintEditor({
               label={`${label} center x`}
               max={RADIAL_CENTER_RANGE.max}
               min={RADIAL_CENTER_RANGE.min}
-              step={1}
               unit="%"
               value={Math.round(paint.centerX * 100)}
               onValueChange={(percent) => {
@@ -195,7 +192,6 @@ function PaintEditor({
               label={`${label} center y`}
               max={RADIAL_CENTER_RANGE.max}
               min={RADIAL_CENTER_RANGE.min}
-              step={1}
               unit="%"
               value={Math.round(paint.centerY * 100)}
               onValueChange={(percent) => {
@@ -209,7 +205,6 @@ function PaintEditor({
               label={`${label} radius`}
               max={MAX_RADIAL_RADIUS}
               min={1}
-              step={1}
               unit="%"
               value={Math.round(paint.radius * 100)}
               onValueChange={(percent) => {

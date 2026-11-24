@@ -66,7 +66,6 @@ function PaintControl({
           <Button
             {...triggerProps}
             className="color-swatch-swatch has-fill"
-            type="button"
             aria-label={`Edit ${label.toLowerCase()}`}
             title={label}
             style={{ '--swatch-fill': getPaintCss(value) } as CSSProperties}
