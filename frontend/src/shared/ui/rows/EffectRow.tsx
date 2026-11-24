@@ -4,7 +4,7 @@ import { EFFECT_KIND_OPTIONS } from './effectKindOptions'
 import Row from './Row'
 
 import type { AnyEffect } from '@/shared/effect'
-import type { OptionItem } from '../primitives/OptionsMenu'
+import type { OptionItem } from '../primitives/Menu'
 
 // ===== TYPES =================================================================
 type EffectRowProps = {

@@ -1,4 +1,4 @@
-import type { OptionItem } from './OptionsMenu'
+import type { OptionItem } from '../primitives/Menu'
 
 type OptionContentProps<TValue extends string> = {
   option: OptionItem<TValue>

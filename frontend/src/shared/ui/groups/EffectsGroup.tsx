@@ -4,7 +4,7 @@ import EffectRow from '../rows/EffectRow'
 import Group from './Group'
 
 import type { AnyEffect } from '@/shared/effect'
-import type { OptionItem } from '../primitives/OptionsMenu'
+import type { OptionItem } from '../primitives/Menu'
 
 // ===== TYPES =================================================================
 type EffectsGroupProps = {

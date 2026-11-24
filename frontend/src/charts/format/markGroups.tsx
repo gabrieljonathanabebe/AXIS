@@ -23,7 +23,7 @@ import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
 import { isMarkEffect } from '@/shared/effect'
 import ColorControl from '@/shared/ui/controls/ColorControl'
-import ScrubbableNumber from '@/shared/ui/controls/ScrubbableNumber'
+import ScrubbableNumber from '@/shared/ui/controls/NumberControl'
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
 import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
 import Group from '@/shared/ui/groups/Group'
@@ -46,7 +46,7 @@ import type {
 } from '@/charts/types'
 import type { Effect, MarkEffect } from '@/shared/effect'
 import type { PaintType } from '@/shared/paint'
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 import type { RowDetails } from '@/shared/ui/rows/Row'
 
 // ===== TYPES =================================================================

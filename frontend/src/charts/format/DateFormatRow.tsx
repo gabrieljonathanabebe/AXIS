@@ -11,7 +11,7 @@ import type {
   DatePreset,
   TimeGrain,
 } from '@/shared/format/valueFormats'
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 
 // ===== TYPES =================================================================
 type DateFormatRowProps = {

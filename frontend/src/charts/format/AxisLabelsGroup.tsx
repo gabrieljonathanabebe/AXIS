@@ -1,11 +1,11 @@
 import { Ruler } from 'lucide-react'
 
 import { showsDateLabels } from '@/charts/getEffectiveTimeGrain'
+import ScrubbableNumber from '@/shared/ui/controls/NumberControl'
 import RotationDial from '@/shared/ui/controls/RotationDial'
-import ScrubbableNumber from '@/shared/ui/controls/ScrubbableNumber'
 import Group from '@/shared/ui/groups/Group'
-import NumberFormatControls from '@/shared/ui/groups/NumberFormatControls'
-import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
+import NumberFormatControls from '@/shared/ui/groups/NumberFormatGroup'
+import TextStyleControls from '@/shared/ui/groups/TextGroup'
 import Row from '@/shared/ui/rows/Row'
 import DateFormatRow from './DateFormatRow'
 

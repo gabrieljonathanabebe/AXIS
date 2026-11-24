@@ -1,4 +1,4 @@
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import Row from './Row'
 
 import type { Box, NumberBounds } from '@/shared/layout'

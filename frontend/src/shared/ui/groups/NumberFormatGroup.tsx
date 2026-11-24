@@ -7,7 +7,7 @@ import {
 } from '@/shared/format/formatNumber'
 import { CURRENCY_OPTIONS } from '@/shared/format/valueFormats'
 import DetailsControl from '../controls/DetailsControl'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import SelectControl from '../controls/SelectControl'
 import TextInput from '../primitives/TextInput'

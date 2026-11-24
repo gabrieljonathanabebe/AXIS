@@ -1,12 +1,12 @@
 import { Timer } from 'lucide-react'
 
-import ScrubbableNumber from '@/shared/ui/controls/ScrubbableNumber'
+import ScrubbableNumber from '@/shared/ui/controls/NumberControl'
 import SelectControl from '@/shared/ui/controls/SelectControl'
 import Group from '@/shared/ui/groups/Group'
 import Row from '@/shared/ui/rows/Row'
 import { DASHBOARD_ANIMATION } from './workspaceReducer'
 
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 import type { AnimationEasing, DashboardAnimation } from './types'
 
 type AnimationGroupProps = {

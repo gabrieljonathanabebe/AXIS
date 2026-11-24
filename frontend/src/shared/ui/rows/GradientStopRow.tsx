@@ -1,8 +1,8 @@
 import { Blend, Minus, MoveHorizontal } from 'lucide-react'
 
-import ColorSwatch from '../ColorSwatch'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import IconButton from '../primitives/IconButton'
+import ColorSwatch from '../primitives/SwatchButton'
 
 import type { GradientStop } from '@/shared/paint'
 import type { ColorPreset } from '../controls/colorPresets'

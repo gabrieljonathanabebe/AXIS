@@ -3,7 +3,7 @@ import { ALargeSmall, Italic } from 'lucide-react'
 import AlignmentControl from '../controls/AlignmentControl'
 import ColorControl from '../controls/ColorControl'
 import FontWeightControl from '../controls/FontWeightControl'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import IconButton from '../primitives/IconButton'
 import Row from '../rows/Row'
 

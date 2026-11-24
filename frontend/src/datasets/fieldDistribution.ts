@@ -1,7 +1,7 @@
 import { formatDate } from '@/shared/format/formatDate'
 import { formatCompactNumber } from '@/shared/format/formatNumber'
 
-import type { HistogramBar } from '@/shared/ui/MiniHistogram'
+import type { HistogramBar } from '@/shared/ui/display/MiniHistogram'
 import type { FieldProfile } from './types'
 
 // ===== HELPERS ===============================================================

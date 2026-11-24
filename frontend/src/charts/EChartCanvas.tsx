@@ -3,7 +3,7 @@ import { TriangleAlert } from 'lucide-react'
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 
 import { getRectInFrame } from '@/objects/elementRect'
-import EmptyState from '@/shared/ui/EmptyState'
+import EmptyState from '@/shared/ui/display/EmptyState'
 import { useIsFormatKeyHeld } from '@/shared/useIsFormatKeyHeld'
 import { isSameSelection } from '@/workspace/dataSelection'
 import ChartColorScale from './ChartColorScale'

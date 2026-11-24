@@ -1,8 +1,8 @@
 import { Check } from 'lucide-react'
 
+import OptionContent from '../display/OptionContent'
 import Tile from '../tiles/Tile'
 import Button from './Button'
-import OptionContent from './OptionContent'
 
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'

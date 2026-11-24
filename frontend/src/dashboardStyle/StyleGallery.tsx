@@ -1,6 +1,6 @@
 import { getFillsCss } from '@/shared/fill'
 import { getSurfaceStyle } from '@/shared/surface'
-import SurfaceLayers from '@/shared/ui/SurfaceLayers'
+import SurfaceLayers from '@/shared/ui/display/SurfaceLayers'
 import { createDashboardStyle } from './createDashboardStyle'
 
 import type { CSSProperties, ReactNode } from 'react'

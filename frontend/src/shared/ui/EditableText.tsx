@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import InlineTextInput from './InlineTextInput'
+import InlineTextInput from './primitives/InlineTextInput'
 
 import type { PointerEvent } from 'react'
 

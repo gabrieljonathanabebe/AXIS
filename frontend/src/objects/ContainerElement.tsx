@@ -1,6 +1,6 @@
 import Group from '@/shared/ui/groups/Group'
-import LayoutControls from '@/shared/ui/groups/LayoutControls'
-import PositionControls from '@/shared/ui/groups/PositionControls'
+import LayoutControls from '@/shared/ui/groups/LayoutGroup'
+import PositionControls from '@/shared/ui/groups/PositionGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
 import { getLayoutBounds } from '@/workspace/chartLayout'
 

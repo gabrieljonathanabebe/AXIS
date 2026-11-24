@@ -1,8 +1,8 @@
 import { getAggregationOptions } from '@/charts/aggregations'
 import SelectControl from '@/shared/ui/controls/SelectControl'
 import Group from '@/shared/ui/groups/Group'
-import NumberFormatControls from '@/shared/ui/groups/NumberFormatControls'
-import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
+import NumberFormatControls from '@/shared/ui/groups/NumberFormatGroup'
+import TextStyleControls from '@/shared/ui/groups/TextGroup'
 import Row from '@/shared/ui/rows/Row'
 
 import type { GroupAggregation } from '@/charts/types'

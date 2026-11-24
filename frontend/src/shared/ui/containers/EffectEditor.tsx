@@ -1,7 +1,7 @@
 import { Blend, CircleDashed, Scaling } from 'lucide-react'
 
 import { createEffect } from '@/shared/effect'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import SelectControl from '../controls/SelectControl'
 import Group from '../groups/Group'
 import ShadowControls from '../groups/ShadowControls'
@@ -9,7 +9,7 @@ import Row from '../rows/Row'
 
 import type { ReactNode } from 'react'
 import type { AnyEffect } from '@/shared/effect'
-import type { OptionItem } from '../primitives/OptionsMenu'
+import type { OptionItem } from '../primitives/Menu'
 
 // ===== TYPES =================================================================
 type EffectEditorProps = {

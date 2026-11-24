@@ -1,6 +1,6 @@
 import { Equal } from 'lucide-react'
 
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import PaintRow from '../rows/PaintRow'
 import Row from '../rows/Row'

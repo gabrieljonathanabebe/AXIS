@@ -1,7 +1,7 @@
 import { Blend, CircleDashed } from 'lucide-react'
 
 import ColorControl from '../controls/ColorControl'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import Row from '../rows/Row'
 import Group from './Group'
 

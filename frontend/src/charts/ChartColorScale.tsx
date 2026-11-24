@@ -4,7 +4,7 @@ import { createNumberFormatter } from '@/shared/format/formatNumber'
 import { getSideOrientation } from '@/shared/layout'
 import { getPaintColor } from '@/shared/paint'
 import { getTextStyleCss } from '@/shared/textStyle'
-import SurfaceBorder from '@/shared/ui/SurfaceBorder'
+import SurfaceBorder from '@/shared/ui/display/SurfaceBorder'
 import { getColorScaleTicks } from './getColorScaleTicks'
 
 import type { CSSProperties, PointerEvent } from 'react'

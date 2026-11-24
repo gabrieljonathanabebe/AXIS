@@ -2,7 +2,7 @@ import { SquareRoundCorner } from 'lucide-react'
 
 import { isSurfaceEffect } from '@/shared/effect'
 import { SURFACE_CAPABILITIES } from '@/shared/surface'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import Row from '../rows/Row'
 import BackgroundGroup from './BackgroundGroup'
 import EffectsGroup from './EffectsGroup'

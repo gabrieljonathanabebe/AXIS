@@ -1,5 +1,5 @@
 import Group from '@/shared/ui/groups/Group'
-import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
+import TextStyleControls from '@/shared/ui/groups/TextGroup'
 import TextInput from '@/shared/ui/primitives/TextInput'
 import Row from '@/shared/ui/rows/Row'
 

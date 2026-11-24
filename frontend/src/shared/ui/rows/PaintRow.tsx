@@ -2,8 +2,8 @@ import { Blend } from 'lucide-react'
 
 import { hasOwnColor, hasPaintEditor, PAINT_TYPES } from '@/shared/paint'
 import PaintEditor from '../containers/PaintEditor'
+import ScrubbableNumber from '../controls/NumberControl'
 import PaintControl from '../controls/PaintControl'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
 import Row from './Row'
 
 import type { ReactNode } from 'react'

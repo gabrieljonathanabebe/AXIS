@@ -1,5 +1,5 @@
 import { getGradientStopsCss, getSortedStops } from '@/shared/paint'
-import ColorSwatch from '@/shared/ui/ColorSwatch'
+import ColorSwatch from '@/shared/ui/primitives/SwatchButton'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'

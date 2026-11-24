@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 
-import ScrubbableNumber from './ScrubbableNumber'
+import ScrubbableNumber from './NumberControl'
 
 // ===== TYPES =================================================================
 type RotationDialProps = {

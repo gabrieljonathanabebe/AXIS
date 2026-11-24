@@ -2,10 +2,10 @@ import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
 
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
 import Group from '@/shared/ui/groups/Group'
-import LayoutControls from '@/shared/ui/groups/LayoutControls'
-import NumberFormatControls from '@/shared/ui/groups/NumberFormatControls'
+import LayoutControls from '@/shared/ui/groups/LayoutGroup'
+import NumberFormatControls from '@/shared/ui/groups/NumberFormatGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
-import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
+import TextStyleControls from '@/shared/ui/groups/TextGroup'
 import Row from '@/shared/ui/rows/Row'
 
 import type {
@@ -13,7 +13,7 @@ import type {
   TooltipAppearance,
   TooltipTrigger,
 } from '@/charts/types'
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 
 type TooltipGroupProps = {
   appearance: TooltipAppearance

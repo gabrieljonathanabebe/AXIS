@@ -1,6 +1,6 @@
 import { PanelLeftClose, PanelRightClose } from 'lucide-react'
 
-import IconBadge from '../primitives/IconBadge'
+import IconBadge from '../display/IconBadge'
 import IconButton from '../primitives/IconButton'
 
 import type { ReactNode } from 'react'

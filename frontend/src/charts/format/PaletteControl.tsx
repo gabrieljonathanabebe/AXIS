@@ -3,7 +3,7 @@ import SelectControl from '@/shared/ui/controls/SelectControl'
 
 import type { ReactNode } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 
 export type PaletteOption = {
   label: string

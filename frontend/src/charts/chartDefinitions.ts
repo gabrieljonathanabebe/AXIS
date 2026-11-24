@@ -18,7 +18,7 @@ import {
 
 import type { LucideIcon } from 'lucide-react'
 import type { SemanticRole } from '@/datasets/types'
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 import type {
   Aggregation,
   ChartEncoding,

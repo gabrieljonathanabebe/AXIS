@@ -1,11 +1,11 @@
-import ColorEditor from './containers/ColorEditor'
-import { getChoiceKey, getSwatchColor } from './controls/colorPresets'
-import Button from './primitives/Button'
-import Popover from './primitives/Popover'
+import ColorEditor from '../containers/ColorEditor'
+import { getChoiceKey, getSwatchColor } from '../controls/colorPresets'
+import Button from './Button'
+import Popover from './Popover'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
-import type { ColorPreset } from './controls/colorPresets'
+import type { ColorPreset } from '../controls/colorPresets'
 
 // ===== TYPES =================================================================
 type ColorSwatchProps<TPreset extends string = never> = {

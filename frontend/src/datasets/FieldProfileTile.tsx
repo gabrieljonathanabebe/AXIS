@@ -2,13 +2,13 @@ import { RotateCcw } from 'lucide-react'
 
 import { formatNumber } from '@/shared/format/formatNumber'
 import SelectControl from '@/shared/ui/controls/SelectControl'
-import MiniHistogram from '@/shared/ui/MiniHistogram'
+import MiniHistogram from '@/shared/ui/display/MiniHistogram'
 import IconButton from '@/shared/ui/primitives/IconButton'
 import Tile from '@/shared/ui/tiles/Tile'
 import { createDistributionBars } from './fieldDistribution'
 import { getAllowedSemanticRoles, semanticRoleLabels } from './semanticRoles'
 
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 import type { FieldProfile, SemanticRole } from './types'
 
 // ===== TYPES =================================================================

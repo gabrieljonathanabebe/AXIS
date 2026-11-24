@@ -1,13 +1,13 @@
 import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
+import OptionContent from '../display/OptionContent'
 import Button from '../primitives/Button'
-import OptionContent from '../primitives/OptionContent'
-import OptionsMenu from '../primitives/OptionsMenu'
+import OptionsMenu from '../primitives/Menu'
 import Popover from '../primitives/Popover'
 
 import type { ReactNode } from 'react'
-import type { OptionItem } from '../primitives/OptionsMenu'
+import type { OptionItem } from '../primitives/Menu'
 
 type SelectControlVariant = 'control' | 'title'
 

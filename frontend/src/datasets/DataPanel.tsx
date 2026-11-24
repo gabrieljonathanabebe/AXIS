@@ -3,12 +3,12 @@ import { useState } from 'react'
 
 import Panel from '@/shared/ui/containers/Panel'
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
-import EmptyState from '@/shared/ui/EmptyState'
+import EmptyState from '@/shared/ui/display/EmptyState'
 import DataTable from '@/table/DataTable'
 import DatasetProfileView from './DatasetProfileView'
 
-import type { EmptyStateProps } from '@/shared/ui/EmptyState'
-import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { EmptyStateProps } from '@/shared/ui/display/EmptyState'
+import type { OptionItem } from '@/shared/ui/primitives/Menu'
 import type {
   Dataset,
   DatasetProfile,

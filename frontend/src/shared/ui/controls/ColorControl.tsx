@@ -1,7 +1,7 @@
 import { HexColorInput } from 'react-colorful'
 
 import { getColorValueKey, normalizeHex } from '@/shared/colorValue'
-import ColorSwatch from '../ColorSwatch'
+import ColorSwatch from '../primitives/SwatchButton'
 
 import type { ReactNode } from 'react'
 import type { ColorValue } from '@/shared/colorValue'

@@ -2,14 +2,14 @@ import { Fullscreen, MoveHorizontal, MoveVertical, Space } from 'lucide-react'
 
 import { isSide } from '@/shared/layout'
 import AlignmentControl from '../controls/AlignmentControl'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
+import ScrubbableNumber from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
 
 import type { LucideIcon } from 'lucide-react'
 import type { Orientation, PartialLayout } from '@/shared/layout'
-import type { OptionItem } from '../primitives/OptionsMenu'
+import type { OptionItem } from '../primitives/Menu'
 import type { LayoutBox } from '../rows/BoxRow'
 
 // ===== TYPES =================================================================

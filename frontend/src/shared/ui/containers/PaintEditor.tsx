@@ -8,8 +8,8 @@ import {
   hasOwnColor,
   PAINT_TYPE_LABELS,
 } from '@/shared/paint'
+import ScrubbableNumber from '../controls/NumberControl'
 import RotationDial from '../controls/RotationDial'
-import ScrubbableNumber from '../controls/ScrubbableNumber'
 import SegmentedControl from '../controls/SegmentedControl'
 import Group from '../groups/Group'
 import GradientStopRow from '../rows/GradientStopRow'
