@@ -2,10 +2,10 @@ import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
 
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
 import Group from '@/shared/ui/groups/Group'
-import LayoutControls from '@/shared/ui/groups/LayoutGroup'
-import NumberFormatControls from '@/shared/ui/groups/NumberFormatGroup'
+import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
+import NumberFormatGroup from '@/shared/ui/groups/NumberFormatGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
-import TextStyleControls from '@/shared/ui/groups/TextGroup'
+import TextGroup from '@/shared/ui/groups/TextGroup'
 import Row from '@/shared/ui/rows/Row'
 
 import type {
@@ -53,7 +53,7 @@ function TooltipGroup({
       }}
     >
       <Group title="Layout">
-        <LayoutControls
+        <LayoutGroup
           label="Tooltip"
           maxGap={24}
           value={appearance.layout}
@@ -72,7 +72,7 @@ function TooltipGroup({
         }}
       >
         <Group title="Text">
-          <TextStyleControls
+          <TextGroup
             label="Tooltip text"
             value={appearance.textStyle}
             onChange={(textStyle) => {
@@ -82,7 +82,7 @@ function TooltipGroup({
         </Group>
       </SurfaceControls>
       <Group title="Format">
-        <NumberFormatControls
+        <NumberFormatGroup
           label="Tooltip"
           value={value.numberFormat}
           onChange={(numberFormat) => onChange({ ...value, numberFormat })}

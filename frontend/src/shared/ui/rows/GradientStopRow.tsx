@@ -1,8 +1,8 @@
 import { Blend, Minus, MoveHorizontal } from 'lucide-react'
 
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import IconButton from '../primitives/IconButton'
-import ColorSwatch from '../primitives/SwatchButton'
+import SwatchButton from '../primitives/SwatchButton'
 
 import type { GradientStop } from '@/shared/paint'
 import type { ColorPreset } from '../controls/colorPresets'
@@ -35,13 +35,13 @@ function GradientStopRow({
 }: GradientStopRowProps) {
   return (
     <div className="gradient-stop">
-      <ColorSwatch
+      <SwatchButton
         label={`${label} color`}
         presets={presets}
         value={value.color}
         onChange={(color) => onChange({ ...value, color })}
       />
-      <ScrubbableNumber
+      <NumberControl
         icon={<MoveHorizontal size={14} />}
         label={`${label} position`}
         max={100}
@@ -52,7 +52,7 @@ function GradientStopRow({
           onChange({ ...value, position: percent / 100 })
         }}
       />
-      <ScrubbableNumber
+      <NumberControl
         icon={<Blend size={14} />}
         label={`${label} opacity`}
         max={100}

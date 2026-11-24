@@ -1,8 +1,8 @@
 import Group from '@/shared/ui/groups/Group'
-import LayoutControls from '@/shared/ui/groups/LayoutGroup'
-import PositionControls from '@/shared/ui/groups/PositionGroup'
+import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
+import PositionGroup from '@/shared/ui/groups/PositionGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
-import TextStyleControls from '@/shared/ui/groups/TextGroup'
+import TextGroup from '@/shared/ui/groups/TextGroup'
 
 import type { LegendAppearance } from '@/charts/types'
 
@@ -20,14 +20,14 @@ function LegendElement({ value, onChange }: LegendElementProps) {
   return (
     <>
       <Group title="Position">
-        <PositionControls
+        <PositionGroup
           label="Legend"
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />
       </Group>
       <Group title="Layout">
-        <LayoutControls
+        <LayoutGroup
           label="Legend"
           maxGap={40}
           value={value.layout}
@@ -42,7 +42,7 @@ function LegendElement({ value, onChange }: LegendElementProps) {
         }}
       >
         <Group title="Text">
-          <TextStyleControls
+          <TextGroup
             label="Legend text"
             value={value.textStyle}
             onChange={(textStyle) => onChange({ ...value, textStyle })}

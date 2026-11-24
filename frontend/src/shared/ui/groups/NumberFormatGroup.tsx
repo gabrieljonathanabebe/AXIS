@@ -7,7 +7,7 @@ import {
 } from '@/shared/format/formatNumber'
 import { CURRENCY_OPTIONS } from '@/shared/format/valueFormats'
 import DetailsControl from '../controls/DetailsControl'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import SelectControl from '../controls/SelectControl'
 import TextInput from '../primitives/TextInput'
@@ -26,7 +26,7 @@ type FormatChoice = Exclude<ValueFormat, 'currency'> | CurrencyCode
 /** How long numbers are written, as in Intl.NumberFormat. */
 type Notation = 'compact' | 'standard'
 
-type NumberFormatControlsProps = {
+type NumberFormatGroupProps = {
   isDate?: boolean
   label: string
   value: NumberFormat
@@ -110,13 +110,13 @@ function getPreview(value: NumberFormat): string {
  * format select shows. With `onDate` the select also offers Date, e.g.
  * for axis labels; `isDate` marks it as chosen and hides the rest.
  */
-function NumberFormatControls({
+function NumberFormatGroup({
   isDate = false,
   label,
   value,
   onChange,
   onDate,
-}: NumberFormatControlsProps) {
+}: NumberFormatGroupProps) {
   const hasDetails = !isDate && value.style !== 'auto'
   return (
     <>
@@ -137,7 +137,7 @@ function NumberFormatControls({
       {hasDetails ? (
         <>
           <Row>
-            <ScrubbableNumber
+            <NumberControl
               icon={<DecimalsArrowRight size={14} />}
               label={`${label} decimal places`}
               max={6}
@@ -185,4 +185,4 @@ function NumberFormatControls({
   )
 }
 
-export default NumberFormatControls
+export default NumberFormatGroup

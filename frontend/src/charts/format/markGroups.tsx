@@ -23,7 +23,7 @@ import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
 import { isMarkEffect } from '@/shared/effect'
 import ColorControl from '@/shared/ui/controls/ColorControl'
-import ScrubbableNumber from '@/shared/ui/controls/NumberControl'
+import NumberControl from '@/shared/ui/controls/NumberControl'
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
 import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
 import Group from '@/shared/ui/groups/Group'
@@ -188,14 +188,14 @@ function getDataColorControls({
       label: 'Color range',
       content: (
         <Row>
-          <ScrubbableNumber
+          <NumberControl
             icon={<ArrowDownToLine size={14} />}
             label="Color scale minimum"
             value={continuous.min}
             onAuto={() => setContinuous({ min: null })}
             onValueChange={(min) => setContinuous({ min })}
           />
-          <ScrubbableNumber
+          <NumberControl
             icon={<ArrowUpToLine size={14} />}
             label="Color scale maximum"
             value={continuous.max}
@@ -315,7 +315,7 @@ function getChartTypeGroups(
         shape: (
           <Group title="Shape">
             <Row>
-              <ScrubbableNumber
+              <NumberControl
                 icon={<UnfoldHorizontal size={14} />}
                 label="Bar width"
                 max={64}
@@ -327,7 +327,7 @@ function getChartTypeGroups(
                   actions.setChartAppearance('bar', 'barWidth', barWidth)
                 }}
               />
-              <ScrubbableNumber
+              <NumberControl
                 icon={<SquareRoundCorner size={14} />}
                 label="Corner radius"
                 max={24}
@@ -354,7 +354,7 @@ function getChartTypeGroups(
           chart.type === 'donut' ? (
             <Group title="Shape">
               <Row>
-                <ScrubbableNumber
+                <NumberControl
                   icon={<Donut size={14} />}
                   label="Donut inner radius"
                   max={60}
@@ -477,7 +477,7 @@ function getChartTypeGroups(
                 }}
               />
               {sizeField ? null : (
-                <ScrubbableNumber
+                <NumberControl
                   icon={<Scaling size={14} />}
                   label="Point size"
                   max={28}
@@ -496,7 +496,7 @@ function getChartTypeGroups(
             </Row>
             {sizeField ? (
               <Row>
-                <ScrubbableNumber
+                <NumberControl
                   icon={<ArrowDownToLine size={14} />}
                   label="Smallest point size"
                   max={scatter.sizeRange.max}
@@ -510,7 +510,7 @@ function getChartTypeGroups(
                     })
                   }}
                 />
-                <ScrubbableNumber
+                <NumberControl
                   icon={<ArrowUpToLine size={14} />}
                   label="Largest point size"
                   max={60}

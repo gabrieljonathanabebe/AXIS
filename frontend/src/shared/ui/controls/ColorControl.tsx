@@ -1,7 +1,7 @@
 import { HexColorInput } from 'react-colorful'
 
 import { getColorValueKey, normalizeHex } from '@/shared/colorValue'
-import ColorSwatch from '../primitives/SwatchButton'
+import SwatchButton from '../primitives/SwatchButton'
 
 import type { ReactNode } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
@@ -54,7 +54,7 @@ function ColorControl<TPreset extends string = never>({
   return (
     <div className="control-frame swatch-control">
       {swatch ?? (
-        <ColorSwatch
+        <SwatchButton
           label={`${label} color`}
           presets={presets}
           value={value}

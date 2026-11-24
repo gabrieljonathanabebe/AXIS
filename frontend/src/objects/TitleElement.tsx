@@ -1,5 +1,5 @@
 import Group from '@/shared/ui/groups/Group'
-import TextStyleControls from '@/shared/ui/groups/TextGroup'
+import TextGroup from '@/shared/ui/groups/TextGroup'
 import TextInput from '@/shared/ui/primitives/TextInput'
 import Row from '@/shared/ui/rows/Row'
 
@@ -29,7 +29,7 @@ function TitleElement({ defaultTitle, value, onChange }: TitleElementProps) {
         </Row>
       </Group>
       <Group title="Text">
-        <TextStyleControls
+        <TextGroup
           alignment={{
             value: value.layout.alignment,
             onChange: (alignment) => {

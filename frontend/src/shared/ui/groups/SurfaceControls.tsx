@@ -2,7 +2,7 @@ import { SquareRoundCorner } from 'lucide-react'
 
 import { isSurfaceEffect } from '@/shared/effect'
 import { SURFACE_CAPABILITIES } from '@/shared/surface'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import Row from '../rows/Row'
 import BackgroundGroup from './BackgroundGroup'
 import EffectsGroup from './EffectsGroup'
@@ -57,7 +57,7 @@ function SurfaceControls({
       {borderRadius === undefined ? null : (
         <Group title="Shape">
           <Row>
-            <ScrubbableNumber
+            <NumberControl
               icon={<SquareRoundCorner size={14} />}
               label={`${label} radius`}
               max={32}

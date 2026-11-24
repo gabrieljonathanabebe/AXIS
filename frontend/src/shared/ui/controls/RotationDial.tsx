@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 
-import ScrubbableNumber from './NumberControl'
+import NumberControl from './NumberControl'
 
 // ===== TYPES =================================================================
 type RotationDialProps = {
@@ -30,7 +30,7 @@ function RotationDial({
   onValueChange,
 }: RotationDialProps) {
   return (
-    <ScrubbableNumber
+    <NumberControl
       icon={
         <ArrowRight size={14} style={{ transform: `rotate(${-value}deg)` }} />
       }

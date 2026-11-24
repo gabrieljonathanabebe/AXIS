@@ -8,7 +8,7 @@ import type { ColorValue } from '@/shared/colorValue'
 import type { ColorPreset } from '../controls/colorPresets'
 
 // ===== TYPES =================================================================
-type ColorSwatchProps<TPreset extends string = never> = {
+type SwatchButtonProps<TPreset extends string = never> = {
   label: string
   presets: ColorPreset<TPreset>[]
   value: ColorValue | NoInfer<TPreset>
@@ -23,12 +23,12 @@ type ColorSwatchProps<TPreset extends string = never> = {
  * named preset that is no color shows its fill.
  * @param props Name, swatches, color and its handler.
  */
-function ColorSwatch<TPreset extends string = never>({
+function SwatchButton<TPreset extends string = never>({
   label,
   presets,
   value,
   onChange,
-}: ColorSwatchProps<TPreset>) {
+}: SwatchButtonProps<TPreset>) {
   const valueKey = getChoiceKey(value)
   const selectedPreset = presets.find((preset) => {
     return getChoiceKey(preset.value) === valueKey
@@ -65,4 +65,4 @@ function ColorSwatch<TPreset extends string = never>({
   )
 }
 
-export default ColorSwatch
+export default SwatchButton

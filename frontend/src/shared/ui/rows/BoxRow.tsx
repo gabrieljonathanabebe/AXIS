@@ -1,4 +1,4 @@
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import Row from './Row'
 
 import type { Box, NumberBounds } from '@/shared/layout'
@@ -49,7 +49,7 @@ function BoxRow({ box, fields, label }: BoxRowProps) {
       }
       const { icon, name } = boxFieldLabels[field]
       return (
-        <ScrubbableNumber
+        <NumberControl
           icon={icon}
           key={field}
           label={`${label} ${name} in ${box.unitName}`}

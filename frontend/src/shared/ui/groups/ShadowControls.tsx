@@ -1,7 +1,7 @@
 import { Blend, CircleDashed } from 'lucide-react'
 
 import ColorControl from '../controls/ColorControl'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import Row from '../rows/Row'
 import Group from './Group'
 
@@ -37,7 +37,7 @@ function ShadowControls<TValue extends Shadow>({
     <>
       <Group title="Offset">
         <Row>
-          <ScrubbableNumber
+          <NumberControl
             icon="X"
             label={`${label} x offset`}
             max={MAX_SHADOW_OFFSET}
@@ -45,7 +45,7 @@ function ShadowControls<TValue extends Shadow>({
             value={value.offsetX}
             onValueChange={(offsetX) => onChange({ ...value, offsetX })}
           />
-          <ScrubbableNumber
+          <NumberControl
             icon="Y"
             label={`${label} y offset`}
             max={MAX_SHADOW_OFFSET}
@@ -57,7 +57,7 @@ function ShadowControls<TValue extends Shadow>({
       </Group>
       <Group title="Blur">
         <Row>
-          <ScrubbableNumber
+          <NumberControl
             icon={<CircleDashed size={14} />}
             label={`${label} blur`}
             max={maxBlur}
@@ -74,7 +74,7 @@ function ShadowControls<TValue extends Shadow>({
             value={value.color}
             onChange={(color) => onChange({ ...value, color })}
           />
-          <ScrubbableNumber
+          <NumberControl
             icon={<Blend size={14} />}
             label={`${label} opacity`}
             max={100}

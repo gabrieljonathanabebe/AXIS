@@ -1,4 +1,4 @@
-.scrubbable-number {
+.number-control {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) auto;
   width: var(--control-width, 84px);
@@ -7,7 +7,7 @@
   overflow: hidden;
 }
 
-.scrubbable-number-handle.button {
+.number-control-handle.button {
   width: 24px;
   min-width: 0;
   height: 100%;
@@ -21,18 +21,18 @@
   touch-action: none;
 }
 
-.scrubbable-number.has-icon .scrubbable-number-handle.button {
+.number-control.has-icon .number-control-handle.button {
   border-right: 0;
 }
 
-.scrubbable-number-handle.button:hover {
+.number-control-handle.button:hover {
   color: var(--color-text-primary);
   background: var(--color-surface-hover);
   border-color: var(--color-border-subtle);
   cursor: ew-resize;
 }
 
-.scrubbable-number-input {
+.number-control-input {
   width: 100%;
   min-width: 0;
   height: 100%;
@@ -48,17 +48,17 @@
   outline: none;
 }
 
-.scrubbable-number-input::placeholder {
+.number-control-input::placeholder {
   color: var(--color-text-secondary);
 }
 
-.scrubbable-number-input::-webkit-inner-spin-button,
-.scrubbable-number-input::-webkit-outer-spin-button {
+.number-control-input::-webkit-inner-spin-button,
+.number-control-input::-webkit-outer-spin-button {
   margin: 0;
   appearance: none;
 }
 
-.scrubbable-number-unit {
+.number-control-unit {
   align-self: center;
   margin-left: calc(-1 * var(--space-1));
   padding-right: var(--space-2);

@@ -1,5 +1,5 @@
 import { getGradientStopsCss, getSortedStops } from '@/shared/paint'
-import ColorSwatch from '@/shared/ui/primitives/SwatchButton'
+import SwatchButton from '@/shared/ui/primitives/SwatchButton'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
@@ -60,14 +60,14 @@ function GradientControl({
       aria-label={label}
       style={style}
     >
-      <ColorSwatch
+      <SwatchButton
         label={`${label} start color`}
         presets={presets}
         value={firstStop.color}
         onChange={(color) => setStopColor(firstStop, color)}
       />
       <div className="gradient-control-preview" aria-hidden="true" />
-      <ColorSwatch
+      <SwatchButton
         label={`${label} end color`}
         presets={presets}
         value={lastStop.color}

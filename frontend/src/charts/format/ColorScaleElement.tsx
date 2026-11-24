@@ -1,8 +1,8 @@
 import { getSideOrientation } from '@/shared/layout'
 import { getVisibility } from '@/shared/ui/groups/getVisibility'
 import Group from '@/shared/ui/groups/Group'
-import LayoutControls from '@/shared/ui/groups/LayoutGroup'
-import PositionControls from '@/shared/ui/groups/PositionGroup'
+import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
+import PositionGroup from '@/shared/ui/groups/PositionGroup'
 import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
 import AxisLabelsGroup from './AxisLabelsGroup'
@@ -88,7 +88,7 @@ function ColorScaleElement({
   return (
     <>
       <Group title="Position">
-        <PositionControls
+        <PositionGroup
           label="Color scale"
           positions={positionOptions}
           value={value.layout}
@@ -96,7 +96,7 @@ function ColorScaleElement({
         />
       </Group>
       <Group title="Layout">
-        <LayoutControls
+        <LayoutGroup
           box={createSizeBox(value, onChange)}
           label="Color scale"
           value={value.layout}

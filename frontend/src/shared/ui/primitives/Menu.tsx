@@ -17,7 +17,7 @@ export type OptionItem<TValue extends string> = {
   value: TValue
 }
 
-type OptionsMenuProps<TValue extends string> = {
+type MenuProps<TValue extends string> = {
   options: OptionItem<TValue>[]
   renderOption?: (option: OptionItem<TValue>) => ReactNode
   value: TValue
@@ -30,19 +30,19 @@ type OptionsMenuProps<TValue extends string> = {
  * is marked with a check.
  * @param props Options, selected value, optional rendering and handler.
  */
-function OptionsMenu<TValue extends string>({
+function Menu<TValue extends string>({
   options,
   renderOption,
   value,
   onChange,
-}: OptionsMenuProps<TValue>) {
+}: MenuProps<TValue>) {
   return (
-    <Tile className="options-menu stack">
+    <Tile className="menu stack">
       {options.map((option) => {
         const isSelected = option.value === value
         return (
           <Button
-            className="options-menu-item spread"
+            className="menu-item spread"
             role="option"
             aria-selected={isSelected}
             isActive={isSelected}
@@ -61,4 +61,4 @@ function OptionsMenu<TValue extends string>({
   )
 }
 
-export default OptionsMenu
+export default Menu

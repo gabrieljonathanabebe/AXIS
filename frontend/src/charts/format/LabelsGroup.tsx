@@ -1,8 +1,8 @@
 import { getVisibility } from '@/shared/ui/groups/getVisibility'
 import Group from '@/shared/ui/groups/Group'
-import NumberFormatControls from '@/shared/ui/groups/NumberFormatGroup'
-import PositionControls from '@/shared/ui/groups/PositionGroup'
-import TextStyleControls from '@/shared/ui/groups/TextGroup'
+import NumberFormatGroup from '@/shared/ui/groups/NumberFormatGroup'
+import PositionGroup from '@/shared/ui/groups/PositionGroup'
+import TextGroup from '@/shared/ui/groups/TextGroup'
 
 import type { LabelPosition, LabelsAppearance } from '@/charts/types'
 import type { OptionItem } from '@/shared/ui/primitives/Menu'
@@ -36,7 +36,7 @@ function LabelsGroup({
       visibility={getVisibility(value, onChange)}
     >
       <Group title="Position">
-        <PositionControls
+        <PositionGroup
           label="Label"
           positions={positions}
           value={value.layout}
@@ -44,7 +44,7 @@ function LabelsGroup({
         />
       </Group>
       <Group title="Text">
-        <TextStyleControls
+        <TextGroup
           label="Label"
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}
@@ -52,7 +52,7 @@ function LabelsGroup({
       </Group>
       {!isRadial ? (
         <Group title="Format">
-          <NumberFormatControls
+          <NumberFormatGroup
             label="Label"
             value={value.numberFormat}
             onChange={(numberFormat) => onChange({ ...value, numberFormat })}

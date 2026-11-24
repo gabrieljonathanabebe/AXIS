@@ -27,7 +27,7 @@ type LayoutPosition<TLayout extends PartialLayout> = NonNullable<
   TLayout['position']
 >
 
-type PositionControlsProps<TLayout extends PartialLayout> = {
+type PositionGroupProps<TLayout extends PartialLayout> = {
   box?: LayoutBox
   label: string
   positions?: OptionItem<LayoutPosition<TLayout>>[]
@@ -71,15 +71,15 @@ const MAX_ICONS_PER_COLUMN = 3
  * an icon group: sides show only the arrow, positions with their own
  * icon, e.g. of the data labels, icon and word across the row. A single
  * position needs no control. Reads only its fields, so it takes the same
- * layout as `LayoutControls`.
+ * layout as `LayoutGroup`.
  */
-function PositionControls<TLayout extends PartialLayout>({
+function PositionGroup<TLayout extends PartialLayout>({
   box,
   label,
   positions = sideOptions as OptionItem<LayoutPosition<TLayout>>[],
   value,
   onChange,
-}: PositionControlsProps<TLayout>) {
+}: PositionGroupProps<TLayout>) {
   const { alignment, position } = value
   const showsPlacement =
     position !== undefined &&
@@ -136,4 +136,4 @@ function PositionControls<TLayout extends PartialLayout>({
   )
 }
 
-export default PositionControls
+export default PositionGroup

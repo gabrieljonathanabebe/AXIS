@@ -1,6 +1,6 @@
 import { getVisibility } from '@/shared/ui/groups/getVisibility'
 import Group from '@/shared/ui/groups/Group'
-import TextStyleControls from '@/shared/ui/groups/TextGroup'
+import TextGroup from '@/shared/ui/groups/TextGroup'
 import TextInput from '@/shared/ui/primitives/TextInput'
 import Row from '@/shared/ui/rows/Row'
 
@@ -45,7 +45,7 @@ function AxisTitleGroup({
           onValueChange={(text) => onChange({ ...value, text })}
         />
       </Row>
-      <TextStyleControls
+      <TextGroup
         label={`${label} title`}
         value={value.textStyle}
         onChange={(textStyle) => onChange({ ...value, textStyle })}

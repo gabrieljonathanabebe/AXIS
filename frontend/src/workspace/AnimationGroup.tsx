@@ -1,6 +1,6 @@
 import { Timer } from 'lucide-react'
 
-import ScrubbableNumber from '@/shared/ui/controls/NumberControl'
+import NumberControl from '@/shared/ui/controls/NumberControl'
 import SelectControl from '@/shared/ui/controls/SelectControl'
 import Group from '@/shared/ui/groups/Group'
 import Row from '@/shared/ui/rows/Row'
@@ -46,7 +46,7 @@ function AnimationGroup({ value, onChange }: AnimationGroupProps) {
           value={value.easing}
           onChange={(easing) => onChange({ ...value, easing })}
         />
-        <ScrubbableNumber
+        <NumberControl
           icon={<Timer size={14} />}
           label="Animation duration"
           max={2000}

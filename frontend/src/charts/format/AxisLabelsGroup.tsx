@@ -1,11 +1,11 @@
 import { Ruler } from 'lucide-react'
 
 import { showsDateLabels } from '@/charts/getEffectiveTimeGrain'
-import ScrubbableNumber from '@/shared/ui/controls/NumberControl'
+import NumberControl from '@/shared/ui/controls/NumberControl'
 import RotationDial from '@/shared/ui/controls/RotationDial'
 import Group from '@/shared/ui/groups/Group'
-import NumberFormatControls from '@/shared/ui/groups/NumberFormatGroup'
-import TextStyleControls from '@/shared/ui/groups/TextGroup'
+import NumberFormatGroup from '@/shared/ui/groups/NumberFormatGroup'
+import TextGroup from '@/shared/ui/groups/TextGroup'
 import Row from '@/shared/ui/rows/Row'
 import DateFormatRow from './DateFormatRow'
 
@@ -62,7 +62,7 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
     <Group group={group} title="Labels" visibility={visibility}>
       <Group title="Layout">
         <Row>
-          <ScrubbableNumber
+          <NumberControl
             icon={<Ruler size={14} />}
             label={`${label} tick count`}
             max={20}
@@ -81,14 +81,14 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
         </Row>
       </Group>
       <Group title="Text">
-        <TextStyleControls
+        <TextGroup
           label={`${label} label`}
           value={value.textStyle}
           onChange={(textStyle) => onChange({ ...value, textStyle })}
         />
       </Group>
       <Group title="Format">
-        <NumberFormatControls
+        <NumberFormatGroup
           isDate={isDate}
           label={label}
           value={value.numberFormat}

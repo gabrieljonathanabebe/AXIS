@@ -8,7 +8,7 @@ import {
   hasOwnColor,
   PAINT_TYPE_LABELS,
 } from '@/shared/paint'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import RotationDial from '../controls/RotationDial'
 import SegmentedControl from '../controls/SegmentedControl'
 import Group from '../groups/Group'
@@ -132,7 +132,7 @@ function PaintEditor({
       <>
         {typeRow}
         <Row>
-          <ScrubbableNumber
+          <NumberControl
             icon={<ArrowLeftToLine size={14} />}
             label={`${label} start opacity`}
             max={100}
@@ -143,7 +143,7 @@ function PaintEditor({
               setPaint({ ...paint, startOpacity: percent / 100 })
             }}
           />
-          <ScrubbableNumber
+          <NumberControl
             icon={<ArrowRightToLine size={14} />}
             label={`${label} end opacity`}
             max={100}
@@ -176,7 +176,7 @@ function PaintEditor({
       ) : (
         <Group title="Shape">
           <Row>
-            <ScrubbableNumber
+            <NumberControl
               icon="X"
               label={`${label} center x`}
               max={RADIAL_CENTER_RANGE.max}
@@ -187,7 +187,7 @@ function PaintEditor({
                 setPaint({ ...paint, centerX: percent / 100 })
               }}
             />
-            <ScrubbableNumber
+            <NumberControl
               icon="Y"
               label={`${label} center y`}
               max={RADIAL_CENTER_RANGE.max}
@@ -200,7 +200,7 @@ function PaintEditor({
             />
           </Row>
           <Row>
-            <ScrubbableNumber
+            <NumberControl
               icon={<Radius size={14} />}
               label={`${label} radius`}
               max={MAX_RADIAL_RADIUS}

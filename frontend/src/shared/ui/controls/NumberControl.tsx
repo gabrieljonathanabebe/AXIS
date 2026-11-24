@@ -10,7 +10,7 @@ import type {
   PointerEvent as ReactPointerEvent,
 } from 'react'
 
-type ScrubbableNumberProps = {
+type NumberControlProps = {
   icon?: ReactNode
   label: string
   value: number | null
@@ -49,7 +49,7 @@ function normalizeValue(value: number, step: number): number {
  * dragging or stepping starts from the minimum.
  * @param props Value, bounds, step, optional icon, unit and auto action.
  */
-function ScrubbableNumber({
+function NumberControl({
   icon,
   label,
   value,
@@ -60,7 +60,7 @@ function ScrubbableNumber({
   unit,
   onAuto,
   onValueChange,
-}: ScrubbableNumberProps) {
+}: NumberControlProps) {
   const [draftValue, setDraftValue, resetDraftValue] = useDraftValue(value)
   const dragState = useRef<DragState | null>(null)
   const pendingValue = useRef<number | null>(null)
@@ -192,11 +192,9 @@ function ScrubbableNumber({
   }
 
   return (
-    <div
-      className={`control-frame scrubbable-number ${icon ? 'has-icon' : ''}`}
-    >
+    <div className={`control-frame number-control ${icon ? 'has-icon' : ''}`}>
       <Button
-        className="scrubbable-number-handle"
+        className="number-control-handle"
         aria-label={`Drag to change ${label}`}
         title={icon ? label : 'Drag horizontally to adjust'}
         onPointerDown={handlePointerDown}
@@ -207,7 +205,7 @@ function ScrubbableNumber({
         {icon ?? <GripVertical size={13} />}
       </Button>
       <input
-        className="scrubbable-number-input"
+        className="number-control-input"
         type="number"
         aria-label={label}
         min={min}
@@ -222,10 +220,10 @@ function ScrubbableNumber({
         onKeyDown={handleKeyDown}
       />
       {unit && value !== null ? (
-        <span className="scrubbable-number-unit">{unit}</span>
+        <span className="number-control-unit">{unit}</span>
       ) : null}
     </div>
   )
 }
 
-export default ScrubbableNumber
+export default NumberControl

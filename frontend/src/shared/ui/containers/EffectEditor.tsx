@@ -1,7 +1,7 @@
 import { Blend, CircleDashed, Scaling } from 'lucide-react'
 
 import { createEffect } from '@/shared/effect'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import SelectControl from '../controls/SelectControl'
 import Group from '../groups/Group'
 import ShadowControls from '../groups/ShadowControls'
@@ -52,7 +52,7 @@ function EffectEditor({
         return (
           <Group title="Intensity">
             <Row>
-              <ScrubbableNumber
+              <NumberControl
                 icon={<CircleDashed size={14} />}
                 label={`${label} intensity`}
                 max={maxBlur}
@@ -67,7 +67,7 @@ function EffectEditor({
         return (
           <Group title="Blur">
             <Row>
-              <ScrubbableNumber
+              <NumberControl
                 icon={<CircleDashed size={14} />}
                 label={`${label} blur`}
                 max={maxBlur}
@@ -82,7 +82,7 @@ function EffectEditor({
         return (
           <Group title="Grain">
             <Row>
-              <ScrubbableNumber
+              <NumberControl
                 icon={<Blend size={14} />}
                 label={`${label} intensity`}
                 max={100}
@@ -93,7 +93,7 @@ function EffectEditor({
                   onChange({ ...value, opacity: percent / 100 })
                 }}
               />
-              <ScrubbableNumber
+              <NumberControl
                 icon={<Scaling size={14} />}
                 label={`${label} size`}
                 max={MAX_NOISE_SIZE}

@@ -1,6 +1,6 @@
 import Group from '@/shared/ui/groups/Group'
-import LayoutControls from '@/shared/ui/groups/LayoutGroup'
-import PositionControls from '@/shared/ui/groups/PositionGroup'
+import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
+import PositionGroup from '@/shared/ui/groups/PositionGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
 import { getLayoutBounds } from '@/workspace/chartLayout'
 
@@ -55,7 +55,7 @@ function ContainerElement({
   return (
     <>
       <Group title="Position">
-        <PositionControls
+        <PositionGroup
           box={box}
           label="Container"
           value={value.layout}
@@ -63,7 +63,7 @@ function ContainerElement({
         />
       </Group>
       <Group title="Layout">
-        <LayoutControls
+        <LayoutGroup
           box={box}
           label="Container"
           value={value.layout}

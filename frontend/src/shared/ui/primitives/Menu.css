@@ -1,4 +1,4 @@
-.options-menu {
+.menu {
   --stack-gap: 0;
 
   width: 100%;
@@ -10,7 +10,7 @@
   border: none;
 }
 
-.options-menu-item {
+.menu-item {
   width: 100%;
   justify-content: space-between;
   min-height: var(--control-height-sm);
@@ -24,19 +24,19 @@
   white-space: nowrap;
 }
 
-.options-menu-item:hover:not(:disabled) {
+.menu-item:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: var(--color-surface-default);
   border-color: transparent;
 }
 
 /* An option the control cannot take now, e.g. a second background blur. */
-.options-menu-item:disabled {
+.menu-item:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
 
-.options-menu-item.is-active {
+.menu-item.is-active {
   color: var(--color-text-primary);
   background: var(--color-surface-active);
   border-color: transparent;

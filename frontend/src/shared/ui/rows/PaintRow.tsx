@@ -2,7 +2,7 @@ import { Blend } from 'lucide-react'
 
 import { hasOwnColor, hasPaintEditor, PAINT_TYPES } from '@/shared/paint'
 import PaintEditor from '../containers/PaintEditor'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import PaintControl from '../controls/PaintControl'
 import Row from './Row'
 
@@ -111,7 +111,7 @@ function PaintRow<TValue extends Fill<Paint | SeriesPaint>>({
   return (
     <Row details={getDetails()} remove={remove}>
       {getControl()}
-      <ScrubbableNumber
+      <NumberControl
         icon={<Blend size={14} />}
         label={`${label} opacity`}
         max={100}

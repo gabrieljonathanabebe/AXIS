@@ -2,7 +2,7 @@ import { Fullscreen, MoveHorizontal, MoveVertical, Space } from 'lucide-react'
 
 import { isSide } from '@/shared/layout'
 import AlignmentControl from '../controls/AlignmentControl'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
@@ -13,7 +13,7 @@ import type { OptionItem } from '../primitives/Menu'
 import type { LayoutBox } from '../rows/BoxRow'
 
 // ===== TYPES =================================================================
-type LayoutControlsProps<TLayout extends PartialLayout> = {
+type LayoutGroupProps<TLayout extends PartialLayout> = {
   box?: LayoutBox
   label: string
   maxGap?: number
@@ -41,16 +41,16 @@ const orientationIcons = {
  * container; `box` adds W | H with the unit and bounds of the element.
  * At a side, orientation and alignment belong to the position, e.g. of a
  * legend, so they show only without one. Reads only its fields, so it
- * takes the same layout as `PositionControls`.
+ * takes the same layout as `PositionGroup`.
  */
-function LayoutControls<TLayout extends PartialLayout>({
+function LayoutGroup<TLayout extends PartialLayout>({
   box,
   label,
   maxGap = 48,
   maxPadding = 64,
   value,
   onChange,
-}: LayoutControlsProps<TLayout>) {
+}: LayoutGroupProps<TLayout>) {
   const { alignment, orientation, position } = value
   const isAtSide = position !== undefined && isSide(position)
   const arrangement = [
@@ -82,7 +82,7 @@ function LayoutControls<TLayout extends PartialLayout>({
   ].filter((control) => control !== null)
   const spacing = [
     value.gap !== undefined ? (
-      <ScrubbableNumber
+      <NumberControl
         icon={<Space size={14} />}
         key="gap"
         label={`${label} gap`}
@@ -95,7 +95,7 @@ function LayoutControls<TLayout extends PartialLayout>({
       />
     ) : null,
     value.padding !== undefined ? (
-      <ScrubbableNumber
+      <NumberControl
         icon={<Fullscreen size={14} />}
         key="padding"
         label={`${label} padding`}
@@ -119,4 +119,4 @@ function LayoutControls<TLayout extends PartialLayout>({
   )
 }
 
-export default LayoutControls
+export default LayoutGroup

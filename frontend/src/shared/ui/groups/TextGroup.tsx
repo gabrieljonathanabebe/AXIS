@@ -3,7 +3,7 @@ import { ALargeSmall, Italic } from 'lucide-react'
 import AlignmentControl from '../controls/AlignmentControl'
 import ColorControl from '../controls/ColorControl'
 import FontWeightControl from '../controls/FontWeightControl'
-import ScrubbableNumber from '../controls/NumberControl'
+import NumberControl from '../controls/NumberControl'
 import IconButton from '../primitives/IconButton'
 import Row from '../rows/Row'
 
@@ -17,7 +17,7 @@ type TextAlignment = {
   onChange: (value: HorizontalAlignment) => void
 }
 
-type TextStyleControlsProps = {
+type TextGroupProps = {
   alignment?: TextAlignment
   label: string
   maxFontSize?: number
@@ -33,14 +33,14 @@ type TextStyleControlsProps = {
  * rows.
  * @param props Text style, its bounds and optional alignment.
  */
-function TextStyleControls({
+function TextGroup({
   alignment,
   label,
   maxFontSize = 28,
   minFontSize = 9,
   value,
   onChange,
-}: TextStyleControlsProps) {
+}: TextGroupProps) {
   const isItalic = value.fontStyle === 'italic'
   return (
     <>
@@ -59,7 +59,7 @@ function TextStyleControls({
           </IconButton>
         }
       >
-        <ScrubbableNumber
+        <NumberControl
           icon={<ALargeSmall size={14} />}
           label={`${label} font size`}
           max={maxFontSize}
@@ -92,4 +92,4 @@ function TextStyleControls({
   )
 }
 
-export default TextStyleControls
+export default TextGroup

@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import OptionContent from '../display/OptionContent'
 import Button from '../primitives/Button'
-import OptionsMenu from '../primitives/Menu'
+import Menu from '../primitives/Menu'
 import Popover from '../primitives/Popover'
 
 import type { ReactNode } from 'react'
@@ -64,7 +64,7 @@ function SelectControl<TValue extends string>({
       <Popover
         label={`${label} options`}
         open={isOpen}
-        className="options-menu-popover"
+        className="menu-popover"
         placement="bottom-start"
         role="listbox"
         matchTriggerWidth={variant === 'control'}
@@ -81,7 +81,7 @@ function SelectControl<TValue extends string>({
           </Button>
         )}
       >
-        <OptionsMenu
+        <Menu
           options={options}
           renderOption={renderOption}
           value={value}
