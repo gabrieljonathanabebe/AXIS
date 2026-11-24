@@ -38,6 +38,9 @@ Folgende Dateien sind die Source of Truth:
   `docs/ARCHITECTURE.md`
 - UI, Designsystem und wiederverwendbare Controls:
   `docs/DESIGN_SYSTEM.md`
+- UI-Komponenten mit Ebene, Zweck und Ziel (Register, im selben Commit
+  wie jede Komponentenänderung pflegen):
+  `docs/COMPONENTS.md`
 - Coding-, Workflow- und Git-Regeln:
   `docs/DEVELOPMENT.md`
 - Aktueller Entwicklungsstand und Prioritäten:
