@@ -28,12 +28,11 @@ Nachher:
 [ Prefix                       ]
 ```
 
-Vorschlag: In einer Gruppe (oder einem Editor), deren Zeilen kein Minus,
-Zahnrad oder Aktion haben, lassen alle Zeilen die leere Icon-Spalte weg;
-hat eine Zeile ein Icon, behalten alle die Spalte, damit die Felder der
-Gruppe fluchten (heute nur Text-Gruppen mit dem Kursiv-Icon und die
-Gruppe Line mit dem Zahnrad; beide fallen mittelfristig weg). `isFull`
-entfällt. · Aufwand: S · Wo lösen: `Row.css` · Stand: offen (4a)
+Vorschlag: Zeilen ohne Icon lassen die leere Icon-Spalte weg, je Gruppe
+entschieden. · Aufwand: S · Wo lösen: `Row.css` · Stand: verworfen.
+Umgesetzt und wieder zurückgenommen: Spalten, die je Gruppe an anderer
+Stelle beginnen, bleiben unruhig, auch wenn die oberste Gruppe
+entscheidet. Ersetzt durch O6.
 
 ### O2 Stopp-Zeile auf dem Raster der Row
 
@@ -56,7 +55,8 @@ Nachher:
 Vorschlag: Der Swatch rückt an die Stelle des Icons im Positionsfeld;
 die Zeile ist eine `pair`-Row mit Minus in der Icon-Spalte und fluchtet
 mit der Fill-Zeile; das eigene Raster `.gradient-stop` entfällt. ·
-Aufwand: S · Wo lösen: `GradientStopRow` über `Row` · Stand: offen (4a)
+Aufwand: S · Wo lösen: `GradientStopRow` über `Row` · Stand: verschoben
+(4c, Paint wird dort ohnehin umgebaut)
 
 ### O3 Hinweis „No matching fields“ eingerückt
 
@@ -132,3 +132,111 @@ Vorschlag: Der Filter nutzt die Breite und den Innenabstand der
 Editor-Fläche (`variant="editor"` ohne die Platzierung links) statt
 eigener Werte. · Aufwand: S · Wo lösen: `Popover.css` · Stand: offen
 (Design-Slice)
+
+### O6 Festes Raster für jede Row
+
+Ort: `shared/ui/Row`, alle Zeilen im Format-Panel und in Editoren
+
+Vorher (nach O1):
+
+```text
+LAYOUT
+[ W 12          ] [ H 14          ]
+TEXT
+[ 13 px    ] [ A A A    ]  I
+FORMAT
+[ Auto                         ▾ ]
+```
+
+Nachher:
+
+```text
+LAYOUT
+[ W 12     ] [ H 14     ]  ·
+TEXT
+[ 13 px    ] [ A A A    ]  I
+FORMAT
+[ Auto                 ▾ ]  ·
+```
+
+Vorschlag: Jede Row hat immer dieselben drei Spalten `1fr 1fr 24px`, die
+Aktionsspalte bleibt auch leer reserviert, wie in Figma. Arten vorerst:
+Paar, Einzeln (Spalte 1), Breit (Spalte 1 und 2, nie über die
+Aktionsspalte). Untergruppen ändern das Raster nicht. Provisorium bis
+zum Design-Slice. · Aufwand: S · Wo lösen: `Row.css` · Stand: erledigt
+(4a)
+
+### O7 In der Aktionsspalte nur Aktionen
+
+Ort: Aktionsspalte jeder Row, heute der Kursiv-Schalter in jeder Gruppe
+„Text“ (`TextStyleControls`)
+
+Vorher:
+
+```text
+TEXT
+[ 13 px    ] [ A A A    ]  I     ← I ist ein Wert, keine Aktion
+[ ● EEF4FF ]               ·
+```
+
+Nachher:
+
+```text
+TEXT
+[ 13 px    ] [ Inter     ▾ ]  ·
+[ Bold Italic ▾ ][ ● EEF4FF ]  ·
+```
+
+Vorschlag: In der Aktionsspalte stehen nur Aktionen (Auge, ＋, −,
+Zahnrad), nie Werte; der Kursiv-Schalter geht mit dem Schriftgewicht in
+einem Auswahlfeld „Schnitt“ auf (4b). · Aufwand: M · Wo lösen:
+`TextStyleControls`, Regel in `DESIGN_SYSTEM.md` · Stand: offen (4b)
+
+### O8 Controls füllen ihre Zelle in gleicher Höhe und mit gleichem Rahmen
+
+Ort: alle Controls in Rows, aufgefallen bei Format (`Auto` neben
+`1,200 | 1.2K`)
+
+Vorher:
+
+```text
+[⇥ Auto     ]  (1,200|1.2K)      ← Segmente schmaler, anderer Rahmen
+```
+
+Nachher:
+
+```text
+[⇥ Auto     ] [1,200 | 1.2K]  ·  ← beide füllen ihre Zelle
+```
+
+Vorschlag: Alle Controls haben dieselbe Höhe und denselben Rahmen
+(`.control-frame`) und füllen ihre Zelle, auch `SegmentedControl`. ·
+Aufwand: S · Wo lösen: `.control-frame`, `SegmentedControl.css` · Stand:
+offen (Design-Slice)
+
+### O9 Zeilen der Gruppe „Format“ neu ordnen
+
+Ort: `shared/ui/NumberFormatControls`, Gruppe „Format“ (Labels, Tooltip,
+Achsen, Card)
+
+Vorher:
+
+```text
+FORMAT
+[ Number                 ▾ ]  ·
+[⇥ Auto    ] [1,200 | 1.2K]  ·
+[⌶ $1.2K                 ]  ·
+```
+
+Nachher (Richtung, im Design-Slice festlegen):
+
+```text
+FORMAT
+[ Number   ▾ ] [ 1.2K     ▾ ]  ·
+[⇥ 2         ] [⌶ $ … €     ]  ·
+```
+
+Vorschlag: Format, Nachkommastellen, Notation und Vorschau als Ganzes
+neu ordnen, sodass jede Zeile ein Paar ist und die Vorschau nicht eine
+eigene Zeile braucht. · Aufwand: M · Wo lösen: `NumberFormatControls` ·
+Stand: verschoben (Design-Slice)

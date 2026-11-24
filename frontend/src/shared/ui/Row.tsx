@@ -37,13 +37,12 @@ type RowProps = {
 // ===== COMPONENT =============================================================
 /**
  * One row of controls. With a label, the label stands left of the
- * controls. Without one, the row sits on the grid of the format panel:
- * two field columns and an icon column, so fields and icons of a group
- * line up with the icons of its heading; in a group whose rows have no
- * icon, the fields share the whole width. `pair` puts two fields side by
- * side, `single` one field into the first column, `wide` one field
- * across both; a wide row without icon also takes the icon column. The
- * icon column holds one icon: the minus of `remove`, else the gear of
+ * controls. Without one, the row sits on the fixed grid of the format
+ * panel: two field columns and an action column that stays reserved when
+ * empty, so fields and actions of all rows line up with the actions of
+ * the group headings. `pair` puts two fields side by side, `single` one
+ * field into the first column, `wide` one field across both. The action
+ * column holds one icon: the minus of `remove`, else the gear of
  * `details`, else `action`, e.g. the italic toggle.
  * @param props Controls, optional label, layout and icon.
  */

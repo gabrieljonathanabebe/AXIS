@@ -6,9 +6,9 @@
   min-height: 36px;
 }
 
-/* Grid of the format panel: two field columns and an icon column that
-   rows keep, also when empty, so fields and icons of all rows of a group
-   line up with the icons of its heading. */
+/* Fixed grid of the format panel, as in Figma: two field columns and an
+   action column that every row keeps, also when empty, so fields and
+   actions of all rows line up with the actions of the group headings. */
 .row-compact {
   --control-border-color: transparent;
   --control-font-size: var(--font-size-xs);
@@ -21,25 +21,10 @@
   min-height: var(--control-height-sm);
 }
 
-/* One field across both field columns, e.g. a text input, a segmented
-   control or a select with a long name. */
+/* One field across both field columns, never across the action column,
+   e.g. a text input, a segmented control or a select with a long name. */
 .row-compact.is-wide > :first-child {
   grid-column: span 2;
-}
-
-/* Without an icon a wide row also takes the icon column, e.g. the
-   function of a card; pairs keep it, so their fields stay aligned. */
-.row-compact.is-wide:not(:has(> .row-icon)) > :first-child {
-  grid-column: 1 / -1;
-}
-
-/* In a group or editor whose rows have no icon, the rows drop the icon
-   column and their fields share the whole width, e.g. X and Y of a
-   position. Once one row has an icon, all keep the column, so the fields
-   of the group still line up. */
-:is(.group-content, .editor-body):not(:has(> .row-compact > .row-icon))
-  > .row-compact {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* The one icon of a row, e.g. a minus or the italic toggle; always in the
