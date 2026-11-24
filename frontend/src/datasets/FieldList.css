@@ -19,7 +19,6 @@
 }
 
 .field-list-empty {
-  padding-left: var(--indent-nested);
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
 }

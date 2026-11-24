@@ -79,7 +79,7 @@ No matching fields
 Vorschlag: Die Einrückung stammt aus der Zeit der verschachtelten
 Sections; seit Section → Group stehen die Feldgruppen bündig, der
 Hinweis auch; danach wird `--indent-nested` nicht mehr genutzt. ·
-Aufwand: S · Wo lösen: `FieldList.css`, `tokens.css` · Stand: offen
+Aufwand: S · Wo lösen: `FieldList.css`, `tokens.css` · Stand: erledigt
 (Teil 4)
 
 ### O4 Titel von Achse und Objekt verschieden aufgebaut
