@@ -56,10 +56,10 @@ function ColorEditor<TPreset extends string = never>({
   }
 
   return (
-    <div className="color-picker stack">
+    <div className="color-editor stack">
       {allPresets.length > 0 ? (
         <div
-          className="color-picker-presets"
+          className="color-editor-presets"
           role="radiogroup"
           aria-label={`${label} presets`}
         >
@@ -87,10 +87,10 @@ function ColorEditor<TPreset extends string = never>({
         </div>
       ) : null}
       <HexColorPicker color={pickerColor} onChange={selectCustomColor} />
-      <label className="color-picker-hex-field">
+      <label className="color-editor-hex-field">
         <span>HEX</span>
         <HexColorInput
-          className="color-picker-hex-input"
+          className="color-editor-hex-input"
           color={pickerColor}
           prefixed
           aria-label={`${label} hex value`}

@@ -89,9 +89,9 @@ function PaintControl({
     )
   }
   return (
-    <div className="control-frame color-control">
+    <div className="control-frame swatch-control">
       {swatch}
-      <span className="color-control-name">
+      <span className="swatch-control-name">
         {PAINT_TYPE_LABELS[value.type]}
       </span>
     </div>

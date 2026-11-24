@@ -1438,8 +1438,8 @@ Ellipsis und Tooltip).
   `src/shared/format/formatNumber.ts`.
 - Der Balken zeigt immer den Anteil des Werts am Ganzen.
 - Padding und Radius entsprechen den Chart-Picker-Kacheln. Andere
-  Kacheln (z. B. `FieldProfileWidget`) nutzen die Basisklassen
-  `stat-widget` und `stat-widget-hint` statt eigener Kopien.
+  Kacheln (z. B. `FieldProfileTile`) nutzen die Basisklassen
+  `stat-tile` und `stat-tile-hint` statt eigener Kopien.
 
 ## 9e. MiniHistogram
 

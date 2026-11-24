@@ -53,19 +53,19 @@ function DatasetTile({
 
   return (
     <Tile
-      className="dataset-card cluster"
+      className="dataset-tile cluster"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
-      <span className="dataset-card-icon">
+      <span className="dataset-tile-icon">
         <FileSpreadsheet size={16} />
       </span>
 
-      <span className="dataset-card-text stack">
-        <strong className="dataset-card-name" title={name}>
+      <span className="dataset-tile-text stack">
+        <strong className="dataset-tile-name" title={name}>
           {name}
         </strong>
-        <span className="dataset-card-meta">
+        <span className="dataset-tile-meta">
           {isLoading
             ? 'Loading...'
             : `${formatCompactNumber(rowCount)} rows · ${fieldCount} fields`}

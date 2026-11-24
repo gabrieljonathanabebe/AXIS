@@ -30,7 +30,7 @@ function DetailsControl({
   text,
 }: DetailsControlProps) {
   return (
-    <div className="control-frame color-control">
+    <div className="control-frame swatch-control">
       <div className="color-swatch">
         <Popover
           className={fitsContent ? 'is-fit-content' : ''}
@@ -51,7 +51,7 @@ function DetailsControl({
           <Editor>{children}</Editor>
         </Popover>
       </div>
-      <span className="color-control-name">{text}</span>
+      <span className="swatch-control-name">{text}</span>
     </div>
   )
 }

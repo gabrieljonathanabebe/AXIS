@@ -1,24 +1,24 @@
-.range-slider {
+.range-control {
   --range-thumb-size: 16px;
   --stack-gap: var(--space-1);
   width: 100%;
   min-width: 0;
 }
 
-.range-slider.has-inputs {
+.range-control.has-inputs {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 44px;
   align-items: center;
   gap: var(--space-2);
 }
 
-.range-slider-track {
+.range-control-track {
   position: relative;
   height: 18px;
 }
 
 /* Inset by half a thumb: native thumbs stop half their width from the end. */
-.range-slider-track::before {
+.range-control-track::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -36,7 +36,7 @@
   transform: translateY(-50%);
 }
 
-.range-slider-input {
+.range-control-input {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -47,20 +47,20 @@
   pointer-events: none;
 }
 
-.range-slider-input.is-raised {
+.range-control-input.is-raised {
   z-index: 1;
 }
 
-.range-slider-input:focus-visible {
+.range-control-input:focus-visible {
   outline: none;
 }
 
-.range-slider-input::-webkit-slider-runnable-track {
+.range-control-input::-webkit-slider-runnable-track {
   height: 100%;
   background: transparent;
 }
 
-.range-slider-input::-webkit-slider-thumb {
+.range-control-input::-webkit-slider-thumb {
   width: var(--range-thumb-size);
   height: var(--range-thumb-size);
   margin-top: 1px;
@@ -73,15 +73,15 @@
   pointer-events: auto;
 }
 
-.range-slider-input:focus-visible::-webkit-slider-thumb {
+.range-control-input:focus-visible::-webkit-slider-thumb {
   outline: var(--border-width-thick) solid var(--color-border-accent);
 }
 
-.range-slider-input::-moz-range-track {
+.range-control-input::-moz-range-track {
   background: transparent;
 }
 
-.range-slider-input::-moz-range-thumb {
+.range-control-input::-moz-range-thumb {
   width: 14px;
   height: 14px;
   background: var(--color-control-handle);
@@ -92,7 +92,7 @@
   pointer-events: auto;
 }
 
-.range-slider-values {
+.range-control-values {
   color: var(--color-text-secondary);
   font-size: var(--font-size-2xs);
   font-variant-numeric: tabular-nums;

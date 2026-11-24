@@ -1,4 +1,4 @@
-.color-control {
+.swatch-control {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -8,8 +8,8 @@
   padding-inline: var(--space-1);
 }
 
-.color-control-hex,
-.color-control-name {
+.swatch-control-hex,
+.swatch-control-name {
   min-width: 0;
   overflow: hidden;
   color: var(--color-text-primary);
@@ -19,7 +19,7 @@
   white-space: nowrap;
 }
 
-.color-control-hex {
+.swatch-control-hex {
   width: 100%;
   padding: 0;
   text-transform: uppercase;
@@ -30,7 +30,7 @@
 
 /* While its picker or editor is open, the control keeps its focus look,
    since the focus moves into the popover outside of it. */
-.color-control:has(.color-swatch-swatch[aria-expanded='true']) {
+.swatch-control:has(.color-swatch-swatch[aria-expanded='true']) {
   border-color: var(--color-accent);
   box-shadow: var(--shadow-accent);
 }

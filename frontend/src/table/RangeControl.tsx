@@ -45,9 +45,9 @@ function RangeControl({
   const isStartRaised = start > min + span / 2
 
   const track = (
-    <div className="range-slider-track" style={style}>
+    <div className="range-control-track" style={style}>
       <input
-        className={`range-slider-input ${isStartRaised ? 'is-raised' : ''}`}
+        className={`range-control-input ${isStartRaised ? 'is-raised' : ''}`}
         type="range"
         aria-label={`${label} start`}
         max={max}
@@ -59,7 +59,7 @@ function RangeControl({
         }}
       />
       <input
-        className="range-slider-input"
+        className="range-control-input"
         type="range"
         aria-label={`${label} end`}
         max={max}
@@ -78,9 +78,9 @@ function RangeControl({
 
   if (formatValue) {
     return (
-      <div className="range-slider stack">
+      <div className="range-control stack">
         {track}
-        <div className="range-slider-values spread">
+        <div className="range-control-values spread">
           <span>{formatValue(start)}</span>
           <span>{formatValue(end)}</span>
         </div>
@@ -88,7 +88,7 @@ function RangeControl({
     )
   }
   return (
-    <div className="range-slider has-inputs">
+    <div className="range-control has-inputs">
       <NumberInput
         label={`${label} start value`}
         max={end}

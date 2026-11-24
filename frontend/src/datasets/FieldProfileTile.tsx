@@ -54,12 +54,12 @@ function FieldProfileTile({
   const detectedLabel = semanticRoleLabels[field.semantic_role]
 
   return (
-    <Tile className="stat-widget field-profile">
+    <Tile className="stat-tile field-profile">
       <div className="field-profile-text stack">
         <strong className="field-profile-name" title={field.name}>
           {field.name}
         </strong>
-        <span className="stat-widget-hint">{createFieldSummary(field)}</span>
+        <span className="stat-tile-hint">{createFieldSummary(field)}</span>
       </div>
       <div className="field-profile-role cluster">
         <SelectControl

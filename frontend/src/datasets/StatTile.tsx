@@ -13,21 +13,21 @@ type StatTileProps = {
 
 function StatTile({ hint, icon, label, share, value }: StatTileProps) {
   return (
-    <Tile className="stat-widget stack">
-      <IconBadge className="stat-widget-label" label={label}>
+    <Tile className="stat-tile stack">
+      <IconBadge className="stat-tile-label" label={label}>
         {icon}
       </IconBadge>
-      <strong className="stat-widget-value">{value}</strong>
+      <strong className="stat-tile-value">{value}</strong>
       {share !== undefined ? (
-        <span className="stat-widget-meter" aria-hidden>
+        <span className="stat-tile-meter" aria-hidden>
           <span
-            className="stat-widget-meter-fill"
+            className="stat-tile-meter-fill"
             style={{ width: `${share * 100}%` }}
           />
         </span>
       ) : null}
       {hint ? (
-        <span className="stat-widget-hint" title={hint}>
+        <span className="stat-tile-hint" title={hint}>
           {hint}
         </span>
       ) : null}

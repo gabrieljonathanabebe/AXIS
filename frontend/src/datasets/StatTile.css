@@ -1,4 +1,4 @@
-.stat-widget {
+.stat-tile {
   --stack-gap: var(--space-2);
 
   align-content: start;
@@ -7,15 +7,15 @@
   border-radius: var(--radius-md);
 }
 
-.stat-widget-label {
+.stat-tile-label {
   font-size: var(--font-size-xs);
 }
 
-.stat-widget-label .icon-badge-label {
+.stat-tile-label .icon-badge-label {
   color: var(--color-text-secondary);
 }
 
-.stat-widget-value {
+.stat-tile-value {
   color: var(--color-text-primary);
   font-size: var(--font-size-lg);
   font-variant-numeric: tabular-nums;
@@ -24,21 +24,21 @@
   line-height: 1.1;
 }
 
-.stat-widget-meter {
+.stat-tile-meter {
   height: 4px;
   overflow: hidden;
   background: var(--color-border-subtle);
   border-radius: var(--radius-pill);
 }
 
-.stat-widget-meter-fill {
+.stat-tile-meter-fill {
   display: block;
   height: 100%;
   background: var(--color-accent);
   border-radius: inherit;
 }
 
-.stat-widget-hint {
+.stat-tile-hint {
   overflow: hidden;
   color: var(--color-text-secondary);
   font-size: var(--font-size-2xs);

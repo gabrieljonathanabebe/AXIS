@@ -52,7 +52,7 @@ function ColorControl<TPreset extends string = never>({
   onChange,
 }: ColorControlProps<TPreset>) {
   return (
-    <div className="control-frame color-control">
+    <div className="control-frame swatch-control">
       {swatch ?? (
         <ColorSwatch
           label={`${label} color`}
@@ -63,7 +63,7 @@ function ColorControl<TPreset extends string = never>({
       )}
       {typeof value !== 'string' && value.kind === 'custom' ? (
         <HexColorInput
-          className="color-control-hex"
+          className="swatch-control-hex"
           color={value.color}
           aria-label={`${label} hex value`}
           onChange={(hex) => {
@@ -71,7 +71,7 @@ function ColorControl<TPreset extends string = never>({
           }}
         />
       ) : (
-        <span className="color-control-name">
+        <span className="swatch-control-name">
           {getSwatchLabel(value, presets)}
         </span>
       )}
