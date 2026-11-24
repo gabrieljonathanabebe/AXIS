@@ -56,7 +56,7 @@ Vorschlag: Der Swatch rückt an die Stelle des Icons im Positionsfeld;
 die Zeile ist eine `pair`-Row mit Minus in der Icon-Spalte und fluchtet
 mit der Fill-Zeile; das eigene Raster `.gradient-stop` entfällt. ·
 Aufwand: S · Wo lösen: `GradientStopRow` über `Row` · Stand: verschoben
-(4c, Paint wird dort ohnehin umgebaut)
+(Teil 6, Paint wird dort ohnehin umgebaut)
 
 ### O3 Hinweis „No matching fields“ eingerückt
 
@@ -80,7 +80,7 @@ Vorschlag: Die Einrückung stammt aus der Zeit der verschachtelten
 Sections; seit Section → Group stehen die Feldgruppen bündig, der
 Hinweis auch; danach wird `--indent-nested` nicht mehr genutzt. ·
 Aufwand: S · Wo lösen: `FieldList.css`, `tokens.css` · Stand: offen
-(4a)
+(Teil 4)
 
 ### O4 Titel von Achse und Objekt verschieden aufgebaut
 
@@ -107,7 +107,7 @@ TITLE              👁
 
 Vorschlag: Eine gemeinsame `TitleGroup` mit optionaler Ausrichtung und
 Schriftgrenzen; das Auge des Objekttitels bleibt im Panel-Kopf. ·
-Aufwand: M · Wo lösen: neue `TitleGroup` · Stand: offen (Teil 8 oder
+Aufwand: M · Wo lösen: neue `TitleGroup` · Stand: offen (Teil 10 oder
 Design-Slice)
 
 ### O5 Filter-Popover breiter als die Editoren
@@ -164,7 +164,7 @@ Aktionsspalte bleibt auch leer reserviert, wie in Figma. Arten vorerst:
 Paar, Einzeln (Spalte 1), Breit (Spalte 1 und 2, nie über die
 Aktionsspalte). Untergruppen ändern das Raster nicht. Provisorium bis
 zum Design-Slice. · Aufwand: S · Wo lösen: `Row.css` · Stand: erledigt
-(4a)
+(Teil 4)
 
 ### O7 In der Aktionsspalte nur Aktionen
 
@@ -189,8 +189,8 @@ TEXT
 
 Vorschlag: In der Aktionsspalte stehen nur Aktionen (Auge, ＋, −,
 Zahnrad), nie Werte; der Kursiv-Schalter geht mit dem Schriftgewicht in
-einem Auswahlfeld „Schnitt“ auf (4b). · Aufwand: M · Wo lösen:
-`TextStyleControls`, Regel in `DESIGN_SYSTEM.md` · Stand: offen (4b)
+einem Auswahlfeld „Schnitt“ auf (Teil 5). · Aufwand: M · Wo lösen:
+`TextStyleControls`, Regel in `DESIGN_SYSTEM.md` · Stand: offen (Teil 5)
 
 ### O8 Controls füllen ihre Zelle in gleicher Höhe und mit gleichem Rahmen
 

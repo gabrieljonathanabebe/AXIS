@@ -263,7 +263,7 @@ Referenz, neues Bild und Unterschied.
 
 Strukturberichte prüfen die Regeln aus Abschnitt 21 und melden vorerst
 nur, ohne den Lauf scheitern zu lassen; scharf werden sie im
-Refactoring-Slice (`ROADMAP.md`, 3.14, Teil 8). Im Ordner `frontend/`:
+Refactoring-Slice (`ROADMAP.md`, 3.14, Teil 10). Im Ordner `frontend/`:
 
 ```bash
 npm run check:boundaries  # Schichtgrenzen (ESLint-Grenzen)
@@ -279,7 +279,7 @@ uv run lint-imports       # Schichtgrenzen (import-linter)
 ```
 
 Umgang mit den Berichten: am Ende eines Slices bzw. Teils ausführen und
-mit dem Stand davor vergleichen (bis Teil 8 die Zahlen in `ROADMAP.md`,
+mit dem Stand davor vergleichen (bis Teil 10 die Zahlen in `ROADMAP.md`,
 3.14, Teil 2). Neue Befunde durch die eigene Änderung vor dem Abschluss
 beheben oder im Abschluss begründen; bestehende Befunde nicht nebenbei
 beheben, sondern nur im Slice, der dafür vorgesehen ist. Der Abschluss
@@ -705,14 +705,15 @@ Panels und Editoren bestehen aus Ebenen. Die Endung eines Namens sagt
 die Ebene; jede Ebene setzt nur Bausteine der Ebenen darunter zusammen:
 
 ```text
-Container   Panel, Editor        enthalten Groups
-  Groups    fachliche Bündel von Gruppen
-  Group     Kopf (Titel, Auge, ＋, Einklappen) und Rows
-    Rows    fachliche Bündel von Zeilen
-    Row     Controls nebeneinander, dazu Label und Aktion
-      Control    verknüpft Primitives zu einem Wert
-        Primitive  Button, Input, Popover und ihre Varianten
+Container   Panel, Editor        enthalten Elements bzw. Groups
+  Element   ein Eintrag der Auswahl im Format-Panel, listet seine Groups
+    Group   Kopf (Titel, Auge, ＋, Einklappen) und Rows
+      Row   Controls nebeneinander, dazu Label und Aktion
+        Control    verknüpft Primitives zu einem Wert
+          Primitive  Button, Input, Popover und ihre Varianten
 ```
+
+Ein Editor beginnt wieder bei Group.
 
 Eine Basis ist die einzige Quelle für das, was ihre Ebene ausmacht.
 Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
@@ -722,9 +723,8 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
 | --------- | ------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ---------------------- |
 | Container | `…Panel`                       | `Panel`                                | Rand, Kopf, Einklappen                                                                                                   | `FormatPanel`, `BuildPanel`                                                        | `containers/`          |
 | Container | `…Editor`                      | `Editor`                               | Inhalt eines Popovers: Abstand, Kopf; setzt die Gruppenebene zurück, Gruppen darin beginnen oben                         | `PaintEditor`, `ColorEditor`                                                       | `containers/`          |
-| Groups    | `…Groups`                      | –                                      | kein Markup: welche Gruppen ein Element oder Baustein hat und in welcher Reihenfolge                                     | `LegendGroups`, `SurfaceGroups`                                                    | `groups/`              |
+| Element   | `…Element`                     | –                                      | kein Markup: listet die Groups eines Eintrags der Auswahl im Format-Panel                                                | `LegendElement`, `ContainerElement`                                                | – (in der Domäne)      |
 | Group     | `…Group`                       | `Group`                                | Titel, Auge, ＋, Einklappen, Icon in der Icon-Spalte, ausgeblendet nur die Überschrift, Ziel für Fokus und Scrollen      | `ZoomGroup`, `StrokeGroup`                                                         | `groups/`              |
-| Rows      | `…Rows`                        | –                                      | kein Markup: welche Zeilen ein Baustein hat                                                                              | `TextStyleRows`, `NumberFormatRows`                                                | `rows/`                |
 | Row       | `…Row`                         | `Row`                                  | Raster `1fr 1fr 24px`, Zeilentypen (Paar, Einzeln, Breit), optional Label, Aktion bzw. Minus in der Icon-Spalte          | `PaintRow`, `BoxRow`                                                               | `rows/`                |
 | Control   | `…Control`                     | keine Komponente, nur `.control-frame` | verknüpft Primitives zu einem bearbeiteten Wert                                                                          | `PaintControl`, `SelectControl`, `SegmentedControl`, `NumberControl`               | `controls/`            |
 | Primitive | Basis oder `…Button`, `…Input` | `Button`, `Input`, `Popover`           | `Button`: Optik und Arten (Text, Icon, Kachel, Swatch); `Input`: natives Eingabefeld; `Popover`: Auslöser und Aufklappen | `IconButton`, `SwatchButton`, `DropdownButton`, `TextInput`, `NumberInput`, `Menu` | `primitives/`          |
@@ -732,9 +732,16 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
 
 - **Nur nach unten:** Jede Ebene nutzt nur Ebenen darunter. Die Ordner
   unter `shared/ui/` folgen den Ebenen; die ESLint-Grenzen prüfen die
-  Richtung. Fachliche Rows, Groups und Editoren liegen in ihrer Domäne
-  (z. B. `charts/format/`) und folgen derselben Richtung. Einzige
-  Ausnahme ist das Popover (übernächste Regel).
+  Richtung. Fachliche Elemente, Groups, Rows und Editoren liegen in
+  ihrer Domäne (z. B. `charts/format/`) und folgen derselben Richtung.
+  Einzige Ausnahme ist das Popover (übernächste Regel).
+- **Element:** genau ein Eintrag der Auswahl oben im Format-Panel und das
+  Ziel von Cmd+Klick, z. B. Marks, Legende oder Achse (die Listen gibt es
+  als `ChartFormatElement`, `CardFormatElement` und
+  `ContainerFormatElement`). Ein Element hat keine Basis und kein eigenes
+  Markup, es listet nur seine Groups. Die Elemente je Objektart stehen im
+  Bauplan (S6); Auswahl und Cmd+Klick lesen dieselbe Liste. Elemente
+  liegen in ihrer Domäne.
 - **Varianten sind dünn:** Eine Variante (`IconButton`, `TextInput`,
   `Menu`) setzt nur feste Props und ruft ihre Basis auf; Optik und
   Verhalten stehen einmal in der Basis.
@@ -760,18 +767,18 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   `PaintControl` → `PaintEditor` → Stopp-Zeile → `PaintControl`.
 - **Eine Komponente rendert nur ihre eigene Ebene:** Ein `…Group`
   rendert seine `Group` selbst; ein Aufrufer legt nie eine `Group` um
-  eine Komponente herum, und ein `…Rows` rendert nie eine.
-- **Plural nur, wenn er entscheidet oder kapselt:** `…Groups` und
-  `…Rows` gibt es, wenn sie Auswahl oder Reihenfolge festlegen oder ein
-  fachliches Bündel an mehreren Stellen kapseln. Nur zu wiederholen ist
-  kein Grund; dann `Group` bzw. `Row` mehrfach rendern.
+  eine Komponente herum, und ein Element rendert nie eine.
+- **Keine Plural-Ebenen:** Was in der Auswahl steht, ist ein Element;
+  wiederverwendet wird immer eine ganze Group (z. B. `TextGroup`), nie
+  ein Bündel von Zeilen oder Gruppen. Die Reihenfolge der Groups folgt
+  der festen Reihenfolge in `DESIGN_SYSTEM.md`.
 - **Eine `Group` in einer `Group` wird Untergruppe:** Sie erkennt das
   über React-Context und zeigt statt des Titels in Großbuchstaben eine
-  kleine Überschrift; Auge, ＋ und Icon-Spalte bleiben gleich. So
-  rendern Container (oberste Ebene) und Tooltip (Untergruppen)
-  dieselben `SurfaceGroups`. Höchstens zwei Ebenen. Ein `Editor`
-  beginnt wieder auf oberster Ebene, weil der Context auch durch das
-  Portal eines Popovers reicht.
+  kleine Überschrift; Auge, ＋ und Icon-Spalte bleiben gleich.
+  Höchstens zwei Ebenen. Ein `Editor` beginnt wieder auf oberster Ebene,
+  weil der Context auch durch das Portal eines Popovers reicht.
+  Untergruppen gibt es nur noch bis zum Design-Slice; neue entstehen
+  nicht.
 - **`Field` meint nur Datenfelder:** Ein Name mit `Field` bzw. `field`
   zeigt im Frontend ein Datenfeld (`FieldList`, `.field-chip`), nie ein
   Control.
@@ -790,19 +797,20 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
 Erste Einträge; neue Begriffe kommen hinzu, sobald zwei Namen für
 dasselbe auffallen (C2).
 
-| Begriff         | Bedeutung                                                                         | nicht                                        |
-| --------------- | --------------------------------------------------------------------------------- | -------------------------------------------- |
-| Gruppe (Group)  | Abschnitt mit Titel im Format- oder Build-Panel, auch einklappbar                 | Widget, Section                              |
-| Control         | verknüpft Primitives zu einem bearbeiteten Wert in einer Zeile                    | Field, Input                                 |
-| Input           | natives Eingabefeld für Text oder Zahl (Primitive)                                | Field, Control                               |
-| Primitive       | `Button`, `Input` oder `Popover` und ihre Varianten; kleinste Ebene               | Element, Atom                                |
-| Details         | Inhalt hinter einem Auslöser (Zahnrad oder Zusammenfassung), immer ein `Editor`   | Settings, Options                            |
-| Field           | Spalte eines Datasets (`Field`, im Frontend `DataField`); nur in dieser Bedeutung | Column, Control                              |
-| Tile            | Kachel, z. B. im Profil oder in der Auswahl der Charttypen                        | Widget, Card                                 |
-| Card            | Objekttyp mit einem aggregierten Wert                                             | Tile                                         |
-| grain           | Zeitraster (Tag, Woche, Monat, Quartal, Jahr)                                     | granularity                                  |
-| direction       | Sortierrichtung `asc` bzw. `desc`                                                 | order                                        |
-| leere Kategorie | ein Wert ohne Kategorie; ein Name an einer Stelle, wird im Refactoring festgelegt | `''`, `(empty)`, `No category` nebeneinander |
+| Begriff         | Bedeutung                                                                                            | nicht                                        |
+| --------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Gruppe (Group)  | Abschnitt mit Titel im Format- oder Build-Panel, auch einklappbar                                    | Widget, Section                              |
+| Control         | verknüpft Primitives zu einem bearbeiteten Wert in einer Zeile                                       | Field, Input                                 |
+| Input           | natives Eingabefeld für Text oder Zahl (Primitive)                                                   | Field, Control                               |
+| Primitive       | `Button`, `Input` oder `Popover` und ihre Varianten; kleinste Ebene                                  | Atom                                         |
+| Element         | formatierbarer Teil eines Objekts, ein Eintrag der Auswahl im Format-Panel (Marks, Legende, Achse …) | Section, Groups                              |
+| Details         | Inhalt hinter einem Auslöser (Zahnrad oder Zusammenfassung), immer ein `Editor`                      | Settings, Options                            |
+| Field           | Spalte eines Datasets (`Field`, im Frontend `DataField`); nur in dieser Bedeutung                    | Column, Control                              |
+| Tile            | Kachel, z. B. im Profil oder in der Auswahl der Charttypen                                           | Widget, Card                                 |
+| Card            | Objekttyp mit einem aggregierten Wert                                                                | Tile                                         |
+| grain           | Zeitraster (Tag, Woche, Monat, Quartal, Jahr)                                                        | granularity                                  |
+| direction       | Sortierrichtung `asc` bzw. `desc`                                                                    | order                                        |
+| leere Kategorie | ein Wert ohne Kategorie; ein Name an einer Stelle, wird im Refactoring festgelegt                    | `''`, `(empty)`, `No category` nebeneinander |
 
 ### Werkzeuge
 
@@ -813,7 +821,7 @@ dasselbe auffallen (C2).
 | `madge --circular`   | Ringabhängigkeiten (S4)                               | Frontend | `npm run check:cycles`     |
 | `knip`               | Ungenutztes (C1)                                      | Frontend | `npm run check:unused`     |
 | `jscpd`              | Kopien (C1, C7)                                       | beide    | `npm run check:copies`     |
-| `openapi-typescript` | API-Typen aus dem Backend erzeugt statt von Hand (C1) | beide    | Teil 5 des Refactorings    |
+| `openapi-typescript` | API-Typen aus dem Backend erzeugt statt von Hand (C1) | beide    | Teil 7 des Refactorings    |
 | Vitest, pytest       | Logik (C4)                                            | beide    | `npm run test`, `pytest`   |
 
 Eingerichtet werden sie im Refactoring-Slice, in der CI laufen sie ab

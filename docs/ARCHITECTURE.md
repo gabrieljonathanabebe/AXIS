@@ -207,7 +207,7 @@ actions/     Action Layer (Cevyn Actions)
 - Komponenten-CSS liegt neben seiner Komponente (z. B.
   `charts/ChartLegend.css`); `src/styles/` hält Tokens, Themes und die
   globale Basis. `src/index.css` lädt alle Dateien in fester
-  Reihenfolge, die Reihenfolge ist Teil der Kaskade. Bis Teil 6 des
+  Reihenfolge, die Reihenfolge ist Teil der Kaskade. Bis Teil 8 des
   Refactorings (3.14) liegen `ChartItem.css` und `EncodingDropSlots.css`
   noch unter `styles/canvas/`, weil sie Frame und Content mischen.
 
