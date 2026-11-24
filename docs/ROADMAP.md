@@ -72,7 +72,8 @@ Slices; Abhängigkeiten stehen beim Punkt):
 12. Sortierung und Top N – implementiert
 13. Theme-Umschalter in der TopBar (provisorisch) – implementiert
 14. Refactoring: Struktur und Modelle vor der Persistenz – **in
-    Arbeit**
+    Arbeit**; direkt danach der Slice „Design-Richtlinien und
+    Optik-Audit“ (geplant, ohne eigene Nummer)
 15. Table-Objekt
 16. Tooltip-Felder
 17. Dashboard-Einstellungen
@@ -113,6 +114,18 @@ Regeln für den Slice:
   anzulegen. Passt ein Fund klar zu einem späteren Teil, steht er
   zusätzlich dort. Abgearbeitet wird die Liste zwischen den Teilen oder
   in Teil 10
+- Optik-Funde: Was beim Arbeiten optisch auffällt (Stellen, die anders
+  aussehen als gleichartige, unruhige Abstände oder Ausrichtung,
+  ungenutzter Platz, unklare Darstellung), trägt der Agent mit Skizze
+  vorher und nachher in `docs/design-findings.md` ein, bevorzugt mit
+  einer Lösung in einer Basis (`Row`, `Group`, `.control-frame`)
+- Optik-Runde am Ende jedes Teils: kleine Optik-Funde werden erledigt,
+  jeder Fix ein eigener Commit; größere sind Eingabe für den
+  Design-Slice
+- bewusste Sichtänderungen nur in einem eigenen Commit mit geprüften
+  Differenzbildern: Smoke laufen lassen, Differenzbilder ansehen
+  (`npx playwright show-report`), erst nach dem OK die Referenzbilder
+  erneuern, im selben Commit
 
 Inventur (erledigt): Scan gegen Abschnitt 21 von `DEVELOPMENT.md`. Der
 Bericht liegt lokal als `refactoring-inventory.md` im Repo-Root (nicht
@@ -160,31 +173,27 @@ Teile:
    in Teil 4 in `Tile` auf) und `NumberInput` (wird das generische
    Zahlen-Input). `ChartItem.css` und `EncodingDropSlots.css` bleiben bis
    Teil 8 unter `styles/canvas/`, `field.css` bis Teil 4 unter `styles/`
-4. Namen und Basen (in Arbeit; Regeln in `DEVELOPMENT.md` Abschnitt 21,
+4. Namen und Basen (erledigt; Regeln in `DEVELOPMENT.md` Abschnitt 21,
    „Ebenen und Namensgrammatik“, Register in `docs/COMPONENTS.md`): Basen
    `Panel`, `Group` (Untergruppe per Context, einklappbar statt
    `CollapsibleSection`), `Row` (festes Raster mit Aktionsspalte, Minus
-   und Zahnrad), `Editor` (nur der Inhalt eines Popovers), `Tile`; der
-   Control-Rahmen als Klasse `.control-frame`. Reihenfolge wegen gleicher
-   Namen: zuerst `.control` des `IconButton` → `.icon-button`, dann
-   `PaintControl` (heute die Zeile) → `PaintRow` und `PaintEditor`,
-   danach `PaintField` → `PaintControl`. `DropdownField` entfällt. Jede
-   Gruppe rendert ihre `Group` selbst. `DetailsPopover` teilt sich in
-   Auslöser, `Popover` und `Editor`. Restliche Schritte:
-   - Umbenennen und Einsortieren: Namen nach dem Register (`…Widget` →
-     `…Element` bzw. `…Group`, `…Field` → `…Control`, `Widget` →
-     `Tile`), Elemente gleich auf den Endnamen; die Bündel
-     (`TextStyleControls`, `NumberFormatControls`, `LayoutControls`,
-     `PositionControls`, `StrokeStyleControls`, `SurfaceControls`,
-     `ShadowControls`) behalten vorerst ihren Namen und kommen nach
-     `shared/ui/groups/`. `shared/ui` nach Ebene geordnet (`primitives/`,
-     `controls/`, `rows/`, `groups/`, `containers/`, `tiles/`,
-     `feedback/`), ein mechanischer Schritt je Datei, Reihenfolge in
-     `index.css` unverändert. Nicht umbenannt werden `PositionGrid`,
-     `RotationDial`, `AlignmentControl` und `FontWeightControl`, sie gehen
-     in Teil 5 auf; was im Register „unklar“ ist, wird nicht verschoben
-   - Defaults: überflüssige Defaults entfallen, z. B. `step={1}`
-   - Abschluss
+   über `remove`, Zahnrad über `details`), `Editor` (Inhalt eines
+   Popovers mit Kopf und Schließen), `Tile`; der Control-Rahmen als
+   Klasse `.control-frame`, Swatch mit Text als `.swatch-control`.
+   `Popover` hält den Offen-Zustand selbst und hat die Variante `editor`.
+   Entfallen sind `DetailsPopover`, `CollapsibleSection`, `DropdownField`,
+   `FillListControls`, `GradientStopsControl`, `EffectControls` und
+   `SurfaceEffectsControls`; dafür gibt es `BackgroundGroup`,
+   `GradientStopRow` und für Marks und Flächen gemeinsam `EffectsGroup`,
+   `EffectRow` und `EffectEditor`. Jede Gruppe rendert ihre `Group`
+   selbst, das Auge eines Teils liefert `getVisibility`. Elemente,
+   Groups, Rows und Tiles tragen ihre Endnamen, `shared/ui` ist nach
+   Ebene geordnet (was im Register „unklar“ ist, liegt noch flach),
+   CSS-Klassen folgen den Komponentennamen, überflüssige Defaults sind
+   entfernt. Bewusste Sichtänderungen mit neuen Referenzbildern: Section
+   → Group, festes Raster der Row (O6), Hinweis ohne Einrückung (O3).
+   Strukturberichte danach: 8 Ringe, 52 Grenzverstöße, 13 Kopien, keine
+   ungenutzte Datei, 43 ungenutzte Exporte und Typen
 5. Ebenen: Primitives mit den Basen `Button`, `Input` und `Popover` und
    dünnen Varianten (`IconButton`, `SwatchButton`, `DropdownButton`,
    `TextInput`, `NumberInput`, `Menu`); Controls nach Verhalten
@@ -200,7 +209,10 @@ Teile:
    Untergruppen im Weg sind (Labels, Tooltip), erst im Design-Slice.
    Import-Grenzen je Ebene melden (scharf in Teil 10). Verhalten, das
    kein Screenshot sieht (Runden, Escape, Pfeiltasten, Auto), sichern
-   Vitest-Tests
+   Vitest-Tests. Als eigener Optik-Commit: `FontWeightControl` und der
+   Kursiv-Schalter gehen in zwei Auswahlfeldern „Schrift“ und „Schnitt“
+   auf (z. B. „Bold Italic“, kursive Inter aus
+   `@fontsource-variable/inter`); das Modell bleibt
 6. Paint vereinfachen, Verhaltensänderung mit neuen Referenzbildern;
    vor der Persistenz, weil sich das gespeicherte Modell ändert:
    - „Datenfarbe“ als Art einer Farbe (`ColorValue` mit
@@ -282,20 +294,40 @@ Health-Endpunkt als Ausnahme in `ARCHITECTURE.md`.
 
 Funde während des Slices (Regel oben, „Fundliste“):
 
-| Fund                                                                                                                                                                        | Ort                                                                                                                                                                                                                        | Vorschlag                                                                                                                     | Teil | Stand |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---- | ----- |
-| `NumberInput` und `ScrubbableNumber` haben beide Entwurf bis Enter/Blur und Begrenzen auf min/max                                                                           | `shared/ui/NumberInput.tsx`, `ScrubbableNumber.tsx`                                                                                                                                                                        | `ScrubbableNumber` (Control) nutzt `NumberInput` (Input) als Eingabeteil                                                      | 5    | offen |
-| 10 von 13 Klassen an `Button` schalten seine Pillen-Fläche (Hintergrund, Rahmen, Hover) per CSS wieder aus                                                                  | `color-swatch-swatch`, `select-control-button`, `options-menu-item`, `segmented-control-option`, `position-grid-cell`, `check-list-item`, `scrubbable-number-handle`, `data-filter-clear(-all)`, `calculated-field-button` | `Button` bekommt eine Art ohne Fläche; die Überschreib-Regeln entfallen                                                       | 5    | offen |
-| `AxisTitleGroup` und `ObjectTitleWidget` bearbeiten beide Text und Textstil eines Titels                                                                                    | `charts/format/AxisTitleGroup.tsx`, `objects/ObjectTitleWidget.tsx`                                                                                                                                                        | eine gemeinsame `TitleGroup` (Ausrichtung und Schriftgrenzen optional); ändert die Optik, also nur als bewusste Sichtänderung | 10   | offen |
-| Interaktionen heißen in der Spec `enabled` (Legende, Tooltip, Zoom), Teile der Optik `visible`; `getVisibility` passt deshalb nur auf die Optik                             | `charts/types.ts` (`ChartInteractionSpec`)                                                                                                                                                                                 | vor der Persistenz entscheiden: bewusst so lassen (Verhalten statt Sichtbarkeit) oder angleichen                              | 9    | offen |
-| `--indent-nested` rückt nur noch den Hinweis „No matching fields“ ein, die Feldgruppen darüber nicht mehr (seit Section → Group)                                            | `datasets/FieldList.css`, `styles/tokens.css`                                                                                                                                                                              | Einrückung und Token entfernen                                                                                                | 4    | offen |
-| Marks haben genau einen `Effect` (mit `{ kind: 'none' }`), Flächen eine Liste `SurfaceEffect[]`; die Oberfläche ist seit Teil 4 eine (`EffectsGroup`), das Modell noch zwei | `shared/effect.ts`, `charts/types.ts`                                                                                                                                                                                      | ein Typ `Effect` mit allen Arten; Marks speichern `effects: Effect[]` (höchstens einer), `none` entfällt                      | 9    | offen |
+| Fund                                                                                                                                                                        | Ort                                                                                                                                                                                                                        | Vorschlag                                                                                                                     | Teil | Stand    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---- | -------- |
+| `NumberInput` und `ScrubbableNumber` haben beide Entwurf bis Enter/Blur und Begrenzen auf min/max                                                                           | `shared/ui/NumberInput.tsx`, `ScrubbableNumber.tsx`                                                                                                                                                                        | `ScrubbableNumber` (Control) nutzt `NumberInput` (Input) als Eingabeteil                                                      | 5    | offen    |
+| 10 von 13 Klassen an `Button` schalten seine Pillen-Fläche (Hintergrund, Rahmen, Hover) per CSS wieder aus                                                                  | `color-swatch-swatch`, `select-control-button`, `options-menu-item`, `segmented-control-option`, `position-grid-cell`, `check-list-item`, `scrubbable-number-handle`, `data-filter-clear(-all)`, `calculated-field-button` | `Button` bekommt eine Art ohne Fläche; die Überschreib-Regeln entfallen                                                       | 5    | offen    |
+| `AxisTitleGroup` und `ObjectTitleWidget` bearbeiten beide Text und Textstil eines Titels                                                                                    | `charts/format/AxisTitleGroup.tsx`, `objects/ObjectTitleWidget.tsx`                                                                                                                                                        | eine gemeinsame `TitleGroup` (Ausrichtung und Schriftgrenzen optional); ändert die Optik, also nur als bewusste Sichtänderung | 10   | offen    |
+| Interaktionen heißen in der Spec `enabled` (Legende, Tooltip, Zoom), Teile der Optik `visible`; `getVisibility` passt deshalb nur auf die Optik                             | `charts/types.ts` (`ChartInteractionSpec`)                                                                                                                                                                                 | vor der Persistenz entscheiden: bewusst so lassen (Verhalten statt Sichtbarkeit) oder angleichen                              | 9    | offen    |
+| `--indent-nested` rückt nur noch den Hinweis „No matching fields“ ein, die Feldgruppen darüber nicht mehr (seit Section → Group)                                            | `datasets/FieldList.css`, `styles/tokens.css`                                                                                                                                                                              | Einrückung und Token entfernen                                                                                                | 4    | erledigt |
+| Marks haben genau einen `Effect` (mit `{ kind: 'none' }`), Flächen eine Liste `SurfaceEffect[]`; die Oberfläche ist seit Teil 4 eine (`EffectsGroup`), das Modell noch zwei | `shared/effect.ts`, `charts/types.ts`                                                                                                                                                                                      | ein Typ `Effect` mit allen Arten; Marks speichern `effects: Effect[]` (höchstens einer), `none` entfällt                      | 9    | offen    |
+| `FieldList` und `DatasetProfileView` bauen dieselben einklappbaren Feldgruppen (Icon, Zahl, `defaultOpen`); `npm run check:copies` meldet die Kopie                         | `datasets/FieldList.tsx`, `datasets/DatasetProfileView.tsx`                                                                                                                                                                | eine gemeinsame `FieldGroup` für eine Feldgruppe                                                                              | 10   | offen    |
 
 Nicht in diesem Slice: das Öffnen des Fill-Editors ausdrücklich steuern;
 Rechenlogik aus `ChartColorScale` und `EncodingsWidget` ziehen; CSS
 direkt in den Komponenten laden statt über `index.css`; Mark-Profile;
 das Zahlenformat des Tooltips (→ Tooltip-Felder); Escape für
 `NumberInput`; JSDoc für alle Funktionen; `dashboardStyle/` aufteilen.
+
+### Design-Richtlinien und Optik-Audit (geplant, direkt nach 3.14)
+
+Eigener Slice ohne Nummer zwischen Refactoring und Table-Objekt:
+
+- Planung vorab mit einer Panel-Werkbank (Artefakt); die Vorgabe für
+  den Slice kommt von dort
+- Richtlinien je Ebene in `DESIGN_SYSTEM.md` mit Skizzen, danach Prüfung
+  anhand der Smoke-Screenshots und `docs/design-findings.md`; Fixe
+  bevorzugt in den Basen
+- Labels und Tooltip werden eigene Elemente in der Auswahl oben im
+  Format-Panel (wie Legende und Achse); bei Marks bleibt je eine
+  kompakte Gruppe mit Auge und einem Icon, das zum Element wechselt
+- Untergruppen entfallen ganz (Regel in `DEVELOPMENT.md` Abschnitt 21
+  und Context in `Group`)
+- Scrollen zur Gruppe beim Klick entfällt; der Klick wählt weiter das
+  Element aus
+- Zeilen nur noch als Paar oder Breit, kein „Einzeln“ mehr
+- Aktionsspalte einheitlich für ein oder zwei Icons festlegen
 
 ### 3.15 Table-Objekt (geplant)
 

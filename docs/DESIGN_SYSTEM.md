@@ -473,28 +473,21 @@ FIELDS
 
 ### Sections
 
-- Die Bereiche sind `CollapsibleSection` mit `variant="plain"`: keine
-  eigene Fläche, kleiner Header in Versalien, Trennung durch eine
+- Die Bereiche sind einklappbare Gruppen (`Group` mit `collapsible`):
+  keine eigene Fläche, kleiner Header in Versalien, Trennung durch eine
   Haarlinie statt durch eine Box.
 - Flächen haben nur die Objekte selbst (Kacheln, Dataset-Karte,
-  Chips). Keine Widgets in Widgets.
-- Eine plain Section innerhalb einer plain Section ist eine
-  Untergruppe: eingerückt um `--indent-nested`, normaler Titel ohne
-  Versalien, keine Trennlinie.
-- Header-Text ist sekundär und wird beim Hover primär; das Icon bleibt
-  in Akzentfarbe.
-- `CollapsibleSection` bietet dafür `variant` (`widget | plain`,
-  Standard `widget`), `meta` für einen kleinen Zusatz neben dem Titel
-  und `forceOpen`, das die Section anzeigt, ohne ihren eigenen Zustand
-  zu verändern.
-- Der Header besteht aus Trigger (Icon, Titel, `meta`), optionalen
-  `actions` und einem eigenen Chevron-Button; Trigger und Chevron
-  klappen beide. `actions` nimmt z. B. ein `IconButton` auf, ohne dass
-  ein Button in einem Button liegt.
-- Header-Icons in plain Sections sind einheitlich 14 px (zentral in
-  `CollapsibleSection.css`).
-- `--indent-nested` ist die gemeinsame Einrückung für verschachtelte
-  Inhalte.
+  Chips). Keine Kacheln in Kacheln.
+- Eine Gruppe innerhalb einer Gruppe ist eine Untergruppe wie im
+  Format-Panel: nicht eingerückt, kleiner Titel ohne Versalien, keine
+  Trennlinie.
+- Der Titel ist sekundär und wird beim Hover primär.
+- `Group` bietet dafür `icon` vor dem Titel, `meta` für einen kleinen
+  Zusatz dahinter (z. B. die Zahl der Felder), `defaultOpen` und
+  `forceOpen`, das die Gruppe anzeigt, ohne ihren eigenen Zustand zu
+  verändern (z. B. beim Suchen).
+- Titel und Chevron klappen beide; der Chevron steht wie Auge und ＋ in
+  der Aktionsspalte, Header-Icons sind einheitlich 14 px.
 - `TextInput` nimmt ein optionales dekoratives `icon` links im Feld an
   (z. B. Suche); ohne `icon` bleibt das Markup unverändert.
 

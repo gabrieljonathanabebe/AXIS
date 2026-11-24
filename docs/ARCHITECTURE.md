@@ -200,10 +200,12 @@ actions/     Action Layer (Cevyn Actions)
   Response-Typen werden aus dem OpenAPI-Schema des Backends erzeugt
   (`openapi-typescript`), nicht von Hand geschrieben; die Pydantic-Modelle
   sind die einzige Quelle.
-- Unterordner gibt es aktuell für abgegrenzte Gruppen innerhalb einer
-  Domäne (z. B. `charts/echarts/content`, `charts/format`,
-  `shared/ui`). Eine feste Regel für Unterordner ist noch nicht
-  beschlossen.
+- Unterordner gibt es für abgegrenzte Gruppen innerhalb einer Domäne
+  (z. B. `charts/echarts/content`, `charts/format`). `shared/ui` ist
+  nach Ebene geordnet (`primitives/`, `controls/`, `rows/`, `groups/`,
+  `containers/`, `tiles/`; Regel in `DEVELOPMENT.md` Abschnitt 21);
+  was im Komponentenregister noch keine Ebene hat, liegt direkt in
+  `shared/ui`. Für andere Unterordner gibt es noch keine feste Regel.
 - Komponenten-CSS liegt neben seiner Komponente (z. B.
   `charts/ChartLegend.css`); `src/styles/` hält Tokens, Themes und die
   globale Basis. `src/index.css` lädt alle Dateien in fester
