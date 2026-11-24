@@ -796,6 +796,7 @@ dasselbe auffallen (C2).
 | Control         | verknüpft Primitives zu einem bearbeiteten Wert in einer Zeile                    | Field, Input                                 |
 | Input           | natives Eingabefeld für Text oder Zahl (Primitive)                                | Field, Control                               |
 | Primitive       | `Button`, `Input` oder `Popover` und ihre Varianten; kleinste Ebene               | Element, Atom                                |
+| Details         | Inhalt hinter einem Auslöser (Zahnrad oder Zusammenfassung), immer ein `Editor`   | Settings, Options                            |
 | Field           | Spalte eines Datasets (`Field`, im Frontend `DataField`); nur in dieser Bedeutung | Column, Control                              |
 | Tile            | Kachel, z. B. im Profil oder in der Auswahl der Charttypen                        | Widget, Card                                 |
 | Card            | Objekttyp mit einem aggregierten Wert                                             | Tile                                         |
