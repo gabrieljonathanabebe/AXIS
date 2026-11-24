@@ -1,11 +1,11 @@
-import Group from '@/shared/ui/Group'
-import LayoutControls from '@/shared/ui/LayoutControls'
-import PositionControls from '@/shared/ui/PositionControls'
-import SurfaceControls from '@/shared/ui/SurfaceControls'
+import Group from '@/shared/ui/groups/Group'
+import LayoutControls from '@/shared/ui/groups/LayoutControls'
+import PositionControls from '@/shared/ui/groups/PositionControls'
+import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
 import { getLayoutBounds } from '@/workspace/chartLayout'
 
 import type { Surface } from '@/shared/surface'
-import type { LayoutBox } from '@/shared/ui/BoxFieldsRow'
+import type { LayoutBox } from '@/shared/ui/rows/BoxRow'
 import type {
   ObjectContainer,
   ObjectLayout,

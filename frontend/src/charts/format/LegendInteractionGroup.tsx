@@ -1,11 +1,11 @@
 import { ListChecks, MousePointerBan, SquareCheck } from 'lucide-react'
 
-import Group from '@/shared/ui/Group'
-import Row from '@/shared/ui/Row'
-import SegmentedControl from '@/shared/ui/SegmentedControl'
+import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
+import Group from '@/shared/ui/groups/Group'
+import Row from '@/shared/ui/rows/Row'
 
 import type { ChartInteractionSpec, LegendSelectionMode } from '@/charts/types'
-import type { OptionItem } from '@/shared/ui/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
 
 // ===== TYPES =================================================================
 type LegendInteractionGroupProps = {

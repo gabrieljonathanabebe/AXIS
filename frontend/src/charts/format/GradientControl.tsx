@@ -4,7 +4,7 @@ import ColorSwatch from '@/shared/ui/ColorSwatch'
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
 import type { GradientStop } from '@/shared/paint'
-import type { ColorPreset } from '@/shared/ui/colorPresets'
+import type { ColorPreset } from '@/shared/ui/controls/colorPresets'
 
 // ===== TYPES =================================================================
 type GradientControlProps = {

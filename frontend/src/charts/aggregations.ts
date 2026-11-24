@@ -3,7 +3,7 @@ import { ArrowDownToLine, ArrowUpToLine, Ban, Hash, Sigma } from 'lucide-react'
 import { XBar, XTilde } from './chartIcons'
 
 import type { LucideIcon } from 'lucide-react'
-import type { OptionItem } from '@/shared/ui/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
 import type { Aggregation, GroupAggregation } from './types'
 
 // ===== CONSTANTS =============================================================

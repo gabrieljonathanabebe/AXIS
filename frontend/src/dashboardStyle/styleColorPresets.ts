@@ -1,6 +1,6 @@
 import { createColorValue } from '@/shared/colorValue'
 
-import type { ColorPreset } from '@/shared/ui/colorPresets'
+import type { ColorPreset } from '@/shared/ui/controls/colorPresets'
 import type { DashboardStyle } from './types'
 
 /**

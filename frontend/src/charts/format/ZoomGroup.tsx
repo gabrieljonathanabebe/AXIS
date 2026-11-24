@@ -1,8 +1,8 @@
 import { Mouse, PanelBottom } from 'lucide-react'
 
-import Button from '@/shared/ui/Button'
-import Group from '@/shared/ui/Group'
-import Row from '@/shared/ui/Row'
+import Group from '@/shared/ui/groups/Group'
+import Button from '@/shared/ui/primitives/Button'
+import Row from '@/shared/ui/rows/Row'
 
 import type { ChartInteractionSpec } from '@/charts/types'
 

@@ -13,9 +13,9 @@ import { getFormatElements } from '@/charts/getFormatElements'
 import ContainerElement from '@/objects/ContainerElement'
 import { getObjectDefinition } from '@/objects/objectDefinitions'
 import TitleElement from '@/objects/TitleElement'
-import FormatPanel from '@/shared/ui/FormatPanel'
-import { getVisibility } from '@/shared/ui/getVisibility'
-import StrokeWidget from '@/shared/ui/StrokeWidget'
+import FormatPanel from '@/shared/ui/containers/FormatPanel'
+import { getVisibility } from '@/shared/ui/groups/getVisibility'
+import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
 import AxisLabelsGroup from './AxisLabelsGroup'
 import AxisTitleGroup from './AxisTitleGroup'
 import ColorScaleElement from './ColorScaleElement'
@@ -26,7 +26,7 @@ import ZoomGroup from './ZoomGroup'
 
 import type { ReactNode } from 'react'
 import type { ChartFormatElement, ChartFormatProps } from '@/charts/types'
-import type { FormatVisibility } from '@/shared/ui/Group'
+import type { FormatVisibility } from '@/shared/ui/groups/Group'
 
 // ===== TYPES =================================================================
 type ChartFormatPanelProps = ChartFormatProps & {
@@ -156,14 +156,14 @@ function getFormatGroups(
             value={axisAppearance.labels}
             onChange={(labels) => setAxis({ ...axisAppearance, labels })}
           />
-          <StrokeWidget
+          <StrokeGroup
             label="Axis line"
             maxWidth={4}
             title="Line"
             value={axisAppearance.line}
             onChange={(line) => setAxis({ ...axisAppearance, line })}
           />
-          <StrokeWidget
+          <StrokeGroup
             label="Grid"
             maxWidth={4}
             title="Gridlines"

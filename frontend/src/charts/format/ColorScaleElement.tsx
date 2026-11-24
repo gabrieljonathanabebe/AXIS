@@ -1,15 +1,15 @@
 import { getSideOrientation } from '@/shared/layout'
-import { getVisibility } from '@/shared/ui/getVisibility'
-import Group from '@/shared/ui/Group'
-import LayoutControls from '@/shared/ui/LayoutControls'
-import PositionControls from '@/shared/ui/PositionControls'
-import StrokeWidget from '@/shared/ui/StrokeWidget'
-import SurfaceControls from '@/shared/ui/SurfaceControls'
+import { getVisibility } from '@/shared/ui/groups/getVisibility'
+import Group from '@/shared/ui/groups/Group'
+import LayoutControls from '@/shared/ui/groups/LayoutControls'
+import PositionControls from '@/shared/ui/groups/PositionControls'
+import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
+import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
 import AxisLabelsGroup from './AxisLabelsGroup'
 import AxisTitleGroup from './AxisTitleGroup'
 
 import type { ColorScaleAppearance } from '@/charts/types'
-import type { LayoutBox } from '@/shared/ui/BoxFieldsRow'
+import type { LayoutBox } from '@/shared/ui/rows/BoxRow'
 
 type ContinuousColorScale = ColorScaleAppearance['continuous']
 
@@ -124,7 +124,7 @@ function ColorScaleElement({
         visibility={getVisibility(value.labels, setLabels)}
         onChange={setLabels}
       />
-      <StrokeWidget
+      <StrokeGroup
         label="Color scale ticks"
         maxWidth={4}
         title="Ticks"

@@ -1,4 +1,4 @@
-import NumberInput from '@/shared/ui/NumberInput'
+import NumberInput from '@/shared/ui/primitives/NumberInput'
 
 import type { CSSProperties } from 'react'
 

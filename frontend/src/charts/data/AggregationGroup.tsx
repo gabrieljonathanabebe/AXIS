@@ -10,9 +10,9 @@ import {
   getEffectiveAggregation,
   isCountOnly,
 } from '@/charts/getEffectiveAggregation'
-import Group from '@/shared/ui/Group'
-import Row from '@/shared/ui/Row'
-import SelectControl from '@/shared/ui/SelectControl'
+import SelectControl from '@/shared/ui/controls/SelectControl'
+import Group from '@/shared/ui/groups/Group'
+import Row from '@/shared/ui/rows/Row'
 
 import type { ChartFormatProps } from '@/charts/types'
 

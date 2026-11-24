@@ -1,11 +1,11 @@
-import { getVisibility } from '@/shared/ui/getVisibility'
-import Group from '@/shared/ui/Group'
-import NumberFormatControls from '@/shared/ui/NumberFormatControls'
-import PositionControls from '@/shared/ui/PositionControls'
-import TextStyleControls from '@/shared/ui/TextStyleControls'
+import { getVisibility } from '@/shared/ui/groups/getVisibility'
+import Group from '@/shared/ui/groups/Group'
+import NumberFormatControls from '@/shared/ui/groups/NumberFormatControls'
+import PositionControls from '@/shared/ui/groups/PositionControls'
+import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
 
 import type { LabelPosition, LabelsAppearance } from '@/charts/types'
-import type { OptionItem } from '@/shared/ui/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
 
 // ===== TYPES =================================================================
 type LabelsGroupProps = {

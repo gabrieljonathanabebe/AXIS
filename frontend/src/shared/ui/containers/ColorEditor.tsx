@@ -1,0 +1,104 @@
+import { use } from 'react'
+import { HexColorInput, HexColorPicker } from 'react-colorful'
+
+import { normalizeHex } from '@/shared/colorValue'
+import {
+  getChoiceKey,
+  getSwatchColor,
+  joinColorPresets,
+  SharedColorPresets,
+} from '../controls/colorPresets'
+import Button from '../primitives/Button'
+
+import type { CSSProperties } from 'react'
+import type { ColorValue } from '@/shared/colorValue'
+import type { ColorPreset } from '../controls/colorPresets'
+
+// ===== TYPES =================================================================
+type ColorEditorProps<TPreset extends string = never> = {
+  label: string
+  presets: ColorPreset<TPreset>[]
+  value: ColorValue | NoInfer<TPreset>
+  onChange: (value: ColorValue | NoInfer<TPreset>) => void
+}
+
+// ===== CONSTANTS =============================================================
+/** Color the area starts from while the value is a theme color or preset. */
+const DEFAULT_PICKER_COLOR = '#8B5CF6'
+
+// ===== COMPONENT =============================================================
+/**
+ * Picker of one color: the shared swatches in front, e.g. the colors of
+ * the dashboard style, and those of its place, then the color area with
+ * the hue slider and the hex value. A swatch opens it in a popover, the
+ * editor of a solid paint shows it in place.
+ * @param props Name, swatches, color and its handler.
+ */
+function ColorEditor<TPreset extends string = never>({
+  label,
+  presets,
+  value,
+  onChange,
+}: ColorEditorProps<TPreset>) {
+  const allPresets = joinColorPresets(use(SharedColorPresets), presets)
+  const valueKey = getChoiceKey(value)
+  const pickerColor =
+    typeof value !== 'string' && value.kind === 'custom'
+      ? normalizeHex(value.color)
+      : DEFAULT_PICKER_COLOR
+
+  /**
+   * Selects a color from the area or the hex field.
+   * @param hex Hex color, with or without `#`.
+   */
+  function selectCustomColor(hex: string): void {
+    onChange({ kind: 'custom', color: normalizeHex(hex) })
+  }
+
+  return (
+    <div className="color-picker stack">
+      {allPresets.length > 0 ? (
+        <div
+          className="color-picker-presets"
+          role="radiogroup"
+          aria-label={`${label} presets`}
+        >
+          {allPresets.map((preset) => {
+            const presetKey = getChoiceKey(preset.value)
+            return (
+              <Button
+                key={presetKey}
+                className={`color-swatch-swatch ${preset.fill ? 'has-fill' : ''}`}
+                type="button"
+                role="radio"
+                aria-label={preset.label}
+                aria-checked={presetKey === valueKey}
+                title={preset.label}
+                style={
+                  {
+                    '--swatch-color': getSwatchColor(preset.value),
+                    '--swatch-fill': preset.fill,
+                  } as CSSProperties
+                }
+                onClick={() => onChange(preset.value)}
+              />
+            )
+          })}
+        </div>
+      ) : null}
+      <HexColorPicker color={pickerColor} onChange={selectCustomColor} />
+      <label className="color-picker-hex-field">
+        <span>HEX</span>
+        <HexColorInput
+          className="color-picker-hex-input"
+          color={pickerColor}
+          prefixed
+          aria-label={`${label} hex value`}
+          onChange={selectCustomColor}
+        />
+      </label>
+    </div>
+  )
+}
+
+export default ColorEditor

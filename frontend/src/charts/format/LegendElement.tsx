@@ -1,8 +1,8 @@
-import Group from '@/shared/ui/Group'
-import LayoutControls from '@/shared/ui/LayoutControls'
-import PositionControls from '@/shared/ui/PositionControls'
-import SurfaceControls from '@/shared/ui/SurfaceControls'
-import TextStyleControls from '@/shared/ui/TextStyleControls'
+import Group from '@/shared/ui/groups/Group'
+import LayoutControls from '@/shared/ui/groups/LayoutControls'
+import PositionControls from '@/shared/ui/groups/PositionControls'
+import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
+import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
 
 import type { LegendAppearance } from '@/charts/types'
 

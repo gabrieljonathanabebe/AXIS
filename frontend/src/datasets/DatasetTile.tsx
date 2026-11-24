@@ -2,8 +2,8 @@ import { FileSpreadsheet, UploadCloud } from 'lucide-react'
 import { useRef } from 'react'
 
 import { formatCompactNumber } from '@/shared/format/formatNumber'
-import IconButton from '@/shared/ui/IconButton'
-import Tile from '@/shared/ui/Tile'
+import IconButton from '@/shared/ui/primitives/IconButton'
+import Tile from '@/shared/ui/tiles/Tile'
 
 import type { ChangeEvent, DragEvent } from 'react'
 

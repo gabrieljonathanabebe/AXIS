@@ -1,9 +1,9 @@
 import StyleGallery from '@/dashboardStyle/StyleGallery'
 import { STYLE_RECIPES } from '@/dashboardStyle/styleRecipes'
-import BackgroundGroup from '@/shared/ui/BackgroundGroup'
-import FormatPanel from '@/shared/ui/FormatPanel'
-import Group from '@/shared/ui/Group'
-import LayoutControls from '@/shared/ui/LayoutControls'
+import FormatPanel from '@/shared/ui/containers/FormatPanel'
+import BackgroundGroup from '@/shared/ui/groups/BackgroundGroup'
+import Group from '@/shared/ui/groups/Group'
+import LayoutControls from '@/shared/ui/groups/LayoutControls'
 import AnimationGroup from './AnimationGroup'
 
 import type { Fill } from '@/shared/fill'

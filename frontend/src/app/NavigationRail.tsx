@@ -1,6 +1,6 @@
 import { ChartNoAxesCombined, Database } from 'lucide-react'
 
-import IconButton from '@/shared/ui/IconButton'
+import IconButton from '@/shared/ui/primitives/IconButton'
 
 import type { LucideIcon } from 'lucide-react'
 import type { WorkspaceView } from './types'

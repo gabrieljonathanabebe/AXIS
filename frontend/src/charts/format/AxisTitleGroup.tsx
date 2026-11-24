@@ -1,8 +1,8 @@
-import { getVisibility } from '@/shared/ui/getVisibility'
-import Group from '@/shared/ui/Group'
-import Row from '@/shared/ui/Row'
-import TextInput from '@/shared/ui/TextInput'
-import TextStyleControls from '@/shared/ui/TextStyleControls'
+import { getVisibility } from '@/shared/ui/groups/getVisibility'
+import Group from '@/shared/ui/groups/Group'
+import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
+import TextInput from '@/shared/ui/primitives/TextInput'
+import Row from '@/shared/ui/rows/Row'
 
 import type { AxisTitleAppearance } from '@/charts/types'
 

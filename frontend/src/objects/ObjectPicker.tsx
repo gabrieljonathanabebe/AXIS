@@ -1,7 +1,7 @@
 import { useDraggable } from '@dnd-kit/core'
 import { Ellipsis } from 'lucide-react'
 
-import WidgetButton from '@/shared/ui/WidgetButton'
+import WidgetButton from '@/shared/ui/primitives/WidgetButton'
 import { getGroupPickerOptions } from './objectDefinitions'
 
 import type { DragPayload } from '@/workspace/types'

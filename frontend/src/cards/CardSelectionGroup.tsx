@@ -1,6 +1,6 @@
-import { getVisibility } from '@/shared/ui/getVisibility'
-import Group from '@/shared/ui/Group'
-import TextStyleControls from '@/shared/ui/TextStyleControls'
+import { getVisibility } from '@/shared/ui/groups/getVisibility'
+import Group from '@/shared/ui/groups/Group'
+import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
 
 import type { CardSelectionLabelAppearance } from './types'
 

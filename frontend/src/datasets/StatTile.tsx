@@ -1,5 +1,5 @@
-import IconBadge from '@/shared/ui/IconBadge'
-import Tile from '@/shared/ui/Tile'
+import IconBadge from '@/shared/ui/primitives/IconBadge'
+import Tile from '@/shared/ui/tiles/Tile'
 
 import type { ReactNode } from 'react'
 

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 
 import { formatNumber, formatPercent } from '@/shared/format/formatNumber'
-import Group from '@/shared/ui/Group'
+import Group from '@/shared/ui/groups/Group'
 import { groupFieldProfiles } from './fieldGroups'
 import FieldProfileTile from './FieldProfileTile'
 import { getSemanticRole } from './semanticRoles'

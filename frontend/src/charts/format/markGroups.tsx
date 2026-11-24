@@ -22,15 +22,15 @@ import {
 import { getCategoricalPalettes } from '@/charts/colorPalettes'
 import { getColorEncodingMode } from '@/charts/getColorEncodingMode'
 import { isMarkEffect } from '@/shared/effect'
-import ColorControl from '@/shared/ui/ColorControl'
-import EffectsGroup from '@/shared/ui/EffectsGroup'
-import Group from '@/shared/ui/Group'
-import PaintRow from '@/shared/ui/PaintRow'
-import Row from '@/shared/ui/Row'
-import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
-import SegmentedControl from '@/shared/ui/SegmentedControl'
-import StrokeStyleControls from '@/shared/ui/StrokeStyleControls'
-import StrokeWidget from '@/shared/ui/StrokeWidget'
+import ColorControl from '@/shared/ui/controls/ColorControl'
+import ScrubbableNumber from '@/shared/ui/controls/ScrubbableNumber'
+import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
+import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
+import Group from '@/shared/ui/groups/Group'
+import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
+import StrokeStyleControls from '@/shared/ui/groups/StrokeStyleControls'
+import PaintRow from '@/shared/ui/rows/PaintRow'
+import Row from '@/shared/ui/rows/Row'
 import GradientControl from './GradientControl'
 import LabelsGroup from './LabelsGroup'
 import PaletteControl from './PaletteControl'
@@ -46,8 +46,8 @@ import type {
 } from '@/charts/types'
 import type { Effect, MarkEffect } from '@/shared/effect'
 import type { PaintType } from '@/shared/paint'
-import type { OptionItem } from '@/shared/ui/OptionsMenu'
-import type { RowDetails } from '@/shared/ui/Row'
+import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
+import type { RowDetails } from '@/shared/ui/rows/Row'
 
 // ===== TYPES =================================================================
 /** One place of the marks element, e.g. its fill. */
@@ -286,7 +286,7 @@ function getFilledMarkGroups(
       actions.setChartAppearance(mark, 'effect', value)
     }),
     stroke: (
-      <StrokeWidget
+      <StrokeGroup
         label={`${label} border`}
         title="Border"
         value={border}

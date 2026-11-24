@@ -8,9 +8,9 @@ import { getCompatibleFields } from '@/charts/getCompatibleFields'
 import { getEffectiveCategoryOrder } from '@/charts/getEffectiveCategoryOrder'
 import { getEffectiveTimeGrain } from '@/charts/getEffectiveTimeGrain'
 import { TIME_GRAIN_OPTIONS } from '@/shared/format/valueFormats'
-import Group from '@/shared/ui/Group'
-import Row from '@/shared/ui/Row'
-import SelectControl from '@/shared/ui/SelectControl'
+import SelectControl from '@/shared/ui/controls/SelectControl'
+import Group from '@/shared/ui/groups/Group'
+import Row from '@/shared/ui/rows/Row'
 import {
   fromLimitChoice,
   fromSortChoice,
@@ -22,7 +22,7 @@ import {
 
 import type { ChartFormatProps } from '@/charts/types'
 import type { TimeGrain } from '@/shared/format/valueFormats'
-import type { OptionItem } from '@/shared/ui/OptionsMenu'
+import type { OptionItem } from '@/shared/ui/primitives/OptionsMenu'
 
 type EncodingsGroupProps = Pick<
   ChartFormatProps,

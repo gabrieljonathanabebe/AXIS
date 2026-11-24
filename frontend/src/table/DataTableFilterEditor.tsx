@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { formatDate } from '@/shared/format/formatDate'
 import { formatNumber } from '@/shared/format/formatNumber'
-import TextInput from '@/shared/ui/TextInput'
+import TextInput from '@/shared/ui/primitives/TextInput'
 import CheckList from './CheckList'
 import { createMeasureSteps } from './measureSteps'
 import RangeControl from './RangeControl'

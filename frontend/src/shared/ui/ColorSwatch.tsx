@@ -1,11 +1,11 @@
-import Button from './Button'
-import ColorPicker from './ColorPicker'
-import { getChoiceKey, getSwatchColor } from './colorPresets'
-import Popover from './Popover'
+import ColorEditor from './containers/ColorEditor'
+import { getChoiceKey, getSwatchColor } from './controls/colorPresets'
+import Button from './primitives/Button'
+import Popover from './primitives/Popover'
 
 import type { CSSProperties } from 'react'
 import type { ColorValue } from '@/shared/colorValue'
-import type { ColorPreset } from './colorPresets'
+import type { ColorPreset } from './controls/colorPresets'
 
 // ===== TYPES =================================================================
 type ColorSwatchProps<TPreset extends string = never> = {
@@ -55,7 +55,7 @@ function ColorSwatch<TPreset extends string = never>({
         )}
         variant="editor"
       >
-        <ColorPicker
+        <ColorEditor
           label={label}
           presets={presets}
           value={value}

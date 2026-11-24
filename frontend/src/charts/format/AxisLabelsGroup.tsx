@@ -1,17 +1,17 @@
 import { Ruler } from 'lucide-react'
 
 import { showsDateLabels } from '@/charts/getEffectiveTimeGrain'
-import Group from '@/shared/ui/Group'
-import NumberFormatControls from '@/shared/ui/NumberFormatControls'
-import RotationDial from '@/shared/ui/RotationDial'
-import Row from '@/shared/ui/Row'
-import ScrubbableNumber from '@/shared/ui/ScrubbableNumber'
-import TextStyleControls from '@/shared/ui/TextStyleControls'
+import RotationDial from '@/shared/ui/controls/RotationDial'
+import ScrubbableNumber from '@/shared/ui/controls/ScrubbableNumber'
+import Group from '@/shared/ui/groups/Group'
+import NumberFormatControls from '@/shared/ui/groups/NumberFormatControls'
+import TextStyleControls from '@/shared/ui/groups/TextStyleControls'
+import Row from '@/shared/ui/rows/Row'
 import DateFormatRow from './DateFormatRow'
 
 import type { AxisLabelsAppearance } from '@/charts/types'
 import type { TimeGrain } from '@/shared/format/valueFormats'
-import type { FormatVisibility } from '@/shared/ui/Group'
+import type { FormatVisibility } from '@/shared/ui/groups/Group'
 
 // ===== TYPES =================================================================
 /**

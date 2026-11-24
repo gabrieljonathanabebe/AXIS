@@ -2,9 +2,9 @@ import { useDraggable } from '@dnd-kit/core'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 
-import Chip from '@/shared/ui/Chip'
-import Group from '@/shared/ui/Group'
-import TextInput from '@/shared/ui/TextInput'
+import Group from '@/shared/ui/groups/Group'
+import Chip from '@/shared/ui/primitives/Chip'
+import TextInput from '@/shared/ui/primitives/TextInput'
 import { groupFields } from './fieldGroups'
 
 import type { DataField, FieldProfile, SemanticRoleOverrides } from './types'
