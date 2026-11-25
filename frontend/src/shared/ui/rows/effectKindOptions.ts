@@ -1,7 +1,7 @@
 import { Droplet, Grip, SquareSquare, SquareStack, Sun } from 'lucide-react'
 
 import type { AnyEffect } from '@/shared/effect'
-import type { OptionItem } from '../primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 
 /**
  * Icon and name of every effect kind, in the order the kind select offers

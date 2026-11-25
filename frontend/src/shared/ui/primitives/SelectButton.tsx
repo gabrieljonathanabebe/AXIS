@@ -5,7 +5,7 @@ import Button from './Button'
 import type { ComponentProps, ReactNode } from 'react'
 import type { ButtonVariant } from './Button'
 
-type DropdownButtonProps = {
+type SelectButtonProps = {
   children: ReactNode
   label: string
   variant?: ButtonVariant
@@ -16,21 +16,17 @@ type DropdownButtonProps = {
  * trigger of a select; `label` names it for screen readers.
  * @param props Shown value, name, variant and native props.
  */
-function DropdownButton({
-  children,
-  label,
-  ...buttonProps
-}: DropdownButtonProps) {
+function SelectButton({ children, label, ...buttonProps }: SelectButtonProps) {
   return (
     <Button
       {...buttonProps}
       aria-label={label}
-      className="dropdown-button spread"
+      className="select-button spread"
     >
-      <span className="dropdown-button-value">{children}</span>
+      <span className="select-button-value">{children}</span>
       <ChevronDown size={16} />
     </Button>
   )
 }
 
-export default DropdownButton
+export default SelectButton

@@ -27,7 +27,7 @@ type PopoverRole = 'dialog' | 'listbox'
 /** Kind of popover: `editor` opens left of its trigger with editor width. */
 type PopoverVariant = 'default' | 'editor'
 
-type PopoverTriggerProps = {
+export type PopoverTriggerProps = {
   ref: RefCallback<HTMLButtonElement>
   'aria-expanded': boolean
   'aria-haspopup': PopoverRole

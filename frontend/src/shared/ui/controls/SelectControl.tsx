@@ -1,12 +1,9 @@
-import { useState } from 'react'
-
-import OptionContent from '../display/OptionLabel'
-import Popover from '../primitives/Popover'
-import DropdownButton from '../primitives/SelectButton'
-import Menu from '../primitives/SelectMenu'
+import OptionLabel from '../display/OptionLabel'
+import SelectButton from '../primitives/SelectButton'
+import SelectMenu from '../primitives/SelectMenu'
 
 import type { ReactNode } from 'react'
-import type { OptionItem } from '../primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 
 type SelectControlVariant = 'control' | 'title'
 
@@ -25,6 +22,7 @@ type SelectControlProps<TValue extends string> = {
  * Picks one option from a menu; options show their icon and label, or what
  * `renderOption` returns, e.g. a palette preview, in the menu and in the
  * button. The title variant reads as a heading.
+ * @param props Options, selected value, variant and handler.
  */
 function SelectControl<TValue extends string>({
   disabled = false,
@@ -36,15 +34,9 @@ function SelectControl<TValue extends string>({
   variant = 'control',
   onChange,
 }: SelectControlProps<TValue>) {
-  const [isOpen, setIsOpen] = useState(false)
   const selectedOption = options.find((option) => {
     return option.value === value
   })
-
-  function handleChange(nextValue: TValue): void {
-    onChange(nextValue)
-    setIsOpen(false)
-  }
 
   /** Content of the button: the selected option (short label if set). */
   function renderValue(): ReactNode {
@@ -55,37 +47,29 @@ function SelectControl<TValue extends string>({
     const shown = shortLabel
       ? { ...selectedOption, label: shortLabel }
       : selectedOption
-    return renderOption?.(shown) ?? <OptionContent option={shown} />
+    return renderOption?.(shown) ?? <OptionLabel option={shown} />
   }
 
   return (
     <div className={`select-control ${variant === 'title' ? 'is-title' : ''}`}>
-      <Popover
+      <SelectMenu
         label={`${label} options`}
-        open={isOpen}
-        className="menu-popover"
-        placement="bottom-start"
-        role="listbox"
         matchTriggerWidth={variant === 'control'}
-        onOpenChange={setIsOpen}
+        options={options}
+        renderOption={renderOption}
+        value={value}
+        onChange={onChange}
         renderTrigger={(triggerProps) => (
-          <DropdownButton
+          <SelectButton
             {...triggerProps}
             disabled={disabled}
             label={label}
             variant={variant === 'title' ? 'ghost' : 'secondary'}
           >
             {renderValue()}
-          </DropdownButton>
+          </SelectButton>
         )}
-      >
-        <Menu
-          options={options}
-          renderOption={renderOption}
-          value={value}
-          onChange={handleChange}
-        />
-      </Popover>
+      />
     </div>
   )
 }

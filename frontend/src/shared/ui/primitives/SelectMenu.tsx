@@ -1,65 +1,84 @@
 import { Check } from 'lucide-react'
+import { useState } from 'react'
 
-import OptionContent from '../display/OptionLabel'
-import Tile from '../tiles/Tile'
+import OptionLabel from '../display/OptionLabel'
 import Button from './Button'
+import Popover from './Popover'
 
-import type { LucideIcon } from 'lucide-react'
+import type { OptionItem } from '@/shared/optionItem'
 import type { ReactNode } from 'react'
+import type { PopoverTriggerProps } from './Popover'
 
-/** One choice of a menu or icon group; some controls show its icon. */
-export type OptionItem<TValue extends string> = {
-  disabled?: boolean
-  icon?: LucideIcon
+type SelectMenuProps<TValue extends string> = {
   label: string
-  /** Shorter text for the select button, e.g. "Auto" for "Auto · Month". */
-  shortLabel?: string
-  value: TValue
-}
-
-type MenuProps<TValue extends string> = {
+  matchTriggerWidth?: boolean
   options: OptionItem<TValue>[]
   renderOption?: (option: OptionItem<TValue>) => ReactNode
   value: TValue
   onChange: (value: TValue) => void
+  renderTrigger: (props: PopoverTriggerProps) => ReactNode
 }
 
 /**
- * List of options in a menu, e.g. of a select; each shows its icon and
- * label, or what `renderOption` returns, e.g. a preview. The selected one
- * is marked with a check.
- * @param props Options, selected value, optional rendering and handler.
+ * Menu of a select that opens below its trigger; each option shows its
+ * icon and label, or what `renderOption` returns, e.g. a preview. The
+ * selected one is marked with a check; choosing one closes the menu.
+ * @param props Label, options, selected value, trigger and handler.
  */
-function Menu<TValue extends string>({
+function SelectMenu<TValue extends string>({
+  label,
+  matchTriggerWidth = false,
   options,
   renderOption,
   value,
   onChange,
-}: MenuProps<TValue>) {
+  renderTrigger,
+}: SelectMenuProps<TValue>) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  /**
+   * Hands on the chosen option and closes the menu.
+   * @param nextValue Value of the chosen option.
+   */
+  function handleChange(nextValue: TValue): void {
+    onChange(nextValue)
+    setIsOpen(false)
+  }
+
   return (
-    <Tile className="menu stack">
-      {options.map((option) => {
-        const isSelected = option.value === value
-        return (
-          <Button
-            className="menu-item spread"
-            variant="ghost"
-            role="option"
-            aria-selected={isSelected}
-            isActive={isSelected}
-            disabled={option.disabled}
-            onClick={() => onChange(option.value)}
-            key={option.value}
-          >
-            <span>
-              {renderOption?.(option) ?? <OptionContent option={option} />}
-            </span>
-            {isSelected ? <Check size={14} /> : null}
-          </Button>
-        )
-      })}
-    </Tile>
+    <Popover
+      label={label}
+      open={isOpen}
+      placement="bottom-start"
+      role="listbox"
+      matchTriggerWidth={matchTriggerWidth}
+      onOpenChange={setIsOpen}
+      renderTrigger={renderTrigger}
+    >
+      <div className="select-menu stack">
+        {options.map((option) => {
+          const isSelected = option.value === value
+          return (
+            <Button
+              className="select-menu-item spread"
+              variant="ghost"
+              role="option"
+              aria-selected={isSelected}
+              isActive={isSelected}
+              disabled={option.disabled}
+              onClick={() => handleChange(option.value)}
+              key={option.value}
+            >
+              <span>
+                {renderOption?.(option) ?? <OptionLabel option={option} />}
+              </span>
+              {isSelected ? <Check size={14} /> : null}
+            </Button>
+          )
+        })}
+      </div>
+    </Popover>
   )
 }
 
-export default Menu
+export default SelectMenu

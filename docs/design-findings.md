@@ -243,7 +243,7 @@ Stand: verschoben (Design-Slice)
 
 ### O10 Gewählte Option im Menü verliert beim Hover ihre Fläche
 
-Ort: Menü jeder Auswahl (`Menu`, `.menu-item`), z. B. Format oder
+Ort: Menü jeder Auswahl (`SelectMenu`, `.select-menu-item`), z. B. Format oder
 Aggregation
 
 Vorher:

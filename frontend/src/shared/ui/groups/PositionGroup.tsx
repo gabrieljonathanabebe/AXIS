@@ -18,7 +18,7 @@ import Row from '../rows/Row'
 
 import type { LucideIcon } from 'lucide-react'
 import type { PartialLayout, Side } from '@/shared/layout'
-import type { OptionItem } from '../primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
 
 // ===== TYPES =================================================================

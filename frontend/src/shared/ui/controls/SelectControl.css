@@ -8,7 +8,7 @@
   width: auto;
 }
 
-.select-control.is-title .dropdown-button {
+.select-control.is-title .select-button {
   --spread-gap: var(--space-1);
 
   width: auto;
@@ -18,6 +18,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.select-control.is-title .dropdown-button:hover {
+.select-control.is-title .select-button:hover {
   color: var(--color-text-secondary);
 }

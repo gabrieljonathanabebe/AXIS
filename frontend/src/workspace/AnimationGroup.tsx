@@ -6,7 +6,7 @@ import Group from '@/shared/ui/groups/Group'
 import Row from '@/shared/ui/rows/Row'
 import { DASHBOARD_ANIMATION } from './workspaceReducer'
 
-import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 import type { AnimationEasing, DashboardAnimation } from './types'
 
 type AnimationGroupProps = {

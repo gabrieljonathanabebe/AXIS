@@ -13,7 +13,7 @@ import type {
   TooltipAppearance,
   TooltipTrigger,
 } from '@/charts/types'
-import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 
 type TooltipGroupProps = {
   appearance: TooltipAppearance

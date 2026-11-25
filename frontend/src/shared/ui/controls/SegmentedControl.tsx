@@ -1,8 +1,8 @@
-import OptionContent from '../display/OptionLabel'
+import OptionLabel from '../display/OptionLabel'
 import Button from '../primitives/Button'
 
 import type { ReactNode } from 'react'
-import type { OptionItem } from '../primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 
 type SegmentedControlProps<TValue extends string> = {
   label: string
@@ -44,7 +44,7 @@ function SegmentedControl<TValue extends string>({
             onClick={() => onValueChange(option.value)}
             key={option.value}
           >
-            {renderOption?.(option) ?? <OptionContent option={option} />}
+            {renderOption?.(option) ?? <OptionLabel option={option} />}
           </Button>
         )
       })}

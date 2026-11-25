@@ -1,6 +1,6 @@
-import type { OptionItem } from '../primitives/SelectMenu'
+import type { OptionItem } from '@/shared/optionItem'
 
-type OptionContentProps<TValue extends string> = {
+type OptionLabelProps<TValue extends string> = {
   option: OptionItem<TValue>
 }
 
@@ -8,16 +8,16 @@ type OptionContentProps<TValue extends string> = {
  * Icon and label of one option, the same in menus, selects and icon groups.
  * @param props Option to show.
  */
-function OptionContent<TValue extends string>({
+function OptionLabel<TValue extends string>({
   option,
-}: OptionContentProps<TValue>) {
+}: OptionLabelProps<TValue>) {
   const OptionIcon = option.icon
   return (
-    <span className="option-content">
+    <span className="option-label">
       {OptionIcon ? <OptionIcon aria-hidden="true" size={14} /> : null}
-      <span className="option-content-label">{option.label}</span>
+      <span className="option-label-text">{option.label}</span>
     </span>
   )
 }
 
-export default OptionContent
+export default OptionLabel

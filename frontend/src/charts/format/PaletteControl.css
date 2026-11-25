@@ -27,14 +27,14 @@
 
 /* In the button of the select the strip alone shows the palette and fills
    the room up to the chevron; the menu still names it. */
-.dropdown-button-value:has(.palette-control-option) {
+.select-button-value:has(.palette-control-option) {
   flex: 1;
 }
 
-.dropdown-button-value .palette-control-preview {
+.select-button-value .palette-control-preview {
   flex: 1;
 }
 
-.dropdown-button-value .palette-control-name {
+.select-button-value .palette-control-name {
   display: none;
 }

@@ -946,7 +946,7 @@ ANIMATION                      ＋
   | Radius, Ticks | Rotation der Achsenlabels, X | Y und W | H von Chart
   und Card (`BoxFieldsRow`, 9p).
 - **Icon-Gruppen** (`SegmentedControl`) zeigen Icon und Wort
-  (`OptionContent`, siehe 9s). Nur Icons, die das Ergebnis zeigen,
+  (`OptionLabel`, siehe 9s). Nur Icons, die das Ergebnis zeigen,
   stehen allein (Ausrichtung, Strichstil, Scatter-Symbole, Seiten als
   Pfeile).
 - **Position von Legende und Farbskala** als Positionsfeld, das ein
@@ -1048,7 +1048,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 | Farbzeile                              | `PaintControl` mit `PaintField` (9q)                   |
 | Icon-Toggle                            | `IconButton` mit `isActive`                            |
 | Toggle mit Icon und Wort               | `Button` mit `isActive` und `aria-pressed` (Zoom)      |
-| Icon und Wort einer Option             | `OptionItem.icon`, gezeigt von `OptionContent` (9s)    |
+| Icon und Wort einer Option             | `OptionItem.icon`, gezeigt von `OptionLabel` (9s)      |
 | Zeile auf dem Raster, Zeile ohne Label | `ControlRow` ohne `label`, mit `layout` und `action`   |
 | Auge und ＋ in der Überschrift         | `FormatWidget` mit `visibility` und `onAdd`            |
 | Gruppe eines kleinen Elements          | `FormatWidget` mit `group`                             |
@@ -1499,9 +1499,9 @@ Klick daneben):
 - `SelectControl` hat eine `variant`: `field` (Default, Feld mit
   Rahmen, Menü so breit wie das Feld) und `title` (liest sich als
   Überschrift: ohne Rahmen und Fläche, Titel-Schrift, Hover leicht
-  gedimmt, Menü so breit wie nötig). Das Menü (`OptionsMenu`) hat
+  gedimmt, Menü so breit wie nötig). Das Menü (`SelectMenu`) hat
   28-px-Zeilen ohne Abstand mit 12-px-Schrift; Optionen zeigen Icon und
-  Wort (`OptionContent`), die gewählte einen Haken. Eine Option mit
+  Wort (`OptionLabel`), die gewählte einen Haken. Eine Option mit
   `disabled` (`OptionItem`) bleibt sichtbar, aber gedimmt und nicht
   wählbar, z. B. ein zweiter Background Blur.
 - `DetailsPopover` ist die Hülle für Details: Standard-Auslöser ist
@@ -1984,14 +1984,14 @@ grid (Legende, Farbskala)         cross (ohne Alignment)
 
 ## 9s. Optionen mit Icons
 
-`OptionItem` (`OptionsMenu.tsx`) ist eine Option von Select, Menü und
+`OptionItem` (`shared/optionItem.ts`) ist eine Option von Select, Menü und
 Icon-Gruppe: `label`, `value`, optional `icon` (`LucideIcon`) und
 `shortLabel`, ein kürzerer Text für den Button von `SelectControl`,
 wenn das Wort im Menü nicht ins Feld passt (Menü „Auto · Month“, Button
 „Auto“).
 
-- `OptionContent` zeigt Icon und Wort einer Option, gleich in
-  `SegmentedControl`, `OptionsMenu` und im Button von `SelectControl`;
+- `OptionLabel` zeigt Icon und Wort einer Option, gleich in
+  `SegmentedControl`, `SelectMenu` und im Button von `SelectControl`;
   lange Wörter enden mit „…“, das Icon schrumpft nicht
 - `renderOption` ersetzt die Darstellung, z. B. nur ein Icon, das das
   Ergebnis zeigt, oder die Paletten-Vorschau; gibt `renderOption` in

@@ -45,8 +45,8 @@ import type {
   ScatterSymbol,
 } from '@/charts/types'
 import type { Effect, MarkEffect } from '@/shared/effect'
+import type { OptionItem } from '@/shared/optionItem'
 import type { PaintType } from '@/shared/paint'
-import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
 import type { RowDetails } from '@/shared/ui/rows/Row'
 
 // ===== TYPES =================================================================

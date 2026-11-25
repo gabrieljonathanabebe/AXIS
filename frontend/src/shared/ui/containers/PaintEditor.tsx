@@ -93,12 +93,12 @@ function PaintEditor({
           label={`${label} paint type`}
           options={typeOptions}
           renderOption={(option) => (
-            <span className="option-content">
+            <span className="option-label">
               <span
                 aria-hidden="true"
                 className={`paint-type-preview is-${option.value}`}
               />
-              <span className="option-content-label">{option.label}</span>
+              <span className="option-label-text">{option.label}</span>
             </span>
           )}
           value={getPaintType(paint)}
