@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
 
-import OptionContent from '../display/OptionContent'
+import OptionContent from '../display/OptionLabel'
 import Tile from '../tiles/Tile'
 import Button from './Button'
 

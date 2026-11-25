@@ -8,7 +8,7 @@ import Tile from '@/shared/ui/tiles/Tile'
 import { createDistributionBars } from './fieldDistribution'
 import { getAllowedSemanticRoles, semanticRoleLabels } from './semanticRoles'
 
-import type { OptionItem } from '@/shared/ui/primitives/Menu'
+import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
 import type { FieldProfile, SemanticRole } from './types'
 
 // ===== TYPES =================================================================

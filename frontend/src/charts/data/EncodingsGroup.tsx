@@ -22,7 +22,7 @@ import {
 
 import type { ChartFormatProps } from '@/charts/types'
 import type { TimeGrain } from '@/shared/format/valueFormats'
-import type { OptionItem } from '@/shared/ui/primitives/Menu'
+import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
 
 type EncodingsGroupProps = Pick<
   ChartFormatProps,

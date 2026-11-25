@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import OptionContent from '../display/OptionContent'
-import DropdownButton from '../primitives/DropdownButton'
-import Menu from '../primitives/Menu'
+import OptionContent from '../display/OptionLabel'
 import Popover from '../primitives/Popover'
+import DropdownButton from '../primitives/SelectButton'
+import Menu from '../primitives/SelectMenu'
 
 import type { ReactNode } from 'react'
-import type { OptionItem } from '../primitives/Menu'
+import type { OptionItem } from '../primitives/SelectMenu'
 
 type SelectControlVariant = 'control' | 'title'
 

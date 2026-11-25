@@ -20,8 +20,8 @@
 @import './shared/ui/primitives/IconButton.css';
 @import './shared/ui/display/MiniHistogram.css';
 @import './shared/ui/primitives/NumberInput.css';
-@import './shared/ui/display/OptionContent.css';
-@import './shared/ui/primitives/Menu.css';
+@import './shared/ui/display/OptionLabel.css';
+@import './shared/ui/primitives/SelectMenu.css';
 @import './shared/ui/containers/PaintEditor.css';
 @import './charts/format/PaletteControl.css';
 @import './shared/ui/containers/Panel.css';
@@ -29,7 +29,7 @@
 @import './shared/ui/controls/PositionGrid.css';
 @import './table/RangeControl.css';
 @import './shared/ui/controls/NumberControl.css';
-@import './shared/ui/primitives/DropdownButton.css';
+@import './shared/ui/primitives/SelectButton.css';
 @import './shared/ui/controls/SelectControl.css';
 @import './shared/ui/controls/SegmentedControl.css';
 @import './datasets/StatTile.css';

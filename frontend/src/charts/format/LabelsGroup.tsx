@@ -5,7 +5,7 @@ import PositionGroup from '@/shared/ui/groups/PositionGroup'
 import TextGroup from '@/shared/ui/groups/TextGroup'
 
 import type { LabelPosition, LabelsAppearance } from '@/charts/types'
-import type { OptionItem } from '@/shared/ui/primitives/Menu'
+import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
 
 // ===== TYPES =================================================================
 type LabelsGroupProps = {

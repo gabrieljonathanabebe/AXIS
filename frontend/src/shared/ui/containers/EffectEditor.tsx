@@ -9,7 +9,7 @@ import Row from '../rows/Row'
 
 import type { ReactNode } from 'react'
 import type { AnyEffect } from '@/shared/effect'
-import type { OptionItem } from '../primitives/Menu'
+import type { OptionItem } from '../primitives/SelectMenu'
 
 // ===== TYPES =================================================================
 type EffectEditorProps = {

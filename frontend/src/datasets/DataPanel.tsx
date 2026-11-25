@@ -8,7 +8,7 @@ import DataTable from '@/table/DataTable'
 import DatasetProfileView from './DatasetProfileView'
 
 import type { EmptyStateProps } from '@/shared/ui/display/EmptyState'
-import type { OptionItem } from '@/shared/ui/primitives/Menu'
+import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
 import type {
   Dataset,
   DatasetProfile,

@@ -1,8 +1,8 @@
-import OptionContent from '../display/OptionContent'
+import OptionContent from '../display/OptionLabel'
 import Button from '../primitives/Button'
 
 import type { ReactNode } from 'react'
-import type { OptionItem } from '../primitives/Menu'
+import type { OptionItem } from '../primitives/SelectMenu'
 
 type SegmentedControlProps<TValue extends string> = {
   label: string

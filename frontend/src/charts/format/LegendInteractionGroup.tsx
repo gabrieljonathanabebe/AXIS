@@ -5,7 +5,7 @@ import Group from '@/shared/ui/groups/Group'
 import Row from '@/shared/ui/rows/Row'
 
 import type { ChartInteractionSpec, LegendSelectionMode } from '@/charts/types'
-import type { OptionItem } from '@/shared/ui/primitives/Menu'
+import type { OptionItem } from '@/shared/ui/primitives/SelectMenu'
 
 // ===== TYPES =================================================================
 type LegendInteractionGroupProps = {
