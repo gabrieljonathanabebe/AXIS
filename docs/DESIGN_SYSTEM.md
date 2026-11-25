@@ -1229,7 +1229,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)            |
 | Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                    |
 | Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | implementiert (Icon-Gruppen, Paletten mit Farbstreifen)    |
-| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `InlineTextInput`)              |
+| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `TextInput` inline)             |
 | Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                    |
 | Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                    |
 | Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorSwatch`, `DetailsPopover`)                |
@@ -1368,10 +1368,11 @@ Domain Model verwenden immer `start | center | end`, nicht
 Inline-Editing und Format-Panel ändern denselben Wert über dieselbe
 Action.
 
-Die Edit-Hälfte ist als `InlineTextInput` eigenständig nutzbar, z. B.
-als Overlay über Text, den nicht HTML rendert (Achsentitel in
-ECharts). `InlineTextInput` besitzt Draft, Enter/Escape/Blur und die
-Tastatur-Isolation. Ein Pointer-Down außerhalb des Inputs übernimmt den
+Die Edit-Hälfte ist als `TextInput variant="inline"` eigenständig
+nutzbar, z. B. als Overlay über Text, den nicht HTML rendert
+(Achsentitel in ECharts). Den Entwurf mit Enter/Escape/Blur liefert
+`Input` im Modus „übernehmen“; die Variante ergänzt Fokus mit
+Markieren, Trimmen und die Tastatur-Isolation. Ein Pointer-Down außerhalb des Inputs übernimmt den
 Wert, auch wenn eine Bibliothek das Default-Verhalten unterdrückt.
 
 Gemeinsames Styling liegt in `EditableText.css`:

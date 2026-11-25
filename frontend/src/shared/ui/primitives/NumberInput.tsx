@@ -1,59 +1,82 @@
-import { useDraftValue } from '@/shared/useDraftValue'
+import Input from './Input'
+import { boundNumber, getArrowSteps, readNumberDraft } from './inputDraft'
+
+import type { KeyboardEvent } from 'react'
+import type { InputProps } from './Input'
+import type { NumberBounds } from './inputDraft'
 
 // ===== TYPES =================================================================
-type NumberInputProps = {
-  label: string
-  max: number
-  min: number
-  step?: number
-  value: number
-  onValueChange: (value: number) => void
-}
+type NumberInputProps = Omit<
+  InputProps,
+  'max' | 'min' | 'mode' | 'step' | 'type' | 'value' | 'onValueChange'
+> &
+  NumberBounds & {
+    value: number | null
+    onAuto?: () => void
+    onValueChange: (value: number) => void
+  }
 
 // ===== COMPONENT =============================================================
 /**
- * Small number control next to a slider. The typed text stays a draft until
- * Enter or blur; then it is clamped to min and max and committed.
+ * Number field that commits on Enter or leaving, rounded to the step and
+ * within min and max, e.g. 3 with min 9 → 9. Arrow keys step at once, ten
+ * steps with Shift. With `onAuto` an empty field shows "Auto", and
+ * emptying it calls `onAuto`. Its frame, e.g. `NumberControl`, draws the
+ * pill.
+ * @param props Value, bounds, auto action and the props of `Input`.
  */
 function NumberInput({
-  label,
+  className = '',
   max,
   min,
   step = 1,
   value,
+  onAuto,
   onValueChange,
+  ...inputProps
 }: NumberInputProps) {
-  const [draftValue, setDraftValue] = useDraftValue(value)
+  const bounds = { max, min, step }
 
-  /** Commits the draft within min and max, or restores the last value. */
-  function commitDraftValue() {
-    const parsedValue = Number(draftValue)
-    if (!Number.isFinite(parsedValue)) {
-      setDraftValue(String(value))
+  /**
+   * Hands on the typed number, or auto for an emptied field.
+   * @param draft Text of the field.
+   */
+  function handleCommit(draft: string): void {
+    const read = readNumberDraft(draft, Boolean(onAuto))
+    if (read.kind === 'auto' && value !== null) {
+      onAuto?.()
+    }
+    if (read.kind === 'number') {
+      onValueChange(boundNumber(read.value, bounds))
+    }
+  }
+
+  /**
+   * Steps with the arrow keys from the value, or from min when auto.
+   * @param event Key press in the field.
+   */
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
+    const steps = getArrowSteps(event.key, event.shiftKey)
+    if (steps === null) {
       return
     }
-    const nextValue = Math.min(max, Math.max(min, parsedValue))
-    setDraftValue(String(nextValue))
-    onValueChange(nextValue)
+    event.preventDefault()
+    onValueChange(boundNumber((value ?? min ?? 0) + steps * step, bounds))
   }
 
   return (
-    <input
-      className="number-input"
-      type="number"
-      aria-label={label}
+    <Input
+      {...inputProps}
+      className={['number-input', className].filter(Boolean).join(' ')}
       max={max}
       min={min}
+      mode="commit"
+      placeholder={onAuto ? 'Auto' : undefined}
       step={step}
-      value={draftValue}
-      onBlur={commitDraftValue}
-      onChange={(event) => setDraftValue(event.currentTarget.value)}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') {
-          commitDraftValue()
-          event.currentTarget.blur()
-        }
-      }}
+      type="number"
+      value={value === null ? '' : String(value)}
+      onKeyDown={handleKeyDown}
+      onValueChange={handleCommit}
     />
   )
 }

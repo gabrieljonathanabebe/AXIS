@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { getRectInFrame } from '@/objects/elementRect'
 import { getTextStyleCss } from '@/shared/textStyle'
 import EditableText from '@/shared/ui/EditableText'
-import InlineTextInput from '@/shared/ui/primitives/InlineTextInput'
+import TextInput from '@/shared/ui/primitives/TextInput'
 import { getChartDefinition } from './chartDefinitions'
 import EChartCanvas from './EChartCanvas'
 import EncodingDropSlots from './EncodingDropSlots'
@@ -140,11 +140,8 @@ function ChartItem({
         </div>
       ) : null}
       {axisTitleEdit ? (
-        <InlineTextInput
+        <TextInput
           className={`chart-axis-title-input is-${axisTitleEdit.axis}-axis`}
-          initialValue={
-            chart.spec.appearance[`${axisTitleEdit.axis}Axis`].title.text
-          }
           key={axisTitleEdit.axis}
           label={`${axisTitleEdit.axis.toUpperCase()} axis title`}
           placeholder={getDefaultAxisTitle(
@@ -153,8 +150,10 @@ function ChartItem({
             axisTitleEdit.axis,
           )}
           style={getAxisTitleInputStyle(axisTitleEdit)}
+          value={chart.spec.appearance[`${axisTitleEdit.axis}Axis`].title.text}
+          variant="inline"
           onClose={() => setAxisTitleEdit(null)}
-          onCommit={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
+          onValueChange={(text) => commitAxisTitle(axisTitleEdit.axis, text)}
         />
       ) : null}
     </>

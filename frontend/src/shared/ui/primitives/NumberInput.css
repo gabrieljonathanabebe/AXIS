@@ -1,27 +1,22 @@
+/* Bare number field; its frame, e.g. of `NumberControl`, draws the pill. */
 .number-input {
-  width: 44px;
-  height: var(--control-height-sm);
-  padding: 0 8px;
-  padding-inline: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--space-2) 0 0;
   color: var(--color-text-primary);
   font: inherit;
   font-size: var(--font-size-xs);
   font-variant-numeric: tabular-nums;
   text-align: right;
   appearance: textfield;
-  background: var(--color-surface-default);
-  border: var(--border-width-thin) solid var(--color-border-subtle);
-  border-radius: var(--radius-pill);
-}
-
-.number-input:hover {
-  border-color: var(--color-border-default);
-}
-
-.number-input:focus {
-  border-color: var(--color-accent);
+  background: transparent;
+  border: 0;
   outline: none;
-  box-shadow: var(--shadow-accent);
+}
+
+.number-input::placeholder {
+  color: var(--color-text-secondary);
 }
 
 .number-input::-webkit-inner-spin-button,

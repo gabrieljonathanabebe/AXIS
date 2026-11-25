@@ -1009,7 +1009,7 @@ Format-Panel und Inline-Editing als Platzhalter.
 Die Achsentitel rendert weiterhin ECharts. Für das Inline-Editing
 übersetzt der Adapter (`createAxisTitleEditFromEvent.ts`) Doppelklick
 und Hover auf `axisName` in ein Domain-Event `AxisTitleEdit` mit Achse
-und Bounding Box. Der Doppelklick öffnet darüber ein `InlineTextInput`,
+und Bounding Box. Der Doppelklick öffnet darüber ein `TextInput variant="inline"`,
 der Hover meldet die Achse als Teil unter dem Pointer (siehe unten).
 Während der Bearbeitung blendet `syncAxisTitleEdit` den Original-Titel
 aus; ECharts-spezifische Aufrufe bleiben im Adapter.
@@ -1816,8 +1816,8 @@ useWorkspaceCommands
   selbst fokussiert ist (`[data-object-id]`).
 - In Textfeldern und `contenteditable` greift kein Shortcut; dort bleibt
   z. B. das native Text-Undo erhalten.
-- Control-lokale Tastaturbedienung (Slider, `ScrubbableNumber`,
-  `RotationDial`, `InlineTextInput`) sowie Pfeiltasten
+- Control-lokale Tastaturbedienung (Slider, `NumberControl`,
+  `RotationDial`, `TextInput variant="inline"`) sowie Pfeiltasten
   und Escape auf dem fokussierten Objekt bleiben in den Komponenten
   (`ObjectFrame`).
 

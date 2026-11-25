@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import InlineTextInput from './primitives/InlineTextInput'
+import TextInput from './primitives/TextInput'
 
 import type { PointerEvent } from 'react'
 
@@ -33,14 +33,15 @@ function EditableText({
 
   if (isEditing) {
     return (
-      <InlineTextInput
+      <TextInput
         className={className}
-        formatElement={formatElement}
-        initialValue={value}
+        data-format-element={formatElement}
         label={label}
         placeholder={placeholder}
+        value={value}
+        variant="inline"
         onClose={() => setIsEditing(false)}
-        onCommit={onCommit}
+        onValueChange={onCommit}
       />
     )
   }
