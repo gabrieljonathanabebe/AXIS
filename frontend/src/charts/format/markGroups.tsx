@@ -360,7 +360,7 @@ function getChartTypeGroups(
                   max={60}
                   min={20}
                   step={2}
-                  unit="%"
+                  unit="percent"
                   value={pie.innerRadius}
                   onValueChange={(innerRadius) => {
                     actions.setChartAppearance(

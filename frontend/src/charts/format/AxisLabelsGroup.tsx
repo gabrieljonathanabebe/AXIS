@@ -2,7 +2,6 @@ import { Ruler } from 'lucide-react'
 
 import { showsDateLabels } from '@/charts/getEffectiveTimeGrain'
 import NumberControl from '@/shared/ui/controls/NumberControl'
-import RotationDial from '@/shared/ui/controls/RotationDial'
 import Group from '@/shared/ui/groups/Group'
 import NumberFormatGroup from '@/shared/ui/groups/NumberFormatGroup'
 import TextGroup from '@/shared/ui/groups/TextGroup'
@@ -72,8 +71,9 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
             onValueChange={(tickCount) => onChange({ ...value, tickCount })}
           />
           {value.rotation === undefined ? null : (
-            <RotationDial
+            <NumberControl
               label={`${label} label rotation`}
+              unit="degree"
               value={value.rotation}
               onValueChange={(rotation) => onChange({ ...value, rotation })}
             />

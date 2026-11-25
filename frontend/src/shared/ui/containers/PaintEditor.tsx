@@ -9,7 +9,6 @@ import {
   PAINT_TYPE_LABELS,
 } from '@/shared/paint'
 import NumberControl from '../controls/NumberControl'
-import RotationDial from '../controls/RotationDial'
 import SegmentedControl from '../controls/SegmentedControl'
 import Group from '../groups/Group'
 import GradientStopRow from '../rows/GradientStopRow'
@@ -33,11 +32,11 @@ type PaintEditorProps = {
 /** Widest turn of a gradient in either direction, a half turn. */
 const MAX_GRADIENT_ANGLE = 180
 
-/** Reach of a radial center in percent; it may lie outside its area. */
-const RADIAL_CENTER_RANGE = { max: 150, min: -50 }
+/** Reach of a radial center as a share of its area; it may lie outside. */
+const RADIAL_CENTER_RANGE = { max: 1.5, min: -0.5 }
 
-/** Largest radius of a radial gradient in percent of its area. */
-const MAX_RADIAL_RADIUS = 200
+/** Largest radius of a radial gradient as a share of its area. */
+const MAX_RADIAL_RADIUS = 2
 
 /** Fewest stops a gradient keeps: its start and its end. */
 const MIN_GRADIENT_STOPS = 2
@@ -135,23 +134,19 @@ function PaintEditor({
           <NumberControl
             icon={<ArrowLeftToLine size={14} />}
             label={`${label} start opacity`}
-            max={100}
-            min={0}
-            unit="%"
-            value={Math.round(paint.startOpacity * 100)}
-            onValueChange={(percent) => {
-              setPaint({ ...paint, startOpacity: percent / 100 })
+            unit="fraction"
+            value={paint.startOpacity}
+            onValueChange={(startOpacity) => {
+              setPaint({ ...paint, startOpacity })
             }}
           />
           <NumberControl
             icon={<ArrowRightToLine size={14} />}
             label={`${label} end opacity`}
-            max={100}
-            min={0}
-            unit="%"
-            value={Math.round(paint.endOpacity * 100)}
-            onValueChange={(percent) => {
-              setPaint({ ...paint, endOpacity: percent / 100 })
+            unit="fraction"
+            value={paint.endOpacity}
+            onValueChange={(endOpacity) => {
+              setPaint({ ...paint, endOpacity })
             }}
           />
         </Row>
@@ -164,10 +159,11 @@ function PaintEditor({
       {paint.type === 'linear' ? (
         <Group title="Angle">
           <Row>
-            <RotationDial
+            <NumberControl
               label={`${label} angle`}
               max={MAX_GRADIENT_ANGLE}
               min={-MAX_GRADIENT_ANGLE}
+              unit="degree"
               value={paint.angle}
               onValueChange={(angle) => setPaint({ ...paint, angle })}
             />
@@ -181,10 +177,10 @@ function PaintEditor({
               label={`${label} center x`}
               max={RADIAL_CENTER_RANGE.max}
               min={RADIAL_CENTER_RANGE.min}
-              unit="%"
-              value={Math.round(paint.centerX * 100)}
-              onValueChange={(percent) => {
-                setPaint({ ...paint, centerX: percent / 100 })
+              unit="fraction"
+              value={paint.centerX}
+              onValueChange={(centerX) => {
+                setPaint({ ...paint, centerX })
               }}
             />
             <NumberControl
@@ -192,10 +188,10 @@ function PaintEditor({
               label={`${label} center y`}
               max={RADIAL_CENTER_RANGE.max}
               min={RADIAL_CENTER_RANGE.min}
-              unit="%"
-              value={Math.round(paint.centerY * 100)}
-              onValueChange={(percent) => {
-                setPaint({ ...paint, centerY: percent / 100 })
+              unit="fraction"
+              value={paint.centerY}
+              onValueChange={(centerY) => {
+                setPaint({ ...paint, centerY })
               }}
             />
           </Row>
@@ -204,11 +200,11 @@ function PaintEditor({
               icon={<Radius size={14} />}
               label={`${label} radius`}
               max={MAX_RADIAL_RADIUS}
-              min={1}
-              unit="%"
-              value={Math.round(paint.radius * 100)}
-              onValueChange={(percent) => {
-                setPaint({ ...paint, radius: percent / 100 })
+              min={0.01}
+              unit="fraction"
+              value={paint.radius}
+              onValueChange={(radius) => {
+                setPaint({ ...paint, radius })
               }}
             />
           </Row>

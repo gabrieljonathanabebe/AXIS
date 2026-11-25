@@ -45,23 +45,19 @@ function GradientStopRow({
       <NumberControl
         icon={<MoveHorizontal size={14} />}
         label={`${label} position`}
-        max={100}
-        min={0}
-        unit="%"
-        value={Math.round(value.position * 100)}
-        onValueChange={(percent) => {
-          onChange({ ...value, position: percent / 100 })
+        unit="fraction"
+        value={value.position}
+        onValueChange={(position) => {
+          onChange({ ...value, position })
         }}
       />
       <NumberControl
         icon={<Blend size={14} />}
         label={`${label} opacity`}
-        max={100}
-        min={0}
-        unit="%"
-        value={Math.round(value.opacity * 100)}
-        onValueChange={(percent) => {
-          onChange({ ...value, opacity: percent / 100 })
+        unit="fraction"
+        value={value.opacity}
+        onValueChange={(opacity) => {
+          onChange({ ...value, opacity })
         }}
       />
       <IconButton

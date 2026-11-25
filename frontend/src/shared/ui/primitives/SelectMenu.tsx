@@ -5,8 +5,8 @@ import OptionLabel from '../display/OptionLabel'
 import Button from './Button'
 import Popover from './Popover'
 
-import type { OptionItem } from '@/shared/optionItem'
 import type { ReactNode } from 'react'
+import type { OptionItem } from '@/shared/optionItem'
 import type { PopoverTriggerProps } from './Popover'
 
 type SelectMenuProps<TValue extends string> = {

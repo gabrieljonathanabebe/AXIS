@@ -1041,20 +1041,20 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 
 **Komponenten** (erweitert statt neu gebaut):
 
-| Bedarf                                 | Umsetzung                                              |
-| -------------------------------------- | ------------------------------------------------------ |
-| Zahlenfeld mit Icon, Einheit und Auto  | `ScrubbableNumber` mit `icon`, `unit` und `onAuto` (8) |
-| Winkel                                 | `RotationDial`: `ScrubbableNumber` mit Pfeil als Icon  |
-| Farbzeile                              | `PaintControl` mit `PaintField` (9q)                   |
-| Icon-Toggle                            | `IconButton` mit `isActive`                            |
-| Toggle mit Icon und Wort               | `Button` mit `isActive` und `aria-pressed` (Zoom)      |
-| Icon und Wort einer Option             | `OptionItem.icon`, gezeigt von `OptionLabel` (9s)      |
-| Zeile auf dem Raster, Zeile ohne Label | `ControlRow` ohne `label`, mit `layout` und `action`   |
-| Auge und ＋ in der Überschrift         | `FormatWidget` mit `visibility` und `onAdd`            |
-| Gruppe eines kleinen Elements          | `FormatWidget` mit `group`                             |
-| Details hinter ⚙                       | `DetailsPopover` (9h)                                  |
-| 3×3-Raster                             | `PositionGrid` (9r)                                    |
-| Zahlenzeile X \| Y bzw. W \| H         | `BoxFieldsRow` mit `LayoutBox` (9p)                    |
+| Bedarf                                 | Umsetzung                                            |
+| -------------------------------------- | ---------------------------------------------------- |
+| Zahlenfeld mit Icon, Einheit und Auto  | `NumberControl` mit `icon`, `unit` und `onAuto` (8)  |
+| Winkel                                 | `NumberControl` mit `unit="degree"` (Pfeil als Icon) |
+| Farbzeile                              | `PaintControl` mit `PaintField` (9q)                 |
+| Icon-Toggle                            | `IconButton` mit `isActive`                          |
+| Toggle mit Icon und Wort               | `Button` mit `isActive` und `aria-pressed` (Zoom)    |
+| Icon und Wort einer Option             | `OptionItem.icon`, gezeigt von `OptionLabel` (9s)    |
+| Zeile auf dem Raster, Zeile ohne Label | `ControlRow` ohne `label`, mit `layout` und `action` |
+| Auge und ＋ in der Überschrift         | `FormatWidget` mit `visibility` und `onAdd`          |
+| Gruppe eines kleinen Elements          | `FormatWidget` mit `group`                           |
+| Details hinter ⚙                       | `DetailsPopover` (9h)                                |
+| 3×3-Raster                             | `PositionGrid` (9r)                                  |
+| Zahlenzeile X \| Y bzw. W \| H         | `BoxFieldsRow` mit `LayoutBox` (9p)                  |
 
 Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt ist kompakt,
 dadurch wirkt eine Änderung auf alle Elemente gleichzeitig.
@@ -1170,8 +1170,8 @@ Beispiele:
 
 Verwenden:
 
-ebenfalls `ScrubbableNumber`, begrenzt über `min` und `max`; Winkel als
-`RotationDial`. Im Popover gibt es keine Slider mehr (`Slider` wurde in
+ebenfalls `NumberControl`, begrenzt über `min` und `max`; Winkel mit
+`unit="degree"`. Im Popover gibt es keine Slider mehr (`Slider` wurde in
 3.4 entfernt).
 
 Beispiele:
@@ -1223,7 +1223,7 @@ Status: `implementiert`, `teilweise`, `geplant`.
 | Modifier Scrubbing           | Shift = grob, Alt = fein        | präzise Einstellung                              | teilweise (Shift ×10 bei den Pfeiltasten)                  |
 | Visual Position Picker       | Legend, Label Position          | 3×3-Feld bzw. Icons statt Dropdown               | implementiert (`PositionGrid`, Label-Positionen mit Icons) |
 | XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                    |
-| Rotation Dial                | Axis Label Rotation, Verlauf    | Winkel als Pfeil sehen und ziehen                | implementiert (`RotationDial`, Feld mit Pfeil)             |
+| Rotation Dial                | Axis Label Rotation, Verlauf    | Winkel als Pfeil sehen und ziehen                | implementiert (`NumberControl` mit `unit="degree"`)        |
 | Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)      |
 | Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | implementiert (`EncodingDropSlots`)                        |
 | Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)            |
@@ -1268,10 +1268,15 @@ begrenzte Werte:
 - `onAuto` erlaubt einen automatischen Wert: `value` ist dann `null`,
   das leere Feld zeigt „Auto“, Leeren ruft `onAuto`, Ziehen oder Pfeile
   starten beim Minimum (Tick Count der Achsenlabels, Decimals).
-- `RotationDial` ist ein `ScrubbableNumber` mit einem Pfeil als Icon,
-  der in Richtung des Winkels zeigt (beim Verlauf von Start nach Ende).
-  `min` und `max` sind optional, Standard ±90 (Achsenlabels); der
-  Verlauf nutzt ±180.
+- `unit` kommt aus `NUMBER_UNITS` (`controls/numberUnits.tsx`) und
+  nennt, was das Modell speichert: `px`, `ms`, `percent` (gespeichert wie
+  gezeigt, z. B. Donut-Innenradius), `fraction` (gespeichert 0–1,
+  gezeigt 0–100 %, z. B. Deckkraft) und `degree`. Wert, Grenzen und
+  Schritt übergibt der Aufrufer wie gespeichert; die Einheit rechnet
+  für das Feld um und gibt Standardgrenzen (`fraction` 0–1, `degree`
+  ±90).
+- `degree` zeigt als Icon einen Pfeil, der in Richtung des Winkels zeigt
+  (beim Verlauf von Start nach Ende); der Verlauf nutzt ±180.
 
 ## 9. ColorSwatch und ColorPicker
 
@@ -1940,7 +1945,7 @@ steht der Hex-Wert einer Solid-Farbe oder der Typ eines Verlaufs
 - Eigene Farbe: `PaintField`, sein Editor (`getEditor`) zeigt oben den
   Typ Solid | Linear | Radial als Icon-Gruppe mit Wort über die ganze
   Breite (`.paint-type-preview`), darunter eine Section je Typ: Color
-  mit dem `ColorPicker`; Angle (`RotationDial`, ±180°) bzw. Shape (X, Y
+  mit dem `ColorPicker`; Angle (`NumberControl`, `degree`, ±180°) bzw. Shape (X, Y
   −50 bis 150 %, Radius 1–200 %) und Stops (`GradientStopsControl`, ＋
   im Kopf der Section).
 - Serienfarbe: links `seriesColor`, das Feld der Datenfarbe, oder nur

@@ -1844,7 +1844,7 @@ useWorkspaceCommands
 - In Textfeldern und `contenteditable` greift kein Shortcut; dort bleibt
   z. B. das native Text-Undo erhalten.
 - Control-lokale Tastaturbedienung (Slider, `NumberControl`,
-  `RotationDial`, `TextInput variant="inline"`) sowie Pfeiltasten
+  `TextInput variant="inline"`) sowie Pfeiltasten
   und Escape auf dem fokussierten Objekt bleiben in den Komponenten
   (`ObjectFrame`).
 

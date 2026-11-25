@@ -2,6 +2,7 @@ import NumberControl from '../controls/NumberControl'
 import Row from './Row'
 
 import type { Box, NumberBounds } from '@/shared/layout'
+import type { NumberUnit } from '../controls/numberUnits'
 
 // ===== TYPES =================================================================
 /**
@@ -10,8 +11,8 @@ import type { Box, NumberBounds } from '@/shared/layout'
  */
 export type LayoutBox = {
   bounds: Partial<Record<keyof Box, NumberBounds>>
-  /** Sign after the number, e.g. "px"; grid cells show none. */
-  unit?: string
+  /** Unit of the fields, e.g. px; grid cells have none. */
+  unit?: NumberUnit
   /** Unit in words for the field names, e.g. "grid cells". */
   unitName: string
   value: Partial<Box>

@@ -77,12 +77,10 @@ function ShadowControls<TValue extends Shadow>({
           <NumberControl
             icon={<Blend size={14} />}
             label={`${label} opacity`}
-            max={100}
-            min={0}
-            unit="%"
-            value={Math.round(value.opacity * 100)}
-            onValueChange={(percent) => {
-              onChange({ ...value, opacity: percent / 100 })
+            unit="fraction"
+            value={value.opacity}
+            onValueChange={(opacity) => {
+              onChange({ ...value, opacity })
             }}
           />
         </Row>
