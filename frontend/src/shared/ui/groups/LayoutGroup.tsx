@@ -1,13 +1,12 @@
 import { Fullscreen, MoveHorizontal, MoveVertical, Space } from 'lucide-react'
 
 import { isSide } from '@/shared/layout'
-import AlignmentControl from '../controls/AlignmentControl'
 import NumberControl from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
+import { ALIGNMENT_OPTIONS } from './alignmentOptions'
 
-import type { LucideIcon } from 'lucide-react'
 import type { Orientation, PartialLayout } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
@@ -24,14 +23,9 @@ type LayoutGroupProps<TLayout extends PartialLayout> = {
 
 // ===== CONSTANTS =============================================================
 const orientationOptions = [
-  { label: 'Vertical', value: 'vertical' },
-  { label: 'Horizontal', value: 'horizontal' },
+  { icon: MoveVertical, label: 'Vertical', value: 'vertical' },
+  { icon: MoveHorizontal, label: 'Horizontal', value: 'horizontal' },
 ] satisfies OptionItem<Orientation>[]
-
-const orientationIcons = {
-  horizontal: MoveHorizontal,
-  vertical: MoveVertical,
-} satisfies Record<Orientation, LucideIcon>
 
 // ===== COMPONENT =============================================================
 /**
@@ -56,13 +50,10 @@ function LayoutGroup<TLayout extends PartialLayout>({
   const arrangement = [
     !isAtSide && orientation !== undefined ? (
       <SegmentedControl
+        iconOnly
         key="orientation"
         label={`${label} orientation`}
         options={orientationOptions}
-        renderOption={(option) => {
-          const OrientationIcon = orientationIcons[option.value]
-          return <OrientationIcon aria-hidden="true" size={16} />
-        }}
         value={orientation}
         onValueChange={(nextOrientation) => {
           onChange({ ...value, orientation: nextOrientation })
@@ -70,9 +61,11 @@ function LayoutGroup<TLayout extends PartialLayout>({
       />
     ) : null,
     !isAtSide && alignment !== undefined ? (
-      <AlignmentControl
+      <SegmentedControl
+        iconOnly
         key="alignment"
         label={`${label} alignment`}
+        options={ALIGNMENT_OPTIONS}
         value={alignment}
         onValueChange={(nextAlignment) => {
           onChange({ ...value, alignment: nextAlignment })

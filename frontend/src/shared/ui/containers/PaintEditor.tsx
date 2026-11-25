@@ -10,6 +10,7 @@ import {
 } from '@/shared/paint'
 import NumberControl from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
+import OptionLabel from '../display/OptionLabel'
 import Group from '../groups/Group'
 import GradientStopRow from '../rows/GradientStopRow'
 import Row from '../rows/Row'
@@ -92,13 +93,15 @@ function PaintEditor({
           label={`${label} paint type`}
           options={typeOptions}
           renderOption={(option) => (
-            <span className="option-label">
-              <span
-                aria-hidden="true"
-                className={`paint-type-preview is-${option.value}`}
-              />
-              <span className="option-label-text">{option.label}</span>
-            </span>
+            <OptionLabel
+              icon={
+                <span
+                  aria-hidden="true"
+                  className={`paint-type-preview is-${option.value}`}
+                />
+              }
+              option={option}
+            />
           )}
           value={getPaintType(paint)}
           onValueChange={setPaintType}

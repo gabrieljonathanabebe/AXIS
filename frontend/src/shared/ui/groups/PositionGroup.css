@@ -1,0 +1,31 @@
+/* Places around the plot: the cells keep the quiet text color, so the
+   chosen one stands out by its bar. */
+.position-grid .segmented-control-option {
+  color: var(--color-text-secondary);
+}
+
+/* Mark of one place: a dot, for the chosen place a bar in the direction
+   the element lines up its items. */
+.position-grid-mark {
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: var(--radius-pill);
+}
+
+.segmented-control-option.is-active > .position-grid-mark {
+  width: 10px;
+  height: 3px;
+}
+
+.segmented-control-option.is-active > .position-grid-mark.is-vertical {
+  width: 3px;
+  height: 10px;
+}
+
+/* The empty middle cell stands for the plot. */
+.position-grid > .segmented-control-gap:nth-child(5) {
+  margin: 5px;
+  border: var(--border-width-thin) dashed var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+}

@@ -23,10 +23,10 @@
 @import './shared/ui/display/OptionLabel.css';
 @import './shared/ui/primitives/SelectMenu.css';
 @import './shared/ui/containers/PaintEditor.css';
-@import './charts/format/PaletteControl.css';
+@import './charts/format/paletteOptions.css';
 @import './shared/ui/containers/Panel.css';
 @import './shared/ui/primitives/Popover.css';
-@import './shared/ui/controls/PositionGrid.css';
+@import './shared/ui/groups/PositionGroup.css';
 @import './table/RangeControl.css';
 @import './shared/ui/controls/NumberControl.css';
 @import './shared/ui/primitives/SelectButton.css';

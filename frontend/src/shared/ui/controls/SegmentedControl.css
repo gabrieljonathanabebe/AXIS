@@ -25,6 +25,12 @@
   box-shadow: none;
 }
 
+/* Icons alone take the whole option, so they stay whole and centered even
+   when options are narrow, e.g. four scatter symbols in half a row. */
+.segmented-control.is-icon-only .segmented-control-option {
+  padding-inline: 0;
+}
+
 .segmented-control-option:hover {
   background: var(--color-surface-hover);
 }
@@ -32,4 +38,21 @@
 .segmented-control-option.is-active {
   color: var(--color-text-primary);
   background: var(--color-surface-active);
+}
+
+/* Square cells in rows, e.g. places around a plot; empty cells stay free. */
+.segmented-control.is-grid {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(
+    var(--segmented-columns),
+    var(--control-height-xs)
+  );
+  grid-auto-rows: var(--control-height-xs);
+  width: max-content;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.segmented-control.is-grid .segmented-control-option {
+  padding: 0;
 }

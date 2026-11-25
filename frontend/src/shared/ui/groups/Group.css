@@ -75,14 +75,6 @@
   --stack-gap: var(--space-1);
 }
 
-.layout-position-control .segmented-control-option {
-  padding-inline: 0;
-}
-
-.layout-position-control .segmented-control-option svg {
-  flex-shrink: 0;
-}
-
 /* A group inside a group, e.g. Text in the data labels: a quieter heading
    without the dividing line, close to its own rows and set apart from the
    rows above, so it reads as part of its parent. */

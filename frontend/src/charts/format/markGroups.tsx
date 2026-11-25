@@ -25,6 +25,7 @@ import { isMarkEffect } from '@/shared/effect'
 import ColorControl from '@/shared/ui/controls/ColorControl'
 import NumberControl from '@/shared/ui/controls/NumberControl'
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
+import SelectControl from '@/shared/ui/controls/SelectControl'
 import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
 import Group from '@/shared/ui/groups/Group'
 import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
@@ -33,10 +34,14 @@ import PaintRow from '@/shared/ui/rows/PaintRow'
 import Row from '@/shared/ui/rows/Row'
 import GradientControl from './GradientControl'
 import LabelsGroup from './LabelsGroup'
-import PaletteControl from './PaletteControl'
+import {
+  getPaletteOptions,
+  renderPaletteOption,
+  toPaletteColors,
+  toPaletteName,
+} from './paletteOptions'
 import TooltipGroup from './TooltipGroup'
 
-import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type {
   ChartFormatProps,
@@ -109,18 +114,11 @@ const linePointsOptions = [
 ] satisfies OptionItem<LinePoints>[]
 
 const scatterSymbolOptions = [
-  { label: 'Circle', value: 'circle' },
-  { label: 'Square', value: 'rect' },
-  { label: 'Triangle', value: 'triangle' },
-  { label: 'Diamond', value: 'diamond' },
-] satisfies { label: string; value: ScatterSymbol }[]
-
-const scatterSymbolIcons = {
-  circle: Circle,
-  diamond: Diamond,
-  rect: Square,
-  triangle: Triangle,
-} satisfies Record<ScatterSymbol, LucideIcon>
+  { icon: Circle, label: 'Circle', value: 'circle' },
+  { icon: Square, label: 'Square', value: 'rect' },
+  { icon: Triangle, label: 'Triangle', value: 'triangle' },
+  { icon: Diamond, label: 'Diamond', value: 'diamond' },
+] satisfies OptionItem<ScatterSymbol>[]
 
 // ===== HELPERS ===============================================================
 /**
@@ -155,17 +153,24 @@ function getDataColorControls({
     }
   }
   if (colorEncodingMode === 'categorical') {
+    const palettes = getCategoricalPalettes(style)
+    const { categorical } = appearance.colorScale
     return {
       field: (
-        <PaletteControl
+        <SelectControl
           label="Categorical color palette"
-          palettes={getCategoricalPalettes(style)}
-          value={appearance.colorScale.categorical.palette}
-          onChange={(palette) => {
-            actions.setAppearance('colorScale', {
-              ...appearance.colorScale,
-              categorical: { ...appearance.colorScale.categorical, palette },
-            })
+          options={getPaletteOptions(palettes)}
+          placeholder="Custom"
+          renderOption={(option) => renderPaletteOption(option, palettes)}
+          value={toPaletteName(categorical.palette, palettes)}
+          onChange={(name) => {
+            const palette = toPaletteColors(name, palettes)
+            if (palette) {
+              actions.setAppearance('colorScale', {
+                ...appearance.colorScale,
+                categorical: { ...categorical, palette },
+              })
+            }
           }}
         />
       ),
@@ -465,13 +470,10 @@ function getChartTypeGroups(
           <Group title="Shape">
             <Row>
               <SegmentedControl
+                iconOnly
                 label="Scatter symbol"
                 options={scatterSymbolOptions}
                 value={scatter.symbol}
-                renderOption={(option) => {
-                  const SymbolIcon = scatterSymbolIcons[option.value]
-                  return <SymbolIcon aria-hidden="true" size={13} />
-                }}
                 onValueChange={(symbol) => {
                   actions.setChartAppearance('scatter', 'symbol', symbol)
                 }}

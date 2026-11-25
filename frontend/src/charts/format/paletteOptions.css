@@ -1,11 +1,12 @@
-.palette-control-option {
+/* One palette: a strip of its colors next to its name. */
+.palette-option {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
 }
 
-.palette-control-preview {
+.palette-option-strip {
   display: flex;
   flex: none;
   width: 30px;
@@ -14,12 +15,12 @@
   border-radius: var(--radius-pill);
 }
 
-.palette-control-swatch {
+.palette-option-swatch {
   flex: 1;
   min-width: 0;
 }
 
-.palette-control-name {
+.palette-option-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -27,14 +28,14 @@
 
 /* In the button of the select the strip alone shows the palette and fills
    the room up to the chevron; the menu still names it. */
-.select-button-value:has(.palette-control-option) {
+.select-button-value:has(.palette-option) {
   flex: 1;
 }
 
-.select-button-value .palette-control-preview {
+.select-button-value .palette-option-strip {
   flex: 1;
 }
 
-.select-button-value .palette-control-name {
+.select-button-value .palette-option-name {
   display: none;
 }

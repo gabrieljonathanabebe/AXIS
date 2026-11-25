@@ -467,7 +467,7 @@ Wenn der Nutzer den Anwendungscode selbst eingibt:
   `[createAxesOptions.ts:97](frontend/src/charts/echarts/createAxesOptions.ts#L97)`;
   wird ein bestehender Bereich ersetzt oder gelöscht, markieren Linktext
   und Anker den ganzen Bereich, z. B.
-  `[PaletteControl.tsx:18-32](frontend/src/charts/format/PaletteControl.tsx#L18-L32)`;
+  `[markGroups.tsx:149-165](frontend/src/charts/format/markGroups.tsx#L149-L165)`;
   bei mehrdeutigen Dateinamen (z. B. `types.ts`) den Ordner im Linktext
   mitnennen;
 - neue Dateien ohne Zeilenanker und mit dem vollständigen Pfad ab

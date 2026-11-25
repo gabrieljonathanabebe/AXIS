@@ -1,11 +1,12 @@
 import { ALargeSmall, Italic } from 'lucide-react'
 
-import AlignmentControl from '../controls/AlignmentControl'
 import ColorControl from '../controls/ColorControl'
 import FontWeightControl from '../controls/FontWeightControl'
 import NumberControl from '../controls/NumberControl'
+import SegmentedControl from '../controls/SegmentedControl'
 import IconButton from '../primitives/IconButton'
 import Row from '../rows/Row'
+import { ALIGNMENT_OPTIONS } from './alignmentOptions'
 
 import type { HorizontalAlignment } from '@/shared/layout'
 import type { TextStyle } from '@/shared/textStyle'
@@ -80,8 +81,10 @@ function TextGroup({
           onChange={(color) => onChange({ ...value, color })}
         />
         {alignment ? (
-          <AlignmentControl
+          <SegmentedControl
+            iconOnly
             label={`${label} alignment`}
+            options={ALIGNMENT_OPTIONS}
             value={alignment.value}
             onValueChange={alignment.onChange}
           />

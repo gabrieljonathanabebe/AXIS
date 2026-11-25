@@ -727,7 +727,7 @@ Typparameter einschränken:
 
 - `alignment` meint die Lage entlang der Seite, gemessen am Plot: Eine
   Legende unten mit `start` beginnt am Anfang des Plots. Links und
-  rechts sitzen Legende und Farbskala immer mittig (`PositionGrid`
+  rechts sitzen Legende und Farbskala immer mittig (das Positionsraster
   bietet dort nur die Mitte).
 - die Größe des Farbskala-Balkens steht nicht im Layout, sondern in
   `continuous.size` (`length`, `thickness`); das Panel zeigt sie als

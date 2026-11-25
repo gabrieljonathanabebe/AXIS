@@ -695,10 +695,10 @@ Reihenfolge; `getMarkGroups` füllt sie pro Charttyp:
 
 Wie in Figma beantworten zwei Gruppen zwei Fragen:
 
-| Gruppe   | Frage                                               | Zeilen                                                                                                                            |
-| -------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Position | Wo sitzt das Element in seinem Elternteil?          | X \| Y, oder Positionsfeld mit `PositionGrid` (angedockt: Legende, Farbskala), oder Positions-Icons (Datenlabels); später Drehung |
-| Layout   | Wie groß ist es, und wie verteilt es seinen Inhalt? | W \| H · Richtung \| Ausrichtung · Gap \| Padding                                                                                 |
+| Gruppe   | Frage                                               | Zeilen                                                                                                                             |
+| -------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Position | Wo sitzt das Element in seinem Elternteil?          | X \| Y, oder Positionsfeld mit Positionsraster (angedockt: Legende, Farbskala), oder Positions-Icons (Datenlabels); später Drehung |
+| Layout   | Wie groß ist es, und wie verteilt es seinen Inhalt? | W \| H · Richtung \| Ausrichtung · Gap \| Padding                                                                                  |
 
 ```text
 POSITION
@@ -950,7 +950,7 @@ ANIMATION                      ＋
   stehen allein (Ausrichtung, Strichstil, Scatter-Symbole, Seiten als
   Pfeile).
 - **Position von Legende und Farbskala** als Positionsfeld, das ein
-  `PositionGrid` öffnet (siehe 9r); **Positionen der Datenlabels** je Charttyp aus `labelPositions` der Registry mit
+  das Positionsraster öffnet (siehe 9r); **Positionen der Datenlabels** je Charttyp aus `labelPositions` der Registry mit
   eigenen Icons (`charts/chartIcons.ts`) und Wort (Top | Right |
   Inside).
 
@@ -971,7 +971,7 @@ Das linke Feld folgt dem Farbmodus (`getColorEncodingMode`):
 
 ```text
 konstant        [● #199E8A         ]  [◐ 90 %]      ColorField
-kategorial      [▬▬ Style         ▾]  [◐ 90 %]      PaletteControl (Dropdown)
+kategorial      [▬▬ Style         ▾]  [◐ 90 %]      SelectControl (Paletten)
 kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      GradientControl, Range (⚙)
 ```
 
@@ -984,9 +984,12 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 - Start- und Endfarbe sowie Range (Min/Max) der Farbskala sind
   Datenfarbe: Range steht als ⚙ in der Überschrift (Slot `details`). Das
   Element Color Scale regelt nur Lage und Labels der Skala.
-- `PaletteControl` ist ein `SelectControl` mit `renderOption`: Button
-  und Menü zeigen jede Palette als Farbstreifen mit Namen; Farben ohne
-  passende Palette zeigen „Custom“.
+- Die Palette ist ein `SelectControl`; Optionen, Farbstreifen und
+  Zuordnung liefern reine Funktionen in `charts/format/paletteOptions.tsx`
+  (`getPaletteOptions`, `renderPaletteOption`, `toPaletteName`,
+  `toPaletteColors`). Das Menü zeigt jede Palette als Farbstreifen mit
+  Namen, der Button nur den Streifen; Farben ohne passende Palette zeigen
+  „Custom“.
 - Die Spec ändert sich nicht (`appearance.color`, `colorScale`).
 
 **Regel 3: Details-Popover statt Einrückung**
@@ -1026,7 +1029,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 - Icons aus `lucide-react`, in Feldern einheitlich 14 px; eigene Icons
   über `createLucideIcon` im selben Strich (`charts/chartIcons.ts`).
 - Ein Icon steht nur allein, wenn es das Ergebnis zeigt (Ausrichtung,
-  Label-Positionen, `PositionGrid`, Strichstil, Scatter-Symbole) oder
+  Label-Positionen, Positionsraster, Strichstil, Scatter-Symbole) oder
   eine Konvention ist (B/I, Auge, ＋/−, ⚙, Pinsel). Sonst Icon und Wort
   oder nur das Wort; Verhalten bekommt immer ein Wort (Scroll, Slider,
   Off, Item, Axis).
@@ -1053,7 +1056,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 | Auge und ＋ in der Überschrift         | `FormatWidget` mit `visibility` und `onAdd`          |
 | Gruppe eines kleinen Elements          | `FormatWidget` mit `group`                           |
 | Details hinter ⚙                       | `DetailsPopover` (9h)                                |
-| 3×3-Raster                             | `PositionGrid` (9r)                                  |
+| 3×3-Raster                             | `SegmentedControl` mit `columns` (9r)                |
 | Zahlenzeile X \| Y bzw. W \| H         | `BoxFieldsRow` mit `LayoutBox` (9p)                  |
 
 Die Bausteine liefern weiter nur Zeilen; nur deren Inhalt ist kompakt,
@@ -1217,25 +1220,25 @@ folgenden Patterns passt.
 
 Status: `implementiert`, `teilweise`, `geplant`.
 
-| Pattern                      | Beispiel in Cevyn               | Nutzen                                           | Status                                                     |
-| ---------------------------- | ------------------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
-| Scrubbable Number            | Font Size, Radius, Opacity      | Wert direkt ziehen statt eintippen               | implementiert (`ScrubbableNumber`)                         |
-| Modifier Scrubbing           | Shift = grob, Alt = fein        | präzise Einstellung                              | teilweise (Shift ×10 bei den Pfeiltasten)                  |
-| Visual Position Picker       | Legend, Label Position          | 3×3-Feld bzw. Icons statt Dropdown               | implementiert (`PositionGrid`, Label-Positionen mit Icons) |
-| XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                    |
-| Rotation Dial                | Axis Label Rotation, Verlauf    | Winkel als Pfeil sehen und ziehen                | implementiert (`NumberControl` mit `unit="degree"`)        |
-| Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)      |
-| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | implementiert (`EncodingDropSlots`)                        |
-| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)            |
-| Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                    |
-| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | implementiert (Icon-Gruppen, Paletten mit Farbstreifen)    |
-| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `TextInput` inline)             |
-| Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                    |
-| Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                    |
-| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorSwatch`, `DetailsPopover`)                |
-| Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                    |
-| Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                    |
-| Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (Achsentitel, `onAuto` für Ticks und Decimals)   |
+| Pattern                      | Beispiel in Cevyn               | Nutzen                                           | Status                                                      |
+| ---------------------------- | ------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| Scrubbable Number            | Font Size, Radius, Opacity      | Wert direkt ziehen statt eintippen               | implementiert (`ScrubbableNumber`)                          |
+| Modifier Scrubbing           | Shift = grob, Alt = fein        | präzise Einstellung                              | teilweise (Shift ×10 bei den Pfeiltasten)                   |
+| Visual Position Picker       | Legend, Label Position          | 3×3-Feld bzw. Icons statt Dropdown               | implementiert (Positionsraster, Label-Positionen mit Icons) |
+| XY Pad                       | Offset X/Y                      | Punkt in kleiner Fläche verschieben              | geplant                                                     |
+| Rotation Dial                | Axis Label Rotation, Verlauf    | Winkel als Pfeil sehen und ziehen                | implementiert (`NumberControl` mit `unit="degree"`)         |
+| Gradient Editor              | Continuous Color Scale          | Stops direkt auf dem Verlauf bewegen             | teilweise (`GradientControl` mit Start- und Endfarbe)       |
+| Field Wells / Drop Zones     | X, Y, Color, Size               | Field direkt auf ein Encoding ziehen             | implementiert (`EncodingDropSlots`)                         |
+| Chips / Tokens               | Filter, Series, Dimensions      | kompakt, sortierbar, entfernbar                  | teilweise (Field Chips, Filter-Chips der Table)             |
+| Searchable Combobox          | Field Picker                    | tippen statt lange Listen durchsuchen            | geplant                                                     |
+| Visual Select                | Symbol, Line Style, Font Weight | echte Vorschau statt Text                        | implementiert (Icon-Gruppen, Paletten mit Farbstreifen)     |
+| Inline Text Editing          | Titel, Achsen, Dashboard-Name   | Text direkt am Objekt bearbeiten                 | teilweise (`EditableText`, `TextInput` inline)              |
+| Context Toolbar              | selektierter Chart              | wichtigste Aktionen direkt am Objekt             | geplant                                                     |
+| Command Palette              | ⌘K → „Add reference line“       | schnelle Bedienung ohne UI-Suche                 | geplant                                                     |
+| Inline Popover               | Farbe, Tooltip, Axis            | Details dort bearbeiten, wo sie gebraucht werden | teilweise (`ColorSwatch`, `DetailsPopover`)                 |
+| Mini Preview Control         | Line Width, Line Style, Area    | Einstellung direkt als Vorschau sehen            | geplant                                                     |
+| Direct Manipulation im Chart | Reference Line                  | Element im Chart direkt ziehen                   | geplant                                                     |
+| Smart Defaults + Auto        | Axis Min/Max, Tick Count        | Werte nur bei Bedarf setzen                      | teilweise (Achsentitel, `onAuto` für Ticks und Decimals)    |
 
 Regeln:
 
@@ -1348,12 +1351,13 @@ bleiben. Auch der `ColorSwatch` zeigt die Fläche des gewählten Presets
 (`--swatch-fill`); dieselbe Variable nimmt beim `PaintField` einen
 Verlauf auf.
 
-## 9a. AlignmentControl
+## 9a. Ausrichtung
 
-`AlignmentControl` ist ein `SegmentedControl` für
-`HorizontalAlignment` (`start | center | end`, aus
-`shared/textStyle.ts`) mit Ausrichtungs-Icons. Es wird für Titel- und
-Legend-Ausrichtung verwendet. Ausrichtungen im
+Die Ausrichtung ist ein `SegmentedControl` mit `iconOnly` und den
+Optionen `ALIGNMENT_OPTIONS` (`shared/ui/groups/alignmentOptions.ts`):
+`HorizontalAlignment` (`start | center | end`, aus `shared/layout.ts`)
+mit Ausrichtungs-Icons, das Wort bleibt Name und Tooltip. Sie wird für
+Titel- und Legend-Ausrichtung verwendet. Ausrichtungen im
 Domain Model verwenden immer `start | center | end`, nicht
 `left | right`.
 
@@ -1563,7 +1567,7 @@ setzt seine eigenen Zeilen davor oder dahinter:
 
 - Zeile 1: Size (`ScrubbableNumber`, Icon Aa, px) | Weight
   (`FontWeightControl`, Icon-Gruppe) | Italic (Icon-Toggle)
-- Zeile 2: Color (`ColorField`) | Ausrichtung (`AlignmentControl`),
+- Zeile 2: Color (`ColorField`) | Ausrichtung (`SegmentedControl`, `iconOnly`),
   wenn das Element sie über `alignment` anbietet (Titel)
 - `label` benennt die Controls für Screenreader, z. B. „Legend text“
   → „Legend text color“
@@ -1893,15 +1897,14 @@ Aufrufer teilt nichts auf.
   Seiten bekommt ein Positionsfeld (`DetailsField` mit `fitsContent`
   über die ganze Zeile): Icon der Seite (`PanelTop` usw.) und ihr Name
   (`getPlacementLabel`, z. B. „Bottom left“, links und rechts nur die
-  Seite). Es öffnet ein `PositionGrid` (siehe 9r), mit Alignment das
+  Seite). Es öffnet das Positionsraster (siehe 9r), mit Alignment das
   Raster (Legende, Farbskala), ohne das Kreuz. Sonst eine Icon-Gruppe,
-  eingeschränkt über `positions` (Standard: die vier Seiten). Seiten
-  erscheinen als Pfeile (`.layout-position-control`), bis drei in einer
-  Feldspalte, ab vier über beide; Positionen mit eigenem `icon`, z. B.
+  eingeschränkt über `positions` (Standard: die vier Seiten), bis drei
+  in einer Feldspalte, ab vier über beide; Positionen mit eigenem `icon`, z. B.
   die `labelPositions` der Registry, zeigen Icon und Wort über die
   ganze Zeile; eine einzige Position braucht kein Control
 - `LayoutControls`: feste Zeilen W | H aus `box`, Orientation (Pfeil-
-  Icons) | Alignment (`AlignmentControl`), Gap (Icon `Space`) | Padding
+  Icons) | Alignment (`SegmentedControl`, `iconOnly`), Gap (Icon `Space`) | Padding
   (Icon `Fullscreen`; beide `ScrubbableNumber`, Schritt 2, Grenzen über
   `maxGap` und `maxPadding`); eine Zeile ohne Felder fällt weg. An einer
   Seite gehören Orientation und Alignment zur Position und erscheinen
@@ -1964,12 +1967,14 @@ steht der Hex-Wert einer Solid-Farbe oder der Typ eines Verlaufs
 Pill-Form, Rahmen über `--field-border-color` (in kompakten Zeilen
 transparent), neutrale Kante bei Hover, Akzent-Kante bei Fokus.
 
-## 9r. PositionGrid
+## 9r. Positionsraster
 
-`PositionGrid` wählt die Seite eines Elements am Plot, ohne
-Formänderung des `Layout`. Es steht im Popover des Positionsfelds
-(`PositionControls`, siehe 9p), nicht direkt im Panel. `variant` wählt
-die Form:
+Das Positionsraster wählt die Seite eines Elements am Plot, ohne
+Formänderung des `Layout`. Es ist ein `SegmentedControl` mit
+`columns={3}`: Optionen aus `getPlacementOptions`
+(`groups/placementOptions.ts`), `null` lässt eine Zelle leer. Es steht
+im Popover des Positionsfelds (`PositionGroup`, siehe 9p), nicht direkt
+im Panel. Mit Alignment ist es das Raster, ohne das Kreuz:
 
 ```text
 grid (Legende, Farbskala)         cross (ohne Alignment)
@@ -1978,14 +1983,17 @@ grid (Legende, Farbskala)         cross (ohne Alignment)
 [↙] [↓] [↘]  bottom: start | center | end   [ ] [↓] [ ]
 ```
 
-- jede Zelle ist ein Button mit Namen aus `getPlacementLabel` („Top
-  left“, „Right“) und zeigt, wo das Element sitzt; die Mitte steht für
-  den Plot und ist deaktiviert
-- `grid` (Standard): Seite und Alignment; links und rechts nur mittig,
-  weil Legende und Farbskala dort vertikal laufen
-- `cross`: nur die vier Seiten, die Ecken bleiben leer; es meldet nur
+- jede Zelle ist eine Option mit Namen aus `getPlacementLabel` („Top
+  left“, „Right“) und zeigt, wo das Element sitzt; die leere Mitte steht
+  für den Plot (gestrichelt)
+- Raster: Seite und Alignment; links und rechts nur mittig, weil
+  Legende und Farbskala dort vertikal laufen
+- Kreuz: nur die vier Seiten, die Ecken bleiben leer; es meldet nur
   `position`, ohne `alignment`, und die Zelle einer Seite steht für die
   ganze Seite
+- `toPlacementKey` und `toPlacement` übersetzen zwischen Lage und Wert
+  der Zelle (`"top-end"`, `"left"`), getestet in
+  `placementOptions.test.ts`
 
 ## 9s. Optionen mit Icons
 
@@ -2076,7 +2084,7 @@ Format-Panel:
 
 ```text
 Legend                👁
-├── Position     (Feld mit PositionGrid, Raster)
+├── Position     (Feld mit Positionsraster)
 ├── Layout       (Gap, Padding)
 ├── Shape
 ├── Text
@@ -2161,7 +2169,7 @@ liegt im Platz ihrer Seite neben dem Canvas, am Plot ausgerichtet:
 
 ```text
 Color Scale           👁
-├── Position     (Feld mit PositionGrid, Raster)
+├── Position     (Feld mit Positionsraster)
 ├── Layout       (W | H des Balkens)
 ├── Shape
 ├── Border       👁

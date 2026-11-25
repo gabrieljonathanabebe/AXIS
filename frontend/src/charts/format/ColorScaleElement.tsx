@@ -19,16 +19,6 @@ type ColorScaleElementProps = {
   onChange: (value: ContinuousColorScale) => void
 }
 
-const positionOptions = [
-  { label: 'Top', value: 'top' },
-  { label: 'Right', value: 'right' },
-  { label: 'Bottom', value: 'bottom' },
-  { label: 'Left', value: 'left' },
-] satisfies {
-  label: string
-  value: ContinuousColorScale['layout']['position']
-}[]
-
 /** Bounds of the bar along its side and across it, in pixels. */
 const SIZE_BOUNDS = {
   length: { max: 480, min: 40 },
@@ -90,7 +80,6 @@ function ColorScaleElement({
       <Group title="Position">
         <PositionGroup
           label="Color scale"
-          positions={positionOptions}
           value={value.layout}
           onChange={(layout) => onChange({ ...value, layout })}
         />

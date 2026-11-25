@@ -1,25 +1,21 @@
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  PanelBottom,
-  PanelLeft,
-  PanelRight,
-  PanelTop,
-} from 'lucide-react'
+import { PanelBottom, PanelLeft, PanelRight, PanelTop } from 'lucide-react'
 
-import { getPlacementLabel, isSide } from '@/shared/layout'
+import { getPlacementLabel, getSideOrientation, isSide } from '@/shared/layout'
 import DetailsControl from '../controls/DetailsControl'
-import PositionGrid from '../controls/PositionGrid'
 import SegmentedControl from '../controls/SegmentedControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
+import {
+  getPlacementOptions,
+  toPlacement,
+  toPlacementKey,
+} from './placementOptions'
 
 import type { LucideIcon } from 'lucide-react'
 import type { PartialLayout, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
+import type { PlacementKey } from './placementOptions'
 
 // ===== TYPES =================================================================
 /** Positions the layout allows, e.g. the four sides of a legend. */
@@ -43,13 +39,6 @@ const sideOptions = [
   { label: 'Right', value: 'right' },
 ] satisfies OptionItem<Side>[]
 
-const sideIcons = {
-  bottom: ArrowDown,
-  left: ArrowLeft,
-  right: ArrowRight,
-  top: ArrowUp,
-} satisfies Record<Side, LucideIcon>
-
 /** Icons of the position field: the side an element sits at. */
 const placementIcons = {
   bottom: PanelBottom,
@@ -61,17 +50,33 @@ const placementIcons = {
 /** Icons that still fit one field column; more take both. */
 const MAX_ICONS_PER_COLUMN = 3
 
+// ===== FUNCTIONS =============================================================
+/**
+ * Mark of one place in the grid: a dot, for the chosen place a bar; left
+ * and right stand upright, e.g. "left" → vertical, "top-end" → horizontal.
+ * @param option Cell of the grid.
+ * @returns Mark inside the cell button.
+ */
+function renderPlacementMark(option: OptionItem<PlacementKey>) {
+  const { position } = toPlacement(option.value, false)
+  return (
+    <span
+      aria-hidden="true"
+      className={`position-grid-mark is-${getSideOrientation(position)}`}
+    />
+  )
+}
+
 // ===== COMPONENT =============================================================
 /**
  * Rows of the Position group: where an element sits in its parent. A box
  * shows X | Y with the unit and bounds of the element, e.g. grid cells of
  * a chart. An element at all four sides gets a field that names its place
- * and opens a `PositionGrid`: the full grid with an alignment, e.g. of a
- * legend, the cross without, e.g. of a color scale. Other positions are
- * an icon group: sides show only the arrow, positions with their own
- * icon, e.g. of the data labels, icon and word across the row. A single
- * position needs no control. Reads only its fields, so it takes the same
- * layout as `LayoutGroup`.
+ * and opens a grid of places around the plot: all eight with an
+ * alignment, e.g. of a legend, the cross of the four sides without, e.g.
+ * of a color scale. Other positions are an icon group with icon and word,
+ * e.g. of the data labels. A single position needs no control. Reads only
+ * its fields, so it takes the same layout as `LayoutGroup`.
  */
 function PositionGroup<TLayout extends PartialLayout>({
   box,
@@ -81,6 +86,7 @@ function PositionGroup<TLayout extends PartialLayout>({
   onChange,
 }: PositionGroupProps<TLayout>) {
   const { alignment, position } = value
+  const hasAlignment = alignment !== undefined
   const showsPlacement =
     position !== undefined &&
     isSide(position) &&
@@ -103,11 +109,16 @@ function PositionGroup<TLayout extends PartialLayout>({
             label={`${label} position`}
             text={getPlacementLabel(position, alignment)}
           >
-            <PositionGrid
+            <SegmentedControl
+              className="position-grid"
+              columns={3}
               label={`${label} position`}
-              value={{ alignment, position }}
-              variant={alignment === undefined ? 'cross' : 'grid'}
-              onChange={(placement) => onChange({ ...value, ...placement })}
+              options={getPlacementOptions(hasAlignment)}
+              renderOption={renderPlacementMark}
+              value={toPlacementKey({ alignment, position })}
+              onValueChange={(key) => {
+                onChange({ ...value, ...toPlacement(key, hasAlignment) })
+              }}
             />
           </DetailsControl>
         </Row>
@@ -115,16 +126,8 @@ function PositionGroup<TLayout extends PartialLayout>({
       {showsIcons ? (
         <Row layout={isWide ? 'wide' : 'single'}>
           <SegmentedControl
-            className="layout-position-control"
             label={`${label} position`}
             options={positions}
-            renderOption={(option) => {
-              if (option.icon || !isSide(option.value)) {
-                return null
-              }
-              const SideIcon = sideIcons[option.value]
-              return <SideIcon aria-hidden="true" size={15} />
-            }}
             value={position}
             onValueChange={(nextPosition) => {
               onChange({ ...value, position: nextPosition })
