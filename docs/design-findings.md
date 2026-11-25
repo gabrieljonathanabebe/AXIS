@@ -264,8 +264,7 @@ Nachher:
 
 Vorschlag: Der Hover-Ton gilt nur für nicht gewählte Optionen
 (`.menu-item:hover:not(:disabled, .is-active)`), wie beim
-`SegmentedControl`. · Aufwand: S · Wo lösen: `Menu.css` · Stand: offen
-(Optik-Runde Teil 5)
+`SegmentedControl`. · Aufwand: S · Wo lösen: `Menu.css` · Stand: erledigt (Teil 5, Schritt 4)
 
 ### O11 Swatch sitzt im Control über der Mitte
 

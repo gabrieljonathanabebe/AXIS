@@ -1,8 +1,7 @@
-import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
 import OptionContent from '../display/OptionContent'
-import Button from '../primitives/Button'
+import DropdownButton from '../primitives/DropdownButton'
 import Menu from '../primitives/Menu'
 import Popover from '../primitives/Popover'
 
@@ -70,16 +69,14 @@ function SelectControl<TValue extends string>({
         matchTriggerWidth={variant === 'control'}
         onOpenChange={setIsOpen}
         renderTrigger={(triggerProps) => (
-          <Button
+          <DropdownButton
             {...triggerProps}
-            className="select-control-button spread"
-            variant={variant === 'title' ? 'ghost' : 'secondary'}
-            aria-label={label}
             disabled={disabled}
+            label={label}
+            variant={variant === 'title' ? 'ghost' : 'secondary'}
           >
-            <span className="select-control-value">{renderValue()}</span>
-            <ChevronDown size={16} />
-          </Button>
+            {renderValue()}
+          </DropdownButton>
         )}
       >
         <Menu

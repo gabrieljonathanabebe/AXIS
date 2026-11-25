@@ -4,41 +4,11 @@
   min-width: 0;
 }
 
-.select-control-button {
-  width: 100%;
-  min-width: 0;
-  height: var(--control-height-sm);
-  padding-inline: var(--space-3);
-  font-size: var(--control-font-size, var(--font-size-sm));
-}
-
-/* In a compact row the text is small, so the value keeps more room: 8px
-   at the start like the other compact fields, and the chevron moves closer
-   to the value and to the edge, whose own blank space keeps it from
-   touching the border, e.g. "Inner shadow" next to its blur. */
-.row-compact .select-control-button {
-  --spread-gap: var(--space-1);
-
-  padding-inline: var(--space-2) var(--space-1);
-}
-
-.select-control-button:disabled {
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.select-control-value {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .select-control.is-title {
   width: auto;
 }
 
-.select-control.is-title .select-control-button {
+.select-control.is-title .dropdown-button {
   --spread-gap: var(--space-1);
 
   width: auto;
@@ -48,6 +18,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.select-control.is-title .select-control-button:hover {
+.select-control.is-title .dropdown-button:hover {
   color: var(--color-text-secondary);
 }

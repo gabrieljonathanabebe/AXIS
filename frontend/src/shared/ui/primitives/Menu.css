@@ -22,7 +22,7 @@
   white-space: nowrap;
 }
 
-.menu-item:hover:not(:disabled) {
+.menu-item:hover:not(:disabled, .is-active) {
   color: var(--color-text-primary);
   background: var(--color-surface-default);
 }

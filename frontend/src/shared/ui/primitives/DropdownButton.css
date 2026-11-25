@@ -1,0 +1,29 @@
+.dropdown-button {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height-sm);
+  padding-inline: var(--space-3);
+  font-size: var(--control-font-size, var(--font-size-sm));
+}
+
+/* In a compact row the text is small, so the value keeps more room: 8px
+   at the start like the other compact fields, and the chevron moves closer
+   to the value and to the edge, whose own blank space keeps it from
+   touching the border, e.g. "Inner shadow" next to its blur. */
+.row-compact .dropdown-button {
+  --spread-gap: var(--space-1);
+
+  padding-inline: var(--space-2) var(--space-1);
+}
+
+.dropdown-button:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.dropdown-button-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
