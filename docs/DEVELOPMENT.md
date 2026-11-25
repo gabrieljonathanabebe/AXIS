@@ -352,7 +352,10 @@ ausdrücklich verlangt wurde.
 Format:
 
 ```bash
-(cd frontend && npm run format && npm run build)
+cd "$(git rev-parse --show-toplevel)/frontend"
+npm run format
+npm run build
+cd "$(git rev-parse --show-toplevel)"
 git status --short
 git add <betroffene-dateien>
 git diff --cached --check
@@ -398,6 +401,22 @@ Technische Schritte mit anwendungsnahen Beispielen erklären: was der
 Nutzer tut oder was ankommt (z. B. konkretes JSON, eine Eingabe in der
 Console oder im UI) und was mit bzw. ohne die Änderung passiert. Kurze
 Tabellen der Form „Eingabe → Effekt“ sind dafür gut geeignet.
+
+Terminal-Befehle laufen einheitlich vom Repo-Root:
+
+- Jeder Codeblock mit Terminal-Befehlen beginnt und endet im Repo-Root.
+- Braucht ein Befehl einen Unterordner, steht am Anfang des Blocks
+  `cd "$(git rev-parse --show-toplevel)/frontend"` (bzw. `/backend`) und
+  am Ende `cd "$(git rev-parse --show-toplevel)"`.
+- Git-Befehle laufen immer im Repo-Root.
+
+```bash
+cd "$(git rev-parse --show-toplevel)/frontend"
+npm run build
+npm run smoke
+cd "$(git rev-parse --show-toplevel)"
+git status --short
+```
 
 ## 18. Vertical Slices und Chat-Übergaben
 

@@ -884,6 +884,33 @@ Werkzeug, Farbe gehört dem Inhalt.
   Solid-Fläche wird ein gleichmäßiger Verlauf, weil nur die unterste
   Schicht eine reine Farbe sein darf. Eine leere Liste ist `none`.
 
+### Bausteine im Stil des Rahmens
+
+Status: beschlossen, Umsetzung mit dem Table-Objekt.
+
+Inhalte auf dem Canvas, die der Nutzer baut (Table-Objekt, Slicer),
+zeigen eigene Bedienelemente: Filter, Sortieren, ein Dropdown. Sie
+bekommen keine zweite Logik, sondern nutzen dieselben Primitives und
+Controls wie die App, nur im Stil des Dashboards statt im App-Theme.
+
+- Primitives und Controls nehmen Farben, Radius und Schrift nur über
+  CSS-Variablen, die ein umgebender Rahmen überschreiben kann (z. B.
+  `--control-bg`, `--text-color`), mit dem App-Theme als Fallback, etwa
+  `var(--control-bg, var(--color-surface-default))`.
+- In App-Panels kommen die Werte aus dem App-Theme; auf dem Canvas setzt
+  der `ObjectFrame` sie aus dem Stil des Objekts (Spec), so wie heute
+  `--chart-background`.
+- Nutzerinhalte sind Fachansichten in ihrer Domäne und rendern aus ihrer
+  Spec. Für alles Bedienbare nutzen sie dieselben Bausteine; eigene
+  Logik nur für die Darstellung von Daten (ECharts-Canvas,
+  Tabellenzellen).
+- Bearbeiten (Hover-Rahmen, Format-Fokus, Cmd+Klick) ist Sache des
+  `ObjectFrame`, nicht der Bausteine, damit Inhalte auch in einer reinen
+  Ansicht oder einem Export funktionieren.
+
+Heute lesen die Bausteine die App-Tokens meist direkt; die offenen
+Stellen stehen in der Fundliste (`ROADMAP.md`, Teil „Table-Objekt“).
+
 ### Dashboard-Styles
 
 Ein Style ist ein vorgefertigter Look für das ganze Dashboard

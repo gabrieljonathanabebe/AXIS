@@ -241,7 +241,10 @@ ausdrücklich verlangt.
 Der Vorschlag soll als kompakter Copy-Paste-Block erfolgen:
 
 ```bash
-(cd frontend && npm run format && npm run build)
+cd "$(git rev-parse --show-toplevel)/frontend"
+npm run format
+npm run build
+cd "$(git rev-parse --show-toplevel)"
 git status --short
 git add <betroffene-dateien>
 git diff --cached --check
@@ -249,6 +252,9 @@ git diff --cached --stat
 git commit -m "<type>: <description>"
 git push
 ```
+
+Der Block beginnt und endet im Repo-Root; Befehle in einem Unterordner
+rahmt er mit `cd` wie in `docs/DEVELOPMENT.md` Abschnitt 17.
 
 Commit Message passend zur Änderung wählen.
 Im Vorschlag konkrete Dateipfade einsetzen. Generierte Dateien und
