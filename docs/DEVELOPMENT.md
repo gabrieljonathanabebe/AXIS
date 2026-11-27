@@ -205,6 +205,16 @@ Wenn sinnvoll, eigene Icons über `createLucideIcon()` integrieren.
 
 ## 13. Verification
 
+Alle Checks dieses Abschnitts auf einmal, aus jedem Ordner aufrufbar:
+
+```bash
+scripts/check.sh            # Backend und Frontend: Format, Lint, Build, Tests
+scripts/check.sh --smoke    # zusätzlich der Smoke-Test
+```
+
+Das Skript hält beim ersten Fehler an und lässt das Terminal im Ordner,
+aus dem es aufgerufen wurde. Die einzelnen Befehle folgen hier.
+
 Nach relevanten Frontend-Änderungen mindestens, im Ordner `frontend/`:
 
 ```bash
