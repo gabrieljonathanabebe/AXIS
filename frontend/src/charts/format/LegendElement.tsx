@@ -26,14 +26,12 @@ function LegendElement({ value, onChange }: LegendElementProps) {
           onChange={(position) => onChange({ ...value, position })}
         />
       </Group>
-      <Group title="Layout">
-        <LayoutGroup
-          label="Legend"
-          maxGap={40}
-          value={value.layout}
-          onChange={(layout) => onChange({ ...value, layout })}
-        />
-      </Group>
+      <LayoutGroup
+        label="Legend"
+        maxGap={40}
+        value={value.layout}
+        onChange={(layout) => onChange({ ...value, layout })}
+      />
       <SurfaceControls
         label="Legend"
         value={value.surface}

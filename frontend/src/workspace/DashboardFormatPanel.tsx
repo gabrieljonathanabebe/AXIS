@@ -48,13 +48,11 @@ function DashboardFormatPanel({
           onApply={actions.applyStyle}
         />
       </Group>
-      <Group title="Layout">
-        <LayoutGroup
-          label="Dashboard"
-          value={dashboard.layout}
-          onChange={actions.updateDashboardLayout}
-        />
-      </Group>
+      <LayoutGroup
+        label="Dashboard"
+        value={dashboard.layout}
+        onChange={actions.updateDashboardLayout}
+      />
       <BackgroundGroup
         label="Canvas"
         value={dashboard.canvas.background}

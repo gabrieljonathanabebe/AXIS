@@ -57,14 +57,12 @@ function ContainerElement({
       <Group title="Position">
         <PositionGroup box={box} label="Container" />
       </Group>
-      <Group title="Layout">
-        <LayoutGroup
-          box={box}
-          label="Container"
-          value={value.layout}
-          onChange={(layout) => onChange('layout', layout)}
-        />
-      </Group>
+      <LayoutGroup
+        box={box}
+        label="Container"
+        value={value.layout}
+        onChange={(layout) => onChange('layout', layout)}
+      />
       <SurfaceControls label="Container" value={value} onChange={setSurface} />
     </>
   )

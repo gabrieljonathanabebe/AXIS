@@ -52,14 +52,12 @@ function TooltipGroup({
         onChange: (enabled) => onChange({ ...value, enabled }),
       }}
     >
-      <Group title="Layout">
-        <LayoutGroup
-          label="Tooltip"
-          maxGap={24}
-          value={appearance.layout}
-          onChange={(layout) => onAppearanceChange({ ...appearance, layout })}
-        />
-      </Group>
+      <LayoutGroup
+        label="Tooltip"
+        maxGap={24}
+        value={appearance.layout}
+        onChange={(layout) => onAppearanceChange({ ...appearance, layout })}
+      />
       <SurfaceControls
         label="Tooltip"
         renderer="css"

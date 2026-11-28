@@ -3,12 +3,14 @@ import { Fullscreen, Space } from 'lucide-react'
 import NumberControl from '../controls/NumberControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
+import Group from './Group'
 
 import type { PartialLayout } from '@/shared/layout'
 import type { LayoutBox } from '../rows/BoxRow'
+import type { GroupHeadProps } from './Group'
 
 // ===== TYPES =================================================================
-type LayoutGroupProps<TLayout extends PartialLayout> = {
+type LayoutGroupProps<TLayout extends PartialLayout> = GroupHeadProps & {
   box?: LayoutBox
   label: string
   maxGap?: number
@@ -19,19 +21,22 @@ type LayoutGroupProps<TLayout extends PartialLayout> = {
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of the Layout group: how large an element is and how it spaces its
- * content, in a fixed order: W | H, then gap | padding. Shows only the
- * fields the layout has, e.g. only padding for a container; `box` adds
- * W | H with the unit and bounds of the element, e.g. of a color scale,
- * which has no layout of its own.
- * @param props Box, name, bounds, layout and handler.
+ * Layout group: how large an element is and how it spaces its content, in
+ * a fixed order: W | H, then gap | padding. Shows only the fields the
+ * layout has, e.g. only padding for a container; `box` adds W | H with the
+ * unit and bounds of the element, e.g. of a color scale, which has no
+ * layout of its own.
+ * @param props Heading, box, name, bounds, layout and handler.
  */
 function LayoutGroup<TLayout extends PartialLayout>({
   box,
+  group,
   label,
   maxGap = 48,
   maxPadding = 64,
+  title = 'Layout',
   value,
+  visibility,
   onChange,
 }: LayoutGroupProps<TLayout>) {
   /**
@@ -73,12 +78,12 @@ function LayoutGroup<TLayout extends PartialLayout>({
     ) : null,
   ].filter((control) => control !== null)
   return (
-    <>
+    <Group group={group} title={title} visibility={visibility}>
       {box ? (
         <BoxRow box={box} fields={['width', 'height']} label={label} />
       ) : null}
       {spacing.length > 0 ? <Row>{spacing}</Row> : null}
-    </>
+    </Group>
   )
 }
 

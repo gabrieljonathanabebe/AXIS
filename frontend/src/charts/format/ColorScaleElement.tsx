@@ -84,9 +84,7 @@ function ColorScaleElement({
           onChange={(position) => onChange({ ...value, position })}
         />
       </Group>
-      <Group title="Layout">
-        <LayoutGroup box={createSizeBox(value, onChange)} label="Color scale" />
-      </Group>
+      <LayoutGroup box={createSizeBox(value, onChange)} label="Color scale" />
       <SurfaceControls
         label="Color scale"
         value={value.bar}
