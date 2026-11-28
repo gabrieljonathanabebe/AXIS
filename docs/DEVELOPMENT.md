@@ -784,6 +784,14 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   klickbar ist, z. B. ein Hinweis bei leerer Ansicht, ein Icon mit Label
   oder eine kleine Verteilung, liegt in `display/` und darf von jeder
   Ebene genutzt werden; Anzeige nutzt selbst nur Anzeige.
+- **Bearbeiten und Inhalt teilen nur Control, Primitive und Anzeige:**
+  Die Kette Container → Element → Group → Row gehört zum Bearbeiten
+  (Format-Panel, Editoren, immer im App-Theme). Inhalt, den der
+  Betrachter bedient, z. B. der Filter einer Tabellenspalte oder später
+  ein Slicer, ist eine Fachansicht in ihrer Domäne: Er heißt nach ihr,
+  nie `…Group`, `…Row` oder `…Element`, und setzt dieselben Controls,
+  Primitives und Anzeigen direkt zusammen, im Stil des Rahmens
+  (`ARCHITECTURE.md`, „Bausteine im Stil des Rahmens“).
 - **Ein Control unterscheidet sich durch Verhalten, nicht durch Inhalt:**
   Gleiches Verhalten mit anderen Optionen ist dasselbe Control mit
   anderer Konfiguration. Ausrichtung, Schriftgewicht und Position sind

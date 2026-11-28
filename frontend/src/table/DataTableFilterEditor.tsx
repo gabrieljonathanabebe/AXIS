@@ -1,11 +1,9 @@
-import { Search } from 'lucide-react'
 import { useState } from 'react'
 
 import { formatDate } from '@/shared/format/formatDate'
 import { formatNumber } from '@/shared/format/formatNumber'
 import CheckList from '@/shared/ui/controls/CheckList'
 import RangeControl from '@/shared/ui/controls/RangeControl'
-import TextInput from '@/shared/ui/primitives/TextInput'
 import { createMeasureSteps } from './measureSteps'
 import { createTemporalSteps } from './temporalSteps'
 import { useFieldValues } from './useFieldValues'
@@ -30,15 +28,6 @@ export type DataTableFilterEditorProps = {
 
 type FilterFormProps = Omit<DataTableFilterEditorProps, 'semanticRole'>
 
-type StepRangeProps<TStep extends number | string> = {
-  end: TStep | null
-  label: string
-  start: TStep | null
-  steps: TStep[]
-  formatStep: (step: TStep) => string
-  onRangeChange: (start: TStep | null, end: TStep | null) => void
-}
-
 // ===== HELPERS ===============================================================
 function createValuesFilter(
   field: string,
@@ -57,50 +46,17 @@ function getStatistics<TKind extends FieldStatistics['kind']>(
     : null
 }
 
-function getStepIndex<TStep>(
-  steps: TStep[],
-  step: TStep | null,
-  fallback: number,
-): number {
-  const index = step === null ? -1 : steps.indexOf(step)
-  return index === -1 ? fallback : index
-}
-
 // ===== FORMS =================================================================
-// A thumb at the first or last step leaves that side open; the full range
-// is no filter.
-function StepRange<TStep extends number | string>({
-  end,
-  label,
-  start,
-  steps,
-  formatStep,
-  onRangeChange,
-}: StepRangeProps<TStep>) {
-  const lastIndex = steps.length - 1
-  if (lastIndex === 0) {
-    return <span className="data-filter-note">All rows share one value.</span>
-  }
-  return (
-    <RangeControl
-      label={label}
-      max={lastIndex}
-      min={0}
-      value={[
-        getStepIndex(steps, start, 0),
-        getStepIndex(steps, end, lastIndex),
-      ]}
-      formatValue={(index) => formatStep(steps[index])}
-      onValueChange={([startIndex, endIndex]) => {
-        onRangeChange(
-          startIndex > 0 ? steps[startIndex] : null,
-          endIndex < lastIndex ? steps[endIndex] : null,
-        )
-      }}
-    />
-  )
-}
+/** Note when every row has the same value, so a range has nothing to pick. */
+const ONE_VALUE_NOTE = (
+  <span className="data-filter-note">All rows share one value.</span>
+)
 
+/**
+ * Range of a number field over evenly spaced steps between its minimum and
+ * maximum; a full range is no filter.
+ * @param props Field, its profile and the current filter.
+ */
 function MeasureRangeFilterForm({
   fieldName,
   filter,
@@ -112,17 +68,21 @@ function MeasureRangeFilterForm({
     return <span className="data-filter-note">No value range available.</span>
   }
   const range = filter?.kind === 'range' ? filter : null
+  const steps = createMeasureSteps(
+    statistics.min,
+    statistics.max,
+    profileField?.physical_type === 'integer',
+  )
+  if (steps.length < 2) {
+    return ONE_VALUE_NOTE
+  }
 
   return (
-    <StepRange
+    <RangeControl
       end={range?.max ?? null}
       label={`${fieldName} range`}
       start={range?.min ?? null}
-      steps={createMeasureSteps(
-        statistics.min,
-        statistics.max,
-        profileField?.physical_type === 'integer',
-      )}
+      steps={steps}
       formatStep={formatNumber}
       onRangeChange={(min, max) => {
         onFilterChange(
@@ -135,7 +95,11 @@ function MeasureRangeFilterForm({
   )
 }
 
-// Steps follow the profile's range and the field's native grain.
+/**
+ * Range of a date field; the steps follow the range of its profile and the
+ * native grain of the field, e.g. days or months.
+ * @param props Field, its profile and the current filter.
+ */
 function DateRangeFilterForm({
   fieldName,
   filter,
@@ -147,17 +111,21 @@ function DateRangeFilterForm({
     return <span className="data-filter-note">No date range available.</span>
   }
   const dateRange = filter?.kind === 'date_range' ? filter : null
+  const steps = createTemporalSteps(
+    statistics.min,
+    statistics.max,
+    profileField?.native_grain ?? null,
+  )
+  if (steps.length < 2) {
+    return ONE_VALUE_NOTE
+  }
 
   return (
-    <StepRange
+    <RangeControl
       end={dateRange?.end ?? null}
       label={`${fieldName} range`}
       start={dateRange?.start ?? null}
-      steps={createTemporalSteps(
-        statistics.min,
-        statistics.max,
-        profileField?.native_grain ?? null,
-      )}
+      steps={steps}
       formatStep={formatDate}
       onRangeChange={(start, end) => {
         onFilterChange(
@@ -170,7 +138,11 @@ function DateRangeFilterForm({
   )
 }
 
-// Selection stays when the search hides a checked value.
+/**
+ * Values of a field to check, found by a search on the server; checked
+ * values stay checked when the search hides them.
+ * @param props Dataset, field and the current filter.
+ */
 function ValuesFilterForm({
   datasetId,
   fieldName,
@@ -191,16 +163,14 @@ function ValuesFilterForm({
 
   return (
     <>
-      <TextInput
-        icon={<Search size={14} />}
-        label={`Search ${fieldName} values`}
-        placeholder="Search values"
-        value={search}
-        onValueChange={setSearch}
-      />
       <CheckList
         label={`${fieldName} values`}
         options={options}
+        search={{
+          placeholder: 'Search values',
+          value: search,
+          onValueChange: setSearch,
+        }}
         values={selectedValues}
         onValuesChange={(values) => {
           onFilterChange(createValuesFilter(fieldName, values))

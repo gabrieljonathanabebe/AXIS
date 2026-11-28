@@ -431,8 +431,8 @@ Canvas Panel = Arbeitsfläche (isEmbedded, isFilled, App-Theme)
   nur bei Hover über dem Kopf (ohne Hover-Gerät immer leise sichtbar);
 - Filter-Icon (`IconButton`, ghost, xs) neben dem Sortier-Button, gleiche
   Sichtbarkeitsregel wie der Sort-Pfeil; öffnet ein Glass-`Popover` mit
-  einem Control je Semantic Role: Measure `RangeSlider` über die
-  Profil-Spanne, Temporal `RangeSlider` über die erkannte Granularität,
+  einem Control je Semantic Role: Measure `RangeControl` über Stufen der
+  Profil-Spanne, Temporal `RangeControl` über die erkannte Granularität,
   sonst `CheckList` mit Suche und Anzahl je Wert; Filter wirken sofort;
 - Toolbar über der Table: Zeilenanzahl, aktive Filter als entfernbare
   `Chip`s (`isActive`) und „Clear all“; mit aktiven Filtern ist die
@@ -1189,8 +1189,8 @@ Verwenden:
 
 - im Format-Panel ein Zahlenpaar in einer Zeile (Size range: ⤓ min |
   ⤒ max), die Grenzen gegenseitig begrenzt
-- `RangeSlider` mit Zahlenfeldern, wenn das Intervall über einer Skala
-  gewählt wird, mit `formatValue` beschriftet (Table Filter)
+- `RangeControl` über feste Stufen, wenn das Intervall über einer Skala
+  gewählt wird, mit `formatStep` beschriftet (Table Filter)
 
 ### Field
 
@@ -1470,26 +1470,30 @@ und `onValuesChange`.
 - Zeilen sind `Button`s mit `role="checkbox"` und `aria-checked`;
   Electric Blue nur im Kästchen, die Zeile bleibt ruhig.
 - Die Liste scrollt ab 240 px selbst.
+- `search` (`value`, `onValueChange`, optional `placeholder`) setzt ein
+  Suchfeld (`TextInput` mit Lupe) über die Liste; es scrollt nicht mit.
+  Die Liste meldet nur den Text, passende Optionen sucht der Aufrufer,
+  z. B. der Table Filter auf dem Server. Ein Slicer kann die Suche
+  später per Schalter ein- oder ausblenden.
 - Die Komponente kennt keine Fields oder Filter; Einsatz im Table
   Filter, später für Slicer.
 
-## 9g. RangeSlider
+## 9g. RangeControl
 
-`RangeSlider` wählt ein Intervall `[start, end]` zwischen `min` und
-`max` mit zwei nativen Range-Inputs auf einer Spur; die Griffe können
-sich nicht überholen.
+`RangeControl` wählt einen Bereich über feste Stufen (`steps`, Zahlen
+oder Daten) mit zwei nativen Range-Inputs auf einer Spur; die Griffe
+können sich nicht überholen.
 
+- `start` und `end` sind Stufen, `null` heißt offene Seite: Ein Griff an
+  der ersten oder letzten Stufe lässt seine Seite offen, der volle
+  Bereich ist also kein Filter (`rangeSteps.ts`, mit Test).
+- Start und Ende stehen mit `formatStep` formatiert unter der Spur.
 - Thumb in `--color-control-handle` mit Accent-Rand, nur der gewählte
   Bereich in Electric Blue.
-- Ohne `formatValue` stehen links und rechts der Spur zwei
-  `NumberInput`s für Start und Ende; sie begrenzen sich gegenseitig wie
-  die Griffe.
-- Mit `formatValue` stehen Start und Ende formatiert unter der Spur:
-  Aufrufer übergeben Positionen (z. B. Indizes von Datums- oder
-  Werteschritten), für die ein Zahlenfeld falsch wäre.
-- `NumberInput` (`shared/ui`) ist das kleine Zahlenfeld des
-  `RangeSlider`: Entwurf bis Enter oder Blur, dann auf `min` und `max`
-  begrenzt. Genutzt wird es heute nur im Table Filter.
+- Hat ein Feld nur eine Stufe, zeigt der Aufrufer einen Hinweis statt
+  der Spur (Table Filter: „All rows share one value.“).
+- Die Komponente kennt keine Fields oder Filter; Einsatz im Table
+  Filter, später für Slicer.
 
 ## 9h. Popover
 

@@ -904,6 +904,11 @@ Controls wie die App, nur im Stil des Dashboards statt im App-Theme.
   Spec. Für alles Bedienbare nutzen sie dieselben Bausteine; eigene
   Logik nur für die Darstellung von Daten (ECharts-Canvas,
   Tabellenzellen).
+- Gemeinsam sind nur Controls, Primitives und Anzeige; Group, Row,
+  Element und Editor gehören zum Bearbeiten im Format-Panel
+  (`DEVELOPMENT.md` §21). Der Filter einer Tabellenspalte setzt die
+  Controls direkt zusammen (`RangeControl` mit Stufen, `CheckList` mit
+  Suche); ein Slicer nutzt dieselben mit seiner eigenen Datenquelle.
 - Bearbeiten (Hover-Rahmen, Format-Fokus, Cmd+Klick) ist Sache des
   `ObjectFrame`, nicht der Bausteine, damit Inhalte auch in einer reinen
   Ansicht oder einem Export funktionieren.

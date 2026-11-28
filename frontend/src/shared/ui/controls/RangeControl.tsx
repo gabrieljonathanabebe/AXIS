@@ -1,18 +1,15 @@
-import NumberInput from '@/shared/ui/primitives/NumberInput'
+import { toStepIndices, toStepRange } from './rangeSteps'
 
 import type { CSSProperties } from 'react'
 
 // ===== TYPES =================================================================
-export type RangeValue = [number, number]
-
-type RangeControlProps = {
+type RangeControlProps<TStep extends number | string> = {
+  end: TStep | null
   label: string
-  max: number
-  min: number
-  step?: number
-  value: RangeValue
-  formatValue?: (value: number) => string
-  onValueChange: (value: RangeValue) => void
+  start: TStep | null
+  steps: TStep[]
+  formatStep: (step: TStep) => string
+  onRangeChange: (start: TStep | null, end: TStep | null) => void
 }
 
 type RangeControlStyle = CSSProperties & {
@@ -22,90 +19,74 @@ type RangeControlStyle = CSSProperties & {
 
 // ===== COMPONENT =============================================================
 /**
- * Two native range inputs on one track; the thumbs cannot cross. Plain
- * numbers get a number control on each side, like `Slider`; with
- * `formatValue`, e.g. dates of a filter, the formatted values sit below.
+ * Range over fixed steps, e.g. the values or days of a field: two native
+ * range inputs on one track, the thumbs cannot cross, the formatted steps
+ * of both sit below. A thumb at the first or last step leaves that side
+ * open (null), so the full range is no filter. In the upper half the
+ * start thumb lies on top, so both stay reachable.
+ * @param props Steps, chosen range, their format and handler.
  */
-function RangeControl({
+function RangeControl<TStep extends number | string>({
+  end,
   label,
-  max,
-  min,
-  step = 1,
-  value,
-  formatValue,
-  onValueChange,
-}: RangeControlProps) {
-  const [start, end] = value
-  const span = max - min || 1
+  start,
+  steps,
+  formatStep,
+  onRangeChange,
+}: RangeControlProps<TStep>) {
+  const lastIndex = steps.length - 1
+  const [startIndex, endIndex] = toStepIndices(steps, start, end)
+  const span = lastIndex || 1
   const style: RangeControlStyle = {
-    '--range-end': `${((end - min) / span) * 100}%`,
-    '--range-start': `${((start - min) / span) * 100}%`,
+    '--range-end': `${(endIndex / span) * 100}%`,
+    '--range-start': `${(startIndex / span) * 100}%`,
   }
-  // The start thumb lies on top in the upper half, so both stay reachable.
-  const isStartRaised = start > min + span / 2
+  const isStartRaised = startIndex > span / 2
 
-  const track = (
-    <div className="range-control-track" style={style}>
-      <input
-        className={`range-control-input ${isStartRaised ? 'is-raised' : ''}`}
-        type="range"
-        aria-label={`${label} start`}
-        max={max}
-        min={min}
-        step={step}
-        value={start}
-        onChange={(event) => {
-          onValueChange([Math.min(event.currentTarget.valueAsNumber, end), end])
-        }}
-      />
-      <input
-        className="range-control-input"
-        type="range"
-        aria-label={`${label} end`}
-        max={max}
-        min={min}
-        step={step}
-        value={end}
-        onChange={(event) => {
-          onValueChange([
-            start,
-            Math.max(event.currentTarget.valueAsNumber, start),
-          ])
-        }}
-      />
-    </div>
-  )
-
-  if (formatValue) {
-    return (
-      <div className="range-control stack">
-        {track}
-        <div className="range-control-values spread">
-          <span>{formatValue(start)}</span>
-          <span>{formatValue(end)}</span>
-        </div>
-      </div>
-    )
+  /**
+   * Reports the range of both thumbs as steps.
+   * @param indices Indices of the start and end thumb.
+   */
+  function changeRange(indices: [number, number]): void {
+    onRangeChange(...toStepRange(steps, indices))
   }
+
   return (
-    <div className="range-control has-inputs">
-      <NumberInput
-        label={`${label} start value`}
-        max={end}
-        min={min}
-        step={step}
-        value={start}
-        onValueChange={(nextStart) => onValueChange([nextStart, end])}
-      />
-      {track}
-      <NumberInput
-        label={`${label} end value`}
-        max={max}
-        min={start}
-        step={step}
-        value={end}
-        onValueChange={(nextEnd) => onValueChange([start, nextEnd])}
-      />
+    <div className="range-control stack">
+      <div className="range-control-track" style={style}>
+        <input
+          className={`range-control-input ${isStartRaised ? 'is-raised' : ''}`}
+          type="range"
+          aria-label={`${label} start`}
+          max={lastIndex}
+          min={0}
+          value={startIndex}
+          onChange={(event) => {
+            changeRange([
+              Math.min(event.currentTarget.valueAsNumber, endIndex),
+              endIndex,
+            ])
+          }}
+        />
+        <input
+          className="range-control-input"
+          type="range"
+          aria-label={`${label} end`}
+          max={lastIndex}
+          min={0}
+          value={endIndex}
+          onChange={(event) => {
+            changeRange([
+              startIndex,
+              Math.max(event.currentTarget.valueAsNumber, startIndex),
+            ])
+          }}
+        />
+      </div>
+      <div className="range-control-values spread">
+        <span>{formatStep(steps[startIndex])}</span>
+        <span>{formatStep(steps[endIndex])}</span>
+      </div>
     </div>
   )
 }
