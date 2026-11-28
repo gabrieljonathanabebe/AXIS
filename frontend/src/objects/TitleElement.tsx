@@ -28,19 +28,17 @@ function TitleElement({ defaultTitle, value, onChange }: TitleElementProps) {
           />
         </Row>
       </Group>
-      <Group title="Text">
-        <TextGroup
-          alignment={{
-            value: value.alignment,
-            onChange: (alignment) => onChange({ ...value, alignment }),
-          }}
-          label="Title"
-          maxFontSize={20}
-          minFontSize={11}
-          value={value.textStyle}
-          onChange={(textStyle) => onChange({ ...value, textStyle })}
-        />
-      </Group>
+      <TextGroup
+        alignment={{
+          value: value.alignment,
+          onChange: (alignment) => onChange({ ...value, alignment }),
+        }}
+        label="Title"
+        maxFontSize={20}
+        minFontSize={11}
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
     </>
   )
 }

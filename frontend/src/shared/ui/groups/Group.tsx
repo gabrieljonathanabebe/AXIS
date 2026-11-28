@@ -26,6 +26,13 @@ type GroupProps = {
   onAdd?: () => void
 }
 
+/**
+ * Heading of a whole group, which renders its `Group` itself: a title
+ * other than its own, e.g. "Selection" for a text, an eye and the part of
+ * the object it formats.
+ */
+export type GroupHeadProps = Pick<GroupProps, 'group' | 'title' | 'visibility'>
+
 // ===== COMPONENT =============================================================
 /**
  * One group of rows, e.g. in the format panel. The title becomes a small

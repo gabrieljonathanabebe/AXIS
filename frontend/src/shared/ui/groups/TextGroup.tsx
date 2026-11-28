@@ -7,9 +7,12 @@ import SegmentedControl from '../controls/SegmentedControl'
 import IconButton from '../primitives/IconButton'
 import Row from '../rows/Row'
 import { ALIGNMENT_OPTIONS } from './alignmentOptions'
+import Group from './Group'
 
+import type { ReactNode } from 'react'
 import type { HorizontalAlignment } from '@/shared/layout'
 import type { TextStyle } from '@/shared/textStyle'
+import type { GroupHeadProps } from './Group'
 
 // ===== TYPES =================================================================
 /** Alignment of the text an element offers, e.g. of a title. */
@@ -18,8 +21,10 @@ type TextAlignment = {
   onChange: (value: HorizontalAlignment) => void
 }
 
-type TextGroupProps = {
+type TextGroupProps = GroupHeadProps & {
   alignment?: TextAlignment
+  /** Rows before the text rows, e.g. the text of an axis title. */
+  children?: ReactNode
   label: string
   maxFontSize?: number
   minFontSize?: number
@@ -29,22 +34,29 @@ type TextGroupProps = {
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of one text: size, weight and italic, then color and, if the
- * element has one, its alignment. Widgets place them next to their own
- * rows.
- * @param props Text style, its bounds and optional alignment.
+ * Text group: size, weight and italic, then color and, if the element has
+ * one, its alignment. Rows of its own come first as `children`, e.g. the
+ * text of an axis title; `title` names a text other than the element's
+ * own, e.g. "Selection" below a card value.
+ * @param props Heading, rows before, text style, its bounds and optional
+ *   alignment.
  */
 function TextGroup({
   alignment,
+  children,
+  group,
   label,
   maxFontSize = 28,
   minFontSize = 9,
+  title = 'Text',
   value,
+  visibility,
   onChange,
 }: TextGroupProps) {
   const isItalic = value.fontStyle === 'italic'
   return (
-    <>
+    <Group group={group} title={title} visibility={visibility}>
+      {children}
       <Row
         action={
           <IconButton
@@ -90,7 +102,7 @@ function TextGroup({
           />
         ) : null}
       </Row>
-    </>
+    </Group>
   )
 }
 

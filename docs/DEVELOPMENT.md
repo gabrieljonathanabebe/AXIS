@@ -797,6 +797,15 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   anderer Konfiguration. Ausrichtung, Schriftgewicht und Position sind
   `SegmentedControl`, ein Winkel ist `NumberControl` mit Einheit °,
   Palette und Datumsformat sind `SelectControl`.
+- **Eine Group ist ein ganzer Abschnitt:** Sie rendert ihre `Group`
+  selbst und hat immer dieselbe Form: `value` (ihr Teil der Spec) und
+  `onChange` (gibt nur diesen Teil zurück). Ihren Titel kennt sie selbst;
+  `title` bekommt sie nur, wenn sie mit anderer Bedeutung auftaucht, z. B.
+  `StrokeGroup` als „Border“ oder `TextGroup` als „Selection“. Das Auge
+  kommt ausdrücklich über `visibility={getVisibility(…)}`; eigene Zeilen
+  davor gehen als `children` hinein, z. B. der Text eines Achsentitels
+  (`GroupHeadProps` in `Group.tsx`). Ein Element liest sich so als Liste
+  seiner Groups, eine pro Zeile, in der Reihenfolge des Panels.
 - **Optik als Klasse, Verhalten als Komponente:** Controls haben keine
   Basis-Komponente; ihr Rahmen ist die Klasse `.control-frame`, Swatch
   mit Text die Klasse `.swatch-control`.

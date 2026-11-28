@@ -1,5 +1,4 @@
 import { getVisibility } from '@/shared/ui/groups/getVisibility'
-import Group from '@/shared/ui/groups/Group'
 import TextGroup from '@/shared/ui/groups/TextGroup'
 import TextInput from '@/shared/ui/primitives/TextInput'
 import Row from '@/shared/ui/rows/Row'
@@ -32,10 +31,13 @@ function AxisTitleGroup({
   onChange,
 }: AxisTitleGroupProps) {
   return (
-    <Group
+    <TextGroup
       group={group}
+      label={`${label} title`}
       title="Title"
+      value={value.textStyle}
       visibility={getVisibility(value, onChange)}
+      onChange={(textStyle) => onChange({ ...value, textStyle })}
     >
       <Row layout="wide">
         <TextInput
@@ -45,12 +47,7 @@ function AxisTitleGroup({
           onValueChange={(text) => onChange({ ...value, text })}
         />
       </Row>
-      <TextGroup
-        label={`${label} title`}
-        value={value.textStyle}
-        onChange={(textStyle) => onChange({ ...value, textStyle })}
-      />
-    </Group>
+    </TextGroup>
   )
 }
 

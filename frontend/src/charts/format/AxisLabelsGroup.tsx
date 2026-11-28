@@ -80,13 +80,11 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
           )}
         </Row>
       </Group>
-      <Group title="Text">
-        <TextGroup
-          label={`${label} label`}
-          value={value.textStyle}
-          onChange={(textStyle) => onChange({ ...value, textStyle })}
-        />
-      </Group>
+      <TextGroup
+        label={`${label} label`}
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
       <Group title="Format">
         <NumberFormatGroup
           isDate={isDate}

@@ -71,15 +71,13 @@ function TooltipGroup({
           })
         }}
       >
-        <Group title="Text">
-          <TextGroup
-            label="Tooltip text"
-            value={appearance.textStyle}
-            onChange={(textStyle) => {
-              onAppearanceChange({ ...appearance, textStyle })
-            }}
-          />
-        </Group>
+        <TextGroup
+          label="Tooltip text"
+          value={appearance.textStyle}
+          onChange={(textStyle) => {
+            onAppearanceChange({ ...appearance, textStyle })
+          }}
+        />
       </SurfaceControls>
       <Group title="Format">
         <NumberFormatGroup

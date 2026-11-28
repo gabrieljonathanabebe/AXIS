@@ -42,15 +42,13 @@ function CardValueElement({
           />
         </Row>
       </Group>
-      <Group title="Text">
-        <TextGroup
-          label="Value"
-          maxFontSize={96}
-          minFontSize={16}
-          value={value.textStyle}
-          onChange={(textStyle) => onChange({ ...value, textStyle })}
-        />
-      </Group>
+      <TextGroup
+        label="Value"
+        maxFontSize={96}
+        minFontSize={16}
+        value={value.textStyle}
+        onChange={(textStyle) => onChange({ ...value, textStyle })}
+      />
       <Group title="Format">
         <NumberFormatGroup
           label="Value"

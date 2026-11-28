@@ -1,5 +1,4 @@
 import { getVisibility } from '@/shared/ui/groups/getVisibility'
-import Group from '@/shared/ui/groups/Group'
 import TextGroup from '@/shared/ui/groups/TextGroup'
 
 import type { CardSelectionLabelAppearance } from './types'
@@ -18,17 +17,14 @@ type CardSelectionGroupProps = {
  */
 function CardSelectionGroup({ value, onChange }: CardSelectionGroupProps) {
   return (
-    <Group
+    <TextGroup
       group="selectionLabel"
+      label="Selection"
       title="Selection"
+      value={value.textStyle}
       visibility={getVisibility(value, onChange)}
-    >
-      <TextGroup
-        label="Selection"
-        value={value.textStyle}
-        onChange={(textStyle) => onChange({ ...value, textStyle })}
-      />
-    </Group>
+      onChange={(textStyle) => onChange({ ...value, textStyle })}
+    />
   )
 }
 

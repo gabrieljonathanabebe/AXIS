@@ -41,13 +41,11 @@ function LegendElement({ value, onChange }: LegendElementProps) {
           onChange({ ...value, surface: { ...value.surface, [key]: property } })
         }}
       >
-        <Group title="Text">
-          <TextGroup
-            label="Legend text"
-            value={value.textStyle}
-            onChange={(textStyle) => onChange({ ...value, textStyle })}
-          />
-        </Group>
+        <TextGroup
+          label="Legend text"
+          value={value.textStyle}
+          onChange={(textStyle) => onChange({ ...value, textStyle })}
+        />
       </SurfaceControls>
     </>
   )
