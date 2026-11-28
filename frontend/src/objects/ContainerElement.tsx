@@ -1,4 +1,3 @@
-import Group from '@/shared/ui/groups/Group'
 import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
 import PositionGroup from '@/shared/ui/groups/PositionGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
@@ -54,9 +53,7 @@ function ContainerElement({
   }
   return (
     <>
-      <Group title="Position">
-        <PositionGroup box={box} label="Container" />
-      </Group>
+      <PositionGroup box={box} label="Container" />
       <LayoutGroup
         box={box}
         label="Container"

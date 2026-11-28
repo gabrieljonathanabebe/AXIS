@@ -5,6 +5,7 @@ import DetailsControl from '../controls/DetailsControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
+import Group from './Group'
 import {
   getPositionOptions,
   toPosition,
@@ -15,6 +16,7 @@ import type { LucideIcon } from 'lucide-react'
 import type { PartialPosition, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
+import type { GroupHeadProps } from './Group'
 import type { PositionKey } from './positionOptions'
 
 // ===== TYPES =================================================================
@@ -23,7 +25,7 @@ type PositionSide<TPosition extends PartialPosition> = NonNullable<
   TPosition['side']
 >
 
-type PositionGroupProps<TPosition extends PartialPosition> = {
+type PositionGroupProps<TPosition extends PartialPosition> = GroupHeadProps & {
   box?: LayoutBox
   label: string
   sides?: OptionItem<PositionSide<TPosition>>[]
@@ -77,12 +79,16 @@ function renderPositionMark(option: OptionItem<PositionKey>) {
  * cross of the four sides without, e.g. of a color scale. Other sides are
  * an icon group with icon and word, e.g. of the data labels. A single side
  * needs no control.
+ * @param props Heading, box, name, allowed sides, position and handler.
  */
 function PositionGroup<TPosition extends PartialPosition>({
   box,
+  group,
   label,
   sides = sideOptions as OptionItem<PositionSide<TPosition>>[],
+  title = 'Position',
   value,
+  visibility,
   onChange,
 }: PositionGroupProps<TPosition>) {
   const alignment = value?.alignment
@@ -108,7 +114,7 @@ function PositionGroup<TPosition extends PartialPosition>({
     }
   }
   return (
-    <>
+    <Group group={group} title={title} visibility={visibility}>
       {box ? <BoxRow box={box} fields={['x', 'y']} label={label} /> : null}
       {showsGrid && SideIcon ? (
         <Row layout="wide">
@@ -142,7 +148,7 @@ function PositionGroup<TPosition extends PartialPosition>({
           />
         </Row>
       ) : null}
-    </>
+    </Group>
   )
 }
 

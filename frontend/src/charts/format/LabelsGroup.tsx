@@ -35,14 +35,12 @@ function LabelsGroup({
       title="Labels"
       visibility={getVisibility(value, onChange)}
     >
-      <Group title="Position">
-        <PositionGroup
-          label="Label"
-          sides={positions}
-          value={value.position}
-          onChange={(position) => onChange({ ...value, position })}
-        />
-      </Group>
+      <PositionGroup
+        label="Label"
+        sides={positions}
+        value={value.position}
+        onChange={(position) => onChange({ ...value, position })}
+      />
       <TextGroup
         label="Label"
         value={value.textStyle}

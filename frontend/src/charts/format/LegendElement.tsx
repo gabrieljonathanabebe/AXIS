@@ -1,4 +1,3 @@
-import Group from '@/shared/ui/groups/Group'
 import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
 import PositionGroup from '@/shared/ui/groups/PositionGroup'
 import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
@@ -19,13 +18,11 @@ type LegendElementProps = {
 function LegendElement({ value, onChange }: LegendElementProps) {
   return (
     <>
-      <Group title="Position">
-        <PositionGroup
-          label="Legend"
-          value={value.position}
-          onChange={(position) => onChange({ ...value, position })}
-        />
-      </Group>
+      <PositionGroup
+        label="Legend"
+        value={value.position}
+        onChange={(position) => onChange({ ...value, position })}
+      />
       <LayoutGroup
         label="Legend"
         maxGap={40}
