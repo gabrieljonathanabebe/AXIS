@@ -1770,8 +1770,9 @@ Card
 - bei explizitem Stil: Decimals (`ScrubbableNumber` 0–6 mit `onAuto`,
   leer heißt Auto) und ⚙ (`DetailsPopover`) mit Notation
   (Standard | Compact) und Prefix | Suffix (`TextInput`)
-- an Achsenlabels zusätzlich Date im Select (`isDate`, `onDate`) statt
-  eines eigenen Typ-Selects; bei Date entfallen Decimals und ⚙
+- an Achsenlabels zusätzlich Date im Select (Prop `date` mit Wahl,
+  Datumsformat und Grain) statt eines eigenen Typ-Selects; bei Date
+  ersetzt das Datumsformat (`DateFormatRow`) Decimals und ⚙
 - Date gilt auch ohne Wahl, wenn ein Datumsfeld mit Auto auf der Achse
   liegt (`showsDateLabels`); das Select zeigt dann Date
 - genutzt vom Card-Wert im `CardValueWidget`, von der Achsenbeschriftung

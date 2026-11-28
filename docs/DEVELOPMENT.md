@@ -806,6 +806,13 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   davor gehen als `children` hinein, z. B. der Text eines Achsentitels
   (`GroupHeadProps` in `Group.tsx`). Ein Element liest sich so als Liste
   seiner Groups, eine pro Zeile, in der Reihenfolge des Panels.
+- **Hülle nur mit Fachwissen:** Eine Hülle um eine gemeinsame Group in
+  ihrer Domäne bleibt, wenn sie Fachwissen trägt: welches Feld der Spec
+  sie liest (z. B. ein Objekt mit `visible` und `textStyle` → Auge und
+  Text), ein Klickziel (`group`), feste Zeilen davor oder Standards, z. B.
+  `AxisTitleGroup` und `CardSelectionGroup`. Setzt sie nur Props, die das
+  Element genauso direkt übergeben könnte (z. B. nur `title`), entfällt
+  sie, und das Element ruft die gemeinsame Group selbst auf.
 - **Optik als Klasse, Verhalten als Komponente:** Controls haben keine
   Basis-Komponente; ihr Rahmen ist die Klasse `.control-frame`, Swatch
   mit Text die Klasse `.swatch-control`.
