@@ -79,13 +79,11 @@ function TooltipGroup({
           }}
         />
       </SurfaceControls>
-      <Group title="Format">
-        <NumberFormatGroup
-          label="Tooltip"
-          value={value.numberFormat}
-          onChange={(numberFormat) => onChange({ ...value, numberFormat })}
-        />
-      </Group>
+      <NumberFormatGroup
+        label="Tooltip"
+        value={value.numberFormat}
+        onChange={(numberFormat) => onChange({ ...value, numberFormat })}
+      />
       {showTrigger ? (
         <Group title="Behavior">
           <Row layout="wide">

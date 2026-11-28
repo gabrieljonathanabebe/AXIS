@@ -813,6 +813,17 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   `AxisTitleGroup` und `CardSelectionGroup`. Setzt sie nur Props, die das
   Element genauso direkt übergeben könnte (z. B. nur `title`), entfällt
   sie, und das Element ruft die gemeinsame Group selbst auf.
+- **Was jede Ebene enthält:**
+
+  | Ebene   | darin steht                                | eigene Komponente, wenn …                                                                                                                                                                          |
+  | ------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Element | nur Groups, eine pro Zeile                 | – (streng)                                                                                                                                                                                         |
+  | Group   | `<Row>`s untereinander, direkt geschrieben | eine Zeile kommt in zwei Groups vor (`PaintRow`, `BoxRow`), hat eigene Logik (`DateFormatRow` rechnet Vorlagen aus dem Grain) oder ist ein Listeneintrag (`EffectRow`, `GradientStopRow`) → `…Row` |
+  | Row     | nur Controls nebeneinander                 | mehrere Primitives werden zu einem Wert verdrahtet → `…Control`                                                                                                                                    |
+
+  Eine Zeile, die nur Controls einer Group verdrahtet, bleibt direkt in
+  der Group (C7).
+
 - **Optik als Klasse, Verhalten als Komponente:** Controls haben keine
   Basis-Komponente; ihr Rahmen ist die Klasse `.control-frame`, Swatch
   mit Text die Klasse `.swatch-control`.

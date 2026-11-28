@@ -49,13 +49,11 @@ function CardValueElement({
         value={value.textStyle}
         onChange={(textStyle) => onChange({ ...value, textStyle })}
       />
-      <Group title="Format">
-        <NumberFormatGroup
-          label="Value"
-          value={value.numberFormat}
-          onChange={(numberFormat) => onChange({ ...value, numberFormat })}
-        />
-      </Group>
+      <NumberFormatGroup
+        label="Value"
+        value={value.numberFormat}
+        onChange={(numberFormat) => onChange({ ...value, numberFormat })}
+      />
     </>
   )
 }

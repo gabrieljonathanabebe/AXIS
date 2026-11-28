@@ -49,13 +49,11 @@ function LabelsGroup({
         onChange={(textStyle) => onChange({ ...value, textStyle })}
       />
       {!isRadial ? (
-        <Group title="Format">
-          <NumberFormatGroup
-            label="Label"
-            value={value.numberFormat}
-            onChange={(numberFormat) => onChange({ ...value, numberFormat })}
-          />
-        </Group>
+        <NumberFormatGroup
+          label="Label"
+          value={value.numberFormat}
+          onChange={(numberFormat) => onChange({ ...value, numberFormat })}
+        />
       ) : null}
     </Group>
   )

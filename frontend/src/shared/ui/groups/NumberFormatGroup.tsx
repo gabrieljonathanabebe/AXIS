@@ -11,13 +11,18 @@ import NumberControl from '../controls/NumberControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import SelectControl from '../controls/SelectControl'
 import TextInput from '../primitives/TextInput'
+import DateFormatRow from '../rows/DateFormatRow'
 import Row from '../rows/Row'
+import Group from './Group'
 
 import type {
   CurrencyCode,
+  DateFormat,
   NumberFormat,
+  TimeGrain,
   ValueFormat,
 } from '@/shared/format/valueFormats'
+import type { GroupHeadProps } from './Group'
 
 // ===== TYPES =================================================================
 /** Choice of the format select: a style, or currency with its code. */
@@ -26,12 +31,23 @@ type FormatChoice = Exclude<ValueFormat, 'currency'> | CurrencyCode
 /** How long numbers are written, as in Intl.NumberFormat. */
 type Notation = 'compact' | 'standard'
 
-type NumberFormatGroupProps = {
-  isDate?: boolean
+/**
+ * Dates as a further choice of the format, e.g. for the labels of an X
+ * axis: whether they are chosen, their format and its grain.
+ */
+type DateChoice = {
+  grain: TimeGrain | null
+  isChosen: boolean
+  value: DateFormat
+  onChange: (value: DateFormat) => void
+  onChoose: () => void
+}
+
+type NumberFormatGroupProps = GroupHeadProps & {
+  date?: DateChoice
   label: string
   value: NumberFormat
   onChange: (value: NumberFormat) => void
-  onDate?: () => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -103,37 +119,49 @@ function getPreview(value: NumberFormat): string {
 
 // ===== COMPONENT =============================================================
 /**
- * Rows of one number format: the format with currency across the row,
- * then for a fixed format the decimal places and the notation, and a
- * preview of the result whose icon opens prefix and suffix with fixed
- * names. With auto the place that shows the value decides, so only the
- * format select shows. With `onDate` the select also offers Date, e.g.
- * for axis labels; `isDate` marks it as chosen and hides the rest.
+ * Format group: the format with currency across the row, then for a fixed
+ * format the decimal places and the notation, and a preview of the result
+ * whose icon opens prefix and suffix with fixed names. With auto the place
+ * that shows the value decides, so only the format select shows. With
+ * `date` the select also offers Date, e.g. for axis labels; chosen, the
+ * date format replaces the number rows.
+ * @param props Heading, number format, optional dates and handler.
  */
 function NumberFormatGroup({
-  isDate = false,
+  date,
+  group,
   label,
+  title = 'Format',
   value,
+  visibility,
   onChange,
-  onDate,
 }: NumberFormatGroupProps) {
+  const isDate = date?.isChosen ?? false
   const hasDetails = !isDate && value.style !== 'auto'
   return (
-    <>
+    <Group group={group} title={title} visibility={visibility}>
       <Row layout="wide">
         <SelectControl
           label={`${label} format`}
-          options={onDate ? formatOrDateOptions : formatChoiceOptions}
+          options={date ? formatOrDateOptions : formatChoiceOptions}
           value={isDate ? 'date' : getFormatChoice(value)}
           onChange={(choice) => {
             if (choice === 'date') {
-              onDate?.()
+              date?.onChoose()
               return
             }
             onChange(applyFormatChoice(value, choice))
           }}
         />
       </Row>
+      {date && isDate ? (
+        <DateFormatRow
+          grain={date.grain}
+          label={label}
+          value={date.value}
+          onChange={date.onChange}
+        />
+      ) : null}
       {hasDetails ? (
         <>
           <Row>
@@ -181,7 +209,7 @@ function NumberFormatGroup({
           </Row>
         </>
       ) : null}
-    </>
+    </Group>
   )
 }
 

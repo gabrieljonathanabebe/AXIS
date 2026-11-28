@@ -5,11 +5,10 @@ import NumberControl from '@/shared/ui/controls/NumberControl'
 import Group from '@/shared/ui/groups/Group'
 import NumberFormatGroup from '@/shared/ui/groups/NumberFormatGroup'
 import TextGroup from '@/shared/ui/groups/TextGroup'
-import DateFormatRow from '@/shared/ui/rows/DateFormatRow'
 import Row from '@/shared/ui/rows/Row'
 
 import type { AxisLabelsAppearance } from '@/charts/types'
-import type { TimeGrain } from '@/shared/format/valueFormats'
+import type { DateFormat, TimeGrain } from '@/shared/format/valueFormats'
 import type { FormatVisibility } from '@/shared/ui/groups/Group'
 
 // ===== TYPES =================================================================
@@ -57,6 +56,18 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
       { numberFormat: value.numberFormat, valueType: value.valueType },
       dateAxis?.hasDateField ?? false,
     )
+  /** Dates as a choice of the format; only the labels of an axis have them. */
+  const dateChoice =
+    value.valueType && value.dateFormat
+      ? {
+          grain: dateAxis?.grain ?? null,
+          isChosen: isDate,
+          value: value.dateFormat,
+          onChange: (dateFormat: DateFormat) =>
+            onChange({ ...value, dateFormat }),
+          onChoose: () => onChange({ ...value, valueType: 'date' }),
+        }
+      : undefined
   return (
     <Group group={group} title="Labels" visibility={visibility}>
       <Group title="Layout">
@@ -85,30 +96,15 @@ function AxisLabelsGroup<TLabels extends AxisLabelsParts>({
         value={value.textStyle}
         onChange={(textStyle) => onChange({ ...value, textStyle })}
       />
-      <Group title="Format">
-        <NumberFormatGroup
-          isDate={isDate}
-          label={label}
-          value={value.numberFormat}
-          onChange={(numberFormat) => {
-            const next = { ...value, numberFormat }
-            onChange(value.valueType ? { ...next, valueType: 'number' } : next)
-          }}
-          onDate={
-            value.valueType
-              ? () => onChange({ ...value, valueType: 'date' })
-              : undefined
-          }
-        />
-        {isDate && value.dateFormat && (
-          <DateFormatRow
-            grain={dateAxis?.grain ?? null}
-            label={label}
-            value={value.dateFormat}
-            onChange={(dateFormat) => onChange({ ...value, dateFormat })}
-          />
-        )}
-      </Group>
+      <NumberFormatGroup
+        date={dateChoice}
+        label={label}
+        value={value.numberFormat}
+        onChange={(numberFormat) => {
+          const next = { ...value, numberFormat }
+          onChange(value.valueType ? { ...next, valueType: 'number' } : next)
+        }}
+      />
     </Group>
   )
 }
