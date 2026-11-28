@@ -27,9 +27,9 @@ import NumberControl from '@/shared/ui/controls/NumberControl'
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
 import SelectControl from '@/shared/ui/controls/SelectControl'
 import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
+import { getVisibility } from '@/shared/ui/groups/getVisibility'
 import Group from '@/shared/ui/groups/Group'
 import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
-import StrokeStyleControls from '@/shared/ui/groups/StrokeStyleControls'
 import PaintRow from '@/shared/ui/rows/PaintRow'
 import Row from '@/shared/ui/rows/Row'
 import GradientControl from './GradientControl'
@@ -272,6 +272,12 @@ function getFilledMarkGroups(
   dataColor: DataColorControls,
 ): MarkGroups {
   const { border, effect, fill } = chart.spec.appearance[mark]
+
+  /** Saves the changed border of the marks, e.g. hidden by its eye. */
+  function setBorder(value: typeof border): void {
+    actions.setChartAppearance(mark, 'border', value)
+  }
+
   return {
     dataColor: (
       <Group title="Fill">
@@ -292,8 +298,9 @@ function getFilledMarkGroups(
       <StrokeGroup
         label={`${label} border`}
         title="Border"
-        value={border}
-        onChange={(value) => actions.setChartAppearance(mark, 'border', value)}
+        value={border.stroke}
+        visibility={getVisibility(border, setBorder)}
+        onChange={(stroke) => setBorder({ ...border, stroke })}
       />
     ),
   }
@@ -382,19 +389,17 @@ function getChartTypeGroups(
     case 'line':
       return {
         dataColor: (
-          <Group title="Line">
-            <StrokeStyleControls
-              details={dataColor.details}
-              label="Line"
-              minWidth={1}
-              paintTypes={dataColor.paintTypes}
-              seriesColor={dataColor.field}
-              value={line.stroke}
-              onChange={(stroke) => {
-                actions.setChartAppearance('line', 'stroke', stroke)
-              }}
-            />
-          </Group>
+          <StrokeGroup
+            details={dataColor.details}
+            label="Line"
+            paintTypes={dataColor.paintTypes}
+            seriesColor={dataColor.field}
+            title="Line"
+            value={line.stroke}
+            onChange={(stroke) => {
+              actions.setChartAppearance('line', 'stroke', stroke)
+            }}
+          />
         ),
         effect: getEffectGroup('Line', line.effect, (effect) => {
           actions.setChartAppearance('line', 'effect', effect)

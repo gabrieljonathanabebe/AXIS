@@ -74,6 +74,11 @@ function ColorScaleElement({
   function setLabels(labels: ContinuousColorScale['labels']): void {
     onChange({ ...value, labels })
   }
+  /** Saves the changed ticks of the bar, e.g. hidden by their eye. */
+  function setTicks(ticks: ContinuousColorScale['ticks']): void {
+    onChange({ ...value, ticks })
+  }
+
   return (
     <>
       <PositionGroup
@@ -107,8 +112,9 @@ function ColorScaleElement({
         label="Color scale ticks"
         maxWidth={4}
         title="Ticks"
-        value={value.ticks}
-        onChange={(ticks) => onChange({ ...value, ticks })}
+        value={value.ticks.stroke}
+        visibility={getVisibility(value.ticks, setTicks)}
+        onChange={(stroke) => setTicks({ ...value.ticks, stroke })}
       />
     </>
   )

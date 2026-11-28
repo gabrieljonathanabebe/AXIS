@@ -977,7 +977,7 @@ kontinuierlich  [● ▬▬▬▬▬▬▬▬▬▬▬▬ ●]  [◐ 90 %]      
 
 - `getDataColorField` (`markGroups.tsx`) baut das Feld einmal; Fill der
   gefüllten Marks bzw. die Line reichen es als `seriesColor` an
-  `PaintControl` bzw. `StrokeStyleControls` weiter. Die Bausteine
+  `PaintRow` bzw. `StrokeGroup` weiter. Die Bausteine
   bleiben generisch.
 - Weitere Paints in der Serienfarbe, z. B. die Area der Line, zeigen nur
   ihre Deckkraft; die Datenfarbe hat genau eine Stelle.
@@ -1122,15 +1122,15 @@ vorigen auf, keine Stufe gibt es doppelt. Der Name sagt die Größe:
 Swatch ist ein Punkt, Field ein Feld, Control eine Zeile, Controls eine
 Gruppe aus Zeilen.
 
-| Stufe    | Baustein              | Aufgabe                                                                   |
-| -------- | --------------------- | ------------------------------------------------------------------------- |
-| Inhalt   | `ColorPicker`         | Presets, Farbfläche mit Hue, Hex-Feld einer Farbe                         |
-| Swatch   | `ColorSwatch`         | Punkt einer Farbe, öffnet den `ColorPicker` im Popover                    |
-| Field    | `ColorField`          | eine Farbe: Swatch + Hex bzw. Preset-Name                                 |
-| Field    | `PaintField`          | ein Paint: bei Solid das `ColorField`, bei Verlauf Vorschau + Typ; Editor |
-| Control  | `PaintControl`        | eine Farbzeile: Feld + Deckkraft + `actions`                              |
-| Controls | `FillListControls`    | mehrere Farbzeilen einer Fläche, oberste zuerst                           |
-| Controls | `StrokeStyleControls` | Farbzeile + Breite + Stil                                                 |
+| Stufe    | Baustein           | Aufgabe                                                                   |
+| -------- | ------------------ | ------------------------------------------------------------------------- |
+| Inhalt   | `ColorPicker`      | Presets, Farbfläche mit Hue, Hex-Feld einer Farbe                         |
+| Swatch   | `ColorSwatch`      | Punkt einer Farbe, öffnet den `ColorPicker` im Popover                    |
+| Field    | `ColorField`       | eine Farbe: Swatch + Hex bzw. Preset-Name                                 |
+| Field    | `PaintField`       | ein Paint: bei Solid das `ColorField`, bei Verlauf Vorschau + Typ; Editor |
+| Control  | `PaintControl`     | eine Farbzeile: Feld + Deckkraft + `actions`                              |
+| Controls | `FillListControls` | mehrere Farbzeilen einer Fläche, oberste zuerst                           |
+| Groups   | `StrokeGroup`      | Farbzeile + Breite + Stil                                                 |
 
 Keine neuen spezialisierten Color Picker erzeugen; jede Farbauswahl
 läuft über den einen `ColorPicker`, im Popover des Swatches oder direkt
@@ -1583,31 +1583,32 @@ setzt seine eigenen Zeilen davor oder dahinter:
 Keine Varianten über Flags: Was ein Element zusätzlich braucht, ist eine
 eigene Zeile im Widget oder ein optionaler Teil wie `alignment`.
 
-## 9k. StrokeStyleControls
+## 9k. StrokeGroup
 
-`StrokeStyleControls` ist der Baustein für das Aussehen einer Linie oder
-eines Umrisses (`StrokeStyle`), nach demselben Muster wie
-`TextStyleControls`: Zeilen statt Rahmen, `label` für Screenreader.
+`StrokeGroup` ist die Group für das Aussehen einer Linie oder eines
+Umrisses (`StrokeStyle`), nach demselben Muster wie `TextGroup`: eine
+ganze Group mit `value` und `onChange`, `label` für Screenreader, `title`
+für ihre Bedeutung (Border, Line, Gridlines, Ticks).
 
-- zuerst die Farbzeile (`PaintControl`, siehe 9q): Feld und Opacity,
-  Typ und Verlauf im Editor hinter dem Swatch bzw. dem ⚙
-- darunter Width (`ScrubbableNumber`, Icon ═, px, `minWidth` bis
-  `maxWidth`, Standard 0–8) | Style (Icon-Gruppe Solid/Dashed/Dotted
-  mit `.line-style-preview`)
+- zuerst die Farbzeile (`PaintRow`, siehe 9q): Feld und Opacity, Typ und
+  Verlauf im Editor hinter dem Swatch bzw. dem ⚙ (`details`)
+- darunter Width (`NumberControl`, Icon ═, px, `minWidth` bis
+  `maxWidth`, Standard 1–8) | Style (Icon-Gruppe Solid/Dashed/Dotted mit
+  `.line-style-preview`)
 - generisch über den Wert (`StrokeStyle<Paint | SeriesPaint>`): Ein
-  `StrokeStyle` hat eine eigene Farbe, ein `SeriesStrokeStyle` nimmt
-  sie aus der Serie; dann zeigt die Farbzeile `seriesColor`, das Feld
-  der Datenfarbe, oder nur die Deckkraft. `onChange` liefert denselben
-  Typ zurück
+  `StrokeStyle` hat eine eigene Farbe, ein `SeriesStrokeStyle` nimmt sie
+  aus der Serie; dann zeigt die Farbzeile `seriesColor`, das Feld der
+  Datenfarbe, oder nur die Deckkraft. `onChange` liefert denselben Typ
+  zurück
+- das Auge kommt nur über `visibility`: Ein Strich mit Auge ist in der
+  Spec ein `StrokeAppearance` (`visible`, `stroke`), der Aufrufer gibt
+  `value={x.stroke}` und `visibility={getVisibility(x, setX)}`
 - `paintTypes` schränkt die Typen ein, z. B. nur Solid unter einer
   kontinuierlichen Farbskala
-- genutzt von `StrokeWidget` (Gruppe mit Auge in der Überschrift,
-  `StrokeAppearance`, Breite ab 1 px; Titel, `label`, `paintTypes` und
-  `maxWidth` per Prop): Ränder aller Kästen (Border in
-  `SurfaceControls`), Rahmen der Balken, Scatter-Punkte und
-  Pie-Segmente, Achsenlinie, Gridlines und Ticks der Farbskala (bis
-  4 px); direkt von Linien-Marks (Gruppe Line mit der Datenfarbe,
-  Breite 1–8); später Tables
+- genutzt von Rändern aller Kästen (Border), Rahmen der Balken,
+  Scatter-Punkte und Pie-Segmente, Achsenlinie, Gridlines und Ticks der
+  Farbskala (bis 4 px) und ohne Auge von der Linie der Line-Marks (mit
+  der Datenfarbe); später Tables
 
 ## 9l. Style-Bausteine und Abdeckung
 
@@ -1621,7 +1622,7 @@ entspricht.
 Vorhandene Bausteine:
 
 - `TextStyle` mit `TextStyleControls` (siehe 9j)
-- `StrokeStyle` mit `StrokeStyleControls` (siehe 9k), mit Auge als
+- `StrokeStyle` mit `StrokeGroup` (siehe 9k), mit Auge als
   `StrokeAppearance` (`visible`, `stroke`) und `StrokeWidget`: Ränder
   der Kästen (`surface.border`, `container.border`, `bar.border` der
   Farbskala), Rahmen der Marks (`bar.border`, `scatter.border`,
@@ -1966,7 +1967,7 @@ steht der Hex-Wert einer Solid-Farbe oder der Typ eines Verlaufs
   dann ein reines `ColorField`.
 - Ein Typwechsel bleibt in der Form des Werts: eigene Farbe bleibt
   eigen, ein Serien-Paint bleibt in der Serienfarbe.
-- `StrokeStyleControls`, `FillListControls` und die Fill-Gruppen der
+- `StrokeGroup`, `FillListControls` und die Fill-Gruppen der
   Marks bauen ihre Farbe damit
 
 `.field` (`styles/field.css`) ist die gemeinsame Fläche der Felder:
@@ -2326,7 +2327,7 @@ Format-Panels formatiert:
   eigener Farbe oder Verlauf und Deckkraft (Standard aus dem Material
   des aktuellen Styles, in Graphite eine Fläche `#202226`);
 - Padding und Radius über `ScrubbableNumber` mit Icon und px;
-- Rahmen über `StrokeStyleControls` (Breite 0 heißt kein Rahmen), als
+- Rahmen über `StrokeGroup` (Breite 0 heißt kein Rahmen), als
   SVG gezeichnet (`SurfaceBorder`), damit Verlauf, Strichmuster und
   Radius zusammen gehen.
 

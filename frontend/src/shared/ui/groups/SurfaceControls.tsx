@@ -6,6 +6,7 @@ import NumberControl from '../controls/NumberControl'
 import Row from '../rows/Row'
 import BackgroundGroup from './BackgroundGroup'
 import EffectsGroup from './EffectsGroup'
+import { getVisibility } from './getVisibility'
 import Group from './Group'
 import StrokeGroup from './StrokeGroup'
 
@@ -85,8 +86,11 @@ function SurfaceControls({
           label={`${label} border`}
           paintTypes={borderGradient ? undefined : ['solid']}
           title="Border"
-          value={border}
-          onChange={(nextBorder) => onChange('border', nextBorder)}
+          value={border.stroke}
+          visibility={getVisibility(border, (nextBorder) => {
+            onChange('border', nextBorder)
+          })}
+          onChange={(stroke) => onChange('border', { ...border, stroke })}
         />
       )}
       {effects === undefined ? null : (

@@ -124,10 +124,21 @@ function getFormatGroups(
       const axis = element === 'xAxis' ? 'x' : 'y'
       const axisElement = element
       const axisAppearance = appearance[axisElement]
+      const { gridLines, line } = axisAppearance
 
       /** Saves the changed axis, e.g. its title or its labels. */
       function setAxis(value: typeof axisAppearance): void {
         actions.setAppearance(axisElement, value)
+      }
+
+      /** Saves the changed axis line, e.g. hidden by its eye. */
+      function setLine(value: typeof line): void {
+        setAxis({ ...axisAppearance, line: value })
+      }
+
+      /** Saves the changed gridlines, e.g. dashed. */
+      function setGridLines(value: typeof gridLines): void {
+        setAxis({ ...axisAppearance, gridLines: value })
       }
 
       return (
@@ -160,15 +171,17 @@ function getFormatGroups(
             label="Axis line"
             maxWidth={4}
             title="Line"
-            value={axisAppearance.line}
-            onChange={(line) => setAxis({ ...axisAppearance, line })}
+            value={line.stroke}
+            visibility={getVisibility(line, setLine)}
+            onChange={(stroke) => setLine({ ...line, stroke })}
           />
           <StrokeGroup
             label="Grid"
             maxWidth={4}
             title="Gridlines"
-            value={axisAppearance.gridLines}
-            onChange={(gridLines) => setAxis({ ...axisAppearance, gridLines })}
+            value={gridLines.stroke}
+            visibility={getVisibility(gridLines, setGridLines)}
+            onChange={(stroke) => setGridLines({ ...gridLines, stroke })}
           />
           {axis === 'x' ? (
             <ZoomGroup
