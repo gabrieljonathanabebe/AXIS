@@ -123,7 +123,7 @@ function CardItem({
             className="card-item-title"
             style={{
               ...getTextStyleCss(title.textStyle),
-              textAlign: title.layout.alignment,
+              textAlign: title.alignment,
             }}
           >
             <EditableText

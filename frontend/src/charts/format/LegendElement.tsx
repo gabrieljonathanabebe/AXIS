@@ -22,8 +22,8 @@ function LegendElement({ value, onChange }: LegendElementProps) {
       <Group title="Position">
         <PositionGroup
           label="Legend"
-          value={value.layout}
-          onChange={(layout) => onChange({ ...value, layout })}
+          value={value.position}
+          onChange={(position) => onChange({ ...value, position })}
         />
       </Group>
       <Group title="Layout">

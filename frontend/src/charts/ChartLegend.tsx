@@ -78,17 +78,18 @@ function ChartLegend({
 }: ChartLegendProps) {
   const { legend } = chart.spec.appearance
   const isInteractive = chart.spec.interaction.legend.enabled
-  const { alignment, gap, position } = legend.layout
-  const isVertical = getSideOrientation(position) === 'vertical'
+  const { gap } = legend.layout
+  const { alignment, side } = legend.position
+  const isVertical = getSideOrientation(side) === 'vertical'
   const symbol = getLegendSymbol(chart)
   const placeStyle: CSSProperties = isVertical
     ? {
-        gridArea: position,
+        gridArea: side,
         paddingBottom: plotInsets.bottom,
         paddingTop: plotInsets.top,
       }
     : {
-        gridArea: position,
+        gridArea: side,
         paddingLeft: plotInsets.left,
         paddingRight: plotInsets.right,
       }

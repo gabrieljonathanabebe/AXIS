@@ -8,13 +8,9 @@ import {
 
 describe('toPlacementKey', () => {
   it('keeps the alignment only at top and bottom', () => {
-    expect(toPlacementKey({ alignment: 'end', position: 'top' })).toBe(
-      'top-end',
-    )
-    expect(toPlacementKey({ alignment: 'start', position: 'left' })).toBe(
-      'left',
-    )
-    expect(toPlacementKey({ position: 'bottom' })).toBe('bottom')
+    expect(toPlacementKey({ alignment: 'end', side: 'top' })).toBe('top-end')
+    expect(toPlacementKey({ alignment: 'start', side: 'left' })).toBe('left')
+    expect(toPlacementKey({ side: 'bottom' })).toBe('bottom')
   })
 })
 
@@ -22,16 +18,16 @@ describe('toPlacement', () => {
   it('reads side and alignment of a cell', () => {
     expect(toPlacement('top-end', true)).toEqual({
       alignment: 'end',
-      position: 'top',
+      side: 'top',
     })
   })
 
   it('centers left and right, and drops the alignment of the cross', () => {
     expect(toPlacement('left', true)).toEqual({
       alignment: 'center',
-      position: 'left',
+      side: 'left',
     })
-    expect(toPlacement('top', false)).toEqual({ position: 'top' })
+    expect(toPlacement('top', false)).toEqual({ side: 'top' })
   })
 })
 

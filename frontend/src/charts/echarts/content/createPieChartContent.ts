@@ -69,7 +69,7 @@ export function createPieChartContent(
       ...label,
       formatter: '{d}%',
       position:
-        spec.appearance.labels.layout.position === 'inside'
+        spec.appearance.labels.position.side === 'inside'
           ? 'inside'
           : 'outside',
     },

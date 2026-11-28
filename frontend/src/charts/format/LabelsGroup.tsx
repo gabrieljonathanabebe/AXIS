@@ -38,9 +38,9 @@ function LabelsGroup({
       <Group title="Position">
         <PositionGroup
           label="Label"
-          positions={positions}
-          value={value.layout}
-          onChange={(layout) => onChange({ ...value, layout })}
+          sides={positions}
+          value={value.position}
+          onChange={(position) => onChange({ ...value, position })}
         />
       </Group>
       <Group title="Text">

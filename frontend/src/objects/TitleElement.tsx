@@ -31,10 +31,8 @@ function TitleElement({ defaultTitle, value, onChange }: TitleElementProps) {
       <Group title="Text">
         <TextGroup
           alignment={{
-            value: value.layout.alignment,
-            onChange: (alignment) => {
-              onChange({ ...value, layout: { ...value.layout, alignment } })
-            },
+            value: value.alignment,
+            onChange: (alignment) => onChange({ ...value, alignment }),
           }}
           label="Title"
           maxFontSize={20}

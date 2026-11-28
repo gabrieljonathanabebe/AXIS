@@ -731,9 +731,9 @@ LAYOUT
 - W | H der Farbskala gelten für ihren Balken. Die Spec speichert Länge
   und Dicke (`continuous.size`); welche davon W und welche H ist, folgt
   aus der Seite, so behält eine verschobene Skala ihre Form.
-- Die Spec ändert sich nicht: X | Y und W | H bleiben `ObjectLayout`,
-  Padding bleibt `container.layout`. Entschieden mit 3.10a: Die Spec
-  trennt Position und Anordnung nicht (`ARCHITECTURE.md`,
+- X | Y und W | H bleiben `ObjectLayout`, Padding bleibt
+  `container.layout`. Seit Teil 5 des Refactorings trennt die Spec
+  Position (`position`) und Anordnung (`layout`) (`ARCHITECTURE.md`,
   „Kasten-Modell“).
 
 Welches Element was bekommt:
@@ -1651,13 +1651,14 @@ Vorhandene Bausteine:
   `.borderRadius`, `.effects`), an der Legende (`legend.surface`), am
   Tooltip (`tooltip.surface`, Renderer `css`) und in Teilen am Balken
   der Farbskala (`continuous.bar`: Radius und Rand)
-- `Layout` mit `PositionControls` und `LayoutControls` (siehe 9p):
-  Container (`container.layout`, dazu X | Y und W | H aus
+- `Position` mit `PositionGroup` und `Layout` mit `LayoutGroup` (siehe
+  9p): Container (`container.layout`, dazu X | Y und W | H aus
   `ObjectLayout`), Dashboard (`dashboard.layout`), Legende
-  (`legend.layout`), Farbskala (`continuous.layout`, dazu W | H aus
-  `continuous.size`), Tooltip (`tooltip.layout`) und Datenlabels
-  (`labels.layout`); die Ausrichtung des Titels (`title.layout`) steht
-  beim Text (`TextStyleControls`)
+  (`legend.position`, `legend.layout`), Farbskala
+  (`continuous.position`, dazu W | H aus `continuous.size`), Tooltip
+  (`tooltip.layout`) und Datenlabels (`labels.position`); die
+  Ausrichtung des Titels (`title.alignment`) steht beim Text
+  (`TextGroup`)
 
 Schatten von Marks und Container teilen `Shadow` und `ShadowControls`.
 
@@ -1712,7 +1713,7 @@ Objekt (Chart und Card)
 | Teil               | Form   | Ist                                                                       | Soll              | Status |
 | ------------------ | ------ | ------------------------------------------------------------------------- | ----------------- | ------ |
 | Container          | Fläche | `container.background`, `.border`, `.layout`, `.borderRadius`, `.effects` | –                 | ✓      |
-| Titel              | Text   | `title.textStyle`, `.layout`                                              | –                 | ✓      |
+| Titel              | Text   | `title.textStyle`, `.alignment`                                           | –                 | ✓      |
 | Position und Größe | –      | `layout` (`x`, `y`, `width`, `height`), nur per Ziehen und Tastatur       | Felder X, Y, W, H | ○      |
 
 Chart
@@ -1724,13 +1725,13 @@ Chart
 | Achsenbeschriftung | Datum        | `xAxis.labels.dateFormat` (Auto oder Vorlage des Rasters)                | –                        | ✓         |
 | Achsenlinie        | Linie        | `xAxis.line.visible`, `.stroke`                                          | –                        | ✓         |
 | Gridlines          | Linie        | `xAxis.gridLines.stroke`                                                 | –                        | ✓         |
-| Legende            | Text         | `legend.textStyle`, `.layout`                                            | –                        | ✓         |
+| Legende            | Text         | `legend.textStyle`, `.position`                                          | –                        | ✓         |
 | Legende            | Fläche       | `legend.surface`, `.layout.padding`                                      | –                        | ✓         |
-| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.layout`                           | Label-Box (Fill, Stroke) | ✓, später |
+| Datenlabels        | Text + Zahl  | `labels.textStyle`, `.numberFormat`, `.position`                         | Label-Box (Fill, Stroke) | ✓, später |
 | Tooltip            | Zahl         | `interaction.tooltip.numberFormat`                                       | –                        | ✓         |
 | Tooltip            | Datum        | Überschrift folgt `xAxis.labels.dateFormat`                              | –                        | ✓         |
 | Tooltip            | Text, Fläche | `tooltip.textStyle`, `.surface`, `.layout`                               | –                        | ✓         |
-| Farbskala          | Fläche       | `continuous.startColor`, `.endColor`, `.bar`, `.size`, `.layout`         | –                        | ✓         |
+| Farbskala          | Fläche       | `continuous.startColor`, `.endColor`, `.bar`, `.size`, `.position`       | –                        | ✓         |
 | Farbskala          | Text + Zahl  | `continuous.title`, `.labels` (`textStyle`, `numberFormat`, `tickCount`) | –                        | ✓         |
 | Farbskala          | Linie        | `continuous.ticks.visible`, `.stroke`                                    | –                        | ✓         |
 

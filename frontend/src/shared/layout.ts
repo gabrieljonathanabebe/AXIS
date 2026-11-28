@@ -9,23 +9,33 @@ export type Side = 'top' | 'right' | 'bottom' | 'left'
 export type Orientation = 'horizontal' | 'vertical'
 
 /**
- * Where an element sits and how it spaces its content. Each element keeps
- * only the fields it has, e.g. `Pick<Layout, 'alignment'>` for a title,
- * and may narrow its positions, e.g. `Layout<'left' | 'right'>`.
+ * Where an element sits: at a side of its surface and along it, e.g. a
+ * legend at the top, left. Each element keeps only the fields it has, e.g.
+ * `Pick<Position, 'alignment'>` for a title, and may name its own sides,
+ * e.g. `Position<LabelPosition>` for data labels, which also sit inside.
  */
-export type Layout<TPosition extends string = Side> = {
-  /** Place along the side or line, e.g. a legend at the top, left. */
+export type Position<TSide extends string = Side> = {
+  /** Place along the side, e.g. the start of the top. */
   alignment: HorizontalAlignment
-  /** Space between the items, e.g. the entries of a legend. */
-  gap: number
-  orientation: Orientation
-  /** Space between the edge and the content. */
-  padding: number
-  position: TPosition
+  side: TSide
 }
 
-/** Any part of a layout, e.g. only the alignment of a title. */
-export type PartialLayout = Partial<Layout<string>>
+/** Any part of a position, e.g. only the side of the data labels. */
+export type PartialPosition = Partial<Position<string>>
+
+/**
+ * How an element spaces its content. Each element keeps only the fields
+ * it has, e.g. `Pick<Layout, 'padding'>` for a container.
+ */
+export type Layout = {
+  /** Space between the items, e.g. the entries of a legend. */
+  gap: number
+  /** Space between the edge and the content. */
+  padding: number
+}
+
+/** Any part of a layout, e.g. only the gap of a dashboard. */
+export type PartialLayout = Partial<Layout>
 
 /**
  * Position and size of an element on its surface, e.g. a chart on the

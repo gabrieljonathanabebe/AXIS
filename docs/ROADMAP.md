@@ -220,7 +220,12 @@ Teile:
    `StrokeStyleControls` geht in `StrokeGroup` auf, `SurfaceControls`
    entfällt, weil jedes Element seine Groups listet (neue `ShapeGroup`,
    Border und Effects lesen den Renderer), `ShadowControls` geht in
-   `EffectEditor` auf); die Filterformulare bleiben Inhalt des
+   `EffectEditor` auf). Vorher trennt die Spec Position und Layout
+   (`position` mit `side` und `alignment`, `layout` mit `gap` und
+   `padding`; der Titel bekommt `alignment` für seinen Text), damit jede
+   Group ihr eigenes Unterobjekt liest. Jede Group nimmt `value` und
+   `onChange`, kennt ihren Titel und zeigt das Auge nur über
+   `visibility`. Die Filterformulare bleiben Inhalt des
    Filter-Popovers ohne Group (Bearbeiten und Inhalt teilen nur Control,
    Primitive und Anzeige, `DEVELOPMENT.md` §21). Labels und Tooltip nutzen die Groups schon jetzt
    als Untergruppen; eigene Elemente werden sie im Design-Slice.

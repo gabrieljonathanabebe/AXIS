@@ -119,7 +119,7 @@ function ChartItem({
           className="chart-item-header"
           style={{
             ...getTextStyleCss(title.textStyle),
-            textAlign: title.layout.alignment,
+            textAlign: title.alignment,
           }}
         >
           <EditableText

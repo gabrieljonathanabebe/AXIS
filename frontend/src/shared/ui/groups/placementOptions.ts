@@ -1,14 +1,12 @@
 import { getPlacementLabel, getSideOrientation } from '@/shared/layout'
 
-import type { HorizontalAlignment, Side } from '@/shared/layout'
+import type { HorizontalAlignment, Position, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 
 // ===== TYPES =================================================================
 /** Side and place along it, e.g. a legend at the top, centered. */
-export type Placement = {
-  alignment?: HorizontalAlignment
-  position: Side
-}
+export type Placement = Partial<Pick<Position, 'alignment'>> &
+  Pick<Position, 'side'>
 
 /** Value of one cell: a whole side, or top or bottom with an alignment. */
 export type PlacementKey = Side | `${'bottom' | 'top'}-${HorizontalAlignment}`
@@ -19,16 +17,16 @@ export type PlacementKey = Side | `${'bottom' | 'top'}-${HorizontalAlignment}`
  * the middle. Top and bottom offer start, center and end, left and right
  * only their middle.
  */
-const GRID_CELLS: (Required<Placement> | null)[] = [
-  { alignment: 'start', position: 'top' },
-  { alignment: 'center', position: 'top' },
-  { alignment: 'end', position: 'top' },
-  { alignment: 'center', position: 'left' },
+const GRID_CELLS: (Position | null)[] = [
+  { alignment: 'start', side: 'top' },
+  { alignment: 'center', side: 'top' },
+  { alignment: 'end', side: 'top' },
+  { alignment: 'center', side: 'left' },
   null,
-  { alignment: 'center', position: 'right' },
-  { alignment: 'start', position: 'bottom' },
-  { alignment: 'center', position: 'bottom' },
-  { alignment: 'end', position: 'bottom' },
+  { alignment: 'center', side: 'right' },
+  { alignment: 'start', side: 'bottom' },
+  { alignment: 'center', side: 'bottom' },
+  { alignment: 'end', side: 'bottom' },
 ]
 
 // ===== FUNCTIONS =============================================================
@@ -39,14 +37,11 @@ const GRID_CELLS: (Required<Placement> | null)[] = [
  * @param placement Side and optional alignment.
  * @returns Key of the cell that shows it.
  */
-export function toPlacementKey({
-  alignment,
-  position,
-}: Placement): PlacementKey {
-  if (!alignment || getSideOrientation(position) === 'vertical') {
-    return position
+export function toPlacementKey({ alignment, side }: Placement): PlacementKey {
+  if (!alignment || getSideOrientation(side) === 'vertical') {
+    return side
   }
-  return `${position}-${alignment}` as PlacementKey
+  return `${side}-${alignment}` as PlacementKey
 }
 
 /**
@@ -60,11 +55,11 @@ export function toPlacement(
   key: PlacementKey,
   withAlignment: boolean,
 ): Placement {
-  const [position, alignment = 'center'] = key.split('-') as [
+  const [side, alignment = 'center'] = key.split('-') as [
     Side,
     HorizontalAlignment?,
   ]
-  return withAlignment ? { alignment, position } : { position }
+  return withAlignment ? { alignment, side } : { side }
 }
 
 /**
@@ -82,15 +77,15 @@ export function getPlacementOptions(
       return null
     }
     const isCorner =
-      getSideOrientation(cell.position) === 'horizontal' &&
+      getSideOrientation(cell.side) === 'horizontal' &&
       cell.alignment !== 'center'
     if (!withAlignment && isCorner) {
       return null
     }
     const alignment = withAlignment ? cell.alignment : undefined
     return {
-      label: getPlacementLabel(cell.position, alignment),
-      value: toPlacementKey({ alignment, position: cell.position }),
+      label: getPlacementLabel(cell.side, alignment),
+      value: toPlacementKey({ alignment, side: cell.side }),
     }
   })
 }

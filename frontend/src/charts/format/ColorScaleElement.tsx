@@ -37,7 +37,7 @@ function createSizeBox(
   scale: ContinuousColorScale,
   onChange: (value: ContinuousColorScale) => void,
 ): LayoutBox {
-  const isVertical = getSideOrientation(scale.layout.position) === 'vertical'
+  const isVertical = getSideOrientation(scale.position.side) === 'vertical'
   const { length, thickness } = scale.size
   return {
     bounds: isVertical
@@ -80,17 +80,12 @@ function ColorScaleElement({
       <Group title="Position">
         <PositionGroup
           label="Color scale"
-          value={value.layout}
-          onChange={(layout) => onChange({ ...value, layout })}
+          value={value.position}
+          onChange={(position) => onChange({ ...value, position })}
         />
       </Group>
       <Group title="Layout">
-        <LayoutGroup
-          box={createSizeBox(value, onChange)}
-          label="Color scale"
-          value={value.layout}
-          onChange={(layout) => onChange({ ...value, layout })}
-        />
+        <LayoutGroup box={createSizeBox(value, onChange)} label="Color scale" />
       </Group>
       <SurfaceControls
         label="Color scale"

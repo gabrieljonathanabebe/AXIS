@@ -12,23 +12,23 @@ import {
 } from './placementOptions'
 
 import type { LucideIcon } from 'lucide-react'
-import type { PartialLayout, Side } from '@/shared/layout'
+import type { PartialPosition, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
 import type { PlacementKey } from './placementOptions'
 
 // ===== TYPES =================================================================
-/** Positions the layout allows, e.g. the four sides of a legend. */
-type LayoutPosition<TLayout extends PartialLayout> = NonNullable<
-  TLayout['position']
+/** Sides the position allows, e.g. the four sides of a legend. */
+type PositionSide<TPosition extends PartialPosition> = NonNullable<
+  TPosition['side']
 >
 
-type PositionGroupProps<TLayout extends PartialLayout> = {
+type PositionGroupProps<TPosition extends PartialPosition> = {
   box?: LayoutBox
   label: string
-  positions?: OptionItem<LayoutPosition<TLayout>>[]
-  value: TLayout
-  onChange: (value: TLayout) => void
+  sides?: OptionItem<PositionSide<TPosition>>[]
+  value?: TPosition
+  onChange?: (value: TPosition) => void
 }
 
 // ===== CONSTANTS =============================================================
@@ -58,11 +58,11 @@ const MAX_ICONS_PER_COLUMN = 3
  * @returns Mark inside the cell button.
  */
 function renderPlacementMark(option: OptionItem<PlacementKey>) {
-  const { position } = toPlacement(option.value, false)
+  const { side } = toPlacement(option.value, false)
   return (
     <span
       aria-hidden="true"
-      className={`position-grid-mark is-${getSideOrientation(position)}`}
+      className={`position-grid-mark is-${getSideOrientation(side)}`}
     />
   )
 }
@@ -71,33 +71,42 @@ function renderPlacementMark(option: OptionItem<PlacementKey>) {
 /**
  * Rows of the Position group: where an element sits in its parent. A box
  * shows X | Y with the unit and bounds of the element, e.g. grid cells of
- * a chart. An element at all four sides gets a field that names its place
- * and opens a grid of places around the plot: all eight with an
- * alignment, e.g. of a legend, the cross of the four sides without, e.g.
- * of a color scale. Other positions are an icon group with icon and word,
- * e.g. of the data labels. A single position needs no control. Reads only
- * its fields, so it takes the same layout as `LayoutGroup`.
+ * a container, which has no position of its own. An element at all four
+ * sides gets a field that names its place and opens a grid of places
+ * around the plot: all eight with an alignment, e.g. of a legend, the
+ * cross of the four sides without, e.g. of a color scale. Other sides are
+ * an icon group with icon and word, e.g. of the data labels. A single side
+ * needs no control.
  */
-function PositionGroup<TLayout extends PartialLayout>({
+function PositionGroup<TPosition extends PartialPosition>({
   box,
   label,
-  positions = sideOptions as OptionItem<LayoutPosition<TLayout>>[],
+  sides = sideOptions as OptionItem<PositionSide<TPosition>>[],
   value,
   onChange,
-}: PositionGroupProps<TLayout>) {
-  const { alignment, position } = value
+}: PositionGroupProps<TPosition>) {
+  const alignment = value?.alignment
+  const side = value?.side
   const hasAlignment = alignment !== undefined
   const showsPlacement =
-    position !== undefined &&
-    isSide(position) &&
-    positions.length === sideOptions.length &&
-    positions.every((option) => isSide(option.value))
-  const PlacementIcon = showsPlacement ? placementIcons[position] : null
-  const showsIcons =
-    !showsPlacement && position !== undefined && positions.length > 1
+    side !== undefined &&
+    isSide(side) &&
+    sides.length === sideOptions.length &&
+    sides.every((option) => isSide(option.value))
+  const PlacementIcon = showsPlacement ? placementIcons[side] : null
+  const showsIcons = !showsPlacement && side !== undefined && sides.length > 1
   const isWide =
-    positions.length > MAX_ICONS_PER_COLUMN ||
-    positions.some((option) => option.icon)
+    sides.length > MAX_ICONS_PER_COLUMN || sides.some((option) => option.icon)
+
+  /**
+   * Saves a changed part of the position, e.g. its side.
+   * @param patch Changed fields of the position.
+   */
+  function changePosition(patch: PartialPosition): void {
+    if (value && onChange) {
+      onChange({ ...value, ...patch })
+    }
+  }
   return (
     <>
       {box ? <BoxRow box={box} fields={['x', 'y']} label={label} /> : null}
@@ -107,7 +116,7 @@ function PositionGroup<TLayout extends PartialLayout>({
             fitsContent
             icon={<PlacementIcon size={14} />}
             label={`${label} position`}
-            text={getPlacementLabel(position, alignment)}
+            text={getPlacementLabel(side, alignment)}
           >
             <SegmentedControl
               className="position-grid"
@@ -115,9 +124,9 @@ function PositionGroup<TLayout extends PartialLayout>({
               label={`${label} position`}
               options={getPlacementOptions(hasAlignment)}
               renderOption={renderPlacementMark}
-              value={toPlacementKey({ alignment, position })}
+              value={toPlacementKey({ alignment, side })}
               onValueChange={(key) => {
-                onChange({ ...value, ...toPlacement(key, hasAlignment) })
+                changePosition(toPlacement(key, hasAlignment))
               }}
             />
           </DetailsControl>
@@ -127,11 +136,9 @@ function PositionGroup<TLayout extends PartialLayout>({
         <Row layout={isWide ? 'wide' : 'single'}>
           <SegmentedControl
             label={`${label} position`}
-            options={positions}
-            value={position}
-            onValueChange={(nextPosition) => {
-              onChange({ ...value, position: nextPosition })
-            }}
+            options={sides}
+            value={side}
+            onValueChange={(nextSide) => changePosition({ side: nextSide })}
           />
         </Row>
       ) : null}

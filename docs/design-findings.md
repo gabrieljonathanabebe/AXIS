@@ -288,3 +288,27 @@ dessen Zeilenhöhe Platz für Unterlängen lässt, sodass der Swatch auf der
 Grundlinie sitzt. Ohne Hülle zentriert das Raster des Controls den
 Swatch. · Aufwand: S · Wo lösen: Controls mit Swatch, `SwatchButton.css`
 · Stand: erledigt (Teil 5, Schritt 4)
+
+### O12 Scrollbalken der Legende liegt über den Einträgen
+
+Ort: Legende mit Überlauf „scroll“ (`ChartLegend.css`,
+`.chart-legend-entries.is-scrolling`), z. B. Pie mit fünf Ländern unten
+
+Vorher:
+
+```text
+[■ United States  ■ Germany  ■ Japan  ■ France]
+ ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔   ← Balken mitten über den Einträgen
+```
+
+Nachher:
+
+```text
+[■ United States  ■ Germany  ■ Japan  ■ France]
+ ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔                 ← Balken unter den Einträgen
+```
+
+Vorschlag: Platz für den Balken unter (bzw. neben) den Einträgen, z. B.
+`scrollbar-gutter: stable` oder ein Innenabstand in Balkenbreite;
+macOS blendet den Balken sonst über dem Inhalt ein. · Aufwand: S · Wo
+lösen: `ChartLegend.css` · Stand: offen

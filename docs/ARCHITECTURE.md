@@ -708,22 +708,25 @@ Flächen in HTML (`SurfaceLayers` in `shared/ui/`, gemeinsam für
 
 ### Platzierung
 
-Wo ein Element sitzt und wie es seinen Inhalt verteilt, beschreibt
-`Layout` aus `src/shared/layout.ts` (`alignment`, `gap`, `orientation`,
-`padding`, `position`; dort liegen auch `HorizontalAlignment`, `Side`
-und `Orientation`). Jedes Element trägt nur die Felder, die es hat, als
-`Pick` im Unterobjekt `layout`; die Positionen lassen sich über den
-Typparameter einschränken:
+Wo ein Element sitzt, beschreibt `Position` (`side`, `alignment`), wie
+es seinen Inhalt verteilt, `Layout` (`gap`, `padding`); beide liegen in
+`src/shared/layout.ts`, dazu `HorizontalAlignment`, `Side` und
+`Orientation`. Jedes Element trägt nur die Felder, die es hat, als
+`Pick` in den Unterobjekten `position` und `layout`; die Seiten lassen
+sich über den Typparameter einschränken. Seit Teil 5 des Refactorings
+trennt auch die Spec beides (vorher ein `layout` für alles):
 
-| Element     | Spec                | Typ                                                             |
-| ----------- | ------------------- | --------------------------------------------------------------- |
-| Titel       | `title.layout`      | `Pick<Layout, 'alignment'>`                                     |
-| Container   | `container.layout`  | `Pick<Layout, 'padding'>`                                       |
-| Dashboard   | `dashboard.layout`  | `Pick<Layout, 'gap'>`                                           |
-| Legende     | `legend.layout`     | `Pick<Layout, 'alignment' \| 'gap' \| 'padding' \| 'position'>` |
-| Farbskala   | `continuous.layout` | `Pick<Layout, 'alignment' \| 'position'>`                       |
-| Tooltip     | `tooltip.layout`    | `Pick<Layout, 'gap' \| 'padding'>`                              |
-| Datenlabels | `labels.layout`     | `Pick<Layout<LabelPosition>, 'position'>`                       |
+| Element     | `position`                              | `layout`                           |
+| ----------- | --------------------------------------- | ---------------------------------- |
+| Legende     | `Position`                              | `Layout`                           |
+| Farbskala   | `Position` (`continuous.position`)      | –                                  |
+| Datenlabels | `Pick<Position<LabelPosition>, 'side'>` | –                                  |
+| Tooltip     | –                                       | `Pick<Layout, 'gap' \| 'padding'>` |
+| Container   | –                                       | `Pick<Layout, 'padding'>`          |
+| Dashboard   | –                                       | `Pick<Layout, 'gap'>`              |
+
+Der Titel hat weder Position noch Layout: seine Ausrichtung ist die des
+Texts (`title.alignment`, siehe „Kasten-Modell“).
 
 - `alignment` meint die Lage entlang der Seite, gemessen am Plot: Eine
   Legende unten mit `start` beginnt am Anfang des Plots. Links und
@@ -732,8 +735,8 @@ Typparameter einschränken:
 - die Größe des Farbskala-Balkens steht nicht im Layout, sondern in
   `continuous.size` (`length`, `thickness`); das Panel zeigt sie als
   W | H je nach Seite
-- ein neues Layout-Feld eines Elements erweitert sein `Pick`, kein neuer
-  Typ; das bisherige Legendenfeld für den Überlauf heißt `overflow`
+- ein neues Feld eines Elements erweitert sein `Pick`, kein neuer Typ;
+  das bisherige Legendenfeld für den Überlauf heißt `overflow`
 - die Richtung an einer Seite folgt aus der Seite (`getSideOrientation`
   in `shared/layout.ts`), links und rechts vertikal, oben und unten
   horizontal; die Spec speichert keine Richtung (`orientation` der
@@ -746,14 +749,14 @@ Typparameter einschränken:
 
 **Kasten-Modell (in Arbeit)**
 
-`Layout` vereint heute drei Bedeutungen. Elemente mit eigener Fläche
+Die Spec trennt drei Bedeutungen. Elemente mit eigener Fläche
 werden als Kasten beschrieben, wie Frames und Textebenen in Figma:
 
-| Bedeutung        | Frage                                 | Heute                                                |
-| ---------------- | ------------------------------------- | ---------------------------------------------------- |
-| Position         | Wo sitzt der Kasten in seinem Eltern? | `position`, `alignment` (Legende, Farbskala, Labels) |
-| Anordnung        | Wie ordnet der Kasten seinen Inhalt?  | `orientation`, `gap`, `padding`                      |
-| Text-Ausrichtung | Wie steht der Text im Kasten?         | `title.layout.alignment`                             |
+| Bedeutung        | Frage                                 | Heute                            |
+| ---------------- | ------------------------------------- | -------------------------------- |
+| Position         | Wo sitzt der Kasten in seinem Eltern? | `position` (`side`, `alignment`) |
+| Anordnung        | Wie ordnet der Kasten seinen Inhalt?  | `layout` (`gap`, `padding`)      |
+| Text-Ausrichtung | Wie steht der Text im Kasten?         | `title.alignment`                |
 
 - Ein Kasten trägt Position, Anordnung, Fläche (Fill, Stroke, Radius)
   und Text; die Gruppen des Format-Panels folgen schon dieser
@@ -763,17 +766,20 @@ werden als Kasten beschrieben, wie Frames und Textebenen in Figma:
   Farbskala sind HTML (siehe „Container vs. Content“). Ihre Flächen und
   die des Tooltips kamen mit 3.10b; die Farbskala hat keine Fläche um
   alles, nur ihr Balken ist ein Kasten.
-- Entschieden: Die Spec trennt Position und Anordnung nicht; sie bleibt
-  bei `layout` mit `Pick`, das Format-Panel trennt beides seit 3.9.
+- Entschieden in Teil 5 des Refactorings (vor der Persistenz): Die Spec
+  trennt Position und Anordnung (`position`, `layout`); das ersetzt die
+  Entscheidung aus 3.10a, beides in `layout` zu lassen.
 - Der Tooltip bleibt ein Kasten in ECharts; seine Fläche zeichnet der
   Renderer `css` (siehe `SURFACE_CAPABILITIES`).
 - Später: frei verschiebbare Kästen mit eigener Größe (Versatz bzw. x/y,
   Breite, Höhe, vertikale Ausrichtung), zusammen mit dem Text-Objekt.
 - Seit 3.4 steht die Text-Ausrichtung des Titels in der Oberfläche beim
-  Text; die Spec bleibt `title.layout.alignment`.
-- Seit 3.9 trennt das Format-Panel Position (`PositionControls`) und
-  Anordnung samt Größe (`LayoutControls`) wie in Figma; beide lesen
-  dasselbe `Layout` eines Elements, die Spec ist unverändert.
+  Text, seit Teil 5 auch in der Spec (`title.alignment`).
+- Das Format-Panel trennt Position (`PositionGroup`) und Anordnung samt
+  Größe (`LayoutGroup`) wie in Figma; jede liest ihr eigenes Unterobjekt.
+  X | Y und W | H eines Kastens ohne eigene Position bzw. ohne eigenes
+  Layout, z. B. Container oder Farbskala, zeigen die Groups nur über
+  `box`.
 
 ### Darstellung der Marks
 

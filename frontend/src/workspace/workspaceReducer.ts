@@ -155,13 +155,13 @@ function setChartType(
         labels: {
           ...chart.spec.appearance.labels,
           visible: appearance.labels.visible,
-          layout: defaultSpec.appearance.labels.layout,
+          position: defaultSpec.appearance.labels.position,
         },
         legend: {
           ...chart.spec.appearance.legend,
-          layout: {
-            ...chart.spec.appearance.legend.layout,
-            position: appearance.legend.layout.position,
+          position: {
+            ...chart.spec.appearance.legend.position,
+            side: appearance.legend.position.side,
           },
         },
       },

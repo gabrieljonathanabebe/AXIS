@@ -73,8 +73,8 @@ function ChartColorScale({
   title,
   onHover,
 }: ChartColorScaleProps) {
-  const { alignment, position } = scale.layout
-  const isVertical = getSideOrientation(position) === 'vertical'
+  const { alignment, side } = scale.position
+  const isVertical = getSideOrientation(side) === 'vertical'
   const ticks = getColorScaleTicks(range, scale.labels.tickCount)
   const formatValue = createNumberFormatter(scale.labels.numberFormat)
   const span = range.max - range.min
@@ -86,13 +86,13 @@ function ChartColorScale({
     ? {
         ...sizeStyle,
         alignItems: alignment,
-        gridArea: position,
+        gridArea: side,
         paddingBottom: plotInsets.bottom,
         paddingTop: plotInsets.top,
       }
     : {
         ...sizeStyle,
-        gridArea: position,
+        gridArea: side,
         justifyItems: alignment,
         paddingLeft: plotInsets.left,
         paddingRight: plotInsets.right,
@@ -139,7 +139,7 @@ function ChartColorScale({
 
   return (
     <div
-      className={`chart-color-scale is-${position} ${
+      className={`chart-color-scale is-${side} ${
         isVertical ? 'is-vertical' : ''
       }`}
       style={placeStyle}

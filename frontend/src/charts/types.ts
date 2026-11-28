@@ -16,7 +16,7 @@ import type {
   NumberFormat,
   TimeGrain,
 } from '@/shared/format/valueFormats'
-import type { Layout } from '@/shared/layout'
+import type { Layout, Position } from '@/shared/layout'
 import type { SeriesStrokeStyle, StrokeAppearance } from '@/shared/strokeStyle'
 import type { Surface } from '@/shared/surface'
 import type { TextStyle } from '@/shared/textStyle'
@@ -241,7 +241,7 @@ export type ColorScaleAppearance = {
     startColor: ColorValue
     endColor: ColorValue
     visible: boolean
-    layout: Pick<Layout, 'alignment' | 'position'>
+    position: Position
     /** Size of the bar along its side and across it, in pixels. */
     size: { length: number; thickness: number }
     /** Corners and border of the bar; its fill is the data color. */
@@ -286,14 +286,15 @@ export type LabelPosition = 'top' | 'right' | 'inside'
 export type LabelsAppearance = {
   visible: boolean
   numberFormat: NumberFormat
-  layout: Pick<Layout<LabelPosition>, 'position'>
+  position: Pick<Position<LabelPosition>, 'side'>
   textStyle: TextStyle
 }
 
 // ===== LEGEND ================================================================
 export type LegendAppearance = {
   visible: boolean
-  layout: Pick<Layout, 'alignment' | 'gap' | 'padding' | 'position'>
+  layout: Layout
+  position: Position
   symbol: 'auto' | 'circle' | 'rect' | 'line'
   textStyle: TextStyle
   /** Whether too many entries page by scrolling; `plain` shows all. */

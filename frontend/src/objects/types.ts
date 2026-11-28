@@ -4,7 +4,7 @@ import type {
   ChartInstance,
   ChartType,
 } from '@/charts/types'
-import type { Layout } from '@/shared/layout'
+import type { HorizontalAlignment, Layout } from '@/shared/layout'
 import type { Surface } from '@/shared/surface'
 import type { TextStyle } from '@/shared/textStyle'
 
@@ -52,7 +52,8 @@ export type SetContainer = <TKey extends keyof ObjectContainer>(
 // ===== TITLE =================================================================
 /** Title above the content of an object; charts and cards share it. */
 export type ObjectTitleAppearance = {
-  layout: Pick<Layout, 'alignment'>
+  /** How the text stands in the title, e.g. at the start. */
+  alignment: HorizontalAlignment
   text: string
   textStyle: TextStyle
   visible: boolean

@@ -55,12 +55,7 @@ function ContainerElement({
   return (
     <>
       <Group title="Position">
-        <PositionGroup
-          box={box}
-          label="Container"
-          value={value.layout}
-          onChange={(layout) => onChange('layout', layout)}
-        />
+        <PositionGroup box={box} label="Container" />
       </Group>
       <Group title="Layout">
         <LayoutGroup

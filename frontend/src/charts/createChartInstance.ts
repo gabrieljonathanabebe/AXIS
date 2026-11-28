@@ -135,7 +135,7 @@ export function createDefaultChartSpec(
           startColor: { kind: 'custom', color: '#fe0314' },
           endColor: { kind: 'custom', color: '#00fa2e' },
           visible: true,
-          layout: { alignment: 'center', position: 'right' },
+          position: { alignment: 'center', side: 'right' },
           size: { length: 200, thickness: 20 },
           bar: { border: createBorder(style), borderRadius: 0 },
           min: null,
@@ -185,11 +185,10 @@ export function createDefaultChartSpec(
       },
       legend: {
         visible: true,
-        layout: {
+        layout: { gap: 8, padding: 8 },
+        position: {
           alignment: 'center',
-          gap: 8,
-          padding: 8,
-          position: isRadialChart ? 'right' : 'bottom',
+          side: isRadialChart ? 'right' : 'bottom',
         },
         symbol: 'auto',
         textStyle,
@@ -202,8 +201,8 @@ export function createDefaultChartSpec(
       labels: {
         numberFormat: DEFAULT_NUMBER_FORMAT,
         visible: isRadialChart,
-        layout: {
-          position: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
+        position: {
+          side: isRadialChart ? 'inside' : hasItemMarks ? 'right' : 'top',
         },
         textStyle,
       },

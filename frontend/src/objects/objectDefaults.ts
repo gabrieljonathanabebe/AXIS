@@ -14,7 +14,7 @@ export function createDefaultTitle(
   style: DashboardStyle,
 ): ObjectTitleAppearance {
   return {
-    layout: { alignment: 'start' },
+    alignment: 'start',
     text: '',
     textStyle: {
       color: createColorValue(style.colors.text),
