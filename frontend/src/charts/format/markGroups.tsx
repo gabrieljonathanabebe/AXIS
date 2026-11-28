@@ -26,8 +26,8 @@ import ColorControl from '@/shared/ui/controls/ColorControl'
 import NumberControl from '@/shared/ui/controls/NumberControl'
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
 import SelectControl from '@/shared/ui/controls/SelectControl'
+import BorderGroup from '@/shared/ui/groups/BorderGroup'
 import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
-import { getVisibility } from '@/shared/ui/groups/getVisibility'
 import Group from '@/shared/ui/groups/Group'
 import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
 import PaintRow from '@/shared/ui/rows/PaintRow'
@@ -272,12 +272,6 @@ function getFilledMarkGroups(
   dataColor: DataColorControls,
 ): MarkGroups {
   const { border, effect, fill } = chart.spec.appearance[mark]
-
-  /** Saves the changed border of the marks, e.g. hidden by its eye. */
-  function setBorder(value: typeof border): void {
-    actions.setChartAppearance(mark, 'border', value)
-  }
-
   return {
     dataColor: (
       <Group title="Fill">
@@ -295,12 +289,10 @@ function getFilledMarkGroups(
       actions.setChartAppearance(mark, 'effect', value)
     }),
     stroke: (
-      <StrokeGroup
-        label={`${label} border`}
-        title="Border"
-        value={border.stroke}
-        visibility={getVisibility(border, setBorder)}
-        onChange={(stroke) => setBorder({ ...border, stroke })}
+      <BorderGroup
+        label={label}
+        value={border}
+        onChange={(value) => actions.setChartAppearance(mark, 'border', value)}
       />
     ),
   }

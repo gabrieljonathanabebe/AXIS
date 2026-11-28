@@ -312,3 +312,34 @@ Vorschlag: Platz für den Balken unter (bzw. neben) den Einträgen, z. B.
 `scrollbar-gutter: stable` oder ein Innenabstand in Balkenbreite;
 macOS blendet den Balken sonst über dem Inhalt ein. · Aufwand: S · Wo
 lösen: `ChartLegend.css` · Stand: offen
+
+### O13 Inhalt des Format-Panels springt mit dem Scrollbalken
+
+Ort: jedes scrollende Panel (`Panel.css`, `.panel.is-scrollable
+.panel-content`), z. B. Format-Panel einer Legende, Auge von Border
+schließen
+
+Vorher:
+
+```text
+mit Scrollbalken        ohne Scrollbalken
+BORDER         👁 ▐     BORDER           👁
+                ↑ 12 px               ↑ näher am Rand
+```
+
+Nachher:
+
+```text
+BORDER         👁 ▐     BORDER         👁
+                ↑ 12 px                ↑ 12 px
+```
+
+Nur in Safari; Chrome ist korrekt. In Safari ist der Abstand rechts
+auch sonst uneinheitlich und hängt von der Breite des Fensters ab.
+
+Vorschlag: Der Abstand rechts bleibt gleich, ob der Inhalt scrollt oder
+nicht. `scrollbar-gutter: stable` und der eigene `::-webkit-scrollbar`
+halten die Rinne in Chrome frei; Safari rechnet sie anders (überlagernde
+Balken in macOS). Dort die Rinne nicht vom Balken abhängig machen, z. B.
+mit vollem Innenabstand wie im Firefox-Zweig. · Aufwand: S · Wo lösen:
+`Panel.css` (Basis, gilt für alle Panels) · Stand: offen

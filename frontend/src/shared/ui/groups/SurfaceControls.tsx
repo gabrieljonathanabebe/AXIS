@@ -5,10 +5,9 @@ import { SURFACE_CAPABILITIES } from '@/shared/surface'
 import NumberControl from '../controls/NumberControl'
 import Row from '../rows/Row'
 import BackgroundGroup from './BackgroundGroup'
+import BorderGroup from './BorderGroup'
 import EffectsGroup from './EffectsGroup'
-import { getVisibility } from './getVisibility'
 import Group from './Group'
-import StrokeGroup from './StrokeGroup'
 
 import type { ReactNode } from 'react'
 import type { Surface, SurfaceRenderer } from '@/shared/surface'
@@ -50,8 +49,7 @@ function SurfaceControls({
   value,
   onChange,
 }: SurfaceControlsProps) {
-  const { borderGradient, effects: effectKinds } =
-    SURFACE_CAPABILITIES[renderer]
+  const { effects: effectKinds } = SURFACE_CAPABILITIES[renderer]
   const { background, border, borderRadius, effects } = value
   return (
     <>
@@ -82,15 +80,11 @@ function SurfaceControls({
         />
       )}
       {border === undefined ? null : (
-        <StrokeGroup
-          label={`${label} border`}
-          paintTypes={borderGradient ? undefined : ['solid']}
-          title="Border"
-          value={border.stroke}
-          visibility={getVisibility(border, (nextBorder) => {
-            onChange('border', nextBorder)
-          })}
-          onChange={(stroke) => onChange('border', { ...border, stroke })}
+        <BorderGroup
+          label={label}
+          renderer={renderer}
+          value={border}
+          onChange={(nextBorder) => onChange('border', nextBorder)}
         />
       )}
       {effects === undefined ? null : (

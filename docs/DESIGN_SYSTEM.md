@@ -1605,10 +1605,13 @@ für ihre Bedeutung (Border, Line, Gridlines, Ticks).
   `value={x.stroke}` und `visibility={getVisibility(x, setX)}`
 - `paintTypes` schränkt die Typen ein, z. B. nur Solid unter einer
   kontinuierlichen Farbskala
-- genutzt von Rändern aller Kästen (Border), Rahmen der Balken,
-  Scatter-Punkte und Pie-Segmente, Achsenlinie, Gridlines und Ticks der
-  Farbskala (bis 4 px) und ohne Auge von der Linie der Line-Marks (mit
-  der Datenfarbe); später Tables
+- genutzt von Achsenlinie, Gridlines und Ticks der Farbskala (bis 4 px)
+  und ohne Auge von der Linie der Line-Marks (mit der Datenfarbe); später
+  Tables
+- `BorderGroup` ist die Hülle für Ränder mit Auge (Kästen, Balken,
+  Scatter-Punkte, Pie-Segmente): Sie liest den `StrokeAppearance`, heißt
+  immer „Border“ und bietet einen Verlauf nur, wo der Renderer ihn
+  zeichnet (`SURFACE_CAPABILITIES`, Prop `renderer`)
 
 ## 9l. Style-Bausteine und Abdeckung
 

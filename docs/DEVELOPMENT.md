@@ -813,6 +813,13 @@ Konkrete Komponenten bauen darauf auf und setzen ihre festen Props selbst
   `AxisTitleGroup` und `CardSelectionGroup`. Setzt sie nur Props, die das
   Element genauso direkt übergeben könnte (z. B. nur `title`), entfällt
   sie, und das Element ruft die gemeinsame Group selbst auf.
+- **Group-Variante:** Eine Variante rendert genau eine ganze Group,
+  setzt nur feste Props und höchstens Zeilen davor (`children`); sie hat
+  kein eigenes Markup und ist keine eigene Ebene, wie `IconButton` →
+  `Button`. Beispiele: `BorderGroup` → `StrokeGroup` (Titel „Border“,
+  Auge aus `visible`, Verlauf aus dem Renderer), `CardSelectionGroup` und
+  `AxisTitleGroup` → `TextGroup`. Ändert eine Variante die Art des Werts,
+  wird sie eine eigene Komponente statt einer Prop `kind` der Basis.
 - **Was jede Ebene enthält:**
 
   | Ebene   | darin steht                                | eigene Komponente, wenn …                                                                                                                                                                          |
