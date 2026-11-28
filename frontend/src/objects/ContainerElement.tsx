@@ -1,9 +1,11 @@
+import BackgroundGroup from '@/shared/ui/groups/BackgroundGroup'
+import BorderGroup from '@/shared/ui/groups/BorderGroup'
+import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
 import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
 import PositionGroup from '@/shared/ui/groups/PositionGroup'
-import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
+import ShapeGroup from '@/shared/ui/groups/ShapeGroup'
 import { getLayoutBounds } from '@/workspace/chartLayout'
 
-import type { Surface } from '@/shared/surface'
 import type { LayoutBox } from '@/shared/ui/rows/BoxRow'
 import type {
   ObjectContainer,
@@ -21,10 +23,10 @@ type ContainerElementProps = {
 }
 
 /**
- * Groups of a container: position, size and padding, then its surface
- * (`SurfaceControls`), in the fixed order Position → Layout → Shape →
- * Fill → Stroke → Effects. Position and size are grid cells, limited
- * like dragging.
+ * Groups of a container in the fixed order Position → Layout → Shape →
+ * Fill → Stroke → Effects: position, size and padding, then corners,
+ * background, border and effects of its surface. Position and size are
+ * grid cells, limited like dragging.
  */
 function ContainerElement({
   layout,
@@ -39,18 +41,6 @@ function ContainerElement({
     value: layout,
     onChange: (patch) => onLayoutChange({ ...layout, ...patch }),
   }
-  /**
-   * Saves one property of the surface, which is a property of the
-   * container, too.
-   * @param key Property of the surface, e.g. its border.
-   * @param surfaceValue New value of the property.
-   */
-  function setSurface<TKey extends keyof Surface>(
-    key: TKey,
-    surfaceValue: Surface[TKey],
-  ): void {
-    onChange(key, surfaceValue as ObjectContainer[TKey])
-  }
   return (
     <>
       <PositionGroup box={box} label="Container" />
@@ -60,7 +50,26 @@ function ContainerElement({
         value={value.layout}
         onChange={(layout) => onChange('layout', layout)}
       />
-      <SurfaceControls label="Container" value={value} onChange={setSurface} />
+      <ShapeGroup
+        label="Container"
+        value={value.borderRadius}
+        onChange={(borderRadius) => onChange('borderRadius', borderRadius)}
+      />
+      <BackgroundGroup
+        label="Container"
+        value={value.background}
+        onChange={(background) => onChange('background', background)}
+      />
+      <BorderGroup
+        label="Container"
+        value={value.border}
+        onChange={(border) => onChange('border', border)}
+      />
+      <EffectsGroup
+        label="Container"
+        value={value.effects}
+        onChange={(effects) => onChange('effects', effects)}
+      />
     </>
   )
 }

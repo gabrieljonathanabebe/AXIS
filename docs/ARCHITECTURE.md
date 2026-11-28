@@ -645,23 +645,24 @@ type ColorScaleBar = Pick<Surface, 'border' | 'borderRadius'>
 ```
 
 - Namensregel: `Surface…` für die Fläche und ihre Teile
-  (`SurfaceControls`, `SurfaceLayers`, `SurfaceBorder`,
-  `SurfaceEffectsControls`), `Container…` nur für den Kasten eines
+  (`SurfaceLayers`, `SurfaceBorder`), `Container…` nur für den Kasten eines
   Objekts (`ObjectContainer`, `ContainerWidget`).
 - Was ein Renderer zeichnen kann, steht an einer Stelle
   (`SURFACE_CAPABILITIES`, `SurfaceRenderer`): `html` zeichnet alles,
   `css` (CSS an einem Element, das ECharts rendert, z. B. der Tooltip)
-  keinen Verlauf im Rahmen und kein Korn. `SurfaceControls` fragt die
-  Tabelle über `renderer`: beim Renderer `css` bietet der Rand nur Solid
-  an, die Effekte kein Korn.
+  keinen Verlauf im Rahmen und kein Korn. `BorderGroup` und
+  `EffectsGroup` fragen die Tabelle über `renderer`: beim Renderer `css`
+  bietet der Rand nur Solid an, die Effekte kein Korn. Heute liest nur
+  das Format-Panel die Tabelle; die Renderer halten sich an sie, ohne
+  sie zu lesen (Fundliste).
 - Der Renderer `css` ist `getSurfaceCssText` (`surface.ts`): eine Liste
   von CSS-Angaben für `extraCssText` des Tooltips; ein Verlauf im Rand
   wird zu seiner Farbe (`getPaintColor`), Innen- und Schlagschatten
   teilen `box-shadow`, Korn entfällt.
-- `SurfaceControls` nimmt `Partial<Surface>` und zeigt nur die Gruppen
-  der vorhandenen Felder, z. B. Shape und Border am Balken der
-  Farbskala. Jedes Widget setzt davor seine eigenen Gruppen (Position,
-  Layout).
+- Jedes Element listet die Groups seiner Fläche selbst, nur für die
+  Felder, die es hat, in der festen Reihenfolge: `ShapeGroup` (Radius),
+  `TextGroup`, `BackgroundGroup`, `BorderGroup`, `EffectsGroup`; der
+  Balken der Farbskala hat nur Shape und Border.
 - Der Tooltip hat sein Aussehen pro Chart in `appearance.tooltip`; sein
   Verhalten (an/aus, Trigger, Felder, Zahlenformat, Verzögerung) bleibt
   in `interaction.tooltip`. Der Default kommt aus
@@ -762,7 +763,8 @@ werden als Kasten beschrieben, wie Frames und Textebenen in Figma:
   und Text; die Gruppen des Format-Panels folgen schon dieser
   Reihenfolge (`DESIGN_SYSTEM.md`, „Feste Reihenfolge“).
 - Seit 3.10a gibt es die Fläche als `Surface` (siehe „Surface“) mit
-  `SurfaceControls` und dem HTML-Renderer `SurfaceLayers`; Legende und
+  ihren Groups (Shape, Background, Border, Effects) und dem HTML-Renderer
+  `SurfaceLayers`; Legende und
   Farbskala sind HTML (siehe „Container vs. Content“). Ihre Flächen und
   die des Tooltips kamen mit 3.10b; die Farbskala hat keine Fläche um
   alles, nur ihr Balken ist ein Kasten.

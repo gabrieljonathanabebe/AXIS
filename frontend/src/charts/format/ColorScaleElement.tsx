@@ -1,9 +1,10 @@
 import { getSideOrientation } from '@/shared/layout'
+import BorderGroup from '@/shared/ui/groups/BorderGroup'
 import { getVisibility } from '@/shared/ui/groups/getVisibility'
 import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
 import PositionGroup from '@/shared/ui/groups/PositionGroup'
+import ShapeGroup from '@/shared/ui/groups/ShapeGroup'
 import StrokeGroup from '@/shared/ui/groups/StrokeGroup'
-import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
 import AxisLabelsGroup from './AxisLabelsGroup'
 import AxisTitleGroup from './AxisTitleGroup'
 
@@ -78,6 +79,10 @@ function ColorScaleElement({
   function setTicks(ticks: ContinuousColorScale['ticks']): void {
     onChange({ ...value, ticks })
   }
+  /** Saves changed parts of the bar, e.g. its corners. */
+  function setBar(patch: Partial<ContinuousColorScale['bar']>): void {
+    onChange({ ...value, bar: { ...value.bar, ...patch } })
+  }
 
   return (
     <>
@@ -87,12 +92,15 @@ function ColorScaleElement({
         onChange={(position) => onChange({ ...value, position })}
       />
       <LayoutGroup box={createSizeBox(value, onChange)} label="Color scale" />
-      <SurfaceControls
+      <ShapeGroup
         label="Color scale"
-        value={value.bar}
-        onChange={(key, property) => {
-          onChange({ ...value, bar: { ...value.bar, [key]: property } })
-        }}
+        value={value.bar.borderRadius}
+        onChange={(borderRadius) => setBar({ borderRadius })}
+      />
+      <BorderGroup
+        label="Color scale"
+        value={value.bar.border}
+        onChange={(border) => setBar({ border })}
       />
       <AxisTitleGroup
         defaultTitle={defaultTitle}

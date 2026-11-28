@@ -1647,7 +1647,8 @@ Vorhandene Bausteine:
 - `Effect` mit `EffectControls` (siehe 9o): Glow in der Farbe der Serie
   bzw. des Segments oder Schatten mit eigener Farbe auf allen Marks
   (`line.effect`, `bar.effect`, `scatter.effect`, `pie.effect`)
-- `Surface` mit `SurfaceControls` (siehe 9o): die Fläche eines Kastens
+- `Surface` mit `ShapeGroup`, `BackgroundGroup`, `BorderGroup` und
+  `EffectsGroup` (siehe 9o): die Fläche eines Kastens
   aus Gruppen Shape (Radius), Background (`FillListControls`), Border
   (`StrokeWidget`) und Effects (`SurfaceEffect[]` mit
   `SurfaceEffectsControls`: Schatten, Innenschatten, Background Blur
@@ -1833,7 +1834,7 @@ BACKGROUND                         ＋
   ganzen Elements (ECharts kennt keine eigene Füll-Deckkraft): Rahmen
   und Glow blenden mit; der Rahmen hat zusätzlich seine eigene Opacity
 
-## 9o. EffectControls, SurfaceEffectsControls und SurfaceControls
+## 9o. Effekte und Fläche eines Kastens
 
 `EffectControls` ist die Zeile des Effekts einer Mark (`Effect`):
 `label` für Screenreader („Bar shadow blur“).
@@ -1872,23 +1873,20 @@ Fläche (`SurfaceEffect[]`), am Container im Element „Chart“ bzw.
 - `kinds` beschränkt die angebotenen Arten auf die, die der Renderer
   zeichnet
 
-`SurfaceControls` sind die Gruppen der Fläche eines Kastens, für jeden
-Kasten dieselben: Shape (Radius), Background, Border (`StrokeWidget`
-mit Auge), Effects. Props `label`, `renderer` (Standard `html`),
-`value: Partial<Surface>` und ein generisches `onChange(key, value)`
-für eine Eigenschaft.
+Die Fläche eines Kastens sind vier Groups, die jedes Element selbst
+listet, nur für die Felder, die es hat: `ShapeGroup` (Radius),
+`BackgroundGroup`, `BorderGroup` (Variante von `StrokeGroup` mit Auge)
+und `EffectsGroup`; Text steht zwischen Shape und Background (feste
+Reihenfolge). Der Balken der Farbskala hat nur Shape und Border, weil
+seine Füllung die Datenfarbe ist.
 
-- es zeigt nur die Gruppen, deren Felder der Wert hat, z. B. Shape und
-  Border für den Balken der Farbskala, dessen Füllung die Datenfarbe
-  ist
-- `children` stehen zwischen Shape und Background, z. B. die Gruppe
-  Text von Legende und Tooltip (feste Reihenfolge)
-- was der Renderer zeichnen kann, liest es aus `SURFACE_CAPABILITIES`
-  (`ARCHITECTURE.md`, „Surface“): beim Renderer `css` (Tooltip) bietet
-  Border nur Solid an und Effects kein Korn
-- ein Kasten bringt davor seine eigenen Gruppen mit, z. B. Position und
-  Layout (`ContainerWidget`, `LegendWidget`, `ColorScaleWidget`,
-  `TooltipWidget`)
+- was der Renderer zeichnen kann, lesen `BorderGroup` und `EffectsGroup`
+  über `renderer` aus `SURFACE_CAPABILITIES` (`ARCHITECTURE.md`,
+  „Surface“): beim Renderer `css` (Tooltip) bietet Border nur Solid an
+  und Effects kein Korn
+- `EffectsGroup` nimmt ohne `kinds` die Arten des Renderers, Titel
+  „Effects“ und die Blur-Grenze einer Fläche; Marks geben `kinds`,
+  `max={1}`, ihre Blur-Grenze und den Titel „Effect“
 
 `ShadowControls` ist der Inhalt hinter dem ⚙ eines Schattens, für Marks
 und Container gleich: Section Offset mit X | Y (Buchstaben als Icon,
@@ -2335,7 +2333,7 @@ Format-Panels formatiert:
   Radius zusammen gehen.
 
 Background, Border, Radius und Effects sind die Fläche des Containers
-(`Surface`, Gruppen aus `SurfaceControls`, siehe 9o). Der Container hat
+(`Surface`, Groups Shape, Background, Border und Effects, siehe 9o). Der Container hat
 kein Glass und keine festen Lichtkanten oder Schatten; was er davon
 trägt, kommt aus seinen Werten. `SurfaceLayers` zeichnet Fläche,
 Effekte und Rahmen auf festen Ebenen um den Inhalt (`ARCHITECTURE.md`,

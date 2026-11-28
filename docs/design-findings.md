@@ -84,7 +84,7 @@ Aufwand: S · Wo lösen: `FieldList.css`, `tokens.css` · Stand: erledigt
 
 ### O4 Titel von Achse und Objekt verschieden aufgebaut
 
-Ort: `charts/format/AxisTitleGroup`, `objects/ObjectTitleWidget`
+Ort: `charts/format/AxisTitleGroup`, `objects/TitleElement`
 
 Vorher:
 
@@ -105,10 +105,13 @@ TITLE              👁
 [ 12 ][ Bold ]   (Ausrichtung nur beim Objekt)
 ```
 
-Vorschlag: Eine gemeinsame `TitleGroup` mit optionaler Ausrichtung und
-Schriftgrenzen; das Auge des Objekttitels bleibt im Panel-Kopf. ·
-Aufwand: M · Wo lösen: neue `TitleGroup` · Stand: offen (Teil 10 oder
-Design-Slice)
+Vorschlag: Eine gemeinsame `TitleGroup` in `shared/ui/groups/`, Variante
+von `TextGroup` (§21): Zeile mit dem Titeltext und dem Standardtitel als
+Platzhalter, optional Ausrichtung und Schriftgrenzen; Nutzer sind
+Achsentitel, Titel der Farbskala und Objekt-Titel, `AxisTitleGroup` geht
+darin auf. Das Auge des Objekttitels bleibt im Panel-Kopf. · Aufwand: M ·
+Wo lösen: neue `TitleGroup` · Stand: geplant (Teil 5, eigener
+Optik-Commit nach Schritt 10.7)
 
 ### O5 Filter-Popover breiter als die Editoren
 

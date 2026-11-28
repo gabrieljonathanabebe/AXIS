@@ -1,10 +1,13 @@
 import { SeparatorVertical, SquareMousePointer } from 'lucide-react'
 
 import SegmentedControl from '@/shared/ui/controls/SegmentedControl'
+import BackgroundGroup from '@/shared/ui/groups/BackgroundGroup'
+import BorderGroup from '@/shared/ui/groups/BorderGroup'
+import EffectsGroup from '@/shared/ui/groups/EffectsGroup'
 import Group from '@/shared/ui/groups/Group'
 import LayoutGroup from '@/shared/ui/groups/LayoutGroup'
 import NumberFormatGroup from '@/shared/ui/groups/NumberFormatGroup'
-import SurfaceControls from '@/shared/ui/groups/SurfaceControls'
+import ShapeGroup from '@/shared/ui/groups/ShapeGroup'
 import TextGroup from '@/shared/ui/groups/TextGroup'
 import Row from '@/shared/ui/rows/Row'
 
@@ -14,6 +17,7 @@ import type {
   TooltipTrigger,
 } from '@/charts/types'
 import type { OptionItem } from '@/shared/optionItem'
+import type { Surface } from '@/shared/surface'
 
 type TooltipGroupProps = {
   appearance: TooltipAppearance
@@ -43,6 +47,13 @@ function TooltipGroup({
   showTrigger = true,
   value,
 }: TooltipGroupProps) {
+  const { surface } = appearance
+
+  /** Saves changed parts of the surface, e.g. its border. */
+  function setSurface(patch: Partial<Surface>): void {
+    onAppearanceChange({ ...appearance, surface: { ...surface, ...patch } })
+  }
+
   return (
     <Group
       group="tooltip"
@@ -58,25 +69,35 @@ function TooltipGroup({
         value={appearance.layout}
         onChange={(layout) => onAppearanceChange({ ...appearance, layout })}
       />
-      <SurfaceControls
+      <ShapeGroup
+        label="Tooltip"
+        value={surface.borderRadius}
+        onChange={(borderRadius) => setSurface({ borderRadius })}
+      />
+      <TextGroup
+        label="Tooltip text"
+        value={appearance.textStyle}
+        onChange={(textStyle) =>
+          onAppearanceChange({ ...appearance, textStyle })
+        }
+      />
+      <BackgroundGroup
+        label="Tooltip"
+        value={surface.background}
+        onChange={(background) => setSurface({ background })}
+      />
+      <BorderGroup
         label="Tooltip"
         renderer="css"
-        value={appearance.surface}
-        onChange={(key, property) => {
-          onAppearanceChange({
-            ...appearance,
-            surface: { ...appearance.surface, [key]: property },
-          })
-        }}
-      >
-        <TextGroup
-          label="Tooltip text"
-          value={appearance.textStyle}
-          onChange={(textStyle) => {
-            onAppearanceChange({ ...appearance, textStyle })
-          }}
-        />
-      </SurfaceControls>
+        value={surface.border}
+        onChange={(border) => setSurface({ border })}
+      />
+      <EffectsGroup
+        label="Tooltip"
+        renderer="css"
+        value={surface.effects}
+        onChange={(effects) => setSurface({ effects })}
+      />
       <NumberFormatGroup
         label="Tooltip"
         value={value.numberFormat}
