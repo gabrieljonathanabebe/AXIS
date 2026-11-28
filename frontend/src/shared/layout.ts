@@ -100,7 +100,7 @@ export function isSide(position: string): position is Side {
  * @param alignment Place along the side, if the element has one.
  * @returns The name, e.g. for a cell of the position grid or its field.
  */
-export function getPlacementLabel(
+export function getPositionLabel(
   position: Side,
   alignment?: HorizontalAlignment,
 ): string {

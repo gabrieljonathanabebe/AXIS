@@ -1,21 +1,21 @@
 import { PanelBottom, PanelLeft, PanelRight, PanelTop } from 'lucide-react'
 
-import { getPlacementLabel, getSideOrientation, isSide } from '@/shared/layout'
+import { getPositionLabel, getSideOrientation, isSide } from '@/shared/layout'
 import DetailsControl from '../controls/DetailsControl'
 import SegmentedControl from '../controls/SegmentedControl'
 import BoxRow from '../rows/BoxRow'
 import Row from '../rows/Row'
 import {
-  getPlacementOptions,
-  toPlacement,
-  toPlacementKey,
+  getPositionOptions,
+  toPosition,
+  toPositionKey,
 } from './positionOptions'
 
 import type { LucideIcon } from 'lucide-react'
 import type { PartialPosition, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
-import type { PlacementKey } from './positionOptions'
+import type { PositionKey } from './positionOptions'
 
 // ===== TYPES =================================================================
 /** Sides the position allows, e.g. the four sides of a legend. */
@@ -40,7 +40,7 @@ const sideOptions = [
 ] satisfies OptionItem<Side>[]
 
 /** Icons of the position field: the side an element sits at. */
-const placementIcons = {
+const sideIcons = {
   bottom: PanelBottom,
   left: PanelLeft,
   right: PanelRight,
@@ -57,8 +57,8 @@ const MAX_ICONS_PER_COLUMN = 3
  * @param option Cell of the grid.
  * @returns Mark inside the cell button.
  */
-function renderPlacementMark(option: OptionItem<PlacementKey>) {
-  const { side } = toPlacement(option.value, false)
+function renderPositionMark(option: OptionItem<PositionKey>) {
+  const { side } = toPosition(option.value, false)
   return (
     <span
       aria-hidden="true"
@@ -88,13 +88,13 @@ function PositionGroup<TPosition extends PartialPosition>({
   const alignment = value?.alignment
   const side = value?.side
   const hasAlignment = alignment !== undefined
-  const showsPlacement =
+  const showsGrid =
     side !== undefined &&
     isSide(side) &&
     sides.length === sideOptions.length &&
     sides.every((option) => isSide(option.value))
-  const PlacementIcon = showsPlacement ? placementIcons[side] : null
-  const showsIcons = !showsPlacement && side !== undefined && sides.length > 1
+  const SideIcon = showsGrid ? sideIcons[side] : null
+  const showsIcons = !showsGrid && side !== undefined && sides.length > 1
   const isWide =
     sides.length > MAX_ICONS_PER_COLUMN || sides.some((option) => option.icon)
 
@@ -110,23 +110,23 @@ function PositionGroup<TPosition extends PartialPosition>({
   return (
     <>
       {box ? <BoxRow box={box} fields={['x', 'y']} label={label} /> : null}
-      {showsPlacement && PlacementIcon ? (
+      {showsGrid && SideIcon ? (
         <Row layout="wide">
           <DetailsControl
             fitsContent
-            icon={<PlacementIcon size={14} />}
+            icon={<SideIcon size={14} />}
             label={`${label} position`}
-            text={getPlacementLabel(side, alignment)}
+            text={getPositionLabel(side, alignment)}
           >
             <SegmentedControl
               className="position-grid"
               columns={3}
               label={`${label} position`}
-              options={getPlacementOptions(hasAlignment)}
-              renderOption={renderPlacementMark}
-              value={toPlacementKey({ alignment, side })}
+              options={getPositionOptions(hasAlignment)}
+              renderOption={renderPositionMark}
+              value={toPositionKey({ alignment, side })}
               onValueChange={(key) => {
-                changePosition(toPlacement(key, hasAlignment))
+                changePosition(toPosition(key, hasAlignment))
               }}
             />
           </DetailsControl>

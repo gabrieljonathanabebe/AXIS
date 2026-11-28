@@ -1901,7 +1901,7 @@ Aufrufer teilt nichts auf.
 - `PositionControls`: X | Y aus `box`; ein Element an allen vier
   Seiten bekommt ein Positionsfeld (`DetailsField` mit `fitsContent`
   über die ganze Zeile): Icon der Seite (`PanelTop` usw.) und ihr Name
-  (`getPlacementLabel`, z. B. „Bottom left“, links und rechts nur die
+  (`getPositionLabel`, z. B. „Bottom left“, links und rechts nur die
   Seite). Es öffnet das Positionsraster (siehe 9r), mit Alignment das
   Raster (Legende, Farbskala), ohne das Kreuz. Sonst eine Icon-Gruppe,
   eingeschränkt über `positions` (Standard: die vier Seiten), bis drei
@@ -1988,7 +1988,7 @@ grid (Legende, Farbskala)         cross (ohne Alignment)
 [↙] [↓] [↘]  bottom: start | center | end   [ ] [↓] [ ]
 ```
 
-- jede Zelle ist eine Option mit Namen aus `getPlacementLabel` („Top
+- jede Zelle ist eine Option mit Namen aus `getPositionLabel` („Top
   left“, „Right“) und zeigt, wo das Element sitzt; die leere Mitte steht
   für den Plot (gestrichelt)
 - Raster: Seite und Alignment; links und rechts nur mittig, weil
@@ -1996,7 +1996,7 @@ grid (Legende, Farbskala)         cross (ohne Alignment)
 - Kreuz: nur die vier Seiten, die Ecken bleiben leer; es meldet nur
   `position`, ohne `alignment`, und die Zelle einer Seite steht für die
   ganze Seite
-- `toPlacementKey` und `toPlacement` übersetzen zwischen Lage und Wert
+- `toPositionKey` und `toPosition` übersetzen zwischen Lage und Wert
   der Zelle (`"top-end"`, `"left"`), getestet in
   `positionOptions.test.ts`
 

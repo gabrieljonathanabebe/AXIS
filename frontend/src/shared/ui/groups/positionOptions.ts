@@ -1,15 +1,15 @@
-import { getPlacementLabel, getSideOrientation } from '@/shared/layout'
+import { getPositionLabel, getSideOrientation } from '@/shared/layout'
 
 import type { HorizontalAlignment, Position, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 
 // ===== TYPES =================================================================
 /** Side and place along it, e.g. a legend at the top, centered. */
-export type Placement = Partial<Pick<Position, 'alignment'>> &
+export type GridPosition = Partial<Pick<Position, 'alignment'>> &
   Pick<Position, 'side'>
 
 /** Value of one cell: a whole side, or top or bottom with an alignment. */
-export type PlacementKey = Side | `${'bottom' | 'top'}-${HorizontalAlignment}`
+export type PositionKey = Side | `${'bottom' | 'top'}-${HorizontalAlignment}`
 
 // ===== CONSTANTS =============================================================
 /**
@@ -31,30 +31,30 @@ const GRID_CELLS: (Position | null)[] = [
 
 // ===== FUNCTIONS =============================================================
 /**
- * Key of a placement; left and right, and a side without alignment, stand
+ * Key of a position; left and right, and a side without alignment, stand
  * for the whole side, e.g. left at the start → "left", top at the end →
  * "top-end".
- * @param placement Side and optional alignment.
+ * @param position Side and optional alignment.
  * @returns Key of the cell that shows it.
  */
-export function toPlacementKey({ alignment, side }: Placement): PlacementKey {
+export function toPositionKey({ alignment, side }: GridPosition): PositionKey {
   if (!alignment || getSideOrientation(side) === 'vertical') {
     return side
   }
-  return `${side}-${alignment}` as PlacementKey
+  return `${side}-${alignment}` as PositionKey
 }
 
 /**
- * Placement of a cell; with an alignment, left and right take the center,
+ * Position of a cell; with an alignment, left and right take the center,
  * e.g. "top-end" → top at the end, "left" → left, centered.
  * @param key Key of the cell.
  * @param withAlignment Whether the element has an alignment.
  * @returns Side and, with an alignment, the place along it.
  */
-export function toPlacement(
-  key: PlacementKey,
+export function toPosition(
+  key: PositionKey,
   withAlignment: boolean,
-): Placement {
+): GridPosition {
   const [side, alignment = 'center'] = key.split('-') as [
     Side,
     HorizontalAlignment?,
@@ -69,9 +69,9 @@ export function toPlacement(
  * @param withAlignment Whether the element has an alignment, e.g. a legend.
  * @returns Nine cells for a grid of three columns.
  */
-export function getPlacementOptions(
+export function getPositionOptions(
   withAlignment: boolean,
-): (OptionItem<PlacementKey> | null)[] {
+): (OptionItem<PositionKey> | null)[] {
   return GRID_CELLS.map((cell) => {
     if (!cell) {
       return null
@@ -84,8 +84,8 @@ export function getPlacementOptions(
     }
     const alignment = withAlignment ? cell.alignment : undefined
     return {
-      label: getPlacementLabel(cell.side, alignment),
-      value: toPlacementKey({ alignment, side: cell.side }),
+      label: getPositionLabel(cell.side, alignment),
+      value: toPositionKey({ alignment, side: cell.side }),
     }
   })
 }
