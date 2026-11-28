@@ -4,7 +4,7 @@
 
 @import './shared/ui/primitives/Button.css';
 @import './shared/ui/primitives/Chip.css';
-@import './table/CheckList.css';
+@import './shared/ui/controls/CheckList.css';
 @import './shared/ui/containers/ColorEditor.css';
 @import './shared/ui/primitives/SwatchButton.css';
 @import './shared/ui/controls/ColorControl.css';
@@ -27,7 +27,7 @@
 @import './shared/ui/containers/Panel.css';
 @import './shared/ui/primitives/Popover.css';
 @import './shared/ui/groups/PositionGroup.css';
-@import './table/RangeControl.css';
+@import './shared/ui/controls/RangeControl.css';
 @import './shared/ui/controls/NumberControl.css';
 @import './shared/ui/primitives/SelectButton.css';
 @import './shared/ui/controls/SelectControl.css';

@@ -3,10 +3,10 @@ import { useState } from 'react'
 
 import { formatDate } from '@/shared/format/formatDate'
 import { formatNumber } from '@/shared/format/formatNumber'
+import CheckList from '@/shared/ui/controls/CheckList'
+import RangeControl from '@/shared/ui/controls/RangeControl'
 import TextInput from '@/shared/ui/primitives/TextInput'
-import CheckList from './CheckList'
 import { createMeasureSteps } from './measureSteps'
-import RangeControl from './RangeControl'
 import { createTemporalSteps } from './temporalSteps'
 import { useFieldValues } from './useFieldValues'
 
@@ -15,7 +15,7 @@ import type {
   FieldStatistics,
   SemanticRole,
 } from '@/datasets/types'
-import type { CheckListOption } from './CheckList'
+import type { CheckListOption } from '@/shared/ui/controls/CheckList'
 import type { TableFilter } from './tableApi'
 
 // ===== TYPES =================================================================
