@@ -33,7 +33,7 @@
 @import './shared/ui/controls/SelectControl.css';
 @import './shared/ui/controls/SegmentedControl.css';
 @import './datasets/StatTile.css';
-@import './shared/ui/groups/StrokeStyleControls.css';
+@import './shared/ui/groups/StrokeGroup.css';
 @import './shared/ui/display/Surface.css';
 @import './shared/ui/primitives/TextInput.css';
 @import './shared/ui/tiles/Tile.css';
