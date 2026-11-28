@@ -9,13 +9,13 @@ import {
   getPlacementOptions,
   toPlacement,
   toPlacementKey,
-} from './placementOptions'
+} from './positionOptions'
 
 import type { LucideIcon } from 'lucide-react'
 import type { PartialPosition, Side } from '@/shared/layout'
 import type { OptionItem } from '@/shared/optionItem'
 import type { LayoutBox } from '../rows/BoxRow'
-import type { PlacementKey } from './placementOptions'
+import type { PlacementKey } from './positionOptions'
 
 // ===== TYPES =================================================================
 /** Sides the position allows, e.g. the four sides of a legend. */

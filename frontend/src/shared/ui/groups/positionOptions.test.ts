@@ -4,7 +4,7 @@ import {
   getPlacementOptions,
   toPlacement,
   toPlacementKey,
-} from './placementOptions'
+} from './positionOptions'
 
 describe('toPlacementKey', () => {
   it('keeps the alignment only at top and bottom', () => {

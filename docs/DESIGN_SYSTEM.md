@@ -1977,7 +1977,7 @@ transparent), neutrale Kante bei Hover, Akzent-Kante bei Fokus.
 Das Positionsraster wählt die Seite eines Elements am Plot, ohne
 Formänderung des `Layout`. Es ist ein `SegmentedControl` mit
 `columns={3}`: Optionen aus `getPlacementOptions`
-(`groups/placementOptions.ts`), `null` lässt eine Zelle leer. Es steht
+(`groups/positionOptions.ts`), `null` lässt eine Zelle leer. Es steht
 im Popover des Positionsfelds (`PositionGroup`, siehe 9p), nicht direkt
 im Panel. Mit Alignment ist es das Raster, ohne das Kreuz:
 
@@ -1998,7 +1998,7 @@ grid (Legende, Farbskala)         cross (ohne Alignment)
   ganze Seite
 - `toPlacementKey` und `toPlacement` übersetzen zwischen Lage und Wert
   der Zelle (`"top-end"`, `"left"`), getestet in
-  `placementOptions.test.ts`
+  `positionOptions.test.ts`
 
 ## 9s. Optionen mit Icons
 
